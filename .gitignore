@@ -1,0 +1,17 @@
+# LaTeX build products
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.pdf
+*.fdb_latexmk
+*.synctex.gz
+chapter/*.aux
+# keep the PDF out of git; build it with `make`
+JitJet.pdf
+.DS_Store

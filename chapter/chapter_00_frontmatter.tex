@@ -1,0 +1,69 @@
+% ---------------------------------------------------------------------------
+% Front matter: preface, how to read this book, the two pilgrims
+% ---------------------------------------------------------------------------
+\chapter{Preface: A Jet Is a Journey, Not a Destination}
+\chaptermark{Preface}
+\label{ch:preface}
+
+In CMS an electron, a photon or a muon is a \emph{destination}: an object that
+is essentially there at the end of reconstruction and needs only identification
+and calibration. A jet is a \emph{journey}. It does not exist at any single
+point; it is the accumulated history of a coloured parton from the hard
+scattering to the calibrated, tagged, smeared four-vector an analyst finally
+puts into a histogram. Every stage of that journey either adds energy to the
+jet, removes energy from it, or reshuffles how the energy is distributed.
+
+This book follows one and the same jet through every stage, shows the
+mathematics of each stage, measures how much energy that stage added or
+removed, and points to the official paper for further reading. The title is
+meant literally: \emph{Journey Is The Jet}, and the two jets we follow are the
+$b$-jet (bottom) and the top-jet (top).
+
+\todo{Expand the preface: who this book is for (new Master, PhD and postdoc
+members of the CMS JME group), what is assumed, what is not.}
+
+\section*{How to read this book}
+
+Chapters are stages of a pilgrimage told through one metaphor: a mother quark,
+her children from the parton shower, the crowd on the road (pileup), borders and
+checkpoints (detector and trigger), the census (Particle Flow), the police
+(pileup mitigation), the inn (clustering), the tax office (jet energy
+corrections), the wobbly ruler (resolution) and the registry office (tagging).
+The metaphor is a memory aid; the physics is always stated explicitly.
+
+Every chapter has the same internal structure:
+\begin{enumerate}[nosep]
+  \item \textbf{The stage in the journey}: the metaphor and what physically happens.
+  \item \textbf{The mathematics}: the minimal, correct formulae.
+  \item \textbf{Our jet at this stage}: the numbers from the energy ledger, plots and event displays.
+  \item \textbf{How CMS does it in practice}: configurations, \CMSSW modules, JME tools, NanoAOD branches.
+  \item \textbf{Pitfalls and FAQs} for newcomers.
+  \item \textbf{Further reading}: official CMS papers, detector-performance notes, theory papers.
+\end{enumerate}
+
+\section*{The two pilgrims}
+
+\begin{description}
+  \item[Event A, the $b$-jet.] \code{generate p p > b b\~{}} at $\sqrt{s}=13.6\TeV$ in
+    \MG with a fixed random seed, showered and hadronised with \PYTHIA (CP5 tune),
+    premixed with Run~3 pileup, simulated with \GEANT, passed through Level-1 and
+    High-Level Trigger emulation, reconstructed with Particle Flow, \PUPPI,
+    \antikt $R=0.4$ clustering, jet energy corrections and resolution smearing,
+    and finally $b$-tagged.
+  \item[Event B, the top-jet.] \code{generate p p > t t\~{}} with a boosted
+    hadronically decaying top quark ($\pt>400\GeV$), the same chain,
+    \antikt $R=0.8$ clustering, soft drop, $N$-subjettiness and a
+    machine-learned top tagger.
+\end{description}
+
+\section*{The energy ledger}
+
+For both jets we keep an \emph{energy ledger}: one row per stage with the jet
+\pt, mass, constituent multiplicity and the change with respect to the previous
+stage. The ledger is the quantitative red thread of the book and is closed in
+\cref{ch:energy_ledger}.
+
+\section*{Reproducibility}
+
+\todo{Software releases, generator versions, random seeds, container image,
+and where the configuration files live (\code{example/}).}

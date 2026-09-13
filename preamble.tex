@@ -1,0 +1,88 @@
+%% ==========================================================================
+%% preamble.tex : packages, macros and environments shared by all chapters
+%% ==========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=green!40!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{cleveref}
+\usepackage{xspace}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\nouppercase{\leftmark}}
+\fancyhead[RO]{\small\nouppercase{\rightmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+\graphicspath{{figures/}{example/}}
+
+%% -------- kinematic shorthands -------------------------------------------
+\newcommand{\pt}{\ensuremath{p_{\mathrm{T}}}\xspace}
+\newcommand{\ptmiss}{\ensuremath{p_{\mathrm{T}}^{\mathrm{miss}}}\xspace}
+\newcommand{\GeV}{\ensuremath{\,\mathrm{GeV}}\xspace}
+\newcommand{\TeV}{\ensuremath{\,\mathrm{TeV}}\xspace}
+\newcommand{\dR}{\ensuremath{\Delta R}\xspace}
+\newcommand{\antikt}{anti-\ensuremath{k_{\mathrm{T}}}\xspace}
+\newcommand{\kt}{\ensuremath{k_{\mathrm{T}}}\xspace}
+\newcommand{\rhoPU}{\ensuremath{\rho}\xspace}
+\newcommand{\NPV}{\ensuremath{N_{\mathrm{PV}}}\xspace}
+\newcommand{\ttbar}{\ensuremath{t\bar t}\xspace}
+\newcommand{\bbbar}{\ensuremath{b\bar b}\xspace}
+\newcommand{\msd}{\ensuremath{m_{\mathrm{SD}}}\xspace}
+\newcommand{\tauNM}[2]{\ensuremath{\tau_{#1#2}}\xspace}
+
+%% -------- software names ---------------------------------------------------
+\newcommand{\MG}{\textsc{MadGraph5\_aMC@NLO}\xspace}
+\newcommand{\PYTHIA}{\textsc{Pythia}~8\xspace}
+\newcommand{\GEANT}{\textsc{Geant4}\xspace}
+\newcommand{\FASTJET}{\textsc{FastJet}\xspace}
+\newcommand{\PUPPI}{\textsc{Puppi}\xspace}
+\newcommand{\CMSSW}{\textsc{cmssw}\xspace}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%% -------- editorial ---------------------------------------------------------
+\newcommand{\todo}[1]{\textcolor{red!80!black}{\textbf{[TODO:} #1\textbf{]}}}
+
+%% "The stage in the journey": the metaphor paragraph opening each chapter
+\newtcolorbox{journeybox}{colback=yellow!8,colframe=orange!60!black,
+  title=The stage in the journey,fonttitle=\bfseries,boxrule=0.6pt,arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+%% one-line list of the physics covered by the chapter
+\newcommand{\physicsline}[1]{%
+  \noindent\textbf{Physics in this chapter:} \emph{#1}\par\medskip}
+
+%% Pitfalls & FAQs box (fixed part 5 of every chapter)
+\newtcolorbox{pitfalls}{colback=red!4,colframe=red!50!black,
+  title=Pitfalls and FAQs for newcomers,fonttitle=\bfseries,boxrule=0.6pt,arc=2pt}
+
+%% Exercises
+\newcommand{\exercisesheader}{\medskip\noindent\textbf{Exercises}\par\nopagebreak}
+\newlist{exercises}{enumerate}{1}
+\setlist[exercises]{label=\textbf{Exercise~\arabic*.},leftmargin=*,before=\exercisesheader}
+
+%% Energy ledger: one table per "Our jet at this stage" section.
+%% \begin{ledger}{stage name}  \ledgerrow{label}{pT}{m}{n}{delta pT}  \end{ledger}
+\newenvironment{ledger}[1]{%
+  \begin{table}[htbp]\centering
+  \caption{Energy ledger at the stage ``#1''. $\Delta\pt$ is relative to the previous row.}
+  \begin{tabular}{lrrrr}\toprule
+  Stage & $\pt$ [GeV] & $m$ [GeV] & $n_{\mathrm{const}}$ & $\Delta\pt$ [GeV] \\ \midrule}%
+  {\bottomrule\end{tabular}\end{table}}
+\newcommand{\ledgerrow}[5]{#1 & #2 & #3 & #4 & #5 \\}
+
+%% code listings
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,
+  backgroundcolor=\color{gray!6},columns=fullflexible,keepspaces=true}

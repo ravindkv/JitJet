@@ -87,51 +87,56 @@ Each chapter follows the same internal structure:
 5. **Pitfalls and FAQs for newcomers**
 6. **Further reading** (official CMS papers, DP notes, theory papers)
 
-## 4. Candidate metaphors for the chapter names
+## 4. The metaphor: The Family Pilgrimage
 
-The physics chain is fixed; the *story* can differ. Three complete tables of
-contents are provided, each built on a different real-world metaphor:
+Three candidate metaphors were drafted (a family pilgrimage, a mountaineering
+expedition, an energy economy). The **Family Pilgrimage** was chosen: a quark is
+a *mother*, the parton shower produces her *children*, pileup is the *crowd on
+the road*, detector and trigger are *borders and checkpoints*, Particle Flow is
+the *census*, CHS/PUPPI are the *police*, clustering is the *inn*, JEC is the
+*tax office*, JER is the *wobbly ruler*, b-tagging is the *registry office*.
+The other images (barber shop for grooming, shop where we pay more and gain
+less) survive at chapter level inside the top-jet part.
 
-| File | Metaphor | One-line pitch |
-|------|----------|----------------|
-| [Book1.md](Book1.md) | **The Family Pilgrimage** | A mother quark gives birth to children in the shower; the growing family travels through borders, crowds, police checks, barbers and tax offices until they are recognised at the destination. |
-| [Book2.md](Book2.md) | **The Expedition: from Base Camp to Summit** | "Bottom to top" taken literally. The b-jet climbs camp by camp; the top-jet is the summit. Each camp costs or gives energy; guides, porters, weather and permits play the roles of the CMS chain. |
-| [Book3.md](Book3.md) | **The Energy Economy** | Energy is currency. Mint, inheritance, factories, immigrants, customs, census, police, town hall, tax office with refunds, barber, court of identification, insurance. The ledger is literally a bank passbook. |
+**Ordering decision.** The b-jet journey is told first and completely
+(chapters 1 to 22, from the hard scattering to b-tagging and MET). Only then do
+"three families travel as one": the top-jet gets two chapters (23: the boosted
+AK8 jet with grooming, substructure and jet mass scale/resolution; 24: top
+tagging). Wrap-up chapters 25 to 27 close the ledger, describe daily life in
+JME and look at Run 3 / Phase-2.
 
-Other metaphors considered (can be mixed in as chapter-level flavour):
-
-* **A river from spring to sea**: tributaries (UE, PU) join, dams (thresholds)
-  and filters (PUPPI) act, the delta (clustering) collects everything.
-* **A postal parcel**: packed (hadronised), stamped (triggered), scanned
-  (detector), sorted (PF), re-weighed and charged (JEC), delivered (analysis).
-* **A train journey**: stations are stages, passengers board and leave, tickets
-  are checked (trigger), the timetable is the CMSSW sequence.
-* **A theatre production**: the script (matrix element), the cast grows
-  (shower), extras (PU), stage lights (detector), the critics (taggers).
-
-## 5. How to use these files
-
-1. Read the three `Book*.md` files and mark, chapter by chapter, which names and
-   framings feel most *apt* (a good metaphor must predict the physics, not just
-   decorate it).
-2. Merge the winners into a final `TOC.md`.
-3. Only then start writing chapters, one directory per chapter
-   (`chapters/01_.../`), each with its Markdown text, the CMSSW/MG/Pythia
-   configs used for the worked example, and the plots.
-
-## 6. Repository layout (proposed)
+## 5. Repository layout
 
 ```
 JitJet/
-  README.md          this file: concept, spine, worked example, metaphors
-  Book1.md           TOC v1: The Family Pilgrimage
-  Book2.md           TOC v2: The Expedition (Base Camp to Summit)
-  Book3.md           TOC v3: The Energy Economy
-  TOC.md             (later) the merged, final table of contents
-  chapters/          (later) one folder per chapter
-  example/           (later) MG cards, Pythia fragments, CMSSW configs, ledger
-  refs/              (later) bibliography (BibTeX) of all cited papers
+  README.md                 this file: concept, spine, worked example
+  JitJet.tex                main LaTeX file: title, TOC, \include of every chapter
+  preamble.tex              packages, macros (\pt, \antikt, ...), boxes, energy-ledger table
+  Makefile                  make -> pdflatex, bibtex, pdflatex x2 -> JitJet.pdf
+  chapter/
+    chapter_00_frontmatter.tex   preface, how to read, the two pilgrims, the ledger
+    chapter_01_ancestral_home.tex ... chapter_27_next_pilgrimage.tex
+    appendix_A_kinematics.tex ... appendix_E_exercises.tex
+  ref/JitJet.bib            bibliography (INSPIRE-style keys)
+  example/                  (later) MG cards, Pythia fragments, CMSSW configs, ledger
+  prompt/                   the brainstorming prompts that shaped the book
 ```
+
+Each chapter file opens with a `journeybox` (the metaphor paragraph), a
+`\physicsline` (what physics the chapter covers), then one `\section` per
+outline item. The section "Our jet at this stage" carries a `ledger` table; the
+section "Further reading" cites the papers in `ref/JitJet.bib`. Every chapter
+ends with a `pitfalls` box and an `exercises` list. Red `\todo{}` marks mark
+what remains to be written.
+
+## 6. Building the PDF
+
+```bash
+make
+```
+
+or, equivalently, `latexmk -pdf JitJet.tex`. `make quick` runs a single
+pdflatex pass; `make clean` removes auxiliary files.
 
 ## 7. Core references (to be cited throughout)
 

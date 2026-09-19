@@ -1,0 +1,27 @@
+{
+  "ecm": 13600.0,
+  "mb": 4.8,
+  "pdf": "NNPDF31_nnlo_as_0118",
+  "member": 0,
+  "ptmin": 30.0,
+  "ptmax": null,
+  "mhatmin": 0.0,
+  "mhatmax": null,
+  "nquark": 5,
+  "renorm_scale": 2,
+  "factor_scale": 1,
+  "renorm_mult_fac": 1.0,
+  "factor_mult_fac": 1.0,
+  "kfactor": 1.0,
+  "alpha_backend": "pythia",
+  "alphas_mz": 0.118,
+  "alpha_order": 2,
+  "alpha_nfmax": 6,
+  "power": 16,
+  "repeats": 8,
+  "reference_pb": 18440.0,
+  "reference_error_pb": 97.17,
+  "metadata": {
+    "source": "User PYTHIA log plus standard defaults; use exporter to confirm unprinted settings and PDF member."
+  }
+}

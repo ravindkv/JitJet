@@ -1,0 +1,80 @@
+[
+  {
+    "config": {
+      "ecm": 13600.0,
+      "mb": 4.8,
+      "pdf": "NNPDF31_nnlo_as_0118",
+      "member": 0,
+      "ptmin": 30.0,
+      "ptmax": null,
+      "mhatmin": 0.0,
+      "mhatmax": null,
+      "ymax": null,
+      "etamax": null,
+      "nquark": 5,
+      "renorm_scale": 2,
+      "factor_scale": 1,
+      "renorm_mult_fac": 1.0,
+      "factor_mult_fac": 1.0,
+      "renorm_fix_scale": 10000.0,
+      "factor_fix_scale": 10000.0,
+      "kfactor": 1.0,
+      "alpha_backend": "pythia",
+      "alphas_mz": 0.118,
+      "alpha_order": 2,
+      "alpha_nfmax": 6,
+      "alpha_fixed": 0.118,
+      "pdf_extrapolate": false,
+      "clip_negative_pdf": true,
+      "symmetrize_heavy_sea": true,
+      "power": 16,
+      "repeats": 8,
+      "seed": 24680,
+      "reference_pb": 18440.0,
+      "reference_error_pb": 97.17
+    },
+    "sigma_pb": 18506.621389732994,
+    "error_pb": 0.04717522138584502,
+    "sigma_nb": 18.506621389732995,
+    "error_nb": 4.717522138584502e-05,
+    "relative_error_percent": 0.000254909961101904,
+    "ratio_to_reference": 1.003612873629772,
+    "difference_over_combined_integration_error": 0.6856167735061688,
+    "by_flavour_pb": {
+      "d": {
+        "sigma": 6174.567943450052,
+        "error": 0.017487633263060118
+      },
+      "u": {
+        "sigma": 8408.87042088217,
+        "error": 0.02944633978551709
+      },
+      "s": {
+        "sigma": 2438.0968457400627,
+        "error": 0.01564828281753406
+      },
+      "c": {
+        "sigma": 1081.8716310127922,
+        "error": 0.006942117282324563
+      },
+      "b": {
+        "sigma": 403.214548647917,
+        "error": 0.0020631709109449913
+      }
+    },
+    "repeat_totals_pb": [
+      18506.469485832495,
+      18506.41753235949,
+      18506.67674407689,
+      18506.65133507836,
+      18506.699263616214,
+      18506.708040402114,
+      18506.81009812236,
+      18506.538618376013
+    ],
+    "pdf_frozen_calls": 0,
+    "negative_pdf_values": 1166234,
+    "alpha_s_at_Q2_1178": 0.1385339926863751,
+    "reference_note": "18.44 nb applies only to the original settings. Cut/parameter scans need new matching PYTHIA runs."
+  }
+]

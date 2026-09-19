@@ -1,6 +1,7 @@
 % ---------------------------------------------------------------------------
 % Chapter 1: The Ancestral Home: Protons, PDFs and the Hard Scattering
-% Generated from the outline; edit freely, this file is now the source.
+% Source files quoted in this chapter live in example/ME/ and are read at
+% build time (minted), so the book always shows the current version.
 % ---------------------------------------------------------------------------
 \chapter{The Ancestral Home: Protons, PDFs and the Hard Scattering}
 \chaptermark{The Ancestral Home}
@@ -13,46 +14,783 @@ single step we must know how much energy she was given, because everything that
 follows is measured against it.
 \end{journeybox}
 
-\physicsline{factorisation, PDFs, LO/NLO matrix elements, $pp\to b\bar b$ in MadGraph5\_aMC@NLO, LHE}
+\physicsline{factorisation, PDFs, the leading-order matrix element for
+$q\bar q\to\bbbar$, scale choices, \PYTHIA's \code{HardQCD:qqbar2bbbar} hard
+process inside \CMSSW, the hard-process record of our event}
+
+\section{What this chapter computes, and why we do it three times}
+\label{sec:ancestral_home:what_we_compute}
+
+The whole chapter is about one number: the cross section for producing a
+$\bbbar$ pair with $\pthat\ge 30\GeV$ in proton--proton collisions at
+$\sqrt{s}=13.6\TeV$ through quark--antiquark annihilation. It comes out at
+about $18.5\nb$. We compute it three times, each time with less of our own
+work and more trust in somebody else's code:
+\begin{enumerate}[nosep]
+  \item \textbf{Theory.} From the factorisation formula, the parton
+    distribution functions and a one-line matrix element we write down a
+    three-dimensional integral and evaluate it
+    (\crefrange{sec:ancestral_home:two_protons_meet}{sec:ancestral_home:from_formula_to_number}).
+  \item \textbf{Standalone code.} A single Python file of about 190 lines,
+    needing only NumPy and SciPy, does exactly that integral. The reader runs it
+    and gets the same number in about one second
+    (\cref{sec:ancestral_home:standalone_code}).
+  \item \textbf{\CMSSW.} The official CMS generator configuration runs the same
+    process inside \PYTHIA. Its log prints the cross section it sampled
+    (\cref{sec:ancestral_home:cmssw}).
+\end{enumerate}
+\Cref{tab:ancestral_home:three_numbers} anticipates the result. The three
+agree within the statistical precision of the Monte Carlo runs, and that
+agreement is the point of the exercise: after this chapter the reader knows
+what every knob in the CMS configuration does to the number, because they have
+turned each knob themselves.
+
+\begin{table}[htbp]\centering\small
+\caption[The $q\bar q\to\bbbar$ cross section obtained three ways]{The $q\bar q\to\bbbar$ cross section at $\sqrt{s}=13.6\TeV$ with
+$\pthat\ge30\GeV$, $\mb=4.8\GeV$, NNPDF3.1 NNLO and
+$\muR^2=\muF^2=\pthat^2+\mb^2$, obtained three ways. The scripts are
+\file{standalone_qqbar_bbbar_xsec.py} and \file{qqbar_bbbar_xsec.py} in
+\file{example/ME/Standalone/}; the \CMSSW number is from
+\file{example/ME/CMSSW/step1_GEN_cfg.log}. Quoted errors are statistical or
+numerical only; the theoretical uncertainty is discussed in
+\cref{sec:ancestral_home:scales}.}
+\label{tab:ancestral_home:three_numbers}
+\begin{tabular}{llr}\toprule
+Method & Details & $\sigma$ [nb] \\ \midrule
+Standalone script, one pass & LO integral, $2^{16}$ Sobol points & $18.5064$ \\
+Standalone script, 8 repeats & LO integral, scrambled seeds & $18.50653 \pm 0.00005$ \\
+Full script (LHAPDF, \PYTHIA $\alphas$) & LO integral, 8 repeats & $18.50662 \pm 0.00005$ \\
+\PYTHIA~8.315 standalone & Monte Carlo, large sample & $18.44 \pm 0.10$ \\
+\PYTHIA~8.311 in \code{CMSSW\_15\_0\_5} & Monte Carlo, 1000 events & $18.33 \pm 0.30$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A word on the tools. The preface promises that \MG generates Event~A. For
+this first stage we use \PYTHIA's own $2\to2$ matrix element instead,
+because it is the process CMS actually runs for the fragment in
+\cref{sec:ancestral_home:cmssw}, and because its leading-order matrix element is
+a formula short enough to check by hand. \MG at leading order uses the same
+Born matrix element; the correspondence between the two sets of input cards is
+given in \cref{sec:ancestral_home:madgraph}.
 
 \section{Two protons meet: the factorisation theorem in one page}
-\label{sec:ancestral_home:two_protons_meet_the_factorisation_theor}
-\todo{Write this section.}
+\label{sec:ancestral_home:two_protons_meet}
+
+A proton is not a particle one can scatter off in perturbation theory. The
+collinear factorisation theorem separates the problem into a long-distance
+part that is measured once and for all, the parton distribution functions
+(PDFs), and a short-distance part that is calculated, the partonic cross
+section. For any inclusive hard process $pp\to\bbbar+X$,
+\begin{equation}
+\begin{split}
+  \sigma(pp\to\bbbar X) &= \sum_{i,j}\int_0^1\!\mathrm{d}x_1\int_0^1\!\mathrm{d}x_2\;
+  f_i(x_1,\muF^2)\, f_j(x_2,\muF^2)\;
+  \hat\sigma_{ij\to\bbbar}\!\left(\shat;\, \muR^2,\muF^2\right) \\
+  &\quad + \mathcal{O}\!\left(\frac{\Lambda^2_{\mathrm{QCD}}}{\pthat^2}\right),
+  \qquad \shat = x_1x_2 s .
+\end{split}
+  \label{eq:ancestral_home:factorisation}
+\end{equation}
+Here $f_i(x,\muF^2)\,\mathrm{d}x$ is the number of partons of flavour $i$
+carrying a fraction between $x$ and $x+\mathrm{d}x$ of the proton momentum,
+resolved at the factorisation scale $\muF$; $\hat\sigma_{ij}$ is the cross
+section for the two partons, computed in perturbation theory with the strong
+coupling evaluated at the renormalisation scale $\muR$; and $\shat$ is the
+squared partonic centre-of-mass energy. With $\sqrt{s}=13.6\TeV$ each beam
+carries $6800\GeV$. The two protons are identical, so the sum over $(i,j)$
+counts both $q$ from beam~1 with $\bar q$ from beam~2 and the reverse; both
+orientations must be included.
+
+\paragraph{Better variables.} For a $2\to2$ process the natural variables
+are the pair's squared-mass fraction and rapidity,
+\begin{equation}
+  \tau \equiv x_1x_2 = \frac{\shat}{s},\qquad
+  Y \equiv \tfrac12\ln\frac{x_1}{x_2},\qquad
+  x_{1,2} = \sqrt{\tau}\,e^{\pm Y}.
+  \label{eq:ancestral_home:tauY}
+\end{equation}
+The Jacobian is $|\partial(x_1,x_2)/\partial(\ln\tau,Y)| = \tau$, hence
+$\mathrm{d}x_1\,\mathrm{d}x_2 = \tau\,\mathrm{d}\ln\tau\,\mathrm{d}Y$. This is
+more than a convenience. PDF libraries return $x f(x,Q^2)$, not $f$, and
+\begin{equation}
+  f_i(x_1)f_j(x_2)\,\mathrm{d}x_1\mathrm{d}x_2
+  = \frac{[x_1f_i(x_1)]\,[x_2f_j(x_2)]}{\tau}\,\tau\,\mathrm{d}\ln\tau\,\mathrm{d}Y
+  = [x_1f_i(x_1)]\,[x_2f_j(x_2)]\;\mathrm{d}\ln\tau\,\mathrm{d}Y ,
+  \label{eq:ancestral_home:xf}
+\end{equation}
+so the factors of $\tau$ cancel exactly and the code never divides by $x$.
+The limits are $\tau_{\min}\le\tau\le1$ with $\tau_{\min}$ fixed by the
+kinematic cut (\cref{sec:ancestral_home:from_formula_to_number}), and
+$|Y|\le -\tfrac12\ln\tau$ so that both $x_1$ and $x_2$ stay below one.
 
 \section{Parton distribution functions: where the mother comes from}
-\label{sec:ancestral_home:parton_distribution_functions_where_the_}
-\todo{Write this section.}
+\label{sec:ancestral_home:pdfs}
 
-\section{The matrix element for $b\bar b$ production ($gg$ and $q\bar q$ channels, 4FS vs 5FS)}
-\label{sec:ancestral_home:the_matrix_element_for_bbar_b_production}
-\todo{Write this section.}
+The PDFs cannot be computed from first principles; they are fitted to data
+and evolved in $Q^2$ with the DGLAP equations. CMS Run~3 simulation uses the
+NNPDF3.1 NNLO set with $\alphas(m_Z)=0.118$~\cite{NNPDF:2017mvq}, member~0
+(the central replica), accessed through LHAPDF~\cite{Buckley:2014ana} under the
+name \code{NNPDF31\_nnlo\_as\_0118} and the numeric ID~303600. The set is
+distributed as a table of $x f(x,Q^2)$ on a grid of knots in $x$ and $Q$;
+LHAPDF interpolates between the knots with cubic splines in $(\ln x,\ln Q^2)$.
 
-\section{Running MadGraph: proc card, run card, seeds, LHE format}
-\label{sec:ancestral_home:running_madgraph_proc_card_run_card_seed}
-\todo{Write this section.}
+Three conventions of the interface matter for reproducing \PYTHIA's numbers,
+and the reader would not guess any of them from the physics:
+\begin{itemize}[nosep]
+  \item \textbf{Freezing at the grid edges.} Outside the tabulated range in
+    $x$ or $Q^2$ the value at the nearest edge is used rather than an
+    extrapolation.
+  \item \textbf{Clipping.} Fitted PDFs can go slightly negative at large $x$
+    and for heavy flavours; \PYTHIA's proton wrapper sets such values to zero.
+    In the default integration $1.17$ million of the individual PDF evaluations
+    were clipped, yet the effect on the cross section is $0.05\%$
+    (\cref{tab:ancestral_home:variations}), because the clipped values are tiny.
+  \item \textbf{Symmetric heavy sea.} The charm and bottom antiquark
+    densities are taken equal to the quark densities, $\bar c=c$ and
+    $\bar b=b$, as in the wrapper.
+\end{itemize}
 
-\section{Our jet at this stage: the $b$-quark four-vector in the LHE file}
-\label{sec:ancestral_home:our_jet_at_this_stage_the_b_quark_four_v}
-\todo{Numbers, plots and event display of the $b$-jet at this stage.}
+\paragraph{Our event.} The hard-process record of the event followed through
+this book (\cref{sec:ancestral_home:our_jet}) was produced by an antiquark
+from beam~A and a quark from beam~B, and \PYTHIA prints the PDF values it used
+(\cref{tab:ancestral_home:pdf_values}). The two partons could hardly be more
+different. The $\bar u$ carries $x_1=2.75\times10^{-4}$ of its proton: it is a
+sea antiquark, drawn from the steeply rising small-$x$ region where $xf$ is of
+order one. The $u$ carries $x_2=0.284$: a valence quark from the region where
+$xf\approx0.4$. The asymmetry is the first fact about our mother's birth.
+The pair is boosted along the beam with rapidity $Y=\tfrac12\ln(x_1/x_2)=-3.47$,
+so both $b$ quarks emerge far backward, and the mother we follow is born
+pointing at the very edge of the CMS tracker.
+
+\begin{table}[htbp]\centering
+\caption[PDF values and coupling at our event]{The PDF values and coupling at our event, as printed by \PYTHIA in
+\file{example/ME/CMSSW/step1_GEN_cfg.log}, compared with an independent
+evaluation of the same LHAPDF set. The scale is
+$Q^2=\pthat^2+\mb^2=1178\GeV^2$. The small differences come from the rounded
+$x$ and $Q^2$ in the printout.}
+\label{tab:ancestral_home:pdf_values}
+\begin{tabular}{llrr}\toprule
+Parton & $x$ & $xf$ (\PYTHIA printout) & $xf$ (LHAPDF, this book) \\ \midrule
+$\bar u$ from beam A & $2.752\times10^{-4}$ & $1.922$ & $1.92184$ \\
+$u$ from beam B & $0.2841$ & $0.4075$ & $0.40742$ \\ \midrule
+$\alphas(Q^2)$ & & $0.1385$ & $0.138534$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The matrix element for \texorpdfstring{$\bbbar$}{bb} production}
+\label{sec:ancestral_home:matrix_element}
+
+\subsection{The \texorpdfstring{$q\bar q\to\bbbar$}{qq->bb} channel at leading order}
+
+The Born process is a single $s$-channel gluon exchange. Averaging over the
+spins and colours of the incoming massless quark pair and summing over those
+of the massive outgoing pair, the differential cross section in the partonic
+centre-of-mass frame is~\cite{ParticleDataGroup:2024cfk}
+\begin{equation}
+  \frac{\mathrm{d}\hat\sigma}{\mathrm{d}\cos\theta}
+  = \frac{\pi\alphas^2(\muR^2)\,\beta}{9\,\shat}
+    \left[\,1+\cos^2\theta+\rho\,(1-\cos^2\theta)\,\right],
+  \qquad
+  \rho\equiv\frac{4\mb^2}{\shat},\quad \beta\equiv\sqrt{1-\rho},
+  \label{eq:ancestral_home:dsigma}
+\end{equation}
+where $\theta$ is the angle between the incoming quark and the outgoing $b$,
+$\beta$ is the $b$ velocity and $\rho$ vanishes far above threshold. The
+$1/9$ is the colour factor: the average $1/3\cdot1/3$ over incoming colours
+times the sum $\mathrm{Tr}(T^aT^b)\mathrm{Tr}(T^aT^b)=2$ over the gluon
+exchange, combined with the spin average. Integrating over $\cos\theta$ from
+$-1$ to $1$ gives the total partonic cross section
+\begin{equation}
+  \hat\sigma(\shat) = \frac{4\pi\alphas^2\,\beta\,(2+\rho)}{27\,\shat},
+  \label{eq:ancestral_home:sigmahat}
+\end{equation}
+which reduces to the familiar $8\pi\alphas^2/(27\shat)$ for massless quarks.
+This is exactly the function \code{sigmaKin} of \PYTHIA's class
+\code{Sigma2qqbar2QQbar}, process code~124. At our event,
+$\shat=14\,456\GeV^2$ and $\alphas=0.1385$ give $\hat\sigma=481\pb$ and
+$\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=302\pb$ at the actual
+$\cos\hat\theta=-0.824$; the reader is asked to verify both in
+\cref{ch:ancestral_home} Exercise~2. The conversion from natural units is
+$(\hbar c)^2 = 0.389\,379\,372\GeV^2\,\mathrm{mb} = 3.893\,793\,72\times10^{8}\GeV^2\,\mathrm{pb}$.
+
+\paragraph{Kinematics of the two quarks.} In the partonic frame each $b$ has
+momentum $p^{*}=\sqrt{\shat/4-\mb^2}$, and
+\begin{equation}
+  \pthat^2 = p^{*2}\,(1-\cos^2\theta),\qquad
+  y^{*} = \operatorname{artanh}(\beta\cos\theta),\qquad
+  y_{b,\bar b} = Y \pm y^{*},\qquad
+  \eta = \operatorname{arsinh}\!\left(\frac{m_{\mathrm{T}}}{\pt}\sinh y\right),
+  \label{eq:ancestral_home:kinematics}
+\end{equation}
+with $m_{\mathrm{T}}^2=\pt^2+\mb^2$. At Born level the two quarks have equal
+and opposite transverse momentum, so ``$\pthat$'' is the \pt of either. A cut
+$\pthat\ge\pthat^{\min}$ is therefore a cut on the angle,
+$|\cos\theta|\le c_{\max}=\sqrt{1-(\pthat^{\min}/p^{*})^2}$, and it can only
+be satisfied when $p^{*}>\pthat^{\min}$, that is when
+$\shat\ge 4(\mb^2+\pthat^{\min\,2})$. This sets $\tau_{\min}$ in
+\cref{eq:ancestral_home:tauY}: for $\pthat^{\min}=30\GeV$ and $\mb=4.8\GeV$,
+$\tau_{\min}=4\times(4.8^2+30^2)/13600^2 = 2.0\times10^{-5}$. Note that
+rapidity $y$ and pseudorapidity $\eta$ differ for a massive quark; the
+difference is $0.01$ at $\pt=34\GeV$ and would be far larger near threshold.
+
+\subsection{The \texorpdfstring{$gg$}{gg} channel, the incoming \texorpdfstring{$b$}{b}, and four versus five flavours}
+\label{sec:ancestral_home:gg_and_flavours}
+
+At LHC energies the gluon luminosity is so large that $gg\to\bbbar$ dominates
+the inclusive $\bbbar$ rate. Our example switches it off
+(\code{HardQCD:gg2bbbar = off}) to keep a single channel whose matrix element
+fits on one line. Nothing in the rest of the journey depends on this choice,
+but a reader comparing with an inclusive $\bbbar$ sample must remember it.
+
+The sum over $q$ in \cref{eq:ancestral_home:factorisation} runs over the
+flavours \PYTHIA allows in the initial state, \code{PDFinProcess:nQuarkIn=5}
+by default: $d,u,s,c$ and $b$. For $q=b$ the process $b\bar b\to b\bar b$ has
+additional $t$-channel diagrams that \cref{eq:ancestral_home:dsigma} ignores;
+\PYTHIA process~124 applies the $s$-channel formula to all five flavours, and
+so do our integrators. This is a convention we reproduce, not a complete
+calculation. It matters at the $2\%$ level, the size of the incoming-$b$
+term (\cref{tab:ancestral_home:flavours}).
+
+Treating the $b$ as a massless parton inside the proton while giving it a
+mass in the final state is the \emph{five-flavour scheme} (5FS). The
+alternative \emph{four-flavour scheme} (4FS) keeps the $b$ out of the proton
+and generates it only in the matrix element, at the price of large logarithms
+$\ln(\pthat^2/\mb^2)$ that the 5FS resums through PDF evolution. For $\bbbar$
+production at $\pthat\ge30\GeV$ the two schemes must agree once higher orders
+are included; at leading order they do not, and the 5FS with
+\cref{eq:ancestral_home:dsigma} is simply what \PYTHIA and CMS use.
+
+\subsection{Scales and the coupling}
+\label{sec:ancestral_home:scales_and_coupling}
+
+Every leading-order calculation has to choose $\muR$ and $\muF$. \PYTHIA's
+default for a $2\to2$ process with two equal-mass final particles is the
+transverse mass,
+\begin{equation}
+  \muR^2 = \muF^2 = \pthat^2 + \mb^2 ,
+  \label{eq:ancestral_home:scale_choice}
+\end{equation}
+which its manual calls scale codes~1--3 (they coincide for equal masses);
+code~4 uses $\shat$ and code~5 a fixed value. The multipliers
+\code{SigmaProcess:renormMultFac} and \code{factorMultFac} multiply the
+\emph{squared} scale, a source of factor-of-two confusion when one tries to
+``double the scale''.
+
+The coupling in the hard process is a separate object from the coupling in
+the parton shower and from the one stored with the PDF set. The CP5
+tune~\cite{CMS:2019csb} sets \code{SigmaProcess:alphaSvalue = 0.118} with
+second-order running (\code{alphaSorder = 2}) for the matrix element, and the
+same for the initial- and final-state showers and for multi-parton
+interactions. Using an NNLO PDF set does not make the matrix element NNLO,
+and using the PDF set's own $\alphas$ would not reproduce \PYTHIA. At our
+event the running gives $\alphas(1178\GeV^2)=0.1385$, well above
+$\alphas(m_Z^2)=0.118$ because the scale is below $m_Z$.
+
+\section{From formula to number: the cross section step by step}
+\label{sec:ancestral_home:from_formula_to_number}
+
+We now have everything needed to turn \cref{eq:ancestral_home:factorisation}
+into $18.5\nb$. The steps below are the steps of the standalone code in
+\cref{sec:ancestral_home:standalone_code}; the function names in brackets
+point to it.
+\begin{enumerate}
+  \item \textbf{Choose the integration variables.} Map the unit cube
+    $(u_1,u_2,u_3)\in[0,1]^3$ to $\ln\tau$, $Y$ and $|\cos\theta|$:
+    \begin{align*}
+      \ln\tau &= \ln\tau_{\min} + u_1\,\ln(1/\tau_{\min}), &
+      Y &= (2u_2-1)\,Y_{\max}, \quad Y_{\max}=-\tfrac12\ln\tau, \\
+      |\cos\theta| &= u_3\,c_{\max}, &
+      c_{\max} &= \sqrt{1-(\pthat^{\min}/p^{*})^2}.
+    \end{align*}
+    Only positive $\cos\theta$ is sampled, with a factor~2, because the
+    matrix element and all our cuts are even in $\cos\theta$
+    [\code{born\_weights}].
+  \item \textbf{Compute the kinematics.} $\shat=\tau s$, $x_{1,2}$ from
+    \cref{eq:ancestral_home:tauY}, $\pthat^2$ from
+    \cref{eq:ancestral_home:kinematics}, and the scale
+    $Q^2=\pthat^2+\mb^2$.
+  \item \textbf{Evaluate the ingredients at that point.} $\alphas(Q^2)$
+    [\code{TableAlphaS}], the ten PDF values $x_1f_q$, $x_1f_{\bar q}$,
+    $x_2f_q$, $x_2f_{\bar q}$ for $q=d,u,s,c,b$ [\code{TablePDF.xf}], and
+    the matrix element $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta$
+    [\code{dsigma\_dcostheta}].
+  \item \textbf{Form the weight.} The integrand times the volume of the mapped
+    region,
+    \[
+      w_q = \ln\!\frac{1}{\tau_{\min}}\;\cdot\;2Y_{\max}\;\cdot\;2c_{\max}\;\cdot\;
+      \frac{\mathrm{d}\hat\sigma}{\mathrm{d}\cos\theta}\;
+      \bigl[\,x_1f_q(x_1)\,x_2f_{\bar q}(x_2)+x_1f_{\bar q}(x_1)\,x_2f_q(x_2)\,\bigr],
+    \]
+    one term per incoming flavour, both beam orientations included. The
+    cross section is the average of $\sum_q w_q$ over the cube.
+  \item \textbf{Average over many points.} Quasi-random Sobol points
+    ($2^{16}=65\,536$ per pass) fill the cube far more evenly than
+    pseudo-random ones, so a single pass already gives four significant digits
+    [\code{integrate}].
+  \item \textbf{Estimate the numerical error.} Repeat with independently
+    scrambled Sobol sequences and take the standard deviation of the pass
+    totals divided by $\sqrt{N_{\mathrm{repeats}}}$. The flavour terms are
+    correlated, so the total is summed before the spread is taken.
+  \item \textbf{Convert units.} Multiply by $3.893\,793\,72\times10^{8}$ to
+    go from $\GeV^{-2}$ to pb.
+\end{enumerate}
+
+The results are in \cref{tab:ancestral_home:three_numbers} and, per flavour, in
+\cref{tab:ancestral_home:flavours}. Up quarks dominate because $u$ is the
+most abundant valence quark and the $\bar u$ sea is comparable to $\bar d$.
+The dependence on the \pt cut (\cref{tab:ancestral_home:ptscan}) is steep:
+raising $\pthat^{\min}$ from $30$ to $100\GeV$ costs a factor~54.
+
+\begin{table}[htbp]\centering
+\caption[Contribution of each incoming flavour]{Contribution of each incoming flavour to the default cross section
+(eight repeats of $2^{16}$ Sobol points, \file{standalone_repeats8.out}).}
+\label{tab:ancestral_home:flavours}
+\begin{tabular}{lrr}\toprule
+Incoming pair & $\sigma$ [nb] & fraction \\ \midrule
+$u\bar u$ & $8.4089$ & $45.4\%$ \\
+$d\bar d$ & $6.1746$ & $33.4\%$ \\
+$s\bar s$ & $2.4380$ & $13.2\%$ \\
+$c\bar c$ & $1.0818$ & $5.8\%$ \\
+$b\bar b$ & $0.4032$ & $2.2\%$ \\ \midrule
+total & $18.5065 \pm 0.00005$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering
+\caption[Dependence on the generator-level cut $\pthat^{\min}$]{Dependence on the generator-level cut $\pthat^{\min}$, all other
+settings at their defaults (\file{example_pt_scan.json}). The \PYTHIA
+reference of $18.44\nb$ applies to the $30\GeV$ row only.}
+\label{tab:ancestral_home:ptscan}
+\begin{tabular}{rr}\toprule
+$\pthat^{\min}$ [GeV] & $\sigma$ [nb] \\ \midrule
+20 & $62.086$ \\
+30 & $18.507$ \\
+50 & $3.6505$ \\
+100 & $0.34532$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{What this number is, and what it is not}
+\label{sec:ancestral_home:caveats}
+
+The agreement in \cref{tab:ancestral_home:three_numbers} was obtained without
+fitting or adjusting anything to the \PYTHIA result. It holds because the
+integrator reproduces \PYTHIA's conventions, and each convention is a caveat
+the reader should carry into the later chapters:
+\begin{itemize}
+  \item It is the \emph{Born} hard-process rate, unweighted and unsuppressed.
+    Nothing has showered, hadronised or been clustered. It is not a $b$-jet
+    cross section, and a cut on $\pthat$ is not a cut on jet \pt.
+  \item The $|y|$ or $|\eta|$ cuts the integrator offers act on the two Born
+    quarks, not on reconstructed jets.
+  \item The incoming-$b$ term uses the $s$-channel formula only
+    (\cref{sec:ancestral_home:gg_and_flavours}); the $gg$ channel is absent by
+    choice.
+  \item PDFs are frozen at grid edges, clipped at zero, and the heavy sea is
+    symmetrised (\cref{sec:ancestral_home:pdfs}).
+  \item The coupling is \PYTHIA's second-order $\alphas$ with
+    $\alphas(m_Z)=0.118$, not the PDF set's.
+  \item The quoted errors are integration or sampling errors. They say nothing
+    about the accuracy of leading-order QCD, which is the subject of
+    \cref{sec:ancestral_home:scales}.
+  \item Points in a \pt scan share the same Sobol seeds and are therefore not
+    statistically independent bins.
+  \item User hooks, process weights, phase-space biasing, nuclear PDFs and
+    any post-shower selection that a production configuration might add are
+    not reproduced.
+\end{itemize}
+
+\section{Standalone code: the whole calculation in one file}
+\label{sec:ancestral_home:standalone_code}
+
+The file \file{example/ME/Standalone/standalone_qqbar_bbbar_xsec.py} contains
+the calculation of \cref{sec:ancestral_home:from_formula_to_number} and
+nothing else. It needs Python~3.10 or newer with NumPy and SciPy; no LHAPDF,
+no \PYTHIA. The PDF grid (member~0 of the NNPDF3.1 set on LHAPDF's own knots,
+restricted to the phase space of the default run) and \PYTHIA's $\alphas$
+curve are embedded as numeric tables between the markers
+\code{BEGIN/END GENERATED TABLES}, produced by
+\file{dump_standalone_tables.py} in an environment that has both libraries.
+From the repository root:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py              # one pass
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --repeats 8  # with error
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --ptmin 50 --ptmax 100
+\end{minted}
+The first command takes about a second and prints the output reproduced
+below. The two integrators agree to $5\times10^{-6}$ for the same Sobol seed,
+so the tables lose nothing; if the PDF set, the coupling or the kinematic range
+is changed the tables must be regenerated, and the script says so.
+
+\filelisting{text}{example/ME/Standalone/standalone_default.out}{output of the first command above}
+
+\subsection{Reading the code}
+
+The listing follows. A map for the reader: \code{TablePDF} (bicubic spline
+in $(\ln x,\ln Q^2)$, with the freezing, clipping and heavy-sea conventions of
+\cref{sec:ancestral_home:pdfs}); \code{TableAlphaS} (monotone cubic in
+$\ln Q^2$, refusing to extrapolate); \code{dsigma\_dcostheta}
+(\cref{eq:ancestral_home:dsigma}, vectorised); \code{born\_weights} (steps~1
+to~4 of \cref{sec:ancestral_home:from_formula_to_number}, including the
+numerically stable form of $c_{\max}-c_{\min}$ when an upper \pt cut is
+present); \code{integrate} (steps~5 and~6); and \code{main} (command line,
+sanity checks and the printout). The line holding the tables is replaced by a
+placeholder in print; the file in the repository has the numbers.
+
+\IfFileExists{build/standalone_qqbar_bbbar_xsec.py}{%
+  \filelisting{python}{build/standalone_qqbar_bbbar_xsec.py}{print copy; the table line is a placeholder}}{%
+  \todo{Run \code{make listings} to generate the print copy of the standalone script.}}
+
+\subsection{The same calculation with LHAPDF and \PYTHIA}
+
+The sibling script \file{qqbar_bbbar_xsec.py} in the same directory does the
+same integral with LHAPDF for the PDFs and \PYTHIA's own \code{AlphaStrong} class
+for the coupling, and offers every knob discussed in this chapter as a command
+line option: upper and lower $\pthat$ and $\hat m$ cuts, $|y|$ or $|\eta|$
+cuts on both quarks, the number of incoming flavours, all five \PYTHIA scale
+codes and their multipliers, a $K$ factor, the PDF member, the coupling
+backend and order, and the option to keep negative PDF values. Its
+\file{README.md} explains how to build the environment and how to export the
+actual settings of a running \PYTHIA instance with the header
+\file{export_pythia_xsec.h}, so that one integrates precisely what the
+generator was configured to do rather than what a log file suggests. We use it
+in \cref{sec:ancestral_home:scales} for the variations that the standalone
+script does not expose.
+
+\section{How CMS does it in practice: the GEN step in \CMSSW}
+\label{sec:ancestral_home:cmssw}
+
+In CMS the hard process is not run by hand; it is one step of a production
+chain driven by \code{cmsDriver.py}. The configuration in
+\file{example/ME/CMSSW/step1_GEN_cfg.py} was generated with the command in
+its header, here broken into lines:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small,breaklines]{bash}
+cmsDriver.py Configuration/GenProduction/python/BBbar_14TeV_TuneCP5_cfi.py \
+  --conditions auto:phase1_2024_realistic --era Run3_2024 --geometry DB:Extended \
+  -n 1 -s GEN --datatier GEN --eventcontent FEVTDEBUG \
+  --fileout file:output_step1_GEN.root --python_filename step1_GEN_cfg.py \
+  --no_exec --beamspot DBrealistic \
+  --customise_commands "process.generator.comEnergy = cms.double(13600.0)"
+\end{minted}
+The pieces are: a \emph{fragment} (the \code{\_cfi.py} file, which carries the
+\PYTHIA settings), the detector \emph{conditions} and \emph{era}, the
+\emph{step} (\code{GEN} only), the output data tier and event content, and a
+customisation that overrides the fragment's $14\TeV$ with the Run~3 energy
+of $13.6\TeV$. To run it:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cmsrel CMSSW_15_0_5
+cd CMSSW_15_0_5/src
+cmsenv
+cmsRun step1_GEN_cfg.py
+\end{minted}
+
+\subsection{Reading the configuration}
+
+Most of the file is boilerplate that every \CMSSW job carries. The physics
+is in the module \code{process.generator}, an \code{EDFilter} of type
+\code{Pythia8ConcurrentGeneratorFilter}, and in particular in three blocks
+of its \code{PythiaParameters}:
+\begin{itemize}[nosep]
+  \item \code{processParameters}: the three lines that define our process,
+    \code{HardQCD:gg2bbbar = off}, \code{HardQCD:qqbar2bbbar = on} and
+    \code{PhaseSpace:pTHatMin = 30.}. Everything in
+    \cref{sec:ancestral_home:matrix_element} follows from these.
+  \item \code{pythia8CP5Settings}: the CMS tune~\cite{CMS:2019csb}. It fixes
+    the PDF through \code{PDF:pSet} to the NNPDF3.1 set of
+    \cref{sec:ancestral_home:pdfs}, and sets the four couplings, for the matrix
+    element, the two showers and the multi-parton interactions, to
+    $\alphas(m_Z)=0.118$ at second order. It also carries the
+    multi-parton-interaction and colour-reconnection parameters that later
+    chapters will meet.
+  \item \code{pythia8CommonSettings}: production defaults such as the
+    tolerance on energy--momentum conservation and the lifetime cut-off for
+    particle decays.
+\end{itemize}
+Other lines worth noticing: \code{maxEvents.input = 1000} (the fragment
+name says one event, the job was run with a thousand); the
+\code{comEnergy} override at the end; the output module writing
+\code{FEVTDEBUG} content to \file{output_step1_GEN.root}; and a commented-out
+\code{customiseJitJet} line that hooks in the book's own analysis package,
+used from the next chapter on. The full file:
+
+\filelisting{python}{example/ME/CMSSW/step1_GEN_cfg.py}{\code{cmsDriver.py} configuration for the GEN step}
+
+\subsection{Reading the log}
+
+\PYTHIA writes two things to \file{step1_GEN_cfg.log} that close the loop
+with \cref{sec:ancestral_home:from_formula_to_number}. For the first event it
+prints the ``Info Listing'' with the incoming partons, their $x$ and PDF
+values, the partonic invariants and the coupling; these are the numbers of
+\cref{tab:ancestral_home:pdf_values} and \cref{eq:ancestral_home:kinematics}.
+
+\filelistinglines[\widelisting]{text}{example/ME/CMSSW/step1_GEN_cfg.log}{187}{197}{the hard-process kinematics of our event}
+
+At the end of the job it prints the cross section it estimated while
+sampling. Three thousand phase-space points were tried to accept one thousand
+unweighted events; the cross section is the average weight of the tried
+points, not the acceptance ratio.
+
+\filelistinglines[\widelisting]{text}{example/ME/CMSSW/step1_GEN_cfg.log}{237}{248}{cross-section statistics; PYTHIA reports in mb}
+
+The value $1.833\times10^{-5}\,\mathrm{mb}=18.33\nb$ with a statistical
+error of $0.30\nb$ is $0.6$ standard deviations from our $18.507\nb$; a
+longer standalone \PYTHIA~8.315 run gave $18.44\pm0.10\nb$, $0.7$ standard
+deviations away. The residual $0.4\%$ is consistent with sampling
+fluctuations and with the \PYTHIA version difference (8.311 in \CMSSW versus
+8.315 for the coupling table), and nothing in it calls for a correction.
+
+\subsection{The same calculation in \MG}
+\label{sec:ancestral_home:madgraph}
+
+A reader who generates Event~A with \MG~\cite{Alwall:2014hca} at leading order
+computes the same Born matrix element, plus the $gg$ channel unless it is
+excluded. The correspondence is: \code{generate p p > b b\~{}} in the process
+card (with \code{define p = u d s c b u\~{} d\~{} s\~{} c\~{} b\~{}} for the
+five-flavour proton and the model \code{sm-no\_b\_mass} or \code{loop\_sm}
+variants depending on whether the $b$ is massive); in the run card
+\code{ebeam1 = ebeam2 = 6800}, \code{pdlabel = lhapdf}, \code{lhaid = 303600},
+\code{ptb = 30} for the $b$ \pt cut, and \code{dynamical\_scale\_choice}
+together with \code{scalefact} for the scale. \MG stores the result as
+weighted or unweighted events in the Les Houches Event (LHE) format, whose
+\code{<event>} blocks carry the same information as \PYTHIA's hard-process
+listing in \cref{sec:ancestral_home:our_jet}; the plotting script of that
+section reads both formats.
+
+\section{Our jet at this stage: the \texorpdfstring{$b$}{b}-quark four-vector in the hard-process record}
+\label{sec:ancestral_home:our_jet}
+
+Here is the mother at the moment of her birth. The file
+\file{example/ME/event_ME.lhe} holds \PYTHIA's hard-process listing for the
+event followed through the book, copied from the log of the \CMSSW job:
+
+\filelisting[\widelisting]{text}{example/ME/event_ME.lhe}{the hard-process record of our event; momenta and masses in GeV}
+
+Reading the columns: \code{status} $-12$ marks the two beam protons, $-21$ the
+two incoming partons after they have been resolved out of the protons, and
+$23$ the two outgoing partons of the hard process; negative status means the
+particle has been ``used up'' and positive means it is still there for the
+next stage. The colour columns show the colour flow: the $\bar u$ carries
+anticolour~101, which is handed to the $\bar b$, and the $u$ carries
+colour~102, handed to the $b$; the gluon in between never appears because it is
+internal. The momentum sum at the bottom is that of the two incoming partons,
+$p_z=1.871-1931.557=-1929.69\GeV$: the whole system recoils backward.
+
+\begin{table}[htbp]\centering
+\caption[Kinematics of the two quarks of our event]{Kinematics of the two quarks in \file{event_ME.lhe}, computed by
+\file{example/ME/plot_journey_ME.py}. The $b$ quark is the mother we follow.}
+\label{tab:ancestral_home:kinematics}
+\begin{tabular}{lrrrrrrrr}\toprule
+ & $p_x$ & $p_y$ & $p_z$ & $E$ & $\pt$ & $\eta$ & $y$ & $\phi$ \\
+ & [GeV] & [GeV] & [GeV] & [GeV] & [GeV] & & & [rad] \\ \midrule
+$b$       & $-18.630$ & $-28.420$ & $-171.125$  & $174.533$  & $33.98$ & $-2.32$ & $-2.31$ & $-2.151$ \\
+$\bar b$  & $18.630$  & $28.420$  & $-1758.560$ & $1758.895$ & $33.98$ & $-4.64$ & $-4.63$ & $0.991$ \\ \midrule
+pair      & $0$ & $0$ & $-1929.685$ & $1933.428$ & $0$ & & $Y=-3.47$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Cref{tab:ancestral_home:kinematics} and \cref{fig:ancestral_home:journey}
+show what the record means. The two quarks are exactly back to back in the
+transverse plane ($\Delta\phi=\pi$) with $\pt=33.98\GeV$ each, just above
+the $30\GeV$ generator cut, as most events in a steeply falling spectrum are.
+The pair mass is $m_{\bbbar}=\sqrt{\shat}=120.2\GeV$, and
+$\shat=x_1x_2s=2.752\times10^{-4}\times0.2841\times13600^2=14\,456\GeV^2$
+checks against the log. The pair rapidity $Y=-3.47$ and the decay
+rapidity $y^{*}=\operatorname{artanh}(\beta\cos\hat\theta)=-1.16$ give
+$y_b=Y-y^{*}=-2.31$ and $y_{\bar b}=Y+y^{*}=-4.63$, in agreement with the
+table. The mother, the $b$, is born at $\eta=-2.32$: inside the tracker
+acceptance of $|\eta|<2.5$, but only just. The $\bar b$ at $\eta=-4.64$ heads
+into the forward hadron calorimeter, where there are no tracks and therefore,
+much later in the journey, no $b$ tag. Two quarks of identical \pt will have
+completely different fates.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{ME/journey_ME.pdf}
+\caption[The hard process of our event in the $(\eta,\phi)$ plane]{The hard process of our event in the $(\eta,\phi)$ plane, drawn by
+\file{example/ME/plot_journey_ME.py} from \file{example/ME/event_ME.lhe}.
+Marker area is proportional to \pt; the shaded bands are the CMS tracker
+region, the endcap calorimeters and the forward calorimeter (HF). The incoming
+partons and their momentum fractions are noted at the two edges. Nothing has
+showered, hadronised or reached a detector yet.}
+\label{fig:ancestral_home:journey}
+\end{figure}
+
+The ledger opens with a single entry: one parton, its \pt, its mass. Every
+later row will be compared with this one.
 
 \begin{ledger}{The Ancestral Home}
-  \ledgerrow{before this stage}{}{}{}{--}
-  \ledgerrow{after this stage}{}{}{}{}
+  \ledgerrow{before this stage}{--}{--}{--}{--}
+  \ledgerrow{$b$ quark in the hard-process record}{33.98}{4.80}{1}{--}
 \end{ledger}
 
-\section{Scale choices and their uncertainties ($\mu_R$, $\mu_F$, PDF sets)}
-\label{sec:ancestral_home:scale_choices_and_their_uncertainties_mu}
-\todo{Write this section.}
+\section{Scale choices and their uncertainties}
+\label{sec:ancestral_home:scales}
+
+A leading-order cross section depends on $\muR$ through $\alphas^2$ and on
+$\muF$ through the PDFs, and neither dependence is compensated by anything at
+this order. The conventional estimate of the missing higher orders is to
+vary both scales by factors of two around the central choice
+\cref{eq:ancestral_home:scale_choice}. \Cref{tab:ancestral_home:variations}
+shows the result for our process, computed with the full integrator.
+
+\begin{table}[htbp]\centering
+\caption[Scale, flavour and PDF-convention variations]{Variations of the default calculation, computed with
+\file{qqbar_bbbar_xsec.py} ($2^{15}$ Sobol points, two repeats; integration
+errors below $0.002\%$). The central value is $18.507\nb$.}
+\label{tab:ancestral_home:variations}
+\begin{tabular}{llrr}\toprule
+Variation & Option & $\sigma$ [nb] & change \\ \midrule
+$\muR\times2$              & \code{--mur-factor 2}                   & $14.765$ & $-20.2\%$ \\
+$\muR\times\tfrac12$       & \code{--mur-factor 0.5}                 & $23.941$ & $+29.4\%$ \\
+$\muF\times2$              & \code{--muf-factor 2}                   & $21.204$ & $+14.6\%$ \\
+$\muF\times\tfrac12$       & \code{--muf-factor 0.5}                 & $15.621$ & $-15.6\%$ \\
+$\muR,\muF\times2$         & \code{--mur-factor 2 --muf-factor 2}     & $16.911$ & $-8.6\%$ \\
+$\muR,\muF\times\tfrac12$  & \code{--mur-factor 0.5 --muf-factor 0.5} & $20.198$ & $+9.1\%$ \\ \midrule
+no incoming $b$            & \code{--nquark 4}                       & $18.104$ & $-2.2\%$ \\
+negative PDFs kept         & \code{--signed-pdfs}                    & $18.498$ & $-0.05\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three lessons are in the table. First, the scale uncertainty of this
+leading-order number is of order $20$ to $30\%$, two orders of magnitude
+larger than any statistical error in
+\cref{tab:ancestral_home:three_numbers}; agreement between two leading-order
+codes at $0.4\%$ says nothing about agreement with nature. Second, $\muR$ and
+$\muF$ pull in opposite directions: a larger $\muR$ lowers $\alphas$, while a
+larger $\muF$ raises the small-$x$ sea that our $\bar u$ came from, because
+DGLAP evolution feeds the sea from the gluon as $Q^2$ grows. Varying both
+together therefore under-estimates the uncertainty, which is why the standard
+prescription is the envelope of a seven-point variation
+($\muR,\muF$ each $\times\tfrac12,1,2$ without the two extreme opposite
+combinations). Third, the two ``convention'' rows are small: whether negative
+PDF values are clipped is irrelevant, and the incoming-$b$ approximation of
+\cref{sec:ancestral_home:gg_and_flavours} is a $2\%$ effect.
+
+Beyond scales, a complete uncertainty would add the PDF uncertainty from the
+other members of the set (100 replicas for NNPDF3.1, run with
+\code{--member}), the variation of $\alphas(m_Z)$ by $\pm0.001$, and the
+choice of $\mb$, which enters through $\rho$ and through the scale. The real
+cure is the next order: at NLO the $\muR$ and $\muF$ dependence of the Born
+term is cancelled by the explicit logarithms of the one-loop and real-emission
+corrections, and the residual uncertainty shrinks to about $10\%$. That is what
+\MG at NLO~\cite{Alwall:2014hca} provides, and why CMS uses NLO samples where
+the cross section itself matters. For following one jet through the detector,
+leading order is enough; for a measurement it is not.
 
 \section{Further reading}
 \label{sec:ancestral_home:further_reading}
-Official and theory references for this stage: \cite{Alwall:2014hca}, \cite{Buckley:2014ana}, \cite{Butterworth:2015oua}.
+The factorisation theorem and the massive-quark Born formula are reviewed in
+the Particle Data Group's ``Cross-section formulae'' and ``QCD'' sections
+\cite{ParticleDataGroup:2024cfk}. NNPDF3.1 is described in
+\cite{NNPDF:2017mvq}, the LHAPDF library in \cite{Buckley:2014ana}, and the
+PDF4LHC recommendations for combining PDF uncertainties in
+\cite{Butterworth:2015oua}. The \PYTHIA~8.3 guide~\cite{Bierlich:2022pfr},
+chapters on hard processes and on couplings and scales, is the reference for
+process~124 and the scale codes; the CP5 tune is documented in
+\cite{CMS:2019csb}. \MG and its NLO capabilities are described in
+\cite{Alwall:2014hca}.
 
 \begin{pitfalls}
-\todo{Pitfalls and FAQs for newcomers at this stage.}
+\begin{itemize}[nosep]
+  \item \textbf{Three numbers, one cross section.} $18.51$, $18.44$ and
+    $18.33\nb$ are the same calculation with different statistical
+    fluctuations. Do not ``fix'' one to match another, and do not read the
+    $0.4\%$ spread as physics: the theoretical uncertainty is $20$--$30\%$.
+  \item \textbf{$\pthat$ is not jet \pt.} The generator cut acts on the two
+    Born quarks. After showering, a $34\GeV$ quark becomes a jet of any \pt
+    from a few GeV up; a sample with $\pthat\ge30\GeV$ is not a sample of
+    jets above $30\GeV$, and cannot be used for jets near that threshold.
+  \item \textbf{NNLO PDF, LO matrix element.} The order of the PDF set and the
+    order of the calculation are independent choices. CMS uses NNLO PDFs with
+    LO \PYTHIA processes; that is a tune decision, not a claim of NNLO accuracy.
+  \item \textbf{Scale multipliers multiply $Q^2$.} \PYTHIA's
+    \code{renormMultFac = 4} doubles $\muR$, not quadruples it. The
+    integrator's \code{--mur-factor} option multiplies $\muR$ itself.
+  \item \textbf{Which $\alphas$?} The matrix element, each shower, the
+    multi-parton interactions and the PDF set each have their own coupling.
+    Check \code{SigmaProcess:alphaSvalue} and \code{alphaSorder}, not
+    \code{Tune:pp}.
+  \item \textbf{$\mb=4.8\GeV$} is \PYTHIA's default mass for the $b$ in the
+    matrix element. It is neither the pole mass nor the $\overline{\mathrm{MS}}$
+    mass in the Particle Data Group tables, and changing it changes the
+    threshold, the scale and the cross section.
+  \item \textbf{$gg$ is off here.} An inclusive $\bbbar$ sample is
+    dominated by gluon fusion. Our number covers only $q\bar q$ annihilation.
+  \item \textbf{The \file{.lhe} file is not an LHE file.} It is \PYTHIA's
+    hard-process listing, saved with that extension because it plays the role
+    of the LHE record. Status codes ($-21$, $23$) are \PYTHIA's, not the LHE
+    standard's ($-1$, $1$).
+  \item \textbf{Units.} \PYTHIA prints mb, the integrators print pb and nb.
+    $1\,\mathrm{mb}=10^{6}\nb=10^{9}\pb$.
+  \item \textbf{Which Python?} A shell alias such as
+    \code{alias python=/usr/bin/python3} silently overrides a virtual
+    environment. Run the scripts with the explicit interpreter path when in
+    doubt; the standalone script prints the table provenance on its first
+    line so the reader can see what was loaded.
+\end{itemize}
 \end{pitfalls}
 
 \begin{exercises}
-\item \todo{Exercise 1.}
-\item \todo{Exercise 2.}
+\item \textbf{Run it.} Run \file{standalone_qqbar_bbbar_xsec.py} with no
+  options and confirm $18.5064\nb$. Run it with \code{--repeats 8} and
+  compare the error with \cref{tab:ancestral_home:three_numbers}. The
+  \CMSSW job accepted $1000$ unweighted events and quoted a $1.7\%$
+  statistical error; how many events would reach $0.1\%$? Why is that
+  precision pointless for a leading-order calculation?
+\item \textbf{The angular integral by hand.} Integrate
+  \cref{eq:ancestral_home:dsigma} over $\cos\theta$ from $-1$ to $1$ and
+  obtain \cref{eq:ancestral_home:sigmahat}. Evaluate both at our event
+  ($\shat=14\,456\GeV^2$, $\alphas=0.1385$, $\cos\hat\theta=-0.824$) and
+  confirm $\hat\sigma=481\pb$ and
+  $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=302\pb$. Then integrate only over
+  $|\cos\theta|\le c_{\max}$ for $\pthat^{\min}=30\GeV$: what fraction of
+  $\hat\sigma$ survives the cut at this $\shat$?
+\item \textbf{Kinematics from the record.} Using only the four-vectors in
+  \file{event_ME.lhe} and the beam energy, compute $x_1$, $x_2$, $\shat$, $Y$,
+  $\pthat$, $\cos\hat\theta$, $y^{*}$ and the rapidities and pseudorapidities
+  of both quarks. Compare with \cref{tab:ancestral_home:kinematics} and with
+  the printout of \file{plot_journey_ME.py}. Why do $y$ and $\eta$ differ by
+  $0.01$ here, and when would they differ by much more?
+\item \textbf{The \pt spectrum.} Reproduce \cref{tab:ancestral_home:ptscan}
+  with \code{--ptmin 20}, \code{50} and \code{100}. Between $50$ and
+  $100\GeV$ the cross section falls as $(\pthat^{\min})^{-n}$; determine $n$.
+  Dimensional analysis of \cref{eq:ancestral_home:sigmahat} suggests
+  $n\approx4$; explain what the PDFs and the running coupling do to it.
+\item \textbf{Scale variation with one line.} In \code{born\_weights} the
+  line \code{q2 = pt2 + mb2} sets both scales. Change it to
+  \code{4*(pt2 + mb2)} and to \code{0.25*(pt2 + mb2)} and reproduce the two
+  ``both scales'' rows of \cref{tab:ancestral_home:variations}. Why can the
+  standalone script not reproduce the single-scale rows without a larger
+  change? (Look at what \code{TablePDF.xf} and \code{TableAlphaS} are called
+  with.)
+\item \textbf{Where does the $\muF$ dependence come from?} Using the
+  embedded PDF table, evaluate $x f_{\bar u}(x,Q^2)$ at $x=2.75\times10^{-4}$
+  and $x f_u$ at $x=0.284$ for $Q^2=1178/4$, $1178$ and $4\times1178\GeV^2$.
+  Which of the two moves more, and in which direction? Connect this to the
+  sign of the $\muF$ rows in \cref{tab:ancestral_home:variations}.
+\item \textbf{The incoming $b$.} Zero the fifth flavour in
+  \code{born\_weights} (or run the full script with \code{--nquark 4}) and
+  confirm the $2.2\%$ change. Draw the additional Feynman diagrams that
+  $b\bar b\to b\bar b$ has and $u\bar u\to b\bar b$ does not. Why does the
+  same-flavour case not matter much here, and when would it?
+\item \textbf{Conventions.} The default full-environment run clipped
+  $1\,166\,234$ negative PDF values yet the cross section moved by $0.05\%$
+  with \code{--signed-pdfs}. Where in the $(x,Q^2)$ plane and for which
+  flavours do fitted PDFs go negative, and why does it not matter for this
+  process?
+\item \textbf{The gluon channel (needs \CMSSW).} In \file{step1_GEN_cfg.py}
+  switch the gluon channel on, \code{HardQCD:gg2bbbar = on}, run $1000$ events
+  and read the per-process cross sections from the statistics table in the
+  log. What fraction of the inclusive $\bbbar$ rate at $\pthat\ge30\GeV$ is
+  $q\bar q$ annihilation? Why is the $gg$ matrix element not a one-line
+  formula?
+\item \textbf{Two fates.} The $\bar b$ of our event is at $\eta=-4.64$.
+  Which CMS subdetectors will see it, and which will not? Will it become a
+  jet in \cref{ch:the_inn}, and can it ever be $b$-tagged? Keep your answer;
+  \cref{ch:registry_office} will check it.
 \end{exercises}

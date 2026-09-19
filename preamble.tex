@@ -14,6 +14,7 @@
 \usepackage{enumitem}
 \usepackage{tcolorbox}
 \usepackage{listings}
+\usepackage{minted}   % source files included from example/ at build time (needs -shell-escape + pygmentize)
 \usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=green!40!black,urlcolor=blue!60!black]{hyperref}
 \usepackage{cleveref}
 \usepackage{xspace}
@@ -42,6 +43,14 @@
 \newcommand{\bbbar}{\ensuremath{b\bar b}\xspace}
 \newcommand{\msd}{\ensuremath{m_{\mathrm{SD}}}\xspace}
 \newcommand{\tauNM}[2]{\ensuremath{\tau_{#1#2}}\xspace}
+\newcommand{\shat}{\ensuremath{\hat{s}}\xspace}
+\newcommand{\pthat}{\ensuremath{\hat{p}_{\mathrm{T}}}\xspace}
+\newcommand{\muR}{\ensuremath{\mu_{\mathrm{R}}}\xspace}
+\newcommand{\muF}{\ensuremath{\mu_{\mathrm{F}}}\xspace}
+\newcommand{\alphas}{\ensuremath{\alpha_{\mathrm{s}}}\xspace}
+\newcommand{\nb}{\ensuremath{\,\mathrm{nb}}\xspace}
+\newcommand{\pb}{\ensuremath{\,\mathrm{pb}}\xspace}
+\newcommand{\mb}{\ensuremath{m_b}\xspace}
 
 %% -------- software names ---------------------------------------------------
 \newcommand{\MG}{\textsc{MadGraph5\_aMC@NLO}\xspace}
@@ -51,6 +60,8 @@
 \newcommand{\PUPPI}{\textsc{Puppi}\xspace}
 \newcommand{\CMSSW}{\textsc{cmssw}\xspace}
 \newcommand{\code}[1]{\texttt{#1}}
+%% \file{path/with_underscores.py}: robust, usable in captions and section titles
+\DeclareRobustCommand{\file}[1]{\path{#1}}
 
 %% -------- editorial ---------------------------------------------------------
 \newcommand{\todo}[1]{\textcolor{red!80!black}{\textbf{[TODO:} #1\textbf{]}}}
@@ -77,12 +88,37 @@
 %% \begin{ledger}{stage name}  \ledgerrow{label}{pT}{m}{n}{delta pT}  \end{ledger}
 \newenvironment{ledger}[1]{%
   \begin{table}[htbp]\centering
-  \caption{Energy ledger at the stage ``#1''. $\Delta\pt$ is relative to the previous row.}
+  \caption[Energy ledger at the stage ``#1'']{Energy ledger at the stage ``#1''. $\Delta\pt$ is relative to the previous row.}
   \begin{tabular}{lrrrr}\toprule
   Stage & $\pt$ [GeV] & $m$ [GeV] & $n_{\mathrm{const}}$ & $\Delta\pt$ [GeV] \\ \midrule}%
   {\bottomrule\end{tabular}\end{table}}
 \newcommand{\ledgerrow}[5]{#1 & #2 & #3 & #4 & #5 \\}
 
-%% code listings
+%% code listings (short inline snippets: listings; whole files from example/: minted)
 \lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,
   backgroundcolor=\color{gray!6},columns=fullflexible,keepspaces=true}
+
+%% minted: the .py / .lhe / .log / .out files are read from example/ at every
+%% build, so the book always shows the current version of the code.
+%% No bgcolor: a coloured background makes the listing unbreakable across pages.
+\usemintedstyle{friendly}
+\setminted{fontsize=\footnotesize,breaklines,breakanywhere,linenos,numbersep=6pt,
+  frame=leftline,framerule=0.8pt,framesep=2mm,rulecolor=\color{gray!60},
+  tabsize=4,stripnl=false}
+\renewcommand{\theFancyVerbLine}{\sffamily\tiny\textcolor{gray}{\arabic{FancyVerbLine}}}
+%% \filelisting[minted options]{lexer}{path}{one-line description}: header + whole file
+%% The optional argument may be a macro such as \widelisting; it is expanded one
+%% level before minted's keyval parser sees it (keyval does not expand keys).
+\newcommand{\filelisting}[4][]{%
+  \medskip\noindent\textbf{File} \file{#3}\quad{\small #4}\par\nopagebreak\smallskip
+  \expandafter\filelistingAux\expandafter{#1}{#2}{#3}}
+\newcommand{\filelistingAux}[3]{\inputminted[#1]{#2}{#3}\medskip}
+%% \filelistinglines[minted options]{lexer}{path}{first}{last}{description}: a line range
+\newcommand{\filelistinglines}[6][]{%
+  \medskip\noindent\textbf{File} \file{#3}, lines #4--#5\quad{\small #6}\par\nopagebreak\smallskip
+  \expandafter\filelistinglinesAux\expandafter{#1}{#2}{#3}{#4}{#5}}
+\newcommand{\filelistinglinesAux}[5]{%
+  \inputminted[firstline=#4,lastline=#5,firstnumber=#4,#1]{#2}{#3}\medskip}
+%% wide (~135 column) log excerpts and event records: 6 pt monospace, no wrapping
+\makeatletter\newcommand{\sixpt}{\@setfontsize\sixpt{6}{7.2}}\makeatother
+\newcommand{\widelisting}{fontsize=\sixpt,linenos=false,breaklines=false}

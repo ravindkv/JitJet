@@ -118,7 +118,12 @@ JitJet/
     chapter_01_ancestral_home.tex ... chapter_27_next_pilgrimage.tex
     appendix_A_kinematics.tex ... appendix_E_exercises.tex
   ref/JitJet.bib            bibliography (INSPIRE-style keys)
-  example/                  (later) MG cards, Pythia fragments, CMSSW configs, ledger
+  example/                  the worked example, stage by stage
+    ME/                       chapter 1: hard process
+      event_ME.lhe              PYTHIA hard-process record of our event
+      plot_journey_ME.py        eta-phi plot of the b and bbar -> journey_ME.pdf
+      Standalone/               LO q qbar -> b bbar integrators, outputs, README
+      CMSSW/                    cmsDriver GEN configuration and its log
   prompt/                   the brainstorming prompts that shaped the book
 ```
 
@@ -135,8 +140,26 @@ what remains to be written.
 make
 ```
 
-or, equivalently, `latexmk -pdf JitJet.tex`. `make quick` runs a single
-pdflatex pass; `make clean` removes auxiliary files.
+or, equivalently, `latexmk -pdf JitJet.tex` (the `.latexmkrc` adds the same
+options). `make quick` runs a single pdflatex pass; `make clean` removes
+auxiliary files.
+
+Source files from `example/` are printed in the book with the `minted`
+package, which calls `pygmentize` while pdflatex runs. The build therefore
+needs `-shell-escape` (set in the Makefile) and Pygments on the PATH
+(`pip install Pygments`). Long files are pre-processed into `build/` by
+`make listings`, which `make` runs automatically; for instance the standalone
+integrator's 250 kB line of embedded tables is replaced by a placeholder.
+
+Figures derived from `example/` (such as `example/ME/journey_ME.pdf`) are
+committed, so building the book does not need matplotlib. After changing a
+plotting script or its input, regenerate them with
+
+```bash
+make figures PYTHON=/usr/bin/python3
+```
+
+where `PYTHON` is any interpreter with matplotlib.
 
 ## 7. Core references (to be cited throughout)
 

@@ -15,3 +15,11 @@ chapter/*.aux
 # keep the PDF out of git; build it with `make`
 JitJet.pdf
 .DS_Store
+# minted (pygments) cache and generated listings
+_minted-*/
+build/
+# figures and outputs that the book includes are kept, even though *.pdf is ignored above
+!example/**/*.pdf
+!example/**/*.log
+!example/**/*.out
+*.pyg

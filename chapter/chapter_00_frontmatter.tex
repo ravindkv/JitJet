@@ -31,6 +31,18 @@ checkpoints (detector and trigger), the census (Particle Flow), the police
 corrections), the wobbly ruler (resolution) and the registry office (tagging).
 The metaphor is a memory aid; the physics is always stated explicitly.
 
+\paragraph{The voice of this book.} Think of the journey as a guided tour.
+The author is the guide and you are the passenger: at every stop the guide
+explains what is happening outside the window, hands you the formula that
+describes it, and asks you to press a button and see the number come out
+yourself. The tone is deliberately that of a teacher standing beside you
+rather than a reference manual in front of you, the book says so
+and does it with you. The code that produces every number is not printed in
+the book. It lives in the public repository
+\url{https://github.com/ravindkv/JitJet}, and each chapter gives the command
+to run and the output to expect, so that the pages can be spent on the
+mathematics instead.
+
 Every chapter has the same internal structure:
 \begin{enumerate}[nosep]
   \item \textbf{The stage in the journey}: the metaphor and what physically happens.
@@ -65,5 +77,10 @@ stage. The ledger is the quantitative red thread of the book and is closed in
 
 \section*{Reproducibility}
 
-\todo{Software releases, generator versions, random seeds, container image,
-and where the configuration files live (\code{example/}).}
+All scripts, generator configurations, logs and event records used in the
+book are in the \code{example/} directory of
+\url{https://github.com/ravindkv/JitJet}, one subdirectory per stage; the
+animated views of the calculations are collected in the JitJet playlist at
+\url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}.
+\todo{Software releases, generator versions, random seeds and the container
+image.}

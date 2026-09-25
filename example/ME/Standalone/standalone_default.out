@@ -1,15 +1,15 @@
 Standalone tables: NNPDF31_nnlo_as_0118/0 (LHAPDF 6.5.4), PYTHIA alpha_s order 2, alphaS(MZ)=0.118
-eCM=13600; mb=4.8; pTHat >= 30 GeV; pTHat upper limit=None
+eCM=13600; mb=4.8; pTHat >= 100 GeV; pTHat upper limit=None
 Sobol 2^16 points x 1 repeat(s)
 
-TOTAL = 18.506381 +/- nan nb
-      = 18506.381 +/- nan pb
-  d dbar: 6.174551 +/- nan nb
-  u ubar: 8.408814 +/- nan nb
-  s sbar: 2.438000 +/- nan nb
-  c cbar: 1.081818 +/- nan nb
-  b bbar: 0.403199 +/- nan nb
-Ratio to reference 18.44 nb: 1.003600
+TOTAL = 0.345320 +/- nan nb
+      = 345.320 +/- nan pb
+  d dbar: 0.118568 +/- nan nb
+  u ubar: 0.178315 +/- nan nb
+  s sbar: 0.030267 +/- nan nb
+  c cbar: 0.012696 +/- nan nb
+  b bbar: 0.005473 +/- nan nb
+Ratio to reference 0.3451 nb: 1.000638
 alpha_s(Q^2=1178 GeV^2) = 0.13853399
 Single repeat: no integration error estimate; use --repeats 8 for one.
 Errors are integration errors, not QCD scale/PDF uncertainties.

@@ -33,8 +33,8 @@ def run():
         val = quad(lambda c: dsigma_dcostheta(energy**2, c, 4.8, .108), -1, 1)[0]
         assert math.isclose(val, sigma_hat_total(energy**2, 4.8, .108), rel_tol=1e-12)
     assert sigma_hat_total(8**2, 4.8, .108) == 0
-    assert scale_q2(2, 4, 100, 30**2, 4.8**2, 200**2) == 4*(30**2+4.8**2)
-    assert scale_q2(5, 4, 100, 30**2, 4.8**2, 200**2) == 100
+    assert scale_q2(2, 4, 100, 100**2, 4.8**2, 200**2) == 4*(100**2+4.8**2)
+    assert scale_q2(5, 4, 100, 100**2, 4.8**2, 200**2) == 100
 
     cfg = Config(ecm=100, ptmin=6, ptmax=25, alpha_backend="fixed",
                  alpha_fixed=.2, nquark=1, power=14, repeats=4)

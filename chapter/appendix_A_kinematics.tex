@@ -1,7 +1,246 @@
 % ---------------------------------------------------------------------------
 % Appendix A: Kinematic Variables, Coordinate System and Useful Identities
+% The reference sheet for the variables used at every stop of the journey.
 % ---------------------------------------------------------------------------
 \chapter{Kinematic Variables, Coordinate System and Useful Identities}
 \label{app:kinematics}
 
-\todo{Write this appendix.}
+This appendix is the glove compartment of the bus: the definitions and
+identities that every stop of the journey uses, collected in one place so that
+the chapters can point here instead of re-deriving them. Nothing in it is
+specific to jets; all of it is used by jets.
+
+\section{The CMS coordinate system}
+\label{app:kinematics:coordinates}
+
+The origin is the nominal collision point. The $z$ axis points along the
+anticlockwise beam (beam~A in \PYTHIA's language, which carries $p_z>0$), the
+$x$ axis points towards the centre of the LHC ring and the $y$ axis upward.
+The polar angle $\theta$ is measured from the $+z$ axis and the azimuthal
+angle $\phi$ from the $x$ axis in the transverse plane. For a particle with
+momentum $\mathbf p=(p_x,p_y,p_z)$ and energy $E$,
+\begin{equation}
+  \pt=\sqrt{p_x^2+p_y^2},\qquad
+  \phi=\operatorname{atan2}(p_y,p_x)\in(-\pi,\pi],\qquad
+  m_{\mathrm T}=\sqrt{\pt^2+m^2}.
+\end{equation}
+The transverse momentum is the quantity a hadron collider measures best,
+because the initial state has none: whatever transverse momentum the hard
+process produces must be balanced within the event.
+
+\section{Rapidity and pseudorapidity}
+\label{app:kinematics:rapidity}
+
+The rapidity and pseudorapidity are
+\begin{equation}
+  y=\frac12\ln\frac{E+p_z}{E-p_z}=\operatorname{artanh}\frac{p_z}{E},\qquad
+  \eta=-\ln\tan\frac\theta2=\operatorname{arsinh}\frac{p_z}{\pt}.
+  \label{eq:app:y_eta}
+\end{equation}
+For a massless particle they coincide. For a massive one they are related
+through the transverse mass,
+\begin{equation}
+  E=m_{\mathrm T}\cosh y,\qquad p_z=m_{\mathrm T}\sinh y,\qquad
+  \sinh\eta=\frac{m_{\mathrm T}}{\pt}\sinh y,
+  \label{eq:app:eta_from_y}
+\end{equation}
+and $|\eta|\ge|y|$ always, with equality only for $m=0$. The difference is
+governed by $m/\pt$: for the $b$ quark of \cref{ch:ancestral_home},
+$m/\pt=4.8/113=0.04$ and $\eta-y=-0.001$ at $y=-1.44$; for a $b$ quark of
+$\pt=5\GeV$ the difference would be a few tenths, and for a jet with
+$m/\pt\sim0.2$ it is routinely $0.05$ or more. Detector geometry is described
+in $\eta$, because $\eta$ depends only on the direction; physics is described
+in $y$, because of what follows.
+
+\paragraph{Rapidities add under boosts.} Under a boost along $z$ with
+velocity $\beta_z$ and rapidity $y_{\mathrm B}=\operatorname{artanh}\beta_z$,
+\begin{equation}
+  E'=\gamma(E-\beta_zp_z),\qquad p_z'=\gamma(p_z-\beta_zE),
+\end{equation}
+and substituting \cref{eq:app:eta_from_y} with $\gamma=\cosh y_{\mathrm B}$
+and $\gamma\beta_z=\sinh y_{\mathrm B}$ gives $E'=m_{\mathrm T}\cosh(y-y_{\mathrm B})$
+and $p_z'=m_{\mathrm T}\sinh(y-y_{\mathrm B})$, that is
+\begin{equation}
+  y'=y-y_{\mathrm B},\qquad \pt'=\pt,\qquad \phi'=\phi .
+  \label{eq:app:boost}
+\end{equation}
+Rapidity \emph{differences}, transverse momenta and azimuths are therefore
+invariant under longitudinal boosts, which is why the whole book measures
+distances in the $(y,\phi)$ or $(\eta,\phi)$ plane,
+$\Delta R=\sqrt{\Delta y^2+\Delta\phi^2}$, and why in
+\cref{ch:ancestral_home} the laboratory rapidities of the two quarks are the
+pair rapidity plus and minus their rapidity in the partonic frame,
+$y_{b,\bar b}=Y\pm y^{*}$. Pseudorapidity differences are \emph{not}
+invariant for massive particles; the error is small at high \pt and is
+ignored in detector-level $\Delta R$.
+
+\section{The partonic frame of a \texorpdfstring{$2\to2$}{2->2} process}
+\label{app:kinematics:partonic}
+
+Two incoming massless partons with momentum fractions $x_1$ and $x_2$ of
+beams of energy $E_{\mathrm b}=\sqrt s/2$ have four-momenta
+$p_1=x_1E_{\mathrm b}(1,0,0,1)$ and $p_2=x_2E_{\mathrm b}(1,0,0,-1)$. Their
+invariant mass and the rapidity of their centre of mass are
+\begin{equation}
+  \shat=(p_1+p_2)^2=x_1x_2s,\qquad
+  Y=\frac12\ln\frac{x_1}{x_2},\qquad
+  \tau\equiv\frac{\shat}{s}=x_1x_2,\qquad
+  x_{1,2}=\sqrt\tau\,e^{\pm Y}.
+  \label{eq:app:tauY}
+\end{equation}
+In their centre-of-mass frame two outgoing particles of equal mass $m$ have
+\begin{equation}
+  E^{*}=\frac{\sqrt{\shat}}2,\qquad
+  p^{*}=\sqrt{\frac{\shat}4-m^2}=\frac{\sqrt{\shat}}2\,\beta,\qquad
+  \beta=\sqrt{1-\frac{4m^2}{\shat}},
+  \label{eq:app:pstar}
+\end{equation}
+and if $\theta$ is the angle between the beam axis and one of them,
+\begin{equation}
+  \pt=p^{*}\sin\theta,\qquad
+  p_z^{*}=p^{*}\cos\theta,\qquad
+  y^{*}=\operatorname{artanh}\frac{p_z^{*}}{E^{*}}=\operatorname{artanh}(\beta\cos\theta).
+  \label{eq:app:ystar}
+\end{equation}
+The other particle has the opposite \pt and the opposite $y^{*}$. The
+Mandelstam variables of the process are
+\begin{equation}
+  \hat t=(p_1-p_3)^2=m^2-\frac{\shat}2(1-\beta\cos\theta),\qquad
+  \hat u=(p_1-p_4)^2=m^2-\frac{\shat}2(1+\beta\cos\theta),\qquad
+  \shat+\hat t+\hat u=2m^2,
+\end{equation}
+which is how \PYTHIA's ``Info Listing'' reports the angle: for the event of
+\cref{ch:ancestral_home}, $\hat t$ and $\hat u$ are simply this pair of
+numbers at $\cos\hat\theta=-0.820$.
+
+\section{The change of variables behind the Monte Carlo integrator}
+\label{app:kinematics:jacobian}
+
+\Cref{ch:ancestral_home} integrates the factorisation formula over $x_1$,
+$x_2$ and $\cos\theta$ by sampling a unit cube. This section collects the
+three changes of variables and their Jacobians in one place.
+
+\paragraph{From $(x_1,x_2)$ to $(\ln\tau,Y)$.} A Jacobian is the factor by
+which an infinitesimal area is stretched when the variables change,
+\begin{equation}
+  \mathrm{d}x_1\,\mathrm{d}x_2=\left|\det\frac{\partial(x_1,x_2)}{\partial(\ln\tau,Y)}\right|\mathrm{d}\ln\tau\,\mathrm{d}Y .
+\end{equation}
+With $x_1=e^{\frac12\ln\tau+Y}$ and $x_2=e^{\frac12\ln\tau-Y}$ the partial
+derivatives are $\partial x_1/\partial\ln\tau=\tfrac12x_1$,
+$\partial x_1/\partial Y=x_1$, $\partial x_2/\partial\ln\tau=\tfrac12x_2$
+and $\partial x_2/\partial Y=-x_2$, so
+\begin{equation}
+  \det\begin{pmatrix}\tfrac12x_1 & x_1\\ \tfrac12x_2 & -x_2\end{pmatrix}
+  =-\tfrac12x_1x_2-\tfrac12x_1x_2=-x_1x_2=-\tau,
+  \qquad
+  \mathrm{d}x_1\,\mathrm{d}x_2=\tau\,\mathrm{d}\ln\tau\,\mathrm{d}Y .
+  \label{eq:app:jacobian}
+\end{equation}
+A small rectangle $\mathrm{d}\ln\tau\times\mathrm{d}Y$ becomes a tilted
+parallelogram of area $\tau$ times larger. Since PDF libraries return
+$xf(x,Q^2)$ rather than $f$,
+\begin{equation}
+  f_i(x_1)f_j(x_2)\,\mathrm{d}x_1\mathrm{d}x_2
+  =\frac{[x_1f_i(x_1)][x_2f_j(x_2)]}{x_1x_2}\,\tau\,\mathrm{d}\ln\tau\,\mathrm{d}Y
+  =[x_1f_i(x_1)][x_2f_j(x_2)]\,\mathrm{d}\ln\tau\,\mathrm{d}Y,
+  \label{eq:app:xf_cancel}
+\end{equation}
+and the $\tau$ cancels: the integrand in the new variables is just the
+product of what the library returns. The limits are $\tau_{\min}\le\tau\le1$
+and, because $x_1=\sqrt\tau e^{Y}\le1$ and $x_2=\sqrt\tau e^{-Y}\le1$,
+\begin{equation}
+  |Y|\le Y_{\max}(\tau)=-\tfrac12\ln\tau,
+  \label{eq:app:ymax}
+\end{equation}
+a triangle in the $(\ln x_1,\ln x_2)$ plane with its apex at
+$x_1=x_2=1$.
+
+\paragraph{From the \pt cut to a range in $\cos\theta$.} With
+$\pt^2=p^{*2}(1-\cos^2\theta)$ from \cref{eq:app:ystar}, the condition
+$\pt\ge\pt^{\min}$ becomes
+\begin{equation}
+  |\cos\theta|\le c_{\max}=\sqrt{1-\frac{(\pt^{\min})^2}{p^{*2}}},
+  \qquad\text{possible only if } p^{*}\ge\pt^{\min}
+  \iff \shat\ge\shat_{\min}=4\bigl(m^2+(\pt^{\min})^2\bigr),
+  \label{eq:app:cmax}
+\end{equation}
+which fixes $\tau_{\min}=\shat_{\min}/s$. An upper cut $\pt\le\pt^{\max}$
+adds a lower bound $|\cos\theta|\ge c_{\min}=\sqrt{1-(\pt^{\max})^2/p^{*2}}$
+(zero when $p^{*}\le\pt^{\max}$). The width of the allowed interval is best
+computed as
+\begin{equation}
+  c_{\max}-c_{\min}=\frac{c_{\max}^2-c_{\min}^2}{c_{\max}+c_{\min}}
+  =\frac{(\pt^{\max})^2-(\pt^{\min})^2}{p^{*2}\,(c_{\max}+c_{\min})},
+  \label{eq:app:span}
+\end{equation}
+which avoids subtracting two nearly equal square roots when the two cuts are
+close; the standalone script of \cref{ch:ancestral_home} uses this form.
+
+\paragraph{From the unit cube to the physical variables.} Three uniform
+numbers $(u_1,u_2,u_3)\in[0,1]^3$ are mapped linearly onto the three
+intervals,
+\begin{equation}
+  \ln\tau=\ln\tau_{\min}+u_1\ln\frac1{\tau_{\min}},\qquad
+  Y=(2u_2-1)\,Y_{\max}(\tau),\qquad
+  |\cos\theta|=c_{\min}+u_3\,(c_{\max}-c_{\min}),
+  \label{eq:app:maps}
+\end{equation}
+with Jacobians $\ln(1/\tau_{\min})$, $2Y_{\max}$ and $c_{\max}-c_{\min}$
+respectively. Because the integrand is even in $\cos\theta$ only the positive
+half is sampled and a factor~2 restores the other. The Monte Carlo weight of
+a point is the integrand times the product of the three Jacobians times that
+factor~2, and the cross section is the average of the weight over the cube,
+which has unit volume:
+\begin{equation}
+\begin{split}
+  \sigma&=\int_{[0,1]^3}w(\mathbf u)\,\mathrm{d}^3u\approx\frac1N\sum_{i=1}^Nw(\mathbf u_i),\\
+  w&=\ln\frac1{\tau_{\min}}\cdot2Y_{\max}\cdot2(c_{\max}-c_{\min})\cdot
+  \frac{\mathrm d\hat\sigma}{\mathrm d\cos\theta}\cdot
+  \bigl[x_1f_q\,x_2f_{\bar q}+x_1f_{\bar q}\,x_2f_q\bigr].
+\end{split}
+  \label{eq:app:weight}
+\end{equation}
+The order of the maps matters: $Y_{\max}$ depends on $\tau$ and $c_{\max}$
+on $\shat=\tau s$, so $u_1$ must be mapped first. Sampling $\ln\tau$
+uniformly rather than $\tau$ places the points where the PDFs put the cross
+section, at small $\tau$; sampling $Y$ uniformly is adequate because the
+integrand in $Y$ is broad and bounded.
+
+\section{Quasi-random points and the error estimate}
+\label{app:kinematics:sobol}
+
+Independent pseudo-random points in a cube cluster and leave holes, and the
+error of their average falls as $N^{-1/2}$. A Sobol sequence is a
+deterministic, low-discrepancy set of points designed to fill the cube as
+evenly as possible at every $N=2^k$; for a smooth integrand in a few
+dimensions its error falls nearly as $N^{-1}$. A plain Sobol sequence gives
+the same answer every time, so its error cannot be read off from repetition.
+\emph{Scrambled} Sobol sequences apply a random permutation that preserves
+the even coverage; $R$ passes with different scrambles give $R$ nearly
+independent estimates $\sigma^{(r)}$, and
+\begin{equation}
+  \bar\sigma=\frac1R\sum_r\sigma^{(r)},\qquad
+  \Delta\sigma=\frac{s_\sigma}{\sqrt R},\qquad
+  s_\sigma^2=\frac1{R-1}\sum_r\bigl(\sigma^{(r)}-\bar\sigma\bigr)^2 .
+  \label{eq:app:error}
+\end{equation}
+When several contributions (the five incoming flavours of
+\cref{ch:ancestral_home}) are computed from the same points they are
+correlated, and the error of their sum must be taken from the per-pass sums,
+not by adding the individual errors in quadrature. This error is a purely
+numerical one; it says nothing about the accuracy of the physics being
+integrated.
+
+\section{Units}
+\label{app:kinematics:units}
+
+Cross sections computed in natural units come out in $\GeV^{-2}$ and are
+converted with
+\begin{gather}
+  (\hbar c)^2=0.389\,379\,372\GeV^2\,\mathrm{mb}
+  =3.893\,793\,72\times10^{8}\GeV^2\,\mathrm{pb},\\
+  1\,\mathrm{mb}=10^{3}\,\mu\mathrm b=10^{6}\nb=10^{9}\pb=10^{12}\,\mathrm{fb}.
+\end{gather}
+\PYTHIA prints mb, \MG prints pb, and integrated luminosities are quoted in
+$\mathrm{fb}^{-1}$: a process of $345\pb$ occurs $3.45\times10^{5}$ times per
+$\mathrm{fb}^{-1}$.

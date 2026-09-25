@@ -1,9 +1,11 @@
 # Reproducing PYTHIA's q qbar -> b bbar cross section
 
-The independent Python integration gives **18.50662 nb** with the settings
-below. Your PYTHIA result is **18.440 +/- 0.09717 nb**: the difference is
-**0.36%**, or **0.69 times PYTHIA's statistical uncertainty**. No normalization
-was fitted to the PYTHIA result.
+The independent Python integration gives **345.324 +/- 0.001 pb** with the
+settings below (pTHat >= 100 GeV). The PYTHIA result from the CMSSW run is
+**345.1 +/- 6.1 pb**: the difference is **0.06%**, or **0.04 times PYTHIA's
+statistical uncertainty**. No normalization was fitted to the PYTHIA result.
+(The earlier pTHat >= 30 GeV setup gave 18.5066 nb against PYTHIA's
+18.440 +/- 0.097 nb.)
 
 The numerical integration uses a separate analytic LO matrix element.
 PYTHIA's native `AlphaStrong` class is used only to evaluate the hard-process
@@ -19,6 +21,10 @@ required.
 - `validated_default_result.json`: full numerical result, flavour breakdown and configuration.
 - `example_pt_scan.json`: example lower-cut scan with numerical errors.
 - `test_integrator.py`: independent normalization and phase-space checks.
+- `standalone_qqbar_bbbar_xsec.py`: the same calculation with NumPy and SciPy
+  only (embedded tables), see below.
+- `animate_standalone_qqbar_bbbar_xsec.py`: 3D animation of what the
+  standalone script integrates, see below.
 
 ## Dependencies
 
@@ -101,18 +107,53 @@ a bicubic spline in (log x, log Q^2) and a monotone cubic in log Q^2. The
 integrand is vectorised, so one Sobol pass of 2^16 points takes about a second:
 
 ```bash
-python3 standalone_qqbar_bbbar_xsec.py              # 18.5064 nb, single pass
+python3 standalone_qqbar_bbbar_xsec.py              # 345.320 pb, single pass
 python3 standalone_qqbar_bbbar_xsec.py --repeats 8  # adds an integration error
 ```
 
-With the same Sobol seed the standalone and full-environment integrals agree
-to 5e-6 relative (18.50638 vs 18.50647 nb for the first repeat). Regenerate the
+With the same Sobol seed the standalone and full-environment integrals agree (345.32 vs 345.322 pb for the first repeat). Regenerate the
 tables with the full environment if the PDF set, alpha_s settings, or the
 kinematic range change:
 
 ```bash
 .venv/bin/python dump_standalone_tables.py
 ```
+
+## Animated 3D view of the standalone calculation
+
+`animate_standalone_qqbar_bbbar_xsec.py` imports the standalone script and
+renders a four-scene film (about 30 s) from its tables, interpolators and
+`born_weights()`; every number on screen comes from the same code that prints
+the cross section. It needs matplotlib in addition to NumPy and SciPy, and
+ffmpeg for an `.mp4` (a `.gif` needs only Pillow). On this Mac use
+`/usr/bin/python3`, which has matplotlib.
+
+1. **collision**: the event of `../event_ME.lhe` in the partonic
+   centre-of-mass frame, with the pTHat >= 100 GeV cut drawn as a tube around
+   the beam; then the boost by the pair rapidity Y = -2.59 to the lab frame,
+   which slides the quark tips along the tube (pT is boost invariant).
+2. **cube**: Sobol points in the unit cube (u1, u2, u3), coloured by log10 of
+   their weight, morphed into (log10 x1, log10 x2, |cos theta|): the change of
+   variables whose Jacobian is part of every weight.
+3. **surface**: the integrand with cos theta integrated out,
+   dsigma/(dlog10 x1 dlog10 x2), over the triangle x1 x2 >= tau_min. Its
+   volume is the cross section; the event of scene 1 is marked on it.
+4. **converge**: one Sobol pass of 2^16 points filling the cube while the
+   running average, per incoming flavour and in total, settles to 345 pb.
+
+```bash
+python3 animate_standalone_qqbar_bbbar_xsec.py                    # -> animate_standalone_qqbar_bbbar_xsec.mp4
+python3 animate_standalone_qqbar_bbbar_xsec.py --fast             # low-resolution preview in under a minute
+python3 animate_standalone_qqbar_bbbar_xsec.py --scene surface -o surface.gif
+python3 animate_standalone_qqbar_bbbar_xsec.py --stills animate_standalone_qqbar_bbbar_xsec_stills.pdf --no-video
+python3 animate_standalone_qqbar_bbbar_xsec.py --show             # interactive window
+```
+
+`--stills` writes one key frame per scene (a PDF page each, or PNG files);
+`make figures` in the book directory regenerates the committed stills PDF.
+The physics options `--ecm`, `--mb`, `--ptmin`, `--ptmax`, `--power` and
+`--seed` are those of the standalone script, and `--event` points scene 1 at
+another hard-process record (PYTHIA listing or LHE block).
 
 ## Run with the supplied settings
 

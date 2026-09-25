@@ -102,7 +102,7 @@ process.generator = cms.EDFilter("Pythia8ConcurrentGeneratorFilter",
         processParameters = cms.vstring(
             'HardQCD:gg2bbbar = off ',
             'HardQCD:qqbar2bbbar = on ',
-            'PhaseSpace:pTHatMin = 30. '
+            'PhaseSpace:pTHatMin = 100. '
         ),
         pythia8CP5Settings = cms.vstring(
             'Tune:pp 14',

@@ -1,4 +1,7 @@
 
+[To Claude Fable]
+[Got standalone scripts from ChatGPT Astra and Claude Fable]
+
 I think I have enough material to exapand chapter/chapter_01_ancestral_home.tex. In this chapter and in future for other chapters also, my plan is to:
 + Theory: Explain theoretical detail and enough steps to compute qqbar -> bbar xsec. Please take the material from example/ME/Standalone/standalone_qqbar_bbbar_xsec.py and also mention the caveats from example/ME/Standalone/qqbar_bbbar_xsec.py.
 +  Standalone code: Next I would like to include the example/ME/Standalone/standalone_qqbar_bbbar_xsec.py code itself in the book for readers who could simply python example/ME/Standalone/standalone_qqbar_bbbar_xsec.py and then they will see the xsec value that we got from Theory stage.

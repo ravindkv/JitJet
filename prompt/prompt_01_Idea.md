@@ -1,3 +1,6 @@
+
+[To Calude Fable]
+
 In the CMS experiment, electron, photon, muon are the “destination” while a “jet” is made of the entire “journey” (matrix element partons in MG -> Parton showering in Pythia -> Hadronisation in Pythia -> Pileup mixing and detector simulation in Geant4  -> L1T (multiple stages) -> HLT (multiple stages such as rechhits, PF candidates, PH hadron calibrations  -> Pileup mitigation -> Jet clustering -> MC Truth corrections -> Residual corrections (though on data  only) -> JER smearing etc.
 
 

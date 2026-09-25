@@ -1,0 +1,80 @@
+[
+  {
+    "config": {
+      "ecm": 13600.0,
+      "mb": 4.8,
+      "pdf": "NNPDF31_nnlo_as_0118",
+      "member": 0,
+      "ptmin": 100.0,
+      "ptmax": null,
+      "mhatmin": 0.0,
+      "mhatmax": null,
+      "ymax": null,
+      "etamax": null,
+      "nquark": 5,
+      "renorm_scale": 2,
+      "factor_scale": 1,
+      "renorm_mult_fac": 1.0,
+      "factor_mult_fac": 1.0,
+      "renorm_fix_scale": 10000.0,
+      "factor_fix_scale": 10000.0,
+      "kfactor": 1.0,
+      "alpha_backend": "pythia",
+      "alphas_mz": 0.118,
+      "alpha_order": 2,
+      "alpha_nfmax": 6,
+      "alpha_fixed": 0.118,
+      "pdf_extrapolate": false,
+      "clip_negative_pdf": true,
+      "symmetrize_heavy_sea": true,
+      "power": 16,
+      "repeats": 8,
+      "seed": 24680,
+      "reference_pb": 18440.0,
+      "reference_error_pb": 97.17
+    },
+    "sigma_pb": 345.3240029295087,
+    "error_pb": 0.0007161656680141963,
+    "sigma_nb": 0.3453240029295087,
+    "error_nb": 7.161656680141963e-07,
+    "relative_error_percent": 0.0002073894840609698,
+    "ratio_to_reference": 0.01872689820658941,
+    "difference_over_combined_integration_error": -186.21669235956608,
+    "by_flavour_pb": {
+      "d": {
+        "sigma": 118.56811305601876,
+        "error": 0.0002946680041426789
+      },
+      "u": {
+        "sigma": 178.31571351644584,
+        "error": 0.0004729389748037648
+      },
+      "s": {
+        "sigma": 30.268873402257224,
+        "error": 0.00018687859269264008
+      },
+      "c": {
+        "sigma": 12.697463268446443,
+        "error": 8.275511177832205e-05
+      },
+      "b": {
+        "sigma": 5.473839686340419,
+        "error": 3.6977741030799686e-05
+      }
+    },
+    "repeat_totals_pb": [
+      345.3226062812502,
+      345.32076165917704,
+      345.3263860118125,
+      345.323965773638,
+      345.3251113355784,
+      345.3239022176321,
+      345.326709259165,
+      345.3225808978163
+    ],
+    "pdf_frozen_calls": 0,
+    "negative_pdf_values": 1402959,
+    "alpha_s_at_Q2_1178": 0.1385339926863751,
+    "reference_note": "18.44 nb applies only to the original settings. Cut/parameter scans need new matching PYTHIA runs."
+  }
+]

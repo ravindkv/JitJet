@@ -23,3 +23,9 @@ build/
 !example/**/*.log
 !example/**/*.out
 *.pyg
+example/ME/Standalone/compute_sigmaKin.py
+example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.mp4
+example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_minPt30.mp4
+# private reading notes, folded into chapter 1 and appendix A
+example/ME/Standalone/explanation_born_weights.md
+example/ME/Standalone/explanation_jacobian_better_variables.md

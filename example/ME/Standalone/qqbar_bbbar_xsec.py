@@ -43,7 +43,7 @@ class Config:
     mb: float = 4.8
     pdf: str = "NNPDF31_nnlo_as_0118"
     member: int = 0
-    ptmin: float = 30.0
+    ptmin: float = 100.0
     ptmax: float | None = None
     mhatmin: float = 0.0
     mhatmax: float | None = None

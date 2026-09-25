@@ -8,7 +8,7 @@
  |  |   P  P   Y Y     T    H   H   I    A A     This is PYTHIA version 8.311      |  | 
  |  |   PPP     Y      T    HHHHH   I   AAAAA    Last date of change:  8 Mar 2024  |  | 
  |  |   P       Y      T    H   H   I   A   A                                      |  | 
- |  |   P       Y      T    H   H  III  A   A    Now is 19 Sep 2026 at 09:50:59    |  | 
+ |  |   P       Y      T    H   H  III  A   A    Now is 24 Sep 2026 at 15:55:38    |  | 
  |  |                                                                              |  | 
  |  |   Program documentation and an archive of historic versions is found on:     |  | 
  |  |                                                                              |  | 
@@ -52,7 +52,7 @@
  |  |   P  P   Y Y     T    H   H   I    A A     This is PYTHIA version 8.311      |  | 
  |  |   PPP     Y      T    HHHHH   I   AAAAA    Last date of change:  8 Mar 2024  |  | 
  |  |   P       Y      T    H   H   I   A   A                                      |  | 
- |  |   P       Y      T    H   H  III  A   A    Now is 19 Sep 2026 at 09:50:59    |  | 
+ |  |   P       Y      T    H   H  III  A   A    Now is 24 Sep 2026 at 15:55:38    |  | 
  |  |                                                                              |  | 
  |  |   Program documentation and an archive of historic versions is found on:     |  | 
  |  |                                                                              |  | 
@@ -102,7 +102,7 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  |                                                    |             |
  |------------------------------------------------------------------|
  |                                                    |             |
- | q qbar -> b bbar                               124 |   5.450e-05 |
+ | q qbar -> b bbar                               124 |   1.004e-06 |
  |                                                                  |
  *-------  End PYTHIA Process Initialization -----------------------*
  PYTHIA Warning in SimpleTimeShower::init: pTmin too low , raised to 0.611
@@ -136,7 +136,7 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  | ParticleDecays:allowPhotonRadiation           |                       on |          off                         | 
  | ParticleDecays:limitTau0                      |                       on |          off                         | 
  | PDF:pSet                                      | LHAPDF6:NNPDF31_nnlo_as_0118 |           13                     | 
- | PhaseSpace:pTHatMin                           |                 30.00000 |          0.0         0.0             | 
+ | PhaseSpace:pTHatMin                           |                100.00000 |          0.0         0.0             | 
  | SigmaProcess:alphaSorder                      |                        2 |            1           0           3 | 
  | SigmaProcess:alphaSvalue                      |                  0.11800 |      0.13000   0.0600000     0.25000 | 
  | SigmaTotal:mode                               |                        0 |            1           0           4 | 
@@ -181,24 +181,26 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
 
  --------  End PYTHIA Particle Data Table  -----------------------------------------------------------------------------------------
 
+Begin processing the 1st record. Run 1, Event 1, LumiSection 1 on stream 0 at 24-Sep-2026 15:55:39.262 CEST
+ PYTHIA Warning in SimpleSpaceShower::pT2nextQCD: weight above unity
 
  --------  PYTHIA Info Listing  ---------------------------------------- 
  
  Beam A: id =   2212, pz =  6.800e+03, e =  6.800e+03, m =  9.383e-01.
  Beam B: id =   2212, pz = -6.800e+03, e =  6.800e+03, m =  9.383e-01.
 
- In 1: id =   -2, x =  2.752e-04, pdf =  1.922e+00 at Q2 =  1.178e+03.
- In 2: id =    2, x =  2.841e-01, pdf =  4.075e-01 at same Q2.
+ In 1: id =   -2, x =  2.174e-03, pdf =  1.145e+00 at Q2 =  1.284e+04.
+ In 2: id =    2, x =  3.901e-01, pdf =  2.107e-01 at same Q2.
 
  Subprocess q qbar -> b bbar with code 124 is 2 -> 2.
- It has sHat =  1.446e+04,    tHat = -1.314e+04,    uHat = -1.271e+03,
-       pTHat =  3.398e+01,   m3Hat =  4.800e+00,   m4Hat =  4.800e+00,
-    thetaHat =  2.539e+00,  phiHat =  9.905e-01.
-     alphaEM =  7.732e-03,  alphaS =  1.385e-01    at Q2 =  1.178e+03.
+ It has sHat =  1.569e+05,    tHat = -1.428e+05,    uHat = -1.409e+04,
+       pTHat =  1.132e+02,   m3Hat =  4.800e+00,   m4Hat =  4.800e+00,
+    thetaHat =  2.533e+00,  phiHat =  9.905e-01.
+     alphaEM =  7.837e-03,  alphaS =  1.143e-01    at Q2 =  1.284e+04.
 
  Impact parameter b =  3.136e-01 gives enhancement factor =  3.709e+00.
- Max pT scale for MPI =  3.432e+01, ISR =  3.432e+01, FSR =  3.432e+01.
- Number of MPI =    22, ISR =    24, FSRproc =    62, FSRreson =     0.
+ Max pT scale for MPI =  1.133e+02, ISR =  1.133e+02, FSR =  1.133e+02.
+ Number of MPI =    32, ISR =    28, FSRproc =    64, FSRreson =     0.
 
  --------  End PYTHIA Info Listing  ------------------------------------
 
@@ -208,11 +210,11 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
      0         90  (system)           -11     0     0     0     0     0     0      0.000      0.000      0.000  13600.000  13600.000
      1       2212  (p+)               -12     0     0     3     0     0     0      0.000      0.000   6800.000   6800.000      0.938
      2       2212  (p+)               -12     0     0     4     0     0     0      0.000      0.000  -6800.000   6800.000      0.938
-     3         -2  (ubar)             -21     1     0     5     6     0   101      0.000      0.000      1.871      1.871      0.000
-     4          2  (u)                -21     2     0     5     6   102     0      0.000      0.000  -1931.557   1931.557      0.000
-     5         -5  bbar                23     3     4     0     0     0   101     18.630     28.420  -1758.560   1758.895      4.800
-     6          5  b                   23     3     4     0     0   102     0    -18.630    -28.420   -171.125    174.533      4.800
-                                   Charge sum:  0.000           Momentum sum:      0.000      0.000  -1929.685   1933.428    120.238
+     3         -2  (ubar)             -21     1     0     5     6     0   101      0.000      0.000     14.785     14.785      0.000
+     4          2  (u)                -21     2     0     5     6   102     0      0.000      0.000  -2652.934   2652.934      0.000
+     5         -5  bbar                23     3     4     0     0     0   101     62.071     94.690  -2413.001   2415.661      4.800
+     6          5  b                   23     3     4     0     0   102     0    -62.071    -94.690   -225.148    252.059      4.800
+                                   Charge sum:  0.000           Momentum sum:      0.000      0.000  -2638.149   2667.719    396.101
 
  --------  End PYTHIA Event Listing  -----------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------
@@ -228,11 +230,6 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
 # It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code
 # and 3rd party plugin jet algorithms. See COPYING file for details.
 #--------------------------------------------------------------------------
- PYTHIA Warning in SimpleSpaceShower::pT2nextQCD: weight above unity
- PYTHIA Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF
- PYTHIA Warning in HadronWidths::pickMasses: angular momentum and running widths not used
- PYTHIA Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times
- PYTHIA Error in SimpleSpaceShower::pT2nearThreshold: xPDF = 0
 
  *-------  PYTHIA Event and Cross Section Statistics  -------------------------------------------------------------*
  |                                                                                                                 |
@@ -241,9 +238,9 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  |                                                    |                                   |                        |
  |-----------------------------------------------------------------------------------------------------------------|
  |                                                    |                                   |                        |
- | q qbar -> b bbar                               124 |        3042       1000       1000 |   1.833e-05  3.048e-07 |
+ | q qbar -> b bbar                               124 |        2910       1000       1000 |   3.451e-07  6.078e-09 |
  |                                                    |                                   |                        |
- | sum                                                |        3042       1000       1000 |   1.833e-05  3.048e-07 |
+ | sum                                                |        2910       1000       1000 |   3.451e-07  6.078e-09 |
  |                                                                                                                 |
  *-------  End PYTHIA Event and Cross Section Statistics ----------------------------------------------------------*
 
@@ -251,12 +248,10 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  |                                                                                                                 | 
  |  times   message                                                                                                | 
  |                                                                                                                 | 
- |      3   Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times           | 
- |      1   Error in SimpleSpaceShower::pT2nearThreshold: xPDF = 0                                                 | 
- |      1   Warning in HadronWidths::pickMasses: angular momentum and running widths not used                      | 
+ |      6   Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times           | 
  |      1   Warning in MultipartonInteractions::init: maximum increased                                            | 
- |   1618   Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF                                           | 
- |    445   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
+ |   1651   Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF                                           | 
+ |    420   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
  |      2   Warning in SimpleTimeShower::init: pTmin too low                                                       | 
  |                                                                                                                 | 
  *-------  End PYTHIA Error and Warning Messages Statistics  ------------------------------------------------------* 
@@ -268,9 +263,9 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  |                                                    |                                   |                        |
  |-----------------------------------------------------------------------------------------------------------------|
  |                                                    |                                   |                        |
- | q qbar -> b bbar                               124 |        3042       1000       1000 |   1.833e-05  3.048e-07 |
+ | q qbar -> b bbar                               124 |        2910       1000       1000 |   3.451e-07  6.078e-09 |
  |                                                    |                                   |                        |
- | sum                                                |        3042       1000       1000 |   1.833e-05  3.048e-07 |
+ | sum                                                |        2910       1000       1000 |   3.451e-07  6.078e-09 |
  |                                                                                                                 |
  *-------  End PYTHIA Event and Cross Section Statistics ----------------------------------------------------------*
 
@@ -278,14 +273,23 @@ NNPDF31_nnlo_as_0118 PDF set, member #0, version 1; LHAPDF ID = 303600
  |                                                                                                                 | 
  |  times   message                                                                                                | 
  |                                                                                                                 | 
- |      3   Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times           | 
- |      1   Error in SimpleSpaceShower::pT2nearThreshold: xPDF = 0                                                 | 
- |      1   Warning in HadronWidths::pickMasses: angular momentum and running widths not used                      | 
+ |      6   Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times           | 
  |      1   Warning in MultipartonInteractions::init: maximum increased                                            | 
- |   1618   Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF                                           | 
- |    445   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
+ |   1651   Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF                                           | 
+ |    420   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
  |      2   Warning in SimpleTimeShower::init: pTmin too low                                                       | 
  |                                                                                                                 | 
  *-------  End PYTHIA Error and Warning Messages Statistics  ------------------------------------------------------* 
+
+------------------------------------
+GenXsecAnalyzer:
+------------------------------------
+Before Filter: total cross section = 3.451e+02 +- 6.078e+00 pb
+Filter efficiency (taking into account weights)= (1000) / (1000) = 1.000e+00 +- 0.000e+00
+Filter efficiency (event-level)= (1000) / (1000) = 1.000e+00 +- 0.000e+00    [TO BE USED IN MCM]
+
+After filter: final cross section = 3.451e+02 +- 6.078e+00 pb
+After filter: final fraction of events with negative weights = 0.000e+00 +- 0.000e+00
+After filter: final equivalent lumi for 1M events (1/fb) = 2.898e+00 +- 5.111e-02
 Thanks for using LHAPDF 6.4.0. Please make sure to cite the paper:
   Eur.Phys.J. C75 (2015) 3, 132  (http://arxiv.org/abs/1412.7420)

@@ -11,9 +11,9 @@ log Q^2. Everything else (phase space, matrix element, cuts, scales) is the
 same physics as qqbar_bbbar_xsec.py, written with numpy arrays.
 
 Default settings reproduce the PYTHIA run summarised by the reference value
-sigma = 18.44 +/- 0.10 nb (pTHat >= 30 GeV, eCM = 13.6 TeV, mb = 4.8 GeV,
+sigma = 345.1 +/- 6.0 pb (pTHat >= 100 GeV, eCM = 13.6 TeV, mb = 4.8 GeV,
 muR^2 = muF^2 = pT^2 + mb^2). The validated full-environment result is
-18.5066 nb.
+345.1 pb.
 
 Examples:
   python standalone_qqbar_bbbar_xsec.py
@@ -147,12 +147,12 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--ecm", type=float, default=13600.0)
     p.add_argument("--mb", type=float, default=4.8)
-    p.add_argument("--ptmin", type=float, default=30.0)
+    p.add_argument("--ptmin", type=float, default=100.0)
     p.add_argument("--ptmax", type=float, default=None)
     p.add_argument("--power", type=int, default=16, help="2**power Sobol points per repeat")
     p.add_argument("--repeats", type=int, default=1, help=">1 gives an integration error estimate")
     p.add_argument("--seed", type=int, default=24680)
-    p.add_argument("--reference-nb", type=float, default=18.44)
+    p.add_argument("--reference-nb", type=float, default=0.3451)
     args = p.parse_args()
     if TABLES is None:
         sys.exit("Tables missing: run dump_standalone_tables.py in the full environment first.")

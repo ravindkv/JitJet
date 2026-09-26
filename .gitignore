@@ -26,6 +26,10 @@ build/
 example/ME/Standalone/compute_sigmaKin.py
 example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.mp4
 example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_minPt30.mp4
+example/PS/Standalone/animate_standalone_parton_showering.mp4
 # private reading notes, folded into chapter 1 and appendix A
 example/ME/Standalone/explanation_born_weights.md
 example/ME/Standalone/explanation_jacobian_better_variables.md
+# the Les Houches input written for the PYTHIA validation (2000 copies of the hard event)
+example/PS/Standalone/validate_shower_with_pythia.lhe
+__pycache__/

@@ -26,12 +26,17 @@ quick:
 # Figures drawn from the example files. The PDFs are committed, so building the
 # book does not need matplotlib; run `make figures` after changing a script.
 FIGURES := example/ME/journey_ME.pdf \
-           example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf
+           example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf \
+           example/PS/journey_PS.pdf \
+           example/PS/Standalone/animate_standalone_parton_showering_stills.pdf
 
 figures: $(FIGURES)
 
 example/ME/journey_ME.pdf: example/ME/plot_journey_ME.py example/ME/event_ME.lhe
 	$(PYTHON) example/ME/plot_journey_ME.py -i example/ME/event_ME.lhe -o $@
+
+example/PS/journey_PS.pdf: example/PS/plot_journey_PS.py example/PS/event_PS.lhe
+	$(PYTHON) example/PS/plot_journey_PS.py -i example/PS/event_PS.lhe -o $@
 
 # Key frames of the 3D animation (one page per scene). The film itself takes
 # minutes to render and is not a build product: run the script without
@@ -41,6 +46,20 @@ example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf: \
 		example/ME/Standalone/standalone_qqbar_bbbar_xsec.py example/ME/event_ME.lhe
 	$(PYTHON) example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py --stills $@ --no-video
 
+example/PS/Standalone/animate_standalone_parton_showering_stills.pdf: \
+		example/PS/Standalone/animate_standalone_parton_showering.py \
+		example/PS/Standalone/standalone_parton_showering.py example/PS/plot_journey_PS.py example/ME/event_ME.lhe
+	$(PYTHON) example/PS/Standalone/animate_standalone_parton_showering.py --stills $@ --no-video
+
+# Event records produced by the standalone scripts. They are committed; run
+# `make records` after changing a script (needs numpy + scipy).
+RECORDS := example/PS/event_PS.lhe
+
+records: $(RECORDS)
+
+example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py example/ME/event_ME.lhe
+	$(PYTHON) example/PS/Standalone/standalone_parton_showering.py -i example/ME/event_ME.lhe -o $@
+
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
 	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux
@@ -49,4 +68,4 @@ clean:
 distclean: clean
 	rm -f $(MAIN).pdf
 
-.PHONY: quick figures clean distclean
+.PHONY: quick figures records clean distclean

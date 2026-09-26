@@ -63,8 +63,8 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import FuncFormatter  # noqa: E402
 
 # --- appearance --------------------------------------------------------------
-# Same colours as plot_journey_ME.py for the b (blue) and bbar (orange).
-COL_B, COL_BBAR = "#2a78d6", "#eb6834"
+# Same colours as plot_journey_ME.py (and the CMSSW genPartAnalyzer) for the b (red) and bbar (blue).
+COL_B, COL_BBAR = "#ff0000", "#0000ff"
 COL_U, COL_UBAR = "#2f8f5b", "#8e5bb5"          # incoming quark / antiquark
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 FLAVOUR_COLOURS = {"d": "#9a6b2f", "u": "#2a78d6", "s": "#2f8f5b", "c": "#eb6834", "b": "#8e5bb5"}

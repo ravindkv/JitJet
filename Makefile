@@ -1,6 +1,7 @@
 # Build JitJet.pdf with pdflatex + bibtex.
 #   make           -> JitJet.pdf
 #   make quick     -> single pdflatex pass (no bibliography refresh)
+#   make cover     -> cover/cover.pdf, the TikZ front cover (first page of the book)
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
 #   make clean     -> remove auxiliary files
 #   make distclean -> also remove the PDF
@@ -12,7 +13,8 @@ MAIN   := JitJet
 TEX    := pdflatex -shell-escape -interaction=nonstopmode -halt-on-error
 PYTHON ?= python3
 
-SRC := $(MAIN).tex preamble.tex $(wildcard chapter/*.tex) reference/JitJet.bib
+COVER := cover/cover.pdf
+SRC := $(MAIN).tex preamble.tex $(wildcard chapter/*.tex) reference/JitJet.bib $(COVER)
 
 $(MAIN).pdf: $(SRC)
 	$(TEX) $(MAIN).tex
@@ -20,8 +22,14 @@ $(MAIN).pdf: $(SRC)
 	$(TEX) $(MAIN).tex
 	$(TEX) $(MAIN).tex
 
-quick:
+quick: $(COVER)
 	$(TEX) $(MAIN).tex
+
+# The cover is a standalone TikZ document (no shell escape needed).
+cover: $(COVER)
+
+$(COVER): cover/cover.tex
+	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover.tex
 
 # Figures drawn from the example files. The PDFs are committed, so building the
 # book does not need matplotlib; run `make figures` after changing a script.
@@ -62,10 +70,11 @@ example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py ex
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
-	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux
+	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux \
+	      cover/cover.aux cover/cover.log
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
-	rm -f $(MAIN).pdf
+	rm -f $(MAIN).pdf $(COVER)
 
-.PHONY: quick figures records clean distclean
+.PHONY: quick cover figures records clean distclean

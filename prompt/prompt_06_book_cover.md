@@ -1,0 +1,1 @@
+Create the cover of the book in tikz latex package in cover/cover.tex maybe we can have pdf cover after compilation and include that as the first page of the book. The drawings in the cover should be as apt as possible. We can keep the current text but in nice format inside the tikz

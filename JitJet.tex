@@ -14,7 +14,12 @@
 \begin{document}
 
 \frontmatter
-\maketitle
+%% The cover is drawn with TikZ in cover/cover.tex and compiled separately
+%% (make cover/cover.pdf); it replaces the title page. \title and \author above
+%% remain the source of the PDF metadata.
+\hypersetup{pdftitle={JitJet: Journey Is The Jet (bottom to top)},pdfauthor={Ravindra Verma}}
+\includepdf[pages=1,pagecommand={\thispagestyle{empty}}]{cover/cover.pdf}
+\clearpage{\pagestyle{empty}\cleardoublepage}  % blank verso without running head
 \include{chapter/chapter_00_frontmatter}
 \tableofcontents
 \listoffigures

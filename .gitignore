@@ -33,3 +33,7 @@ example/ME/Standalone/explanation_jacobian_better_variables.md
 # the Les Houches input written for the PYTHIA validation (2000 copies of the hard event)
 example/PS/Standalone/validate_shower_with_pythia.lhe
 __pycache__/
+# rendered films and their soundtracks (make cover-video, the animate_*.py scripts)
+*.mp4
+*.wav
+cover/animate_cover_timeline.srt

@@ -2,6 +2,9 @@
 #   make           -> JitJet.pdf
 #   make quick     -> single pdflatex pass (no bibliography refresh)
 #   make cover     -> cover/cover.pdf, the TikZ front cover (first page of the book)
+#   make cover-timeline -> cover/cover_timeline.pdf, the alternative timeline-cone cover
+#   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
+#   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the one-minute cone-growth trailer
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
 #   make clean     -> remove auxiliary files
 #   make distclean -> also remove the PDF
@@ -30,6 +33,24 @@ cover: $(COVER)
 
 $(COVER): cover/cover.tex
 	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover.tex
+
+# The alternative cover: the jet as a timeline cone (not included in the book
+# unless the \includepdf line in JitJet.tex is pointed at it).
+cover-timeline: cover/cover_timeline.pdf
+
+cover/cover_timeline.pdf: cover/cover_timeline.tex
+	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover_timeline.tex
+
+# The trailer: a narrated flight along the timeline cone (about 5 min, 1080p).
+# Needs numpy + Pillow (on this Mac: PYTHON=/usr/bin/python3), ffmpeg, gs and
+# the macOS `say` voice; rendering takes a while, so it is not a build product.
+cover-video: cover/cover_timeline.pdf
+	$(PYTHON) cover/animate_cover_timeline.py
+
+# The short trailer (about 1 min, no narration): the cone grows part by part.
+# Compiles cover_timeline.tex once per growth step into build/short_cover_frames.
+cover-video-short: cover/cover_timeline.tex
+	$(PYTHON) cover/animate_short_cover_timeline.py
 
 # Figures drawn from the example files. The PDFs are committed, so building the
 # book does not need matplotlib; run `make figures` after changing a script.
@@ -71,10 +92,10 @@ example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py ex
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
 	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux \
-	      cover/cover.aux cover/cover.log
+	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
-	rm -f $(MAIN).pdf $(COVER)
+	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf
 
-.PHONY: quick cover figures records clean distclean
+.PHONY: quick cover cover-timeline cover-video cover-video-short figures records clean distclean

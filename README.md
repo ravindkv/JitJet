@@ -78,14 +78,18 @@ to the previous stage. The ledger is the quantitative red thread of the book.
 | after shower | ... | ... | ... | ... | 2 |
 | ... | | | | | |
 
-Each chapter follows the same internal structure:
+Each chapter follows the same internal structure, told "top to bottom" the
+way a guided tour is (show first, derive later), while the journey itself
+runs "bottom to top" (from the hard scattering to the histogram, and from
+the bottom quark to the top quark):
 
-1. **The stage in the journey** (metaphor + what physically happens)
-2. **The mathematics** (the minimal, correct formulae)
-3. **Our jet at this stage** (numbers from the ledger, event displays, plots)
-4. **How CMS does it in practice** (configs, CMSSW modules, JME tools, NanoAOD branches)
-5. **Pitfalls and FAQs for newcomers**
-6. **Further reading** (official CMS papers, DP notes, theory papers)
+1. **The stage in the journey** (metaphor + what physically happens + the one number to take away)
+2. **Watch it** (the animated journey: a short film rendered from the chapter's own code, key frames in the book)
+3. **Run it** (the standalone script: command to run, output to expect; code lives on GitHub, not in the book)
+4. **Derive it** (the minimal, correct formulae, ending with the step-by-step recipe the script executes)
+5. **Validation from official packages** (the same number from CMSSW, Pythia, MadGraph or JME tools, read from their configs and logs)
+6. **Our jet at this stage** (numbers from the ledger, event displays, plots)
+7. **Further reading** (+ open problems for Phase-2), **Pitfalls and FAQs for newcomers**, **Exercises**
 
 ## 4. The metaphor: The Family Pilgrimage
 

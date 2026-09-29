@@ -42,30 +42,33 @@ There is again one number to take away, and it is the first entry in the
 energy ledger that differs from the previous one: after the shower the
 partons within $\dR<0.4$ of the mother carry $100\GeV$, not $113$. Where the
 missing $13\GeV$ went, and why the ``family'' is defined with a cone at all,
-is the physics of the chapter. As before we will get the number several
-ways, each time trusting more of somebody else's code:
+is the physics of the chapter. As at the first stop we will meet the number
+four times, from the top down:
 \begin{enumerate}[nosep]
-  \item \textbf{By hand, on paper.} From the collinear limit of QCD we write
-    down the splitting functions, the Sudakov form factor and the one-line
-    algorithm that turns a form factor into a random emission
-    (\crefrange{sec:mother_gives_birth:why_alone}{sec:mother_gives_birth:dipole_shower}).
-  \item \textbf{With a standalone script.} A single Python file, needing
-    only NumPy and SciPy, showers the hard-process record of
-    \cref{ch:ancestral_home} in a third of a second and writes the parton
-    record we follow through the rest of the book
-    (\cref{sec:mother_gives_birth:standalone_code}). A companion script
-    turns the shower into a film (\cref{sec:mother_gives_birth:animation}).
-  \item \textbf{With \PYTHIA itself.} A validation script showers the same
-    hard event two thousand times with the real generator, and the averages
-    are compared with the standalone shower's
+  \item \textbf{Watch it.} A film replays the shower of our event branching
+    by branching, measures who radiates first, keeps the momentum accounts
+    and shows the same hard event showered a dozen times
+    (\cref{sec:mother_gives_birth:animation}).
+  \item \textbf{Run it.} A single Python file, needing only NumPy and SciPy,
+    showers the hard-process record of \cref{ch:ancestral_home} in a third
+    of a second and writes the parton record we follow through the rest of
+    the book (\cref{sec:mother_gives_birth:standalone_code}).
+  \item \textbf{Derive it.} From the collinear limit of QCD we write down
+    the splitting functions, the Sudakov form factor and the one-line
+    algorithm that turns a form factor into a random emission, follow
+    \PYTHIA's construction of the shower step by step, and read the record
+    the script wrote
+    (\crefrange{sec:mother_gives_birth:why_alone}{sec:mother_gives_birth:runaways}).
+  \item \textbf{Check it against the official packages.} A validation
+    script showers the same hard event two thousand times with the real
+    \PYTHIA and compares the averages with the standalone shower's, and the
+    CMS generator configuration of \cref{ch:ancestral_home}, which already
+    ran the shower, gives us its log and its event to read
     (\cref{sec:mother_gives_birth:validation}).
-  \item \textbf{With \CMSSW.} The CMS generator configuration of
-    \cref{ch:ancestral_home} already ran the shower; we read its log and draw
-    its event with the book's own analyser (\cref{sec:mother_gives_birth:cmssw}).
 \end{enumerate}
 \MG does not appear on this list, and it is worth saying why at once: \MG
 computes matrix elements and hands its events to \PYTHIA for the shower, so
-at this stage the fourth road merges with the third. The question of what
+at this stage there is no separate \MG number to compare with. The question of what
 happens when the matrix element and the shower both want to produce the
 same gluon is the subject of \cref{ch:whose_child}.
 
@@ -120,8 +123,199 @@ shower is the first place where such children are lost. The cone is a
 bookkeeping device here, not a jet algorithm; the algorithm comes later and
 will not ask who the mother was.
 
+\section{Watch the shower happen: the animated journey}
+\label{sec:mother_gives_birth:animation}
+
+Out of the window first, as before. The script
+\file{example/PS/Standalone/animate_standalone_parton_showering.py}
+imports the standalone shower of \cref{sec:mother_gives_birth:standalone_code}
+and renders a four-scene film of about forty seconds, so that every number
+on the screen is computed by the same classes that wrote the record. It is
+on the JitJet playlist,
+\begin{center}
+  \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
+\end{center}
+and \cref{fig:mother_gives_birth:stills} shows one key frame per scene.
+Each scene names the section that explains it; watch first, and let the
+formulae catch up.
+\begin{enumerate}
+  \item \textbf{The shower unwinds} (\cref{sec:mother_gives_birth:step_by_step}).
+    A scale runs down from $\pt^{\max}=113.3\GeV$ to the cut-off, and each
+    time it passes the \pt of one of the 38 branchings of our event the
+    branching happens: a ladder on the left fills rung by rung, orange
+    squares for ISR and red or blue dots for the two families, while the
+    $(\eta,\phi)$ picture on the right fills with partons, connected by the
+    colour dipoles that do the radiating. The scene replays the seed-1
+    shower branching by branching and checks itself against the record to
+    half a MeV. Watch the first three rungs: all initial state, all above
+    $40\GeV$, and every marker on the right jumps at each of them. Watch the
+    ladder cross $\mb$ and $m_c$, where the number of flavours in the
+    coupling changes, and watch a gluon near the $\bar b$ turn into a
+    $\bbbar$ pair.
+  \item \textbf{Who radiates first?} (\cref{sec:mother_gives_birth:sudakov,sec:mother_gives_birth:veto}).
+    The four ends that can radiate from $\pt^{\max}$, the $b$, the $\bar b$
+    and the two incoming partons, each propose their next emission 1500
+    times. The survival curves on the left are the no-emission probabilities
+    $\Delta(\pt^{\max},\pt)$ of each end, measured rather than computed:
+    the $b$ and $\bar b$ curves lie on top of each other, the $+z$ beam at
+    small $x$ falls fastest, and the dashed product is the probability that
+    nobody has radiated yet. On the right, the histogram of the hardest of
+    the four proposals, coloured by who made it: the $+z$ beam wins $57\%$
+    of the time, the $-z$ beam and the $\bar b$ $15\%$ each, the $b$ $12\%$,
+    and in one trial in a thousand nobody radiates at all. The seed-1
+    event's first branching at $53.9\GeV$ is marked.
+  \item \textbf{Momentum bookkeeping} (\cref{sec:mother_gives_birth:runaways}).
+    The shower runs again while the transverse plane on the left keeps the
+    accounts: the $b$ and $\bar b$ arrows, their sum, the ISR partons and
+    their sum, and the total, which stays at zero. On the right the two
+    incoming partons walk up in $x$ on top of the PDFs at the current
+    scale, from $2.2\times10^{-3}$ to $1.7\times10^{-2}$ and from $0.39$ to
+    $0.47$, while the curves themselves change with the falling scale.
+  \item \textbf{No two alike} (\cref{tab:mother_gives_birth:numbers}). The
+    same hard event with seeds $1,2,3,\ldots$: twelve outcomes side by side,
+    and the running means of the branching counts and of the family \pt of
+    each $b$ quark settling, after 64 showers, onto $5.2$ and $22$
+    branchings and $113$ and $106\GeV$, next to the \PYTHIA values of the
+    README. Our event, the first frame, is one of the less lucky ones.
+\end{enumerate}
+To render it you need matplotlib in addition to NumPy and SciPy, and
+\code{ffmpeg} for an \code{.mp4}:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/PS/Standalone
+python3 animate_standalone_parton_showering.py           # the film, about a minute
+python3 animate_standalone_parton_showering.py --fast    # low-resolution preview
+python3 animate_standalone_parton_showering.py --scene sudakov -o sudakov.gif
+python3 animate_standalone_parton_showering.py --stills stills.pdf --no-video
+\end{minted}
+The physics options are those of the shower script we run next, so \code{--seed 7}
+films another family, \code{--no-dampen} shows what
+\cref{eq:mother_gives_birth:dampen} does to the survival curves, and
+\code{--ptmax 50} starts the shower lower.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\hfill
+\includegraphics[page=2,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\\[2mm]
+\includegraphics[page=3,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\hfill
+\includegraphics[page=4,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}
+\caption[Key frames of the animated standalone shower]{Key frames of the
+four scenes of the animated standalone shower, drawn by
+\file{animate_standalone_parton_showering.py} with \code{--stills}. Top left:
+the ladder of branchings in decreasing \pt and the $(\eta,\phi)$ picture
+filling up. Top right: the measured survival curves $\Delta(\pt^{\max},\pt)$
+of the four radiators and the histogram of who radiates first. Bottom left:
+the transverse-momentum balance and the walk of the incoming partons in $x$.
+Bottom right: twelve showers of the same hard event and the running means
+converging to the \PYTHIA reference. The film is on the JitJet YouTube
+playlist.}
+\label{fig:mother_gives_birth:stills}
+\end{figure}
+
+\section{Press the button: the standalone shower}
+\label{sec:mother_gives_birth:standalone_code}
+
+Now make a family yourself. The material of this chapter is in
+\file{example/PS/} of the JitJet repository,
+\begin{center}
+  \url{https://github.com/ravindkv/JitJet}
+\end{center}
+with the shower and its validation under \file{example/PS/Standalone/}, the
+event record and the plotting script one level up, and the \CMSSW log and
+figures under \file{example/PS/CMSSW/}. As before the code is not printed;
+each script gets a description, the command and the output to expect.
+
+\subsection{The standalone shower script}
+
+\file{example/PS/Standalone/standalone_parton_showering.py} contains the
+construction that \cref{sec:mother_gives_birth:dipole_shower} will describe,
+and nothing else: about a thousand lines of Python needing NumPy and SciPy, no LHAPDF,
+no \PYTHIA. The PDF grid (member~0 of NNPDF3.1 on LHAPDF's own knots, all
+flavours, $x\ge10^{-3}$, $Q$ up to $140\GeV$) is embedded between the markers
+\code{BEGIN/END GENERATED TABLES}, produced by \file{dump_shower_tables.py}
+in an environment that has LHAPDF. A map of the file: \code{AlphaStrong}
+(second-order running with thresholds, \cref{eq:mother_gives_birth:lambdas});
+\code{TablePDF} (bicubic spline in $(\ln x,\ln Q^2)$, frozen below the
+grid); \code{Particle}, \code{Event}, \code{read\_event} and \code{listing}
+(\PYTHIA's record format, in and out); \code{Shower} with
+\code{pT2next\_fsr} and \code{pT2next\_isr} (the veto algorithm,
+\cref{sec:mother_gives_birth:veto}), \code{fsr\_kinematics} and
+\code{isr\_kinematics} (the recoils), \code{branch\_fsr}, \code{branch\_isr}
+and \code{run} (steps~4 and~5); \code{verify} (energy--momentum, masses and
+colour lines after every branching, for \code{--check}); and
+\code{family}, \code{summarise} and \code{main}. From the repository root:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/PS/Standalone
+python3 standalone_parton_showering.py                       # seed 1 -> ../event_PS.lhe
+python3 standalone_parton_showering.py --seed 7 --history h.json
+python3 standalone_parton_showering.py --no-isr              # the two b quarks only
+python3 standalone_parton_showering.py --check               # assert conservation laws
+python3 standalone_parton_showering.py --repeat 2000 --quiet --history s.json
+\end{minted}
+The first command takes about a second, most of it parsing the tables, and
+prints
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+input ../../ME/event_ME.lhe: hard process g u -> bbar b, pTmax = 113.32 GeV, seed = 1
+shower finished: 5 ISR + 33 FSR branchings, 40 final-state partons (27 gluons); ...
+incoming after ISR: g x = 1.7140e-02 (+z), u x = 4.6999e-01 (-z)
+parton  pT before  pT after     eta     phi  family n  family pT  family E  family m
+bbar       113.22     73.18  -3.409   0.577         3      92.13   1414.97      7.02
+b          113.22     78.12  -1.379  -2.728         3     100.45    224.59     13.52
+branchings in pT order:
+    1 ISR q<-g   side A(+z)  g  -> ubar + u   pT =  53.877  z = 0.779  x -> 2.7914e-03
+    2 ISR q<-q   side B(-z)  u  -> u    + g   pT =  51.361  z = 0.850  x -> 4.5920e-01
+    ...
+\end{minted}
+followed by the 38 branchings and the record, written to
+\file{example/PS/event_PS.lhe}. With \code{--history} the branchings and the
+summary go to a JSON file as well; with \code{--repeat N} the script showers
+the event $N$ times with seeds $1\ldots N$ and writes the per-event
+quantities of \cref{tab:mother_gives_birth:numbers} to
+\file{s.stats.json}, about ten minutes for $2000$. The physics options are
+\code{--alphas} and \code{--order} (the coupling), \code{--ptmin-fsr},
+\code{--ptmin-isr}, \code{--pt0} and \code{--ptmax} (the scales of
+\cref{sec:mother_gives_birth:scales}), \code{--no-isr}, \code{--no-fsr},
+\code{--no-dampen} (\cref{eq:mother_gives_birth:dampen} off) and
+\code{--radius} (the family cone). The output with \code{--seed 1} is
+byte-for-byte the committed record; any other seed gives another family,
+which is the point of Exercise~1.
+
+\subsection{Reading the record}
+\label{sec:mother_gives_birth:record_format}
+
+The record keeps \PYTHIA's conventions so that the same reader serves the
+standalone and the \CMSSW output. Status codes: $-21$ and $23$ are the hard
+process as before; $43$ a parton emitted by ISR, $-41$ the new incoming
+parton, $44$ a final-state parton shifted by an ISR recoil; $51$ the two
+daughters of an FSR branching, $52$ a final-state recoiler, $-53$ an
+incoming recoiler. A negative status means the parton has been replaced by
+its daughters and is no longer in the event; the final state is every row
+with a positive status, and its momentum sum equals that of the two current
+incoming partons. Every row names its mother, so the family of any final
+parton can be found by walking up until a hard-process row ($-23$) or an
+ISR emission ($43$) is reached; that is what the plotting script does.
+
+\subsection{Drawing the event}
+
+\file{example/PS/plot_journey_PS.py} reads the record and draws every
+final-state parton in the $(\eta,\phi)$ plane in the layout of the \CMSSW
+analyser of \cref{sec:mother_gives_birth:cmssw}
+(\cref{fig:mother_gives_birth:journey}), classifying each parton by walking
+its mother chain back to the hard $b$, the hard $\bar b$ or an ISR emission,
+and prints a table of all partons with their origin, the momentum sums of
+\cref{sec:mother_gives_birth:runaways} and the $x$ walk of the incoming
+partons. It needs matplotlib only:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/PS/plot_journey_PS.py                  # -> example/PS/journey_PS.pdf
+python3 example/PS/plot_journey_PS.py -i my.lhe --label-min 10 --png
+\end{minted}
+
 \section{Why a quark cannot travel alone: collinear and soft singularities}
 \label{sec:mother_gives_birth:why_alone}
+
+You have watched the family appear, and you have produced one yourself. Now
+we earn it. The next five sections derive the branching probability, turn
+it into the algorithm the script executes, follow \PYTHIA's construction of
+the shower step by step, and end by reading the record you have just
+written.
 
 Look out of the window at the mother leaving the hard process. In the
 partonic frame she carries $E=\sqrt{\shat}/2=198\GeV$ and is, at Born level,
@@ -288,8 +482,8 @@ $\alphas=0.118$ the probability that she emits nothing above $10\GeV$ is
   =\exp(-0.588)=0.56 ,
 \end{equation*}
 and with the running coupling of \cref{sec:mother_gives_birth:cp5} in the
-integrand it drops to $0.48$. The film of \cref{sec:mother_gives_birth:animation}
-measures the same quantity from the standalone shower itself and finds
+integrand it drops to $0.48$. Scene~2 of the film (\cref{sec:mother_gives_birth:animation})
+measured the same quantity from the standalone shower itself and found
 about $0.7$. The difference is what the leading logarithm leaves out: the
 full kernel is smaller than $2C_F/(1-z)$ away from $z=1$, the exact $z$
 range of the dipole is narrower than $1-z\ge\pt/Q$, and an emission that
@@ -434,7 +628,7 @@ which suppresses large virtualities of a parton whose colour partner is a
 beam. This one factor turns out to be the single most sensitive ingredient
 of the whole shower: switching it off doubles the number of final-state
 branchings in \cref{tab:mother_gives_birth:numbers}
-(\cref{sec:mother_gives_birth:validation}).
+(\cref{sec:mother_gives_birth:pythia}).
 
 \subsection{Initial-state radiation: backward evolution}
 \label{sec:mother_gives_birth:isr}
@@ -484,8 +678,8 @@ $q\leftarrow q$ ratio at its first branching is $0.65$, because the valence
 density falls with $x$, multiplied by the large $P_{qq}(0.850)=15.3$. The
 small-$x$ side radiates through gluon splitting, the valence side through
 gluon emission; that is the general pattern at the LHC, and it is why in
-the film of \cref{sec:mother_gives_birth:animation} the $+z$ beam wins the
-first branching more than half the time.
+scene~2 of the film (\cref{sec:mother_gives_birth:animation}) the $+z$ beam
+won the first branching more than half the time.
 
 \subsection{Interleaving, the starting scale and the cut-offs}
 \label{sec:mother_gives_birth:scales}
@@ -566,7 +760,8 @@ either \PYTHIA default or left out of the standalone version; the list is in
 
 We now have everything needed to turn the hard-process record into a
 showered event, and as at the previous stop I want you to see the machine,
-not just the output. The steps below are those of the standalone script.
+not just the output. The steps below are those of the standalone script
+you ran in \cref{sec:mother_gives_birth:standalone_code}.
 
 \paragraph{Step 1: read the hard process and find the dipoles.} From
 \file{event_ME.lhe} the script takes the two incoming and two outgoing
@@ -619,8 +814,8 @@ worth reading in order, because they set everything that follows:
     virtuality of $65.7\GeV$.
 \end{enumerate}
 Three initial-state branchings, each harder than anything the mother does,
-came first. That is not an accident of the seed: the film of
-\cref{sec:mother_gives_birth:animation} shows that the $+z$ beam, at small
+came first. That is not an accident of the seed: scene~2 of the film
+(\cref{sec:mother_gives_birth:animation}) showed that the $+z$ beam, at small
 $x$ where the gluon density is huge, wins the first branching in $57\%$ of
 the trials. Then follow 33 more, softer and softer: gluons splitting into
 gluons, a gluon splitting into $s\bar s$ at $6\GeV$, another into
@@ -739,91 +934,20 @@ shower does this in a few percent of events, and at the registry office
 definition rather than a label: which of the two $b$ quarks at
 $\eta\approx-3.3$ is the jet's flavour? Keep the question.
 
-\section{Press the button: the standalone shower}
-\label{sec:mother_gives_birth:standalone_code}
+\section{Validation from official packages}
+\label{sec:mother_gives_birth:validation}
 
-The material of this chapter is in \file{example/PS/} of the JitJet
-repository,
-\begin{center}
-  \url{https://github.com/ravindkv/JitJet}
-\end{center}
-with the shower and its validation under \file{example/PS/Standalone/}, the
-event record and the plotting script one level up, and the \CMSSW log and
-figures under \file{example/PS/CMSSW/}. As before the code is not printed;
-each script gets a description, the command and the output to expect.
-
-\subsection{The standalone shower script}
-
-\file{example/PS/Standalone/standalone_parton_showering.py} contains the
-construction of \cref{sec:mother_gives_birth:dipole_shower} and nothing
-else: about a thousand lines of Python needing NumPy and SciPy, no LHAPDF,
-no \PYTHIA. The PDF grid (member~0 of NNPDF3.1 on LHAPDF's own knots, all
-flavours, $x\ge10^{-3}$, $Q$ up to $140\GeV$) is embedded between the markers
-\code{BEGIN/END GENERATED TABLES}, produced by \file{dump_shower_tables.py}
-in an environment that has LHAPDF. A map of the file: \code{AlphaStrong}
-(second-order running with thresholds, \cref{eq:mother_gives_birth:lambdas});
-\code{TablePDF} (bicubic spline in $(\ln x,\ln Q^2)$, frozen below the
-grid); \code{Particle}, \code{Event}, \code{read\_event} and \code{listing}
-(\PYTHIA's record format, in and out); \code{Shower} with
-\code{pT2next\_fsr} and \code{pT2next\_isr} (the veto algorithm,
-\cref{sec:mother_gives_birth:veto}), \code{fsr\_kinematics} and
-\code{isr\_kinematics} (the recoils), \code{branch\_fsr}, \code{branch\_isr}
-and \code{run} (steps~4 and~5); \code{verify} (energy--momentum, masses and
-colour lines after every branching, for \code{--check}); and
-\code{family}, \code{summarise} and \code{main}. From the repository root:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/PS/Standalone
-python3 standalone_parton_showering.py                       # seed 1 -> ../event_PS.lhe
-python3 standalone_parton_showering.py --seed 7 --history h.json
-python3 standalone_parton_showering.py --no-isr              # the two b quarks only
-python3 standalone_parton_showering.py --check               # assert conservation laws
-python3 standalone_parton_showering.py --repeat 2000 --quiet --history s.json
-\end{minted}
-The first command takes about a second, most of it parsing the tables, and
-prints
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-input ../../ME/event_ME.lhe: hard process g u -> bbar b, pTmax = 113.32 GeV, seed = 1
-shower finished: 5 ISR + 33 FSR branchings, 40 final-state partons (27 gluons); ...
-incoming after ISR: g x = 1.7140e-02 (+z), u x = 4.6999e-01 (-z)
-parton  pT before  pT after     eta     phi  family n  family pT  family E  family m
-bbar       113.22     73.18  -3.409   0.577         3      92.13   1414.97      7.02
-b          113.22     78.12  -1.379  -2.728         3     100.45    224.59     13.52
-branchings in pT order:
-    1 ISR q<-g   side A(+z)  g  -> ubar + u   pT =  53.877  z = 0.779  x -> 2.7914e-03
-    2 ISR q<-q   side B(-z)  u  -> u    + g   pT =  51.361  z = 0.850  x -> 4.5920e-01
-    ...
-\end{minted}
-followed by the 38 branchings and the record, written to
-\file{example/PS/event_PS.lhe}. With \code{--history} the branchings and the
-summary go to a JSON file as well; with \code{--repeat N} the script showers
-the event $N$ times with seeds $1\ldots N$ and writes the per-event
-quantities of \cref{tab:mother_gives_birth:numbers} to
-\file{s.stats.json}, about ten minutes for $2000$. The physics options are
-\code{--alphas} and \code{--order} (the coupling), \code{--ptmin-fsr},
-\code{--ptmin-isr}, \code{--pt0} and \code{--ptmax} (the scales of
-\cref{sec:mother_gives_birth:scales}), \code{--no-isr}, \code{--no-fsr},
-\code{--no-dampen} (\cref{eq:mother_gives_birth:dampen} off) and
-\code{--radius} (the family cone). The output with \code{--seed 1} is
-byte-for-byte the committed record; any other seed gives another family,
-which is the point of Exercise~1.
-
-\subsection{Reading the record}
-\label{sec:mother_gives_birth:record_format}
-
-The record keeps \PYTHIA's conventions so that the same reader serves the
-standalone and the \CMSSW output. Status codes: $-21$ and $23$ are the hard
-process as before; $43$ a parton emitted by ISR, $-41$ the new incoming
-parton, $44$ a final-state parton shifted by an ISR recoil; $51$ the two
-daughters of an FSR branching, $52$ a final-state recoiler, $-53$ an
-incoming recoiler. A negative status means the parton has been replaced by
-its daughters and is no longer in the event; the final state is every row
-with a positive status, and its momentum sum equals that of the two current
-incoming partons. Every row names its mother, so the family of any final
-parton can be found by walking up until a hard-process row ($-23$) or an
-ISR emission ($43$) is reached; that is what the plotting script does.
+As at the first stop, the last word goes to the official packages. Two are
+available here: \PYTHIA itself, driven from a script so that it showers
+exactly our hard event and nothing else, and the full CMS generator job of
+\cref{ch:ancestral_home}, whose log and event record we can now read with
+the shower's status codes in hand. A shower is a random process, so the
+comparison with \PYTHIA is made on averages over two thousand showers, and
+the comparison with the single \CMSSW event is made on structure, not on
+numbers.
 
 \subsection{The same shower with \PYTHIA: the validation script}
-\label{sec:mother_gives_birth:validation}
+\label{sec:mother_gives_birth:pythia}
 
 \file{validate_shower_with_pythia.py} in the same directory writes the hard
 event of \cref{ch:ancestral_home} two thousand times into a Les Houches
@@ -870,105 +994,7 @@ $20$ final-state ones, with the $b$ families unchanged to a percent. The
 softest activity of a shower is a matter of options; the hard structure is
 not.
 
-\subsection{Drawing the event}
-
-\file{example/PS/plot_journey_PS.py} reads the record and draws every
-final-state parton in the $(\eta,\phi)$ plane in the layout of the \CMSSW
-analyser of \cref{sec:mother_gives_birth:cmssw}
-(\cref{fig:mother_gives_birth:journey}), classifying each parton by walking
-its mother chain back to the hard $b$, the hard $\bar b$ or an ISR emission,
-and prints a table of all partons with their origin, the momentum sums of
-\cref{sec:mother_gives_birth:runaways} and the $x$ walk of the incoming
-partons. It needs matplotlib only:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/PS/plot_journey_PS.py                  # -> example/PS/journey_PS.pdf
-python3 example/PS/plot_journey_PS.py -i my.lhe --label-min 10 --png
-\end{minted}
-
-\section{Watch the shower happen: the animated journey}
-\label{sec:mother_gives_birth:animation}
-
-The script \file{example/PS/Standalone/animate_standalone_parton_showering.py}
-imports the standalone shower and renders a four-scene film of about forty
-seconds, so that every number on the screen is computed by the same classes
-that wrote the record. It is on the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
-\end{center}
-and \cref{fig:mother_gives_birth:stills} shows one key frame per scene.
-\begin{enumerate}
-  \item \textbf{The shower unwinds} (\cref{sec:mother_gives_birth:step_by_step}).
-    A scale runs down from $\pt^{\max}=113.3\GeV$ to the cut-off, and each
-    time it passes the \pt of one of the 38 branchings of our event the
-    branching happens: a ladder on the left fills rung by rung, orange
-    squares for ISR and red or blue dots for the two families, while the
-    $(\eta,\phi)$ picture on the right fills with partons, connected by the
-    colour dipoles that do the radiating. The scene replays the seed-1
-    shower branching by branching and checks itself against the record to
-    half a MeV. Watch the first three rungs: all initial state, all above
-    $40\GeV$, and every marker on the right jumps at each of them. Watch the
-    ladder cross $\mb$ and $m_c$, where the number of flavours in the
-    coupling changes, and watch a gluon near the $\bar b$ turn into a
-    $\bbbar$ pair.
-  \item \textbf{Who radiates first?} (\cref{sec:mother_gives_birth:sudakov,sec:mother_gives_birth:veto}).
-    The four ends that can radiate from $\pt^{\max}$, the $b$, the $\bar b$
-    and the two incoming partons, each propose their next emission 1500
-    times. The survival curves on the left are the no-emission probabilities
-    $\Delta(\pt^{\max},\pt)$ of each end, measured rather than computed:
-    the $b$ and $\bar b$ curves lie on top of each other, the $+z$ beam at
-    small $x$ falls fastest, and the dashed product is the probability that
-    nobody has radiated yet. On the right, the histogram of the hardest of
-    the four proposals, coloured by who made it: the $+z$ beam wins $57\%$
-    of the time, the $-z$ beam and the $\bar b$ $15\%$ each, the $b$ $12\%$,
-    and in one trial in a thousand nobody radiates at all. The seed-1
-    event's first branching at $53.9\GeV$ is marked.
-  \item \textbf{Momentum bookkeeping} (\cref{sec:mother_gives_birth:runaways}).
-    The shower runs again while the transverse plane on the left keeps the
-    accounts: the $b$ and $\bar b$ arrows, their sum, the ISR partons and
-    their sum, and the total, which stays at zero. On the right the two
-    incoming partons walk up in $x$ on top of the PDFs at the current
-    scale, from $2.2\times10^{-3}$ to $1.7\times10^{-2}$ and from $0.39$ to
-    $0.47$, while the curves themselves change with the falling scale.
-  \item \textbf{No two alike} (\cref{tab:mother_gives_birth:numbers}). The
-    same hard event with seeds $1,2,3,\ldots$: twelve outcomes side by side,
-    and the running means of the branching counts and of the family \pt of
-    each $b$ quark settling, after 64 showers, onto $5.2$ and $22$
-    branchings and $113$ and $106\GeV$, next to the \PYTHIA values of the
-    README. Our event, the first frame, is one of the less lucky ones.
-\end{enumerate}
-To render it you need matplotlib in addition to NumPy and SciPy, and
-\code{ffmpeg} for an \code{.mp4}:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/PS/Standalone
-python3 animate_standalone_parton_showering.py           # the film, about a minute
-python3 animate_standalone_parton_showering.py --fast    # low-resolution preview
-python3 animate_standalone_parton_showering.py --scene sudakov -o sudakov.gif
-python3 animate_standalone_parton_showering.py --stills stills.pdf --no-video
-\end{minted}
-The physics options are those of the shower script, so \code{--seed 7}
-films another family, \code{--no-dampen} shows what
-\cref{eq:mother_gives_birth:dampen} does to the survival curves, and
-\code{--ptmax 50} starts the shower lower.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\hfill
-\includegraphics[page=2,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\\[2mm]
-\includegraphics[page=3,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}\hfill
-\includegraphics[page=4,width=0.49\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}
-\caption[Key frames of the animated standalone shower]{Key frames of the
-four scenes of the animated standalone shower, drawn by
-\file{animate_standalone_parton_showering.py} with \code{--stills}. Top left:
-the ladder of branchings in decreasing \pt and the $(\eta,\phi)$ picture
-filling up. Top right: the measured survival curves $\Delta(\pt^{\max},\pt)$
-of the four radiators and the histogram of who radiates first. Bottom left:
-the transverse-momentum balance and the walk of the incoming partons in $x$.
-Bottom right: twelve showers of the same hard event and the running means
-converging to the \PYTHIA reference. The film is on the JitJet YouTube
-playlist.}
-\label{fig:mother_gives_birth:stills}
-\end{figure}
-
-\section{How CMS does it in practice: the shower inside the GEN step}
+\subsection{How CMS does it in practice: the shower inside the GEN step}
 \label{sec:mother_gives_birth:cmssw}
 
 In CMS nobody runs the shower separately. The \code{GEN} step of
@@ -998,7 +1024,7 @@ stage, \file{genPartAnalyzer_stage1_hardProcess_run1_event1.pdf} through
 stage~5. The log and the first two figures are in
 \file{example/PS/CMSSW/}.
 
-\subsection{Reading the log}
+\subsubsection{Reading the log}
 
 Three things in \file{step1_GEN_PS_cfg.log} close the loop with this
 chapter. At initialisation, the warning
@@ -1040,7 +1066,7 @@ showered''; it is not set on any copy of a $b$ that never radiated, and
 the copy that plays that role here is row~14 at $122.8\GeV$, $9\GeV$
 \emph{above} the Born value, entirely from ISR recoil.
 
-\subsection{The figure}
+\subsubsection{The figure}
 
 \Cref{fig:mother_gives_birth:cmssw} is the analyser's stage-2 figure,
 the parton level of the \CMSSW event: 57 partons, 26 from the initial state
@@ -1240,7 +1266,7 @@ chapter.
     equivalent to rerunning with \code{--alphas}, and where does it break
     down?
   \item \textbf{The last octave.} The $7\%$ excess of soft branchings in
-    \cref{sec:mother_gives_birth:validation} is invisible at parton level
+    \cref{sec:mother_gives_birth:pythia} is invisible at parton level
     and may not be after hadronisation. A Phase-2 measurement of jet
     constituent multiplicity at $\pt\sim100\GeV$ will have a statistical
     error far below that. Which hadron-level observables are sensitive to
@@ -1248,7 +1274,7 @@ chapter.
     The answer decides what a Run-4 tune can constrain.
   \item \textbf{Rapidity ordering and the third jet.} \PYTHIA's rapidity
     ordering of ISR changes the soft initial-state activity by a third
-    (\cref{sec:mother_gives_birth:validation}). Run the validation script
+    (\cref{sec:mother_gives_birth:pythia}). Run the validation script
     with and without \code{--rapidity-order} and compare the \pt spectrum
     and rapidity of the hardest initial-state parton, the ``third jet'' of
     a dijet event. Which existing CMS measurement constrains this option,

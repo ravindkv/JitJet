@@ -43,15 +43,37 @@ the book. It lives in the public repository
 to run and the output to expect, so that the pages can be spent on the
 mathematics instead.
 
-Every chapter has the same internal structure:
+Every chapter has the same internal structure, and the order is deliberate:
+it runs from the top down, the way a guided tour does, not from the bottom
+up, the way a textbook does.
 \begin{enumerate}[nosep]
-  \item \textbf{The stage in the journey}: the metaphor and what physically happens.
-  \item \textbf{The mathematics}: the minimal, correct formulae.
-  \item \textbf{Our jet at this stage}: the numbers from the energy ledger, plots and event displays.
-  \item \textbf{How CMS does it in practice}: configurations, \CMSSW modules, JME tools, NanoAOD branches.
-  \item \textbf{Pitfalls and FAQs} for newcomers.
-  \item \textbf{Further reading}: official CMS papers, detector-performance notes, theory papers.
+  \item \textbf{The stage in the journey}: the metaphor, what physically
+    happens, and the one number to take away from the stop.
+  \item \textbf{Watch it}: a short film of the stage, rendered from the same
+    code that produces the chapter's numbers, with one key frame per scene
+    printed in the book.
+  \item \textbf{Run it}: the standalone script, the command to run and the
+    output to expect. You press the button before you know what is behind it.
+  \item \textbf{Derive it}: the minimal, correct mathematics of the stage,
+    ending with the step-by-step recipe that the script executes.
+  \item \textbf{Validation from official packages}: the same number from
+    \CMSSW, \PYTHIA, \MG or the JME tools, read from their configurations,
+    logs and records.
+  \item \textbf{Our jet at this stage}: the numbers from the energy ledger,
+    plots and event displays.
+  \item \textbf{Further reading}, with a list of open problems for the
+    Phase-2 LHC, followed by \textbf{Pitfalls and FAQs} for newcomers and
+    \textbf{Exercises}.
 \end{enumerate}
+
+\paragraph{Top to bottom, bottom to top.} The two phrases are not in
+conflict. The \emph{journey} runs from the bottom up: it starts where the
+jet starts, at the hard scattering, and ends where the jet ends, in the
+histogram, and the two pilgrims are the bottom quark and the top quark.
+Each \emph{stop} along the way is told from the top down: you see the stage
+first, run it second, derive it third, and let the official packages have
+the last word. Bottom to top is the road; top to bottom is how the guide
+explains each stop.
 
 \section*{The two pilgrims}
 

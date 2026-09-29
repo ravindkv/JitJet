@@ -33,29 +33,47 @@ Our first stop is the ancestral home, and there is exactly one number to take
 away from it: the cross section for producing a $\bbbar$ pair with
 $\pthat\ge100\GeV$ in proton--proton collisions at $\sqrt{s}=13.6\TeV$
 through quark--antiquark annihilation. It comes out at about $345\pb$. We
-will compute it \emph{four} times, each time with less of our own work and
-more trust in somebody else's code:
+will meet it \emph{four} times, and the order in which we meet it is the
+order of every stop in this book, from the top down: first you watch, then
+you run, then you derive, and only then do you check against the official
+machinery.
 \begin{enumerate}[nosep]
-  \item \textbf{By hand, on paper.} From the factorisation formula, the
-    parton distribution functions and a one-line matrix element we write down
-    a three-dimensional integral and understand every factor in it
+  \item \textbf{Watch it.} A short film, rendered from the same code that
+    prints the cross section, shows the collision, the integration volume
+    and the number converging (\cref{sec:ancestral_home:animation}).
+  \item \textbf{Run it.} A single Python file, needing only NumPy and SciPy,
+    does the integral in about one second; you press the button and watch
+    $345\pb$ come out on your own screen
+    (\cref{sec:ancestral_home:standalone_code}).
+  \item \textbf{Derive it.} From the factorisation formula, the parton
+    distribution functions and a one-line matrix element we write down the
+    three-dimensional integral the script evaluates and understand every
+    factor in it
     (\crefrange{sec:ancestral_home:two_protons_meet}{sec:ancestral_home:from_formula_to_number}).
-  \item \textbf{With a standalone script.} A single Python file, needing only
-    NumPy and SciPy, does exactly that integral in about one second
-    (\cref{sec:ancestral_home:standalone_code}). A companion script turns the
-    same integral into a short film (\cref{sec:ancestral_home:animation}).
-  \item \textbf{With \CMSSW.} The official CMS generator configuration runs
-    the same process inside \PYTHIA, and its log prints the cross section it
-    sampled (\cref{sec:ancestral_home:cmssw}).
-  \item \textbf{With \MG.} A second, independent generator computes the same
-    Born process from its own Feynman diagrams
-    (\cref{sec:ancestral_home:madgraph}).
+  \item \textbf{Check it against the official packages.} The CMS generator
+    configuration runs the same process inside \PYTHIA and its log prints
+    the cross section it sampled; \MG, a second and independent generator,
+    computes the same Born process from its own Feynman diagrams
+    (\cref{sec:ancestral_home:validation}).
 \end{enumerate}
 \Cref{tab:ancestral_home:three_numbers} gives away the ending. The four agree
 within the statistical precision of the Monte Carlo runs, and that agreement
 is the whole point of the stop: after this chapter you will know what every
 knob in the CMS configuration does to the number, because you will have turned
 each knob yourself.
+
+\paragraph{Top to bottom, bottom to top.} A word on the order, because it
+is the opposite of a textbook's. A textbook derives first and shows last; a
+guided tour shows first. So at every stop you will see the film before the
+formula, run the script before you can read it, and only then sit down with
+pencil and paper to earn what you have already seen, before the official
+packages get the last word. The journey itself runs the other way, from the
+bottom up: the ``bottom to top'' of the title is the jet's whole road from
+the hard scattering to the histogram, and it is also the two quarks we
+follow, the bottom quark of this chapter and the top quark of
+\cref{ch:three_families}. The two directions do not conflict. The road is
+walked from its beginning to its end; each stop along it is explained from
+the top down.
 
 \begin{table}[htbp]\centering\small
 \caption[The $q\bar q\to\bbbar$ cross section obtained four ways]{The
@@ -98,8 +116,186 @@ leading-order matrix element is a formula short enough to check by hand. \MG
 at leading order uses the very same Born matrix element, as
 \cref{sec:ancestral_home:madgraph} shows.
 
+\section{Watch the integral happen: the animated journey}
+\label{sec:ancestral_home:animation}
+
+We begin, as at every stop of this book, by looking out of the window. The
+script \file{example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py}
+imports the standalone calculation of \cref{sec:ancestral_home:standalone_code}
+and renders a four-scene film of about thirty seconds from its tables, its
+interpolators and its \code{born\_weights} function, so every number on the
+screen comes from the same code that prints the cross section. The film is
+on the JitJet playlist,
+\begin{center}
+  \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
+\end{center}
+and \cref{fig:ancestral_home:stills} shows one key frame per scene. Here is
+what you will see. Each scene names the equation that explains it; the words
+will be new, and that is intended. Watch first, and let the formulae of
+\crefrange{sec:ancestral_home:two_protons_meet}{sec:ancestral_home:from_formula_to_number}
+catch up with the pictures.
+\begin{enumerate}
+  \item \textbf{The collision} (\cref{eq:ancestral_home:kinematics}). Our
+    event in three dimensions. In the partonic centre-of-mass frame the $u$
+    and $\bar u$ collide head on and the $b$ and $\bar b$ leave back to back
+    at the angle $\theta^{*}$ to the beam. The translucent tube around the
+    beam is the generator cut $\pthat\ge100\GeV$: the quarks must leave
+    through its wall, and the sidebar lists $x_1$, $x_2$, $\shat$, $p^{*}$,
+    $\cos\theta^{*}$ and $\pthat$ as computed in
+    \cref{sec:ancestral_home:matrix_element}. The system is then boosted
+    along the beam by the pair rapidity $Y=-2.59$ into the laboratory: the
+    tips slide along the tube, because \pt is boost invariant, and the pair
+    ends up backward exactly as in \file{event_ME.lhe}.
+  \item \textbf{The cube} (\cref{eq:ancestral_home:maps}). Sobol points in
+    the unit cube $(u_1,u_2,u_3)$, coloured by $\log_{10}$ of their weight
+    $\sum_q w_q$, and then morphed into the physical variables
+    $(\log_{10}x_1,\log_{10}x_2,|\cos\theta|)$. Watch the cube become a
+    wedge: only the region above the threshold line $x_1x_2=\tau_{\min}$ is
+    allowed, and the stretching you see is the Jacobian of
+    \cref{sec:ancestral_home:better_variables}, carried in every weight.
+  \item \textbf{The surface} (\cref{eq:ancestral_home:weight}). The
+    integrand with $\cos\theta$ integrated out,
+    $\mathrm{d}\sigma/(\mathrm{d}\log_{10}x_1\,\mathrm{d}\log_{10}x_2)$, as a
+    surface over the triangle. Its volume is the cross section. The dome
+    sits just above the threshold at $Y=0$, because the PDFs grow towards
+    small $x$ and $\hat\sigma\propto1/\shat$, so most of the rate is just
+    above the cut; our event, marked on the surface, sits on the backward
+    slope at $Y=-2.6$.
+  \item \textbf{Convergence} (\cref{eq:ancestral_home:average,eq:ancestral_home:error}).
+    One Sobol pass: the cube fills up point by point while the running
+    average of the weights, per incoming flavour and in total, settles onto
+    $345\pb$, with \PYTHIA's own $345.1\pm6.1\pb$ drawn as a band. The first
+    few hundred points swing wildly; by $2^{16}$ the estimate has stopped
+    moving at the fourth digit.
+\end{enumerate}
+To render it yourself you need matplotlib in addition to NumPy and SciPy, and
+\code{ffmpeg} for an \code{.mp4} (a \code{.gif} needs only Pillow):
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/ME/Standalone
+python3 animate_standalone_qqbar_bbbar_xsec.py            # the film, a few minutes
+python3 animate_standalone_qqbar_bbbar_xsec.py --fast     # low-resolution preview
+python3 animate_standalone_qqbar_bbbar_xsec.py --scene surface -o surface.gif
+python3 animate_standalone_qqbar_bbbar_xsec.py --stills stills.pdf --no-video
+\end{minted}
+The physics options \code{--ecm}, \code{--mb}, \code{--ptmin},
+\code{--ptmax}, \code{--power} and \code{--seed} are those of the standalone
+script we run next, and \code{--event} points scene~1 at another hard-process
+record, so
+you can film your own event.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\hfill
+\includegraphics[page=2,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\\[2mm]
+\includegraphics[page=3,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\hfill
+\includegraphics[page=4,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}
+\caption[Key frames of the animated standalone calculation]{Key frames of
+the four scenes of the animated standalone calculation, drawn by
+\file{animate_standalone_qqbar_bbbar_xsec.py} with \code{--stills}. Top left:
+our event in the partonic frame with the $\pthat\ge100\GeV$ tube. Top right:
+Sobol points morphed from the unit cube into
+$(\log_{10}x_1,\log_{10}x_2,|\cos\theta|)$. Bottom left: the integrand over
+the $(x_1,x_2)$ triangle, whose volume is the cross section. Bottom right:
+the running average converging to $345\pb$. The film itself is on the
+JitJet YouTube playlist.}
+\label{fig:ancestral_home:stills}
+\end{figure}
+
+\section{Press the button: the standalone calculation}
+\label{sec:ancestral_home:standalone_code}
+
+You have watched the number converge on the screen; now make it converge on
+yours. Everything in this book is public. The scripts, configurations and
+event records live in the JitJet repository,
+\begin{center}
+  \url{https://github.com/ravindkv/JitJet}
+\end{center}
+under \file{example/}, and this chapter's material is in \file{example/ME/}.
+I will not print the code here; it would double the length of the chapter,
+and a listing on paper cannot be run. Instead, each script gets a short
+description, the command to run it, and the output you should see. Run it
+now, and read the source on GitHub later, once you have the equations of
+this chapter beside you; the function names match the step numbers of
+\cref{sec:ancestral_home:from_formula_to_number}, where the integral is
+derived.
+
+\subsection{The standalone script}
+
+\file{example/ME/Standalone/standalone_qqbar_bbbar_xsec.py} contains the
+calculation of \cref{sec:ancestral_home:from_formula_to_number} and nothing
+else. It needs Python~3.10 or newer with NumPy and SciPy; no LHAPDF, no
+\PYTHIA. The PDF grid (member~0 of the NNPDF3.1 set on LHAPDF's own knots,
+restricted to the phase space of the default run) and \PYTHIA's $\alphas$
+curve are embedded as numeric tables between the markers
+\code{BEGIN/END GENERATED TABLES}, produced by
+\file{dump_standalone_tables.py} in an environment that has both libraries.
+A map of the file: \code{TablePDF} (bicubic spline in $(\ln x,\ln Q^2)$,
+with the freezing, clipping and heavy-sea conventions of
+\cref{sec:ancestral_home:pdfs}); \code{TableAlphaS} (monotone cubic in
+$\ln Q^2$, refusing to extrapolate); \code{dsigma\_dcostheta}
+(\cref{eq:ancestral_home:dsigma}, vectorised); \code{born\_weights} (steps~1
+to~4, that is \cref{eq:ancestral_home:maps,eq:ancestral_home:weight});
+\code{integrate} (steps~5 and~6, \cref{eq:ancestral_home:average,eq:ancestral_home:error});
+and \code{main} (command line, sanity checks and the printout). From the
+repository root:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py              # one pass
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --repeats 8  # with error
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --ptmin 150 --ptmax 300
+\end{minted}
+The first command takes about a second and ends with
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{text}
+TOTAL = 0.345320 +/- nan nb
+      = 345.320 +/- nan pb
+  d dbar: 0.118568 +/- nan nb
+  u ubar: 0.178315 +/- nan nb
+  ...
+\end{minted}
+(the \code{nan} says that one pass has no error estimate). The second gives
+$345.322\pm0.001\pb$ after eight passes; the third shows how to select a
+window in $\pthat$, which is how sliced production samples are stitched
+together. The options are \code{--ecm}, \code{--mb}, \code{--ptmin},
+\code{--ptmax}, \code{--power} (the exponent of the number of Sobol points),
+\code{--repeats} and \code{--seed}. The two integrators agree to
+$5\times10^{-6}$ for the same Sobol seed, so the tables lose nothing; if the
+PDF set, the coupling or the kinematic range is changed the tables must be
+regenerated, and the script says so.
+
+\subsection{The same calculation with LHAPDF and \PYTHIA}
+
+The sibling script \file{qqbar_bbbar_xsec.py} in the same directory does the
+same integral with LHAPDF for the PDFs and \PYTHIA's own \code{AlphaStrong}
+class for the coupling, and offers every knob discussed in this chapter as a
+command-line option: upper and lower $\pthat$ and $\hat m$ cuts, $|y|$ or
+$|\eta|$ cuts on both quarks, the number of incoming flavours
+(\code{--nquark}), all five \PYTHIA scale codes and their multipliers, the
+convenience factors \code{--mur-factor} and \code{--muf-factor}, a $K$ factor,
+the PDF member, $\alphas(m_Z)$, the coupling backend and order, and the
+option to keep negative PDF values (\code{--signed-pdfs}). It needs the
+LHAPDF Python bindings and either the \code{pythia8mc} package or an exported
+coupling table; its \file{README.md} explains how to build such an environment
+and how to export the actual settings of a running \PYTHIA instance with the
+header \file{export_pythia_xsec.h}, so that one integrates precisely what the
+generator was configured to do rather than what a log file suggests. With
+the environment in place:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/ME/Standalone
+.venv/bin/python qqbar_bbbar_xsec.py --output result.json
+.venv/bin/python qqbar_bbbar_xsec.py --mur-factor 2 --muf-factor 2
+.venv/bin/python test_integrator.py
+\end{minted}
+The first prints $345.324\pm0.001\pb$ and writes the flavour breakdown of
+\cref{tab:ancestral_home:flavours}; the second is one row of
+\cref{tab:ancestral_home:variations}; the third runs the normalisation and
+phase-space checks. We use this script in \cref{sec:ancestral_home:scales}
+for the variations that the standalone one does not expose.
+
 \section{Two protons meet: the factorisation theorem in one page}
 \label{sec:ancestral_home:two_protons_meet}
+
+You have watched the number appear, and you have made it appear yourself.
+Now we earn it. The next four sections derive, factor by factor, the
+integral that the script evaluates, and end with the seven steps that its
+\code{born\_weights} and \code{integrate} functions execute.
 
 Look out of the left window: two protons are approaching each other at
 $6800\GeV$ apiece. You cannot scatter a proton in perturbation theory; it is
@@ -195,8 +391,8 @@ $\tau_{\min}\le\tau\le1$, with $\tau_{\min}$ fixed by the kinematic cut
 \end{equation}
 which is simply the statement that both $x_1=\sqrt\tau e^{Y}$ and
 $x_2=\sqrt\tau e^{-Y}$ must stay below one. The allowed region in the
-$(\ln x_1,\ln x_2)$ plane is a triangle, and you will see it drawn in the film
-of \cref{sec:ancestral_home:animation}. \Cref{app:kinematics} collects these
+$(\ln x_1,\ln x_2)$ plane is a triangle, and you have seen it drawn in
+scene~2 of the film (\cref{sec:ancestral_home:animation}). \Cref{app:kinematics} collects these
 variables together with the rest of the kinematic vocabulary of the book.
 
 \section{Parton distribution functions: where the mother comes from}
@@ -415,9 +611,9 @@ at the $30\GeV$ draft's $Q^2=1178\GeV^2$ they differed in the third digit.
 
 We now have everything needed to turn \cref{eq:ancestral_home:factorisation}
 into $345\pb$, and I want you to see the whole machine, not just the output.
-The steps below are, one for one, the steps of the standalone script
-(\cref{sec:ancestral_home:standalone_code}); the function names in brackets
-point to it.
+The steps below are, one for one, the steps of the standalone script you
+ran in \cref{sec:ancestral_home:standalone_code}; the function names in
+brackets point to it.
 
 \paragraph{Step 1: choose the integration variables.} Every Monte Carlo
 integrator wants to sample a unit cube, so we map
@@ -577,172 +773,18 @@ you should carry with you to the later stops:
     not reproduced.
 \end{itemize}
 
-\section{Press the button: the standalone calculation}
-\label{sec:ancestral_home:standalone_code}
+\section{Validation from official packages}
+\label{sec:ancestral_home:validation}
 
-Everything in this book is public. The scripts, configurations and event
-records live in the JitJet repository,
-\begin{center}
-  \url{https://github.com/ravindkv/JitJet}
-\end{center}
-under \file{example/}, and this chapter's material is in \file{example/ME/}.
-I will not print the code here; it would double the length of the chapter,
-and a listing on paper cannot be run. Instead, each script gets a short
-description, the command to run it, and the output you should see. Read the
-source on GitHub with the equations of this chapter beside you; the function
-names match the step numbers of \cref{sec:ancestral_home:from_formula_to_number}.
+A script you wrote yourself and a derivation you did yourself can be wrong
+in the same way. The last word at every stop therefore goes to the official
+packages: the code CMS actually runs, and an independent generator that
+shares none of its source. Neither is a black box any more; after the
+previous sections you know what every setting in them means, and the point
+of this section is to read their configurations and logs and find our
+$345\pb$ in them.
 
-\subsection{The standalone script}
-
-\file{example/ME/Standalone/standalone_qqbar_bbbar_xsec.py} contains the
-calculation of \cref{sec:ancestral_home:from_formula_to_number} and nothing
-else. It needs Python~3.10 or newer with NumPy and SciPy; no LHAPDF, no
-\PYTHIA. The PDF grid (member~0 of the NNPDF3.1 set on LHAPDF's own knots,
-restricted to the phase space of the default run) and \PYTHIA's $\alphas$
-curve are embedded as numeric tables between the markers
-\code{BEGIN/END GENERATED TABLES}, produced by
-\file{dump_standalone_tables.py} in an environment that has both libraries.
-A map of the file: \code{TablePDF} (bicubic spline in $(\ln x,\ln Q^2)$,
-with the freezing, clipping and heavy-sea conventions of
-\cref{sec:ancestral_home:pdfs}); \code{TableAlphaS} (monotone cubic in
-$\ln Q^2$, refusing to extrapolate); \code{dsigma\_dcostheta}
-(\cref{eq:ancestral_home:dsigma}, vectorised); \code{born\_weights} (steps~1
-to~4, that is \cref{eq:ancestral_home:maps,eq:ancestral_home:weight});
-\code{integrate} (steps~5 and~6, \cref{eq:ancestral_home:average,eq:ancestral_home:error});
-and \code{main} (command line, sanity checks and the printout). From the
-repository root:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py              # one pass
-python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --repeats 8  # with error
-python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py --ptmin 150 --ptmax 300
-\end{minted}
-The first command takes about a second and ends with
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{text}
-TOTAL = 0.345320 +/- nan nb
-      = 345.320 +/- nan pb
-  d dbar: 0.118568 +/- nan nb
-  u ubar: 0.178315 +/- nan nb
-  ...
-\end{minted}
-(the \code{nan} says that one pass has no error estimate). The second gives
-$345.322\pm0.001\pb$ after eight passes; the third shows how to select a
-window in $\pthat$, which is how sliced production samples are stitched
-together. The options are \code{--ecm}, \code{--mb}, \code{--ptmin},
-\code{--ptmax}, \code{--power} (the exponent of the number of Sobol points),
-\code{--repeats} and \code{--seed}. The two integrators agree to
-$5\times10^{-6}$ for the same Sobol seed, so the tables lose nothing; if the
-PDF set, the coupling or the kinematic range is changed the tables must be
-regenerated, and the script says so.
-
-\subsection{The same calculation with LHAPDF and \PYTHIA}
-
-The sibling script \file{qqbar_bbbar_xsec.py} in the same directory does the
-same integral with LHAPDF for the PDFs and \PYTHIA's own \code{AlphaStrong}
-class for the coupling, and offers every knob discussed in this chapter as a
-command-line option: upper and lower $\pthat$ and $\hat m$ cuts, $|y|$ or
-$|\eta|$ cuts on both quarks, the number of incoming flavours
-(\code{--nquark}), all five \PYTHIA scale codes and their multipliers, the
-convenience factors \code{--mur-factor} and \code{--muf-factor}, a $K$ factor,
-the PDF member, $\alphas(m_Z)$, the coupling backend and order, and the
-option to keep negative PDF values (\code{--signed-pdfs}). It needs the
-LHAPDF Python bindings and either the \code{pythia8mc} package or an exported
-coupling table; its \file{README.md} explains how to build such an environment
-and how to export the actual settings of a running \PYTHIA instance with the
-header \file{export_pythia_xsec.h}, so that one integrates precisely what the
-generator was configured to do rather than what a log file suggests. With
-the environment in place:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/ME/Standalone
-.venv/bin/python qqbar_bbbar_xsec.py --output result.json
-.venv/bin/python qqbar_bbbar_xsec.py --mur-factor 2 --muf-factor 2
-.venv/bin/python test_integrator.py
-\end{minted}
-The first prints $345.324\pm0.001\pb$ and writes the flavour breakdown of
-\cref{tab:ancestral_home:flavours}; the second is one row of
-\cref{tab:ancestral_home:variations}; the third runs the normalisation and
-phase-space checks. We use this script in \cref{sec:ancestral_home:scales}
-for the variations that the standalone one does not expose.
-
-\section{Watch the integral happen: the animated journey}
-\label{sec:ancestral_home:animation}
-
-Some passengers prefer a film to a formula, and for once I agree with them.
-The script \file{example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py}
-imports the standalone script and renders a four-scene film of about
-thirty seconds from its tables, its interpolators and its
-\code{born\_weights} function, so every number on the screen comes from the
-same code that prints the cross section. The film is on the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
-\end{center}
-and \cref{fig:ancestral_home:stills} shows one key frame per scene. Here is
-what you will see.
-\begin{enumerate}
-  \item \textbf{The collision} (\cref{eq:ancestral_home:kinematics}). Our
-    event in three dimensions. In the partonic centre-of-mass frame the $u$
-    and $\bar u$ collide head on and the $b$ and $\bar b$ leave back to back
-    at the angle $\theta^{*}$ to the beam. The translucent tube around the
-    beam is the generator cut $\pthat\ge100\GeV$: the quarks must leave
-    through its wall, and the sidebar lists $x_1$, $x_2$, $\shat$, $p^{*}$,
-    $\cos\theta^{*}$ and $\pthat$ as computed in
-    \cref{sec:ancestral_home:matrix_element}. The system is then boosted
-    along the beam by the pair rapidity $Y=-2.59$ into the laboratory: the
-    tips slide along the tube, because \pt is boost invariant, and the pair
-    ends up backward exactly as in \file{event_ME.lhe}.
-  \item \textbf{The cube} (\cref{eq:ancestral_home:maps}). Sobol points in
-    the unit cube $(u_1,u_2,u_3)$, coloured by $\log_{10}$ of their weight
-    $\sum_q w_q$, and then morphed into the physical variables
-    $(\log_{10}x_1,\log_{10}x_2,|\cos\theta|)$. Watch the cube become a
-    wedge: only the region above the threshold line $x_1x_2=\tau_{\min}$ is
-    allowed, and the stretching you see is the Jacobian of
-    \cref{sec:ancestral_home:better_variables}, carried in every weight.
-  \item \textbf{The surface} (\cref{eq:ancestral_home:weight}). The
-    integrand with $\cos\theta$ integrated out,
-    $\mathrm{d}\sigma/(\mathrm{d}\log_{10}x_1\,\mathrm{d}\log_{10}x_2)$, as a
-    surface over the triangle. Its volume is the cross section. The dome
-    sits just above the threshold at $Y=0$, because the PDFs grow towards
-    small $x$ and $\hat\sigma\propto1/\shat$, so most of the rate is just
-    above the cut; our event, marked on the surface, sits on the backward
-    slope at $Y=-2.6$.
-  \item \textbf{Convergence} (\cref{eq:ancestral_home:average,eq:ancestral_home:error}).
-    One Sobol pass: the cube fills up point by point while the running
-    average of the weights, per incoming flavour and in total, settles onto
-    $345\pb$, with \PYTHIA's own $345.1\pm6.1\pb$ drawn as a band. The first
-    few hundred points swing wildly; by $2^{16}$ the estimate has stopped
-    moving at the fourth digit.
-\end{enumerate}
-To render it yourself you need matplotlib in addition to NumPy and SciPy, and
-\code{ffmpeg} for an \code{.mp4} (a \code{.gif} needs only Pillow):
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/ME/Standalone
-python3 animate_standalone_qqbar_bbbar_xsec.py            # the film, a few minutes
-python3 animate_standalone_qqbar_bbbar_xsec.py --fast     # low-resolution preview
-python3 animate_standalone_qqbar_bbbar_xsec.py --scene surface -o surface.gif
-python3 animate_standalone_qqbar_bbbar_xsec.py --stills stills.pdf --no-video
-\end{minted}
-The physics options \code{--ecm}, \code{--mb}, \code{--ptmin},
-\code{--ptmax}, \code{--power} and \code{--seed} are those of the standalone
-script, and \code{--event} points scene~1 at another hard-process record, so
-you can film your own event.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\hfill
-\includegraphics[page=2,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\\[2mm]
-\includegraphics[page=3,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}\hfill
-\includegraphics[page=4,width=0.49\textwidth]{ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf}
-\caption[Key frames of the animated standalone calculation]{Key frames of
-the four scenes of the animated standalone calculation, drawn by
-\file{animate_standalone_qqbar_bbbar_xsec.py} with \code{--stills}. Top left:
-our event in the partonic frame with the $\pthat\ge100\GeV$ tube. Top right:
-Sobol points morphed from the unit cube into
-$(\log_{10}x_1,\log_{10}x_2,|\cos\theta|)$. Bottom left: the integrand over
-the $(x_1,x_2)$ triangle, whose volume is the cross section. Bottom right:
-the running average converging to $345\pb$. The film itself is on the
-JitJet YouTube playlist.}
-\label{fig:ancestral_home:stills}
-\end{figure}
-
-\section{How CMS does it in practice: the GEN step in \CMSSW}
+\subsection{How CMS does it in practice: the GEN step in \CMSSW}
 \label{sec:ancestral_home:cmssw}
 
 Now let us see how the professionals do it. In CMS the hard process is not
@@ -770,7 +812,7 @@ cmsenv
 cmsRun step1_GEN_cfg.py 2>&1 | tee step1_GEN_cfg.log
 \end{minted}
 
-\subsection{Reading the configuration}
+\subsubsection{Reading the configuration}
 
 Open the file on GitHub. Most of it is boilerplate that every \CMSSW job
 carries. The physics is in the module \code{process.generator}, an
@@ -799,7 +841,7 @@ name says one event, the job was run with a thousand); the
 \code{customiseJitJet} line that hooks in the book's own analysis package,
 used from the next chapter on.
 
-\subsection{Reading the log}
+\subsubsection{Reading the log}
 
 \PYTHIA writes two things to the log that close the loop with
 \cref{sec:ancestral_home:from_formula_to_number}. For the first event it
@@ -828,7 +870,7 @@ error of a thousand-event run is the largest number in
 will show, still ten times smaller than the theoretical uncertainty. Nothing
 here calls for a correction.
 
-\section{The same calculation in \MG}
+\subsection{The same calculation in \MG}
 \label{sec:ancestral_home:madgraph}
 
 A second generator is the best check of the first, because it shares none of
@@ -895,7 +937,8 @@ nature.
 
 \paragraph{The LHE file.} \MG stores the result as weighted or unweighted
 events in the LHE format, whose \code{<event>} blocks carry the same
-information as \PYTHIA's hard-process listing in the next section: one line
+information as \PYTHIA's hard-process listing of
+\cref{sec:ancestral_home:our_jet}: one line
 per particle with its PDG code, status ($-1$ incoming, $1$ outgoing), mother
 indices, colour labels, four-momentum and mass, plus the event weight and the
 values of $\alphas$ and the scale that were used. The plotting script of

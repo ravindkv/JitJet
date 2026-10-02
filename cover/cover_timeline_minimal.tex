@@ -1,0 +1,363 @@
+%% ==========================================================================
+%% cover/cover_timeline_minimal.tex : the minimal variant of cover_timeline.tex.
+%% Same title, credits, cone and ruler, but without the seven part labels on
+%% the left of the cone and without the explanatory paragraph under it, and
+%% with the cone drawn a little smaller (\conescale).
+%%
+%% Compile on its own:   make cover-timeline-minimal   (or: cd cover && pdflatex cover_timeline_minimal)
+%% To use it as the book cover, point the \includepdf line in JitJet.tex at it.
+%%
+%% The drawing is the one of cover_timeline.tex: a cone that opens from the
+%% hard scattering and widens with time, every cross-section being the
+%% (eta, phi) patch around the jet axis, so the cone IS the jet. Along the way
+%% the slices show the b quark and its shower, the hadrons, the pileup crowd,
+%% the detector wall, the two trigger gates, the Particle-Flow census, PUPPI
+%% and clustering, the JEC scale, the b tag and the three-prong top jet. The
+%% milestones on the axis (I..V, b, t) are the seven parts of the book; their
+%% names are left to the table of contents.
+%%
+%% Truncation, as in cover_timeline.tex: compile with
+%%   pdflatex "\def\smax{7.4}\input{cover_timeline_minimal.tex}"
+%% to draw the cone only up to s = smax on the axis.
+%% ==========================================================================
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tgheros}          % TeX Gyre Heros for the sans-serif title
+\usepackage{amssymb}
+\usetikzlibrary{calc,arrows.meta,decorations.pathmorphing,shapes.geometric}
+\providecommand{\smax}{19}      % the cone is drawn up to this s (19 = all of it)
+\providecommand{\conescale}{0.85} % the whole cone, ruler included, scaled by this factor
+
+%% -------- palette (identical to cover.tex) ----------------------------------
+\definecolor{navy}{HTML}{0B1D3A}
+\definecolor{navytop}{HTML}{17365F}
+\definecolor{gold}{HTML}{F4B942}
+\definecolor{bred}{HTML}{FF5A5A}     % b quark  (red in the journey figures)
+\definecolor{bblue}{HTML}{6E8EFF}    % bbar     (blue in the journey figures)
+\definecolor{fsr}{HTML}{3DD16E}      % FSR gluons (green)
+\definecolor{isr}{HTML}{FF9A3C}      % ISR gluon  (orange)
+\definecolor{hadroncol}{HTML}{FFC24D}
+\definecolor{ecalcol}{HTML}{3FBF77}
+\definecolor{hcalcol}{HTML}{E58F2A}
+\definecolor{steel}{HTML}{9AA7B8}
+\definecolor{trackcol}{HTML}{E4ECF7}
+\definecolor{pu}{HTML}{8D9AAB}
+\definecolor{nucol}{HTML}{5EE7EA}
+\definecolor{muoncol}{HTML}{8FB8FF}
+
+%% -------- the cone ----------------------------------------------------------
+%% Local frame: the apex at the origin, time along +x, the cross-section plane
+%% seen at a slant so that a circle of radius rho becomes an ellipse with
+%% half-axes (kk*rho, rho). rf(s) is the cone radius at time s: a straight
+%% cone, as a jet is drawn in an event display, with a flare at the end where
+%% the AK4 b jet becomes a subjet of the AK8 top jet. The contents of a slice
+%% are drawn in units of sc(s), the cone radius over 2.2 and at most 1, so the
+%% (eta, phi) patch is zoomed out as the cone opens and the R = 0.4 jet keeps
+%% its size once the cone is wider than it.
+\def\kk{0.30}
+\pgfmathdeclarefunction{rf}{1}{\pgfmathparse{0.18*#1+0.6*(1+((#1-16.8)/1.2)/sqrt(1+((#1-16.8)/1.2)^2))}}
+\pgfmathdeclarefunction{sc}{1}{\pgfmathparse{min(rf(#1)/2.2,1)}}
+%% a point of the slice at time s, at polar (rho, theta) in the (eta, phi) plane
+\newcommand{\xy}[3]{({#1+\kk*#2*sc(#1)*cos(#3)},{#2*sc(#1)*sin(#3)})}
+%% a ring: the near half solid, the far half faint
+\newcommand{\xring}[2]{%
+  \draw[ringback] ({#1},{#2}) arc[start angle=90, end angle=-90, x radius={\kk*#2}, y radius={#2}];
+  \draw[ring]     ({#1},{#2}) arc[start angle=90, end angle=270, x radius={\kk*#2}, y radius={#2}];}
+%% a full ellipse of radius r at time s: \xellipse[style]{s}{r}
+\newcommand{\xellipse}[3][]{\path[#1] ({#2},0) ellipse [x radius={\kk*#3}, y radius={#3}];}
+%% a calorimeter cell of half-size h at (u,v) on the wall at time s
+\newcommand{\cell}[5]{\fill[#5] ({#1+\kk*(#2-#4)*sc(#1)},{(#3-#4)*sc(#1)}) rectangle ({#1+\kk*(#2+#4)*sc(#1)},{(#3+#4)*sc(#1)});}
+
+%% -------- styles ------------------------------------------------------------
+\tikzset{
+  ring/.style={draw=gold!75!white, line width=0.45pt, opacity=0.85},
+  ringback/.style={draw=white, line width=0.3pt, opacity=0.28, dash pattern=on 1pt off 1pt},
+  meridian/.style={draw=white, line width=0.3pt, opacity=0.13},
+  edge/.style={draw=gold!80!white, line width=0.7pt, opacity=0.9},
+  bline/.style={draw=bred, line width=1.9pt, line cap=round},
+  bbarline/.style={draw=bblue, line width=1.9pt, line cap=round},
+  gluon/.style={draw=fsr, line width=0.8pt, decorate,
+    decoration={coil, aspect=0.55, segment length=2.4pt, amplitude=1.5pt}},
+  isrgluon/.style={gluon, draw=isr},
+  quark/.style={draw=hadroncol, line width=0.9pt, line cap=round},
+  string/.style={draw=hadroncol, line width=0.45pt, opacity=0.8},
+  hadron/.style={circle, fill=hadroncol, draw=navy, line width=0.3pt,
+    inner sep=0pt, minimum size=3.8pt},
+  track/.style={draw=trackcol, line width=0.55pt, opacity=0.9},
+  photon/.style={draw=hadroncol, line width=0.55pt, dash pattern=on 1.3pt off 1.3pt},
+  putrack/.style={draw=pu, line width=0.35pt, opacity=0.45},
+  pudot/.style={circle, fill=pu, inner sep=0pt, minimum size=2.2pt, opacity=0.7},
+  pf/.style={circle, inner sep=0pt, minimum size=4.2pt, draw=navy, line width=0.25pt},
+  road/.style={draw=white, line width=7pt, opacity=0.09, line cap=round},
+  roadline/.style={draw=gold, line width=1pt, dash pattern=on 7pt off 5pt},
+  jet/.style={draw=gold, line width=0.8pt},
+  milestone/.style={circle, draw=gold, fill=navy, line width=1.1pt,
+    minimum size=13pt, inner sep=0pt, font=\sffamily\bfseries\scriptsize, text=gold},
+  mlabel/.style={font=\sffamily\footnotesize, text=white, align=left,
+    inner sep=2.5pt, fill=navy, fill opacity=0.75, text opacity=1, rounded corners=1.5pt},
+  leader/.style={draw=gold, line width=0.4pt, opacity=0.7},
+  ruler/.style={draw=gold!85!white, line width=0.6pt},
+  tick/.style={draw=gold!85!white, line width=0.5pt},
+  ticklabel/.style={font=\sffamily\scriptsize, text=white!85!navy, align=left,
+    inner sep=1.5pt, rotate=-50, anchor=west},
+  gate/.style={draw=gold, line width=0.5pt, dash pattern=on 2pt off 1.5pt, opacity=0.9},
+  tiny/.style={font=\sffamily\tiny, inner sep=1pt},
+}
+\newcommand{\sub}[1]{\\{\scriptsize\color{gold!85!white}#1}}
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\useasboundingbox (0,0) rectangle (21,29.7);
+\clip (0,0) rectangle (21,29.7);
+
+%% ======== background ========================================================
+\shade[top color=navytop, bottom color=navy!80!black] (0,0) rectangle (21,29.7);
+\draw[white, opacity=0.045, line width=0.3pt, step=1cm] (0,0) grid (21,29.7);
+
+\coordinate (IP) at (3.4,7.3);
+
+\begin{scope}[shift={(IP)}, rotate=40, scale=\conescale]
+
+%% the glow of the hard scattering, before the truncation clip so it is whole
+\shade[inner color=gold, outer color=navy, opacity=0.65] (0,0) circle[radius=1.1];
+%% everything up to s = smax, closed by the (elliptical) cross-section there
+\clip (-3,-8) -- (\smax,-8) -- (\smax,{-rf(\smax)})
+  arc[start angle=-90, end angle=90, x radius={\kk*rf(\smax)}, y radius={rf(\smax)}]
+  -- (\smax,8) -- (-3,8) -- cycle;
+
+%% ======== the cone body ====================================================
+\fill[gold, opacity=0.10]
+  plot[domain=0:19, samples=80] (\x,{rf(\x)})
+  arc[start angle=90, end angle=-90, x radius={\kk*rf(19)}, y radius={rf(19)}]
+  -- plot[domain=19:0, samples=80] (\x,{-rf(\x)}) -- cycle;
+\foreach \t in {0,30,...,330}
+  \draw[meridian] plot[domain=0:19, samples=70] ({\x+\kk*rf(\x)*cos(\t)},{rf(\x)*sin(\t)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{rf(\x)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{-rf(\x)});
+
+%% the road: the jet axis, up to the detector wall
+\draw[road] (0,0) -- (9,0);
+\draw[roadline] (0,0) -- (9,0);
+
+%% ======== I. the family is born: 10^-27 s to 10^-23 s ======================
+% the sibling and the ISR gluon leave the slice sideways
+\draw[bbarline] (0,0) -- (0.3,1.35);
+\node[bblue, font=\small\bfseries, inner sep=1pt] at (0.1,1.65) {$\bar b$};
+\draw[isrgluon] (0,0) -- (1.25,1.2);
+\node[isr, tiny] at (1.45,1.45) {ISR};
+% the b quark keeps to the axis and showers
+\coordinate (B1) at (1.1,0.12);
+\coordinate (B2) at (2.3,0.02);
+\coordinate (B3) at (3.6,-0.08);
+\path \xy{2.9}{1.0}{120} coordinate (G1);
+\path \xy{3.6}{1.05}{210} coordinate (G2);
+\path \xy{3.6}{1.1}{330} coordinate (G3);
+\path \xy{3.6}{1.5}{112} coordinate (Q1);
+\path \xy{3.6}{1.0}{145} coordinate (Q2);
+\draw[bline] (0,0) -- (B1) -- (B2) -- (B3);
+\draw[gluon] (B1) -- (G1);
+\draw[gluon] (B2) -- (G2);
+\draw[gluon] (B2) -- (G3);
+\draw[quark] (G1) -- (Q1);
+\draw[quark] (G1) -- (Q2);
+\node[bred, font=\small\bfseries, inner sep=1pt] at ($(B1)+(0.05,-0.42)$) {$b$};
+\node[fsr, tiny] at ($(G1)+(-0.35,0.15)$) {FSR};
+\xring{3.6}{rf(3.6)}
+
+% hadronisation: strings from the partons to the hadrons of the s = 5.2 slice
+\path \xy{5.2}{0.0}{0} coordinate (H1);     % the B hadron, on the axis
+\path \xy{5.2}{1.4}{118} coordinate (H2);   % pi+-
+\path \xy{5.2}{0.9}{150} coordinate (H3);   % K+-
+\path \xy{5.2}{1.0}{200} coordinate (H4);   % photon
+\path \xy{5.2}{1.4}{222} coordinate (H5);   % photon
+\path \xy{5.2}{1.2}{335} coordinate (H6);   % pi+-
+\path \xy{5.2}{0.6}{305} coordinate (H7);   % neutron
+\path \xy{5.2}{1.6}{95} coordinate (H8);    % pi+-
+\path \xy{5.2}{0.5}{30} coordinate (H9);    % pi+-
+\foreach \p/\h in {Q1/H2, Q1/H8, Q2/H3, G2/H4, G2/H5, G3/H6, G3/H7, B3/H1, B3/H9}
+  \draw[string] (\p) -- (\h);
+\foreach \h in {H2,H3,H4,H5,H6,H7,H8,H9} \node[hadron] at (\h) {};
+\node[hadron, minimum size=7pt, font=\tiny\bfseries, text=navy] at (H1) {B};
+\xring{5.2}{rf(5.2)}
+
+% the hadrons fly: same (eta, phi), so parallel to the axis, up to the wall
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30}
+  \draw[track] \xy{5.2}{\r}{\t} -- \xy{9}{\r}{\t};
+\foreach \r/\t in {1.0/200, 1.4/222, 0.6/305}
+  \draw[photon] \xy{5.2}{\r}{\t} -- \xy{9}{\r}{\t};
+% the B hadron decays after 1.5 ps: a muon, a neutrino, and a charged track
+\coordinate (SV) at (6.2,0);
+\draw[draw=hadroncol, line width=1.6pt] (H1) -- (SV);
+\draw[track] (SV) -- \xy{9}{0.25}{20};
+\draw[draw=muoncol, line width=0.8pt] (SV) -- \xy{9}{0.5}{250}
+  node[pos=0.6, below=1pt, muoncol, tiny] {$\mu$};
+\draw[draw=nucol, line width=0.7pt, dash pattern=on 3pt off 2.5pt, -{Stealth[length=4pt]}]
+  (SV) -- \xy{10.2}{2.55}{75} coordinate (NUEND);
+\node[circle, draw=bred, fill=navy, line width=0.7pt, inner sep=1.4pt] at (SV) {};
+\node[bred, tiny] at ($(SV)+(0,-0.4)$) {SV};
+
+%% ======== II. on the road: the pileup crowd joins ==========================
+\pgfmathsetseed{2026}
+\foreach \i in {1,...,55}{
+  \pgfmathsetmacro{\r}{1.95*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot] at \xy{7}{\r}{\t} {};
+  \pgfmathparse{rnd<0.55 ? 1 : 0}
+  \ifnum\pgfmathresult=1 \draw[putrack] \xy{7}{\r}{\t} -- \xy{9}{\r}{\t}; \fi}
+\xring{7}{rf(7)}
+
+%% ======== the detector wall at 25 ns ========================================
+\def\Rd{3.25}
+\pgfmathsetmacro{\scw}{sc(9)}
+\xellipse[fill=navy!75!black, fill opacity=0.82]{9}{\Rd*\scw}
+\foreach \v in {-3.2,-2.8,...,3.2}{
+  \pgfmathsetmacro{\w}{sqrt(\Rd*\Rd-\v*\v)}
+  \draw[steel, opacity=0.3, line width=0.3pt] ({9-\kk*\w*\scw},{\v*\scw}) -- ({9+\kk*\w*\scw},{\v*\scw});}
+\foreach \u in {-3.2,-2.8,...,3.2}{
+  \pgfmathsetmacro{\w}{sqrt(\Rd*\Rd-\u*\u)}
+  \draw[steel, opacity=0.3, line width=0.3pt] ({9+\kk*\u*\scw},{-\w*\scw}) -- ({9+\kk*\u*\scw},{\w*\scw});}
+% pileup cells and hits, the background noise of the wall
+\pgfmathsetseed{7}
+\foreach \i in {1,...,28}{
+  \pgfmathsetmacro{\r}{3.0*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \pgfmathsetmacro{\u}{\r*cos(\t)}
+  \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.16}{pu, opacity=0.5}}
+\pgfmathsetseed{11}
+\foreach \i in {1,...,30}{
+  \pgfmathsetmacro{\r}{3.0*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot, minimum size=1.8pt] at \xy{9}{\r}{\t} {};}
+% the jet's own hits: track dots, ECAL and HCAL cells, one muon cell
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30, 0.25/20}{
+  \pgfmathsetmacro{\u}{\r*cos(\t)} \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.30}{hcalcol!90!white, opacity=0.9}}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.0/200, 1.4/222, 1.2/335, 1.6/95, 0.5/30, 0.25/20}{
+  \pgfmathsetmacro{\u}{\r*cos(\t)} \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.17}{ecalcol!85!white}}
+\cell{9}{0.6*cos(305)}{0.6*sin(305)}{0.30}{hcalcol!90!white, opacity=0.9}
+\cell{9}{0.5*cos(250)}{0.5*sin(250)}{0.17}{muoncol}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30, 0.25/20, 0.5/250}
+  \node[circle, fill=white, inner sep=0pt, minimum size=2.6pt] at \xy{9}{\r}{\t} {};
+\draw[edge, opacity=0.6] (9,0) ellipse [x radius={\kk*\Rd*\scw}, y radius={\Rd*\scw}];
+\node[gold!90!white, tiny, anchor=south] at (9,{\Rd*\scw+0.08}) {tracker $\cdot$ ECAL $\cdot$ HCAL $\cdot$ $\mu$ chambers};
+% the neutrino: through the wall without a trace, and out of the cone
+\node[nucol, tiny, anchor=south west, rotate=40] at ($(NUEND)+(0.05,0.05)$) {$\nu$: never arrived};
+
+%% the road continues: reconstruction
+\draw[road] (9,0) -- (19,0);
+\draw[roadline] (9,0) -- (19,0);
+
+%% ======== the two trigger gates =============================================
+\foreach \s/\l in {10.0/L1T, 10.7/HLT}{
+  \draw[gate] (\s,0) ellipse [x radius={\kk*rf(\s)}, y radius={rf(\s)}];
+  \node[gold, tiny, anchor=north] at (\s,{-rf(\s)-0.05}) {\l\ \checkmark};}
+
+%% ======== III. the census: Particle-Flow candidates at s = 12 ===============
+\pgfmathsetseed{5}
+\foreach \i in {1,...,22}{
+  \pgfmathsetmacro{\r}{2.1*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot] at \xy{12}{\r}{\t} {};}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{12}{\r}{\t} {};
+\xring{12}{rf(12)}
+
+%% ======== IV. PUPPI weights and anti-kT: the family inside R = 0.4 ==========
+\pgfmathsetseed{5}
+\foreach \i in {1,...,22}{
+  \pgfmathsetmacro{\r}{2.1*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot, opacity=0.12] at \xy{13.8}{\r}{\t} {};}
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.8pt]{13.8}{1.75}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{13.8}{\r}{\t} {};
+\node[gold, tiny, anchor=north] at (13.8,-1.8) {$R=0.4$};
+\xring{13.8}{rf(13.8)}
+
+%% ======== V. settling the accounts: JEC and JER =============================
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.8pt]{15.3}{1.75}
+\xellipse[draw=gold, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt, opacity=0.7]{15.3}{2.1}
+\draw[gold, line width=0.7pt, {Stealth[length=4pt]}-{Stealth[length=4pt]}] (15.3,-2.0) -- (15.3,2.0);
+\node[gold, tiny, fill=navy, fill opacity=0.7, text opacity=1, anchor=west] at (15.42,0.9) {JEC};
+\node[gold!80!white, tiny, anchor=north] at (15.3,-2.2) {JER $\pm$};
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c, minimum size=3.6pt] at \xy{15.3}{\r}{\t} {};
+\xring{15.3}{rf(15.3)}
+
+%% ======== VI. arrival: the registry office stamps the b jet =================
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.8pt]{16.8}{1.75}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      1.0/200/ecalcol, 1.4/222/ecalcol, 0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c, minimum size=3.6pt] at \xy{16.8}{\r}{\t} {};
+\xring{16.8}{rf(16.8)}
+
+%% ======== VII. the top family: the AK8 cap of the cone ======================
+\coordinate (T) at (19,0);
+\xellipse[fill=gold, fill opacity=0.18, draw=gold, line width=0.8pt, dash pattern=on 2.5pt off 2pt]{19}{rf(19)}
+\foreach \t/\c in {90/bred, 210/hadroncol, 330/hadroncol}{
+  \path \xy{19}{2.25}{\t} coordinate (SJ);
+  \draw[draw=\c, fill=\c, fill opacity=0.15, line width=0.7pt] (SJ) ellipse [x radius={\kk*1.3}, y radius=1.3];
+  \draw[draw=\c, line width=0.6pt, opacity=0.8] (T) -- (SJ);
+  \pgfmathsetseed{\t}
+  \foreach \i in {1,...,7}{
+    \pgfmathsetmacro{\r}{2.25+1.05*sqrt(rnd)*cos(360*rnd)}
+    \pgfmathsetmacro{\rr}{1.05*sqrt(rnd)}
+    \pgfmathsetmacro{\tt}{360*rnd}
+    \node[pf, fill=\c, minimum size=3.2pt] at ({19+\kk*(2.25*cos(\t)+\rr*cos(\tt))},{2.25*sin(\t)+\rr*sin(\tt)}) {};}}
+\node[bred, font=\small\bfseries, inner sep=1pt] at \xy{19}{3.45}{118} {$b$};
+\node[hadroncol, font=\scriptsize\sffamily, inner sep=1pt] at \xy{19}{2.25}{270} {$W\!\to q\bar q'$};
+\node[gold, tiny, anchor=north] at (19,{-rf(19)-0.05}) {$R=0.8$};
+
+%% ======== milestones on the axis ============================================
+\node[milestone] (m1) at (0,0) {I};
+\node[milestone] (m2) at (7.4,0) {II};
+\node[milestone] (m3) at (12,0) {III};
+\node[milestone] (m4) at (13.8,0) {IV};
+\node[milestone] (m5) at (15.3,0) {V};
+\node[circle, draw=gold, fill=bred, line width=1.1pt, minimum size=15pt, inner sep=0pt,
+      font=\sffamily\bfseries\small, text=white] (m6) at (16.8,0) {b};
+\node[gold, font=\scriptsize\bfseries] at ($(m6)+(0.30,0.30)$) {\checkmark};
+\node[circle, fill=gold, draw=navy, line width=0.5pt, minimum size=15pt, inner sep=0pt,
+      font=\sffamily\bfseries\small, text=navy] (m7) at (T) {$t$};
+
+%% ======== the ruler: time along the axis, not to scale =======================
+\draw[ruler, -{Stealth[length=5pt]}] plot[domain=0:13.5, samples=60] (\x,{-rf(\x)-1.1});
+\node[gold, font=\sffamily\scriptsize\itshape, rotate=40, anchor=west] at (13.5,{-rf(13.5)-1.1}) {time (not to scale)};
+\foreach \s/\l in {0/{$10^{-27}$ s\\hard scattering}, 3.6/{$10^{-24}$ s\\parton shower},
+                   5.2/{$10^{-23}$ s\\hadronisation}, 6.2/{1.5 ps\\$B$ decay},
+                   7.0/{same crossing\\pileup}, 9.0/{25 ns\\detector},
+                   10.0/{4 $\mu$s\\L1 trigger}, 10.7/{0.3 s\\HLT},
+                   12.0/{hours\\reconstruction}, 13.2/{months\\analysis}}{
+  \draw[tick] (\s,{-rf(\s)-0.95}) -- (\s,{-rf(\s)-1.25});
+  \node[ticklabel] at (\s,{-rf(\s)-1.3}) {\l};}
+
+\end{scope}
+
+%% ======== title =============================================================
+\node[anchor=center] at (10.5,27.35)
+  {\fontsize{84}{88}\selectfont\sffamily\bfseries{\color{white}Jit}{\color{gold}Jet}};
+\draw[gold, line width=0.8pt] (5.5,25.85) -- (15.5,25.85);
+\node[anchor=center, white, font=\fontsize{27}{30}\selectfont\sffamily] at (10.5,25.1) {Journey Is The Jet};
+\node[anchor=center, gold!90!white, font=\fontsize{15}{18}\selectfont\sffamily\itshape] at (10.5,24.15) {(bottom to top)};
+
+%% ======== credits ===========================================================
+\draw[gold, line width=0.6pt, opacity=0.8] (3,3.45) -- (18,3.45);
+\node[anchor=center, gold, font=\sffamily\scriptsize\scshape] at (10.5,3.05) {Directed by};
+\node[anchor=center, white, font=\sffamily\bfseries\large] at (10.5,2.55)
+  {Ravindra Verma \,{\normalfont\normalsize\color{white!75!navy}(JME-Freelancer)}};
+\node[anchor=center, gold, font=\sffamily\scriptsize\scshape] at (10.5,1.95) {Produced by};
+\node[anchor=center, white, font=\sffamily\normalsize] at (10.5,1.5) {Claude Fable\ \ $\cdot$\ \ ChatGPT Astra};
+\node[anchor=center, white!70!navy, font=\sffamily\footnotesize] at (10.5,0.85)
+  {University of Helsinki\ \ $\cdot$\ \ CMS Collaboration\qquad|\qquad Draft of \today};
+
+\end{tikzpicture}
+\end{document}

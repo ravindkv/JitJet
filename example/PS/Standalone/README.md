@@ -14,10 +14,51 @@ python3 standalone_parton_showering.py --seed 7 --history shower_history.json
 python3 standalone_parton_showering.py --no-isr         # final-state radiation only
 python3 standalone_parton_showering.py --check          # assert E/p, masses, colour lines after every branching
 python3 standalone_parton_showering.py --repeat 2000 --quiet --history stats.json
+python3 standalone_parton_showering.py -v                # learning mode: narrate every step with all numbers
+python3 standalone_parton_showering.py -vv | less        # ... and every trial of the veto algorithm
 ```
 
 On this Mac use `/usr/bin/python3` (NumPy + SciPy); one shower takes about
 0.3 s, the start-up (parsing the embedded PDF grid) about 0.8 s.
+
+## Learning mode (`-v`, `-vv`)
+
+`-v` prints, before the shower, a table of alpha_s at the scales that
+matter (second order, the first-order form used for sampling, and their
+ratio, which is the veto weight), the input record with x_A, x_B, s_hat,
+pTHat, the starting scale and the cut-offs with their formulas, the PDFs
+x f(x, Q^2) at the two incoming x and the PDF ratios that backward
+evolution needs, and the colour dipoles with their masses and the largest
+pT each can host. Then, for every step: the competition (each dipole end
+and each beam with its proposed pT, z and channel, or "no emission"), the
+winner, and the winning branching worked out in full: the evolution
+variable turned into the virtuality (FSR) or the spacelike Q^2 and x' = x/z
+(ISR), alpha_s at the scale, the PDF ratio, the dipole-rest-frame numbers
+(E_P, p_z, E_1 = z E_P, the actual transverse momentum against pT_evol),
+every momentum before and after, and the conservation checks (momentum,
+virtuality, s_hat of the downstream system). At the end: how many trial
+emissions the veto algorithm made for the accepted branchings, and the
+full event record. `-vv` adds every trial: the overestimate integrals, the
+random number and the pT it produces, the chosen z, and each factor of the
+acceptance weight (kernel over its overestimate, alpha_s ratio,
+`dampenBeamRecoil`, PDF ratio) with the accept/reject decision. About 1700
+lines for `-v` and 27000 for `-vv` with seed 1. The random numbers are not
+touched, so `../event_PS.lhe` is identical with and without `-v`.
+
+## The veto algorithm drawn (`plot_veto_algorithm.py`)
+
+`plot_veto_algorithm.py` (numpy + matplotlib) draws the four steps of the Sudakov
+veto algorithm for the mother's first proposal in round 1 of the seed-1 shower:
+the kernel and its overestimate, the coupling and its first-order overestimate,
+the three inversions `Delta_over = R` in a row (113.3 -> 59.7 -> 47.5 -> 5.24 GeV,
+each continued from the rejected scale) and the four factors of the acceptance
+weight against `R'`. It imports `AlphaStrong` from the shower script; the random
+numbers are those of the `-vv` log. `make figures` writes `veto_algorithm.pdf`,
+which chapter 2 shows next to the derivation.
+
+```bash
+python3 plot_veto_algorithm.py                  # -> veto_algorithm.pdf
+```
 
 ## What the script does
 

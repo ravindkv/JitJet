@@ -1,0 +1,91 @@
+% ---------------------------------------------------------------------------
+% Colour chains of our event before and after the first two final-state
+% branchings (branchings 4 and 5 of the seed-1 shower). Every tag, row number
+% and mass is taken from the -v log of standalone_parton_showering.py
+% (example/PS/Standalone/standalone_parton_showering.log, steps 3 to 5).
+% Input from chapter_02_mother_gives_birth.tex inside a figure environment.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  parton/.style={draw,circle,minimum size=8mm,inner sep=0pt,fill=white,thick,align=center},
+  gluon/.style={parton,double,double distance=1.2pt},
+  quark/.style={parton},
+  beam/.style={draw,rectangle,rounded corners=1.5pt,minimum height=8mm,minimum width=12mm,inner sep=1pt,fill=gray!15,thick,align=center},
+  new/.style={fill=yellow!40},
+  line/.style={line width=1.8pt},
+  tag/.style={font=\scriptsize,fill=white,inner sep=1pt},
+  role/.style={font=\scriptsize\itshape,text=black!65,align=center},
+  head/.style={font=\small\bfseries}]
+\colorlet{c101}{blue!70!black}
+\colorlet{c102}{red!80!black}
+\colorlet{c103}{green!55!black}
+\colorlet{c104}{orange!90!black}
+\colorlet{c105}{violet}
+\colorlet{c106}{teal}
+\colorlet{c107}{brown!90!black}
+% ---------------- (a) before branching 4: after the three ISR branchings ------------------
+\node[head,anchor=west] at (-0.7,3.3) {(a) after the three ISR branchings: 5 final partons, 7 dipole ends};
+\node[beam] (b16) at (0,1.0) {$g$ \#16\\[-1pt]{\tiny beam $+z$}};
+\node[quark] (u19) at (3.6,2.4) {$u$\\[-2pt]\tiny\#19};
+\node[gluon] (g17) at (3.6,1.0) {$g$\\[-2pt]\tiny\#17};
+\node[quark] (bb20) at (7.6,1.0) {$\bar b$\\[-2pt]\tiny\#20};
+\node[beam] (u11) at (0,-1.2) {$u$ \#11\\[-1pt]{\tiny beam $-z$}};
+\node[gluon] (g18) at (3.6,-1.2) {$g$\\[-2pt]\tiny\#18};
+\node[quark] (b21) at (7.6,-1.2) {$b$\\[-2pt]\tiny\#21};
+\draw[line,c103] (b16) -- (u19) node[tag,midway,above,sloped] {103};
+\draw[line,c105] (b16) -- (g17) node[tag,midway,below] {105};
+\draw[line,c101] (g17) -- (bb20) node[tag,midway,below] {101} node[role,midway,above] {$m_{\mathrm{dip}}=843\GeV$};
+\draw[line,c104] (u11) -- (g18) node[tag,midway,below] {104};
+\draw[line,c102] (g18) -- (b21) node[tag,midway,below] {102} node[role,midway,above] {$m_{\mathrm{dip}}=80.6\GeV$};
+\node[role,above=1pt of bb20] {radiator of branching 4\\(anticolour 101)};
+\node[role,below=1pt of g17] {recoiler of\\branching 4};
+\node[role,below=1pt of b21] {radiator of branching 5\\(colour 102)};
+\node[role,below=1pt of g18] {recoiler of\\branching 5};
+% ---------------- (b) after branchings 4 and 5 -------------------------------------------
+\begin{scope}[yshift=-6.4cm]
+\node[head,anchor=west] at (-0.7,3.3) {(b) after branchings 4 and 5: 7 final partons, 11 dipole ends};
+\node[beam] (b16) at (0,1.0) {$g$ \#16\\[-1pt]{\tiny beam $+z$}};
+\node[quark] (u19) at (3.0,2.4) {$u$\\[-2pt]\tiny\#19};
+\node[gluon] (g24) at (3.0,1.0) {$g$\\[-2pt]\tiny\#24};
+\node[gluon,new] (g23) at (5.9,1.0) {$g$\\[-2pt]\tiny\#23};
+\node[quark] (bb22) at (8.8,1.0) {$\bar b$\\[-2pt]\tiny\#22};
+\node[beam] (u11) at (0,-1.2) {$u$ \#11\\[-1pt]{\tiny beam $-z$}};
+\node[gluon] (g27) at (3.0,-1.2) {$g$\\[-2pt]\tiny\#27};
+\node[gluon,new] (g26) at (5.9,-1.2) {$g$\\[-2pt]\tiny\#26};
+\node[quark] (b25) at (8.8,-1.2) {$b$\\[-2pt]\tiny\#25};
+\draw[line,c103] (b16) -- (u19) node[tag,midway,above,sloped] {103};
+\draw[line,c105] (b16) -- (g24) node[tag,midway,below] {105};
+\draw[line,c101] (g24) -- (g23) node[tag,midway,below] {101} node[role,midway,above] {$534\GeV$};
+\draw[line,c106] (g23) -- (bb22) node[tag,midway,below] {106} node[role,midway,above] {$69.8\GeV$};
+\draw[line,c104] (u11) -- (g27) node[tag,midway,below] {104};
+\draw[line,c102] (g27) -- (g26) node[tag,midway,above] {102} node[role,midway,below] {$4.5\GeV$};
+\draw[line,c107] (g26) -- (b25) node[tag,midway,above] {107} node[role,midway,below] {$65.7\GeV$};
+\node[role,above=1pt of g23] {emitted gluon (status 51), $67\GeV$,\\inserted into line 101};
+\node[role,below=1pt of g24] {recoiler's\\new copy (52)};
+\node[role,above=1pt of bb22] {$\bar b$'s new\\copy (51)};
+\node[role,above=1pt of g26] {emitted gluon (51), $38\GeV$,\\inserted into line 102};
+\node[role,below=1pt of g27] {recoiler's\\new copy (52)};
+\node[role,below=1pt of b25] {mother's new\\copy (51)};
+\end{scope}
+% ---------------- (c) colour coherence ------------------------------------------------------
+\begin{scope}[xshift=12.9cm,yshift=-2.6cm]
+\node[head,anchor=west] at (-1.2,3.6) {(c) what a soft gluon sees};
+\coordinate (O) at (0,0);
+\coordinate (B) at (20:4.0);
+\coordinate (G) at (-32:4.0);
+\fill[red!8] (O) -- (46:3.8) arc[start angle=46,end angle=-6,radius=3.8] -- cycle;
+\fill[red!8] (O) -- (-6:3.8) arc[start angle=-6,end angle=-58,radius=3.8] -- cycle;
+\draw[thick,c107] (O) -- (B) node[pos=1.1,font=\footnotesize] {$b$ \#25};
+\draw[thick,c107,decorate,decoration={coil,aspect=0,segment length=4pt,amplitude=1.6pt}] (O) -- (G)
+   node[pos=1.12,font=\footnotesize] {$g$ \#26};
+\draw[-{Stealth}] (-32:1.5) arc[start angle=-32,end angle=20,radius=1.5];
+\node[font=\scriptsize] at (-6:2.0) {$\theta_{bg}$};
+\draw[thick,gray!70,decorate,decoration={coil,aspect=0,segment length=3pt,amplitude=1.3pt}] (O) -- (128:3.0)
+   node[pos=1.25,font=\scriptsize,align=center,text=black!70] {soft gluon at $\theta\gg\theta_{bg}$:\\sees the pair's total\\charge, $C_F$};
+\node[font=\scriptsize,align=left,anchor=north west,text width=5.4cm] at (-1.2,-2.7)
+  {Inside the dipole 107 each end radiates mainly within a cone of about $\theta_{bg}$
+   (shaded). A gluon at a wider angle cannot resolve the two ends; it sees the colour
+   charge of the pair, which is that of the original $b$, $C_F$, not $C_F+C_A$. That is
+   colour coherence, and the dipole construction has it built in.};
+\end{scope}
+\end{tikzpicture}

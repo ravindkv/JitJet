@@ -3,6 +3,7 @@
 #   make quick     -> single pdflatex pass (no bibliography refresh)
 #   make cover     -> cover/cover.pdf, the TikZ front cover (first page of the book)
 #   make cover-timeline -> cover/cover_timeline.pdf, the alternative timeline-cone cover
+#   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
 #   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the one-minute cone-growth trailer
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
@@ -41,6 +42,12 @@ cover-timeline: cover/cover_timeline.pdf
 cover/cover_timeline.pdf: cover/cover_timeline.tex
 	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover_timeline.tex
 
+# The minimal variant: a slightly smaller cone, no part labels, no caption.
+cover-timeline-minimal: cover/cover_timeline_minimal.pdf
+
+cover/cover_timeline_minimal.pdf: cover/cover_timeline_minimal.tex
+	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover_timeline_minimal.tex
+
 # The trailer: a narrated flight along the timeline cone (about 5 min, 1080p).
 # Needs numpy + Pillow (on this Mac: PYTHON=/usr/bin/python3), ffmpeg, gs and
 # the macOS `say` voice; rendering takes a while, so it is not a build product.
@@ -57,7 +64,8 @@ cover-video-short: cover/cover_timeline.tex
 FIGURES := example/ME/journey_ME.pdf \
            example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf \
            example/PS/journey_PS.pdf \
-           example/PS/Standalone/animate_standalone_parton_showering_stills.pdf
+           example/PS/Standalone/animate_standalone_parton_showering_stills.pdf \
+           example/PS/Standalone/veto_algorithm.pdf
 
 figures: $(FIGURES)
 
@@ -80,6 +88,12 @@ example/PS/Standalone/animate_standalone_parton_showering_stills.pdf: \
 		example/PS/Standalone/standalone_parton_showering.py example/PS/plot_journey_PS.py example/ME/event_ME.lhe
 	$(PYTHON) example/PS/Standalone/animate_standalone_parton_showering.py --stills $@ --no-video
 
+# The four steps of the Sudakov veto algorithm with the numbers of the seed-1
+# shower (imports AlphaStrong from the shower script; needs matplotlib).
+example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algorithm.py \
+		example/PS/Standalone/standalone_parton_showering.py
+	$(PYTHON) example/PS/Standalone/plot_veto_algorithm.py -o $@
+
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
 RECORDS := example/PS/event_PS.lhe
@@ -92,10 +106,11 @@ example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py ex
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
 	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux \
-	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log
+	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log \
+	      cover/cover_timeline_minimal.aux cover/cover_timeline_minimal.log
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
-	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf
+	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
 
-.PHONY: quick cover cover-timeline cover-video cover-video-short figures records clean distclean
+.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short figures records clean distclean

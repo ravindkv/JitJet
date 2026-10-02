@@ -57,9 +57,30 @@ final-state branchings, which is the level at which this reimplementation of
 the soft-emission machinery (beam-recoil damping, cut-off region) differs from
 the real code. See README.md for the tables.
 
+Learning mode (--verbose / -v, -vv)
+------------------------------------
+  -v   narrates the whole shower on the screen: the running coupling and the
+       PDFs at the scales that matter, the hard event with x_A, x_B, s_hat and
+       the starting scale, the colour dipoles, and then for every step the
+       competition between all dipole ends and both beams (each one's proposed
+       pT, the winner), the kinematics of the winning branching (evolution
+       variable -> virtuality, dipole rest frame, actual transverse momentum,
+       momenta before and after, momentum check, PDF ratio and x' for ISR),
+       and at the end the full event record and the veto-algorithm statistics.
+  -vv  adds every trial of the Sudakov veto algorithm: the overestimate
+       integrals, the random number and the pT it produces, the chosen z, and
+       every factor of the acceptance weight (splitting kernel over its
+       overestimate, alpha_s second over first order, beam-recoil damping, PDF
+       ratio), with the accept/reject decision. This is a lot of output; pipe
+       it into `less` or a file.
+  The random-number sequence is the same with and without -v, so the event
+  record written with -v is identical to the one written without.
+
 Examples
 --------
   python3 standalone_parton_showering.py                       # -> ../event_PS.lhe
+  python3 standalone_parton_showering.py -v                    # explain every step
+  python3 standalone_parton_showering.py -vv | less            # ... and every veto trial
   python3 standalone_parton_showering.py --seed 7 --history h.json
   python3 standalone_parton_showering.py --no-isr              # FSR only
   python3 standalone_parton_showering.py --repeat 500          # shower statistics
@@ -216,6 +237,22 @@ def delta_r(p, q) -> float:
     dphi = abs(phi(p) - phi(q))
     dphi = 2 * math.pi - dphi if dphi > math.pi else dphi
     return math.hypot(eta(p) - eta(q), dphi)
+
+
+def fmt_p(p) -> str:
+    """One four-vector with its pT, eta, phi, for the verbose narrative."""
+    return (f"E={float(p[0]):9.3f} px={float(p[1]):8.3f} py={float(p[2]):8.3f} pz={float(p[3]):9.3f}"
+            f"  | pT={pt(p):7.3f} eta={eta(p):7.3f} phi={phi(p):6.3f}")
+
+
+def fmt_row(ev, i: int) -> str:
+    """One row of the event record: index, name, status, colour tags, mass and momentum."""
+    q = ev.p[i]
+    return f"#{i:<4d}{pname(q.id):6s}st{q.status:4d}  col {q.col:3d}/{q.acol:<3d} m={q.m:6.3f}  {fmt_p(q.p)}"
+
+
+def banner(title: str, char: str = "=") -> str:
+    return f"\n{char * 4} {title} {char * max(4, 96 - len(title))}"
 
 
 def boost_matrix(beta) -> np.ndarray:
@@ -412,9 +449,12 @@ def listing(ev: Event, title: str) -> str:
 # ---------------------------------------------------------------------------
 class Shower:
     def __init__(self, ev: Event, alpha: AlphaStrong, pdf, rng, ptmin_fsr=0.5, ptmin_isr=0.2,
-                 pt0_isr=2.0, do_isr=True, do_fsr=True, dampen_beam_recoil=True, check=False):
+                 pt0_isr=2.0, do_isr=True, do_fsr=True, dampen_beam_recoil=True, check=False, verbose=0):
         self.ev, self.alpha, self.pdf, self.rng = ev, alpha, pdf, rng
         self.check = check
+        self.verbose = verbose               # 0 silent, 1 narrate every branching, 2 also every veto trial
+        self.n_trials = {"FSR": 0, "ISR": 0}  # trial emissions of the veto algorithm (accepted + rejected)
+        self.n_proposals = {"FSR": 0, "ISR": 0}   # accepted proposals (not all of them win the competition)
         lam3 = math.sqrt(alpha.lambda2(3))
         self.pT2min_fsr = max(ptmin_fsr, LAMBDA3_MARGIN_FSR * lam3) ** 2
         self.pT2min_isr = max(ptmin_isr, LAMBDA3_MARGIN_ISR * lam3) ** 2
@@ -442,6 +482,18 @@ class Shower:
         kw.update(kind=kind, step=len(self.history) + 1)
         self.history.append(kw)
 
+    def say(self, level: int, text: str):
+        """Print `text` when the verbosity is at least `level` (never touches the random numbers)."""
+        if self.verbose >= level:
+            print(text)
+
+    def end_label(self, end) -> str:
+        i, k, side = end
+        rad, rec = self.ev.p[i], self.ev.p[k]
+        tagv = rad.col if side == "col" else rad.acol
+        return (f"#{i} {pname(rad.id)} ({side} {tagv}) against #{k} {pname(rec.id)}"
+                f"{' [beam]' if not rec.final else ''}")
+
     # ---- FSR: next emission of one dipole end (veto algorithm) -------------
     def pT2next_fsr(self, end, pT2start):
         i, k, side = end
@@ -458,6 +510,13 @@ class Shower:
         colfac = 0.5 * CA if is_gluon else CF       # a gluon radiates from two ends, each with C_A/2
         pT2 = min(pT2start, 0.25 * m2DipCorr)
         rng = self.rng
+        v2 = self.verbose >= 2
+        lab = f"      [FSR {self.end_label(end)}]"
+        if v2:
+            self.say(2, f"{lab} m_dip = {mDip:.3f}, m_rad = {rad.m:.3f}, m_rec = {mRec:.3f}: "
+                        f"m2DipCorr = (m_dip - m_rec)^2 - m_rad^2 = {m2DipCorr:.3f} GeV^2, colour factor {colfac:.3f}")
+            self.say(2, f"{lab} start at pT^2 = min(pT2now = {pT2start:.3f}, m2DipCorr/4 = {0.25 * m2DipCorr:.3f}) "
+                        f"= {pT2:.3f} (pT = {math.sqrt(pT2):.3f} GeV)")
         while pT2 > self.pT2min_fsr:
             # flavour segment: nf and the lowest scale of this segment
             if pT2 > MB * MB:
@@ -481,20 +540,40 @@ class Shower:
             coefTot = coefGlue + coefQ
             b0 = (33.0 - 2.0 * nf) / 6.0                     # alpha_s^(1) = 2 pi / (b0 ln(pT^2/Lambda^2))
             lam2 = self.alpha.lambda2(nf)
-            pT2 = lam2 * (pT2 / lam2) ** (rng.random() ** (b0 / coefTot))
+            self.n_trials["FSR"] += 1
+            if v2:
+                self.say(2, f"{lab} trial: segment nf = {nf} (down to pT = {math.sqrt(pT2minNow):.3f}), "
+                            f"z in [{zMin:.4f}, {zMax:.4f}], overestimate integrals: gluon emission "
+                            f"{coefGlue:.4f} + g->qqbar {coefQ:.4f} = {coefTot:.4f}, b0 = {b0:.3f}, "
+                            f"Lambda_{nf} = {math.sqrt(lam2):.4f}")
+            R = rng.random()
+            pT2old = pT2
+            pT2 = lam2 * (pT2 / lam2) ** (R ** (b0 / coefTot))
+            if v2:
+                self.say(2, f"{lab}   R = {R:.5f} -> pT^2 = Lambda^2 (pT^2/Lambda^2)^(R^(b0/c)): "
+                            f"pT {math.sqrt(pT2old):.4f} -> {math.sqrt(pT2):.4f} GeV")
             if pT2 < pT2minNow:
                 if pT2minNow <= self.pT2min_fsr:
+                    self.say(2, f"{lab}   below the cut-off pTmin = {math.sqrt(self.pT2min_fsr):.3f}: "
+                                f"this end does not radiate any more")
                     return None
+                self.say(2, f"{lab}   below the flavour threshold at {math.sqrt(pT2minNow):.3f}: "
+                            f"restart there with nf - 1 and the wider z range")
                 pT2 = pT2minNow
                 continue
             # choose the branching and z from the overestimates
+            factors = []
             if rng.random() < coefGlue / coefTot:
                 z = 1.0 - (1.0 - zMin) * ((1.0 - zMax) / (1.0 - zMin)) ** rng.random()
                 if is_gluon:
                     wt = (1.0 - z * (1.0 - z)) ** 2
+                    factors.append(("P_gg(z)/overestimate = (1 - z(1-z))^2", wt))
                 else:
                     wt = 0.5 * (1.0 + z * z) - m2Rad * z * (1.0 - z) ** 2 / pT2   # dead cone
+                    factors.append((f"P_qq(z)/overestimate = (1+z^2)/2 - m_q^2 z(1-z)^2/pT^2 "
+                                    f"[dead-cone term {m2Rad * z * (1.0 - z) ** 2 / pT2:.4f}]", wt))
                     if wt <= 0.0:
+                        self.say(2, f"{lab}   z = {z:.4f}: {factors[0][0]} = {wt:.4f} <= 0, inside the dead cone: reject")
                         continue
                 idNew, m2d1, m2d2 = 21, m2Rad, 0.0
                 kind = "q->qg" if not is_gluon else "g->gg"
@@ -503,31 +582,52 @@ class Shower:
                 flav = int(rng.integers(1, nfl + 1))
                 mq2 = QUARK_MASS[flav] ** 2
                 wt = z * z + (1.0 - z) ** 2 + 2.0 * mq2 * z * (1.0 - z) / pT2
+                factors.append((f"P_qg(z)/overestimate = z^2 + (1-z)^2 + 2 m_q^2 z(1-z)/pT^2 (flavour {pname(flav)})", wt))
                 idNew, m2d1, m2d2 = flav, mq2, mq2
                 kind = "g->qqbar"
             # running coupling: second order over the first-order form used for sampling
-            wt *= self.alpha.alphaS(pT2) / self.alpha.alphaS_1loop(pT2, nf)
+            ratio_alpha = self.alpha.alphaS(pT2) / self.alpha.alphaS_1loop(pT2, nf)
+            factors.append((f"alpha_s^(2)(pT^2)/alpha_s^(1)(pT^2) = {self.alpha.alphaS(pT2):.4f}/"
+                            f"{self.alpha.alphaS_1loop(pT2, nf):.4f}", ratio_alpha))
+            wt *= ratio_alpha
             if rec_in:
                 m2 = m2Rad + pT2 / (z * (1.0 - z))
                 if self.dampen:                               # SimpleTimeShower dampenBeamRecoil
                     pTpT = math.sqrt(pt(rad.p) ** 2 * pT2)
+                    factors.append((f"dampenBeamRecoil pT_rad pT/(pT_rad pT + m^2) with m = {math.sqrt(m2):.3f}",
+                                    pTpT / (pTpT + m2)))
                     wt *= pTpT / (pTpT + m2)
                 if self.pdf is not None:
                     # the incoming recoiler moves to x' = x (1 + delta): PDF ratio at the new x, as PYTHIA does
                     xOld = self.ev.x(k)
                     xNew = xOld * (1.0 + (m2 - m2Rad) / (m2Dip - m2Rad))
                     if xNew >= 1.0:
+                        self.say(2, f"{lab}   the beam recoiler would need x' = {xNew:.4f} >= 1: reject")
                         continue
                     q2 = max(pT2, self.pdf.q2min)
                     pdfOld = max(self.pdf.xf(rec.id, xOld, q2), 1e-10)
+                    factors.append((f"min(1, xf_{pname(rec.id)}(x' = {xNew:.4e})/xf(x = {xOld:.4e}))",
+                                    min(1.0, self.pdf.xf(rec.id, xNew, q2) / pdfOld)))
                     wt *= min(1.0, self.pdf.xf(rec.id, xNew, q2) / pdfOld)
             if wt > 1.0:
                 self.weight_above_unity_alpha += 1
-            if rng.random() > wt:
+            if v2:
+                self.say(2, f"{lab}   channel {kind} (P(gluon channel) = {coefGlue / coefTot:.3f}), z = {z:.4f}")
+                for name, val in factors:
+                    self.say(2, f"{lab}     x {val:.4f}  {name}")
+                self.say(2, f"{lab}     = acceptance weight {wt:.4f}")
+            R2 = rng.random()
+            if R2 > wt:
+                self.say(2, f"{lab}   R' = {R2:.4f} > {wt:.4f}: reject, continue downwards from pT = {math.sqrt(pT2):.4f}")
                 continue
             kin = self.fsr_kinematics(i, k, pT2, z, m2d1, m2d2)
             if kin is None:
+                self.say(2, f"{lab}   R' = {R2:.4f} <= {wt:.4f} but the kinematics is not allowed "
+                            f"(pT_actual^2 <= 0 or recoiler below its mass): reject")
                 continue
+            self.n_proposals["FSR"] += 1
+            self.say(2, f"{lab}   R' = {R2:.4f} <= {wt:.4f}: ACCEPT {kind} at pT = {math.sqrt(pT2):.4f}, z = {z:.4f} "
+                        f"(m_virt = {math.sqrt(kin['m2']):.3f})")
             return dict(pT2=pT2, z=z, end=end, idNew=idNew, kind=kind, kin=kin)
         return None
 
@@ -570,7 +670,9 @@ class Shower:
         ptc = math.sqrt(pT2corr)
         p1 = np.array([E1, ptc * math.cos(ph), ptc * math.sin(ph), p1z])
         p2 = P - p1
-        return dict(p1=Minv @ p1, p2=Minv @ p2, pk=Minv @ K, xnew=xnew, m2=m2)
+        return dict(p1=Minv @ p1, p2=Minv @ p2, pk=Minv @ K, xnew=xnew, m2=m2,
+                    frame=dict(mDip=mDip, EP=EP, Pz=Pz, E1=E1, p1z=p1z, ptc=ptc, phi=ph,
+                               delta=(m2 - m2Rad) / (2.0 * dot(rad.p, rec.p)) if rec_in else None))
 
     def branch_fsr(self, t):
         ev = self.ev
@@ -578,6 +680,7 @@ class Shower:
         rad, rec = ev.p[i], ev.p[k]
         rec_in = not rec.final
         kin = t["kin"]
+        p_rad_before, p_rec_before = rad.p.copy(), rec.p.copy()
         m1 = math.sqrt(max(mass2(kin["p1"]), 0.0)) if t["idNew"] != 21 else rad.m
         if t["idNew"] == 21:                                   # X -> X g on this colour line
             tag = ev.new_tag()
@@ -617,6 +720,70 @@ class Shower:
                      recoiler_incoming=rec_in, pT=math.sqrt(t["pT2"]), z=t["z"],
                      m_virtual=math.sqrt(kin["m2"]), emitted=pname(id2), new_rows=[n1, n2, nk],
                      x_new=kin["xnew"])
+        if self.verbose >= 1:
+            self.explain_fsr(t, i, k, side, rec_in, p_rad_before, p_rec_before, n1, n2, nk, id1, id2)
+
+    def explain_fsr(self, t, i, k, side, rec_in, p_rad, p_rec, n1, n2, nk, id1, id2):
+        """Narrate the FSR branching just written into the record (verbose >= 1)."""
+        ev, kin, fr = self.ev, t["kin"], t["kin"]["frame"]
+        rad, rec = ev.p[i], ev.p[k]
+        pT2, z, m2 = t["pT2"], t["z"], kin["m2"]
+        pT = math.sqrt(pT2)
+        say = lambda s: self.say(1, s)
+        say(banner(f"branching {len(self.history)}: FSR {t['kind']}  {pname(rad.id)} -> {pname(id1)} + {pname(id2)}"
+                   f"  at pT_evol = {pT:.3f} GeV", "-"))
+        say(f"  radiator #{i} {pname(rad.id)} radiates on its {side} line (tag {rad.col if side == 'col' else rad.acol}) "
+            f"against recoiler #{k} {pname(rec.id)}{' (incoming parton: beam recoil)' if rec_in else ''}")
+        say(f"  evolution variable: pT_evol^2 = z(1-z)(m^2 - m_rad^2) with m_rad = {rad.m:.3f} GeV")
+        say(f"    -> virtuality of the branching parton m^2 = m_rad^2 + pT^2/(z(1-z)) = {rad.m ** 2:.3f} + "
+            f"{pT2:.3f}/({z:.4f} x {1 - z:.4f}) = {m2:.3f} GeV^2,  m = {math.sqrt(m2):.3f} GeV")
+        say(f"  z = {z:.4f}: daughter 1 ({pname(id1)}) keeps the fraction z of the pair's energy in the dipole rest frame, "
+            f"daughter 2 ({pname(id2)}) gets 1 - z = {1 - z:.4f}")
+        nf = self.alpha.nf(pT2)
+        say(f"  alpha_s(pT^2) = {self.alpha.alphaS(pT2):.4f} (nf = {nf}, second order; first-order form "
+            f"{self.alpha.alphaS_1loop(pT2, nf):.4f} was used for the overestimate)")
+        say(f"  dipole rest frame (dipole mass m_dip = {fr['mDip']:.3f} GeV): the pair (daughters) gets E_P = "
+            f"{fr['EP']:.3f}, p_z = {fr['Pz']:.3f}; daughter 1: E1 = z E_P = {fr['E1']:.3f}, p1z = {fr['p1z']:.3f}, "
+            f"pT_actual = sqrt(E1^2 - m1^2 - p1z^2) = {fr['ptc']:.3f} GeV (compare pT_evol = {pT:.3f}), "
+            f"azimuth phi = {fr['phi']:.3f}")
+        if rec_in:
+            say(f"  the incoming recoiler is scaled by (1 + delta) with delta = (m^2 - m_rad^2)/(2 p_rad.p_rec) = "
+                f"{fr['delta']:.5f}: its x moves {ev.x(k):.5e} -> {kin['xnew']:.5e}")
+        else:
+            say(f"  the final-state recoiler keeps its mass {rec.m:.3f} and its direction in the dipole frame, "
+                f"only its energy and |p| change so that the dipole mass is conserved")
+        say("  before:")
+        say(f"    radiator  #{i:<3d} {pname(rad.id):6s} {fmt_p(p_rad)}")
+        say(f"    recoiler  #{k:<3d} {pname(rec.id):6s} {fmt_p(p_rec)}")
+        say("  after:")
+        say(f"    {fmt_row(ev, n1)}")
+        say(f"    {fmt_row(ev, n2)}")
+        say(f"    {fmt_row(ev, nk)}")
+        before = p_rad + p_rec
+        after = ev.p[n1].p + ev.p[n2].p + ev.p[nk].p
+        if rec_in:
+            gained = ev.p[n1].p + ev.p[n2].p - p_rad
+            say(f"  check: what the daughters gain, p1 + p2 - p_rad, is what the beam parton now brings in, "
+                f"p_rec' - p_rec = delta p_rec: max difference {np.abs(gained - (ev.p[nk].p - p_rec)).max():.2e} GeV "
+                f"(E gained {float(gained[0]):.3f} GeV)")
+        else:
+            say(f"  check: p_rad + p_rec (before) = p1 + p2 + p_rec' (after): max difference "
+                f"{np.abs(before - after).max():.2e} GeV")
+        say(f"  check: m(daughter 1 + daughter 2) = {math.sqrt(max(mass2(ev.p[n1].p + ev.p[n2].p), 0)):.3f} GeV "
+            f"= the virtuality m above; daughter masses {ev.p[n1].m:.3f}, {ev.p[n2].m:.3f}; "
+            f"dR(daughters) = {delta_r(ev.p[n1].p, ev.p[n2].p):.3f}")
+        self.explain_state()
+
+    def explain_state(self):
+        """One line on the state of the record after a branching (verbose >= 1)."""
+        ev = self.ev
+        fin = ev.final_indices()
+        psum = ev.momentum_sum(fin)
+        pin = ev.p[ev.inA].p + ev.p[ev.inB].p
+        self.say(1, f"  state: {len(fin)} final-state partons, {len(self.dipole_ends())} dipole ends, incoming "
+                    f"{pname(ev.p[ev.inA].id)} x_A = {ev.x(ev.inA):.5e}, {pname(ev.p[ev.inB].id)} x_B = {ev.x(ev.inB):.5e}, "
+                    f"sqrt(s_hat) = {math.sqrt(max(mass2(pin), 0)):.3f} GeV; "
+                    f"|sum(final) - sum(incoming)|_max = {np.abs(psum - pin).max():.2e} GeV")
 
     # ---- ISR: next backward branching of one incoming parton ----------------
     def isr_channels(self, side):
@@ -646,6 +813,12 @@ class Shower:
         pT2 = pT2start
         zMinAbs = x                                            # x/z <= 1
         nf_seg = None
+        v2 = self.verbose >= 2
+        lab = f"      [ISR side {'A(+z)' if side == 0 else 'B(-z)'} {pname(a.id)} x = {x:.4e}]"
+        if v2:
+            self.say(2, f"{lab} sqrt(s_hat) = {math.sqrt(max(m2Dip, 0)):.3f}, start at pT = {math.sqrt(pT2):.3f}; "
+                        f"z >= x = {zMinAbs:.4e} because x' = x/z <= 1; channels: "
+                        + ", ".join(ch["kind"] + "(" + pname(ch["idb"]) + ")" for ch in channels))
         while pT2 > self.pT2min_isr:
             q2 = pT2 + self.pT20
             if q2 > MB * MB:
@@ -681,18 +854,37 @@ class Shower:
                             integ = 2.0 * CF * math.log(zMaxAbs / zMinAbs)
                         coefs.append(ch["rmax"] * integ)
                     coefTot = sum(coefs)
+                    if v2:
+                        self.say(2, f"{lab} new segment nf = {nf} (down to pT = {math.sqrt(pT2minNow):.3f}): "
+                                    f"z in [{zMinAbs:.4e}, {zMaxAbs:.6f}]; overestimates (scanned PDF ratio x {PDF_RATIO_MARGIN} "
+                                    f"times kernel integral):")
+                        for ch, c in zip(channels, coefs):
+                            self.say(2, f"{lab}   {ch['kind']:5s} {pname(ch['idb']):5s} -> {pname(a.id):5s} + "
+                                        f"{pname(ch['idc']):5s} ratio_max = {ch['rmax']:9.4f}  coef = {c:9.4f}")
+                        self.say(2, f"{lab}   total = {coefTot:.4f}")
                 b0 = (33.0 - 2.0 * nf) / 6.0
                 lam2 = self.alpha.lambda2(nf)
             if coefTot <= 0.0:                                 # nothing possible in this segment
                 if pT2minNow <= self.pT2min_isr:
+                    self.say(2, f"{lab}   no channel possible: this beam does not branch any more")
                     return None
                 pT2 = pT2minNow
                 continue
-            q2 = lam2 * (q2 / lam2) ** (rng.random() ** (b0 / coefTot))
+            self.n_trials["ISR"] += 1
+            R = rng.random()
+            q2old = q2
+            q2 = lam2 * (q2 / lam2) ** (R ** (b0 / coefTot))
             pT2 = q2 - self.pT20
+            if v2:
+                self.say(2, f"{lab} trial: R = {R:.5f} -> (pT^2 + pT0^2) {q2old:.3f} -> {q2:.3f}, i.e. pT = "
+                            f"{math.sqrt(max(pT2, 0)):.4f} GeV [regularised: alpha_s and dpT^2/pT^2 use pT^2 + pT0^2, "
+                            f"pT0 = {math.sqrt(self.pT20):.1f}]")
             if pT2 < pT2minNow:
                 if pT2minNow <= self.pT2min_isr:
+                    self.say(2, f"{lab}   below the cut-off pTmin(ISR) = {math.sqrt(self.pT2min_isr):.3f}: "
+                                f"this beam does not branch any more")
                     return None
+                self.say(2, f"{lab}   below the flavour threshold at pT = {math.sqrt(pT2minNow):.3f}: restart there with nf - 1")
                 pT2 = pT2minNow
                 continue
             # channel and z
@@ -716,15 +908,32 @@ class Shower:
                 z = zMinAbs * (zMaxAbs / zMinAbs) ** R
                 wt = 0.5 * (1.0 + (1.0 - z) ** 2)
             # actual PDF ratio at this scale, and the running-coupling correction
-            wt *= self.pdf_ratio(a.id, ch["idb"], x, z, max(pT2, self.pdf.q2min)) / ch["rmax"]
+            wt_kernel = wt
+            ratio_pdf = self.pdf_ratio(a.id, ch["idb"], x, z, max(pT2, self.pdf.q2min))
+            wt *= ratio_pdf / ch["rmax"]
             if wt > 1.0:
                 self.weight_above_unity_pdf += 1
-            wt *= self.alpha.alphaS(q2) / self.alpha.alphaS_1loop(q2, nf)
-            if rng.random() > wt:
+            ratio_alpha = self.alpha.alphaS(q2) / self.alpha.alphaS_1loop(q2, nf)
+            wt *= ratio_alpha
+            if v2:
+                self.say(2, f"{lab}   channel {ch['kind']} ({pname(ch['idb'])} -> {pname(a.id)} + {pname(ch['idc'])}), "
+                            f"z = {z:.5f} -> x' = x/z = {x / z:.4e}")
+                self.say(2, f"{lab}     x {wt_kernel:.4f}  P(z)/overestimate")
+                self.say(2, f"{lab}     x {ratio_pdf / ch['rmax']:.4f}  PDF ratio x'f_{pname(ch['idb'])}(x')/x f_{pname(a.id)}(x) "
+                            f"= {ratio_pdf:.4f} over its scanned maximum {ch['rmax']:.4f}")
+                self.say(2, f"{lab}     x {ratio_alpha:.4f}  alpha_s^(2)/alpha_s^(1) at pT^2 + pT0^2 = {q2:.3f}")
+                self.say(2, f"{lab}     = acceptance weight {wt:.4f}")
+            R2 = rng.random()
+            if R2 > wt:
+                self.say(2, f"{lab}   R' = {R2:.4f} > {wt:.4f}: reject, continue downwards from pT = {math.sqrt(pT2):.4f}")
                 continue
             kin = self.isr_kinematics(side, pT2, z, QUARK_MASS.get(abs(ch["idc"]), 0.0))
             if kin is None:
+                self.say(2, f"{lab}   R' = {R2:.4f} <= {wt:.4f} but the kinematics is not allowed: reject")
                 continue
+            self.n_proposals["ISR"] += 1
+            self.say(2, f"{lab}   R' = {R2:.4f} <= {wt:.4f}: ACCEPT {ch['kind']} at pT = {math.sqrt(pT2):.4f}, "
+                        f"z = {z:.5f}, x' = {kin['xnew']:.4e}")
             return dict(pT2=pT2, z=z, side=side, ch=ch, kin=kin)
         return None
 
@@ -759,7 +968,8 @@ class Shower:
         finals = {}
         for i in ev.final_indices():
             finals[i] = Minv @ (L @ (M @ ev.p[i].p))
-        return dict(pb=Minv @ pb, pc=Minv @ pc, finals=finals, xnew=ev.x(ia) / z, Q2=Q2)
+        return dict(pb=Minv @ pb, pc=Minv @ pc, finals=finals, xnew=ev.x(ia) / z, Q2=Q2,
+                    frame=dict(rs=rs, u=u, v=v, ptc=ptc, phi=ph, Eb=rs / (2.0 * z), mc=mc))
 
     def branch_isr(self, t):
         ev = self.ev
@@ -793,6 +1003,8 @@ class Shower:
                 cb, ab, cc, ac = 0, a.acol, 0, a.col
         mc = QUARK_MASS.get(abs(ch["idc"]), 0.0)
         pc = kin["pc"]
+        pa_before, x_before = a.p.copy(), ev.x(ia)
+        finals_before = {i: ev.p[i].p.copy() for i in kin["finals"]}
         nb = ev.add(Particle(ch["idb"], -41, beam, 0, 0, 0, cb, ab, kin["pb"], 0.0))
         nc = ev.add(Particle(ch["idc"], 43, nb, 0, 0, 0, cc, ac, pc, mc))
         ev.p[nb].d1, ev.p[nb].d2 = ia, nc
@@ -813,6 +1025,54 @@ class Shower:
         self._record("ISR", branching=ch["kind"], side="A(+z)" if side == 0 else "B(-z)", daughter=pname(a.id),
                      mother=pname(ch["idb"]), emitted=pname(ch["idc"]), pT=math.sqrt(t["pT2"]), z=t["z"],
                      Q_spacelike=math.sqrt(kin["Q2"]), x_new=kin["xnew"], new_rows=[nb, nc])
+        if self.verbose >= 1:
+            self.explain_isr(t, ia, ev.incoming(1 - side), pa_before, x_before, finals_before, nb, nc)
+
+    def explain_isr(self, t, ia, ir, pa_before, x_before, finals_before, nb, nc):
+        """Narrate the ISR branching just written into the record (verbose >= 1)."""
+        ev, ch, kin, fr = self.ev, t["ch"], t["kin"], t["kin"]["frame"]
+        side, pT2, z = t["side"], t["pT2"], t["z"]
+        pT = math.sqrt(pT2)
+        a, b, c = ev.p[ia], ev.p[nb], ev.p[nc]
+        say = lambda s: self.say(1, s)
+        say(banner(f"branching {len(self.history)}: ISR {ch['kind']} on side {'A(+z)' if side == 0 else 'B(-z)'}  "
+                   f"{pname(b.id)} -> {pname(a.id)} + {pname(c.id)}  at pT_evol = {pT:.3f} GeV", "-"))
+        say(f"  backward evolution: the incoming {pname(a.id)} #{ia} (x = {x_before:.5e}) is found to come from a "
+            f"{pname(b.id)} #{nb} that entered with x' = x/z = {x_before:.5e}/{z:.5f} = {kin['xnew']:.5e} and emitted "
+            f"the {pname(c.id)} #{nc} into the final state")
+        say(f"  evolution variable: pT_evol^2 = (1-z) Q^2 with Q^2 the spacelike virtuality of #{ia}: "
+            f"Q^2 = pT^2/(1-z) = {pT2:.3f}/{1 - z:.5f} = {kin['Q2']:.3f} GeV^2, Q = {math.sqrt(kin['Q2']):.3f} GeV")
+        q2 = pT2 + self.pT20
+        nf = self.alpha.nf(q2)
+        say(f"  alpha_s(pT^2 + pT0^2 = {q2:.3f}) = {self.alpha.alphaS(q2):.4f} (nf = {nf}); the infrared regularisation "
+            f"pT0 = {math.sqrt(self.pT20):.1f} GeV also replaces dpT^2/pT^2 by dpT^2/(pT^2 + pT0^2)")
+        if self.pdf is not None:
+            scale = max(pT2, self.pdf.q2min)
+            num, den = self.pdf.xf(b.id, kin["xnew"], scale), self.pdf.xf(a.id, x_before, scale)
+            say(f"  PDF ratio at Q^2 = {scale:.3f}: x'f_{pname(b.id)}(x') / x f_{pname(a.id)}(x) = {num:.5f} / {den:.5f} = "
+                f"{num / den if den > 0 else float('inf'):.4f}  (the probability of the backward step is proportional to it)")
+        say(f"  old (a, r) rest frame, sqrt(s_hat) = {fr['rs']:.3f}: new incoming b = (sqrt(s)/2z)(1,0,0,1) with E_b = "
+            f"{fr['Eb']:.3f}; emitted c has E_c - p_cz = z(Q^2 + m_c^2)/sqrt(s) = {fr['u']:.4f}, "
+            f"E_c + p_cz = {fr['v']:.4f}, pT_c = sqrt(uv - m_c^2) = {fr['ptc']:.3f} (compare pT_evol = {pT:.3f}), phi = {fr['phi']:.3f}")
+        say("  before:")
+        say(f"    incoming  #{ia:<3d} {pname(a.id):6s} x = {x_before:.5e}  {fmt_p(pa_before)}")
+        say("  after:")
+        say(f"    {fmt_row(ev, nb)}   x' = {kin['xnew']:.5e}")
+        say(f"    {fmt_row(ev, nc)}")
+        say(f"  the other incoming parton #{ir} {pname(ev.p[ir].id)} is untouched (x = {ev.x(ir):.5e}); the whole "
+            f"downstream system is boosted from the old (a, r) frame to the new (a', r) frame, status 44 copies:")
+        for i, p_old in finals_before.items():
+            q = ev.p[i]
+            n = q.d1
+            p_new = ev.p[n].p
+            say(f"    #{i:<3d} -> #{n:<3d} {pname(q.id):6s} pT {pt(p_old):8.3f} -> {pt(p_new):8.3f}  eta {eta(p_old):7.3f} -> "
+                f"{eta(p_new):7.3f}  phi {phi(p_old):6.3f} -> {phi(p_new):6.3f}  E {float(p_old[0]):9.3f} -> {float(p_new[0]):9.3f}")
+        s_before = mass2(pa_before + ev.p[ir].p)
+        s_after = mass2(b.p + ev.p[ir].p - c.p)
+        say(f"  check: mass of the downstream system sqrt(s_hat) before {math.sqrt(max(s_before, 0)):.3f} = after "
+            f"{math.sqrt(max(s_after, 0)):.3f} GeV; virtuality of #{ia} after the branching: (p_b - p_c)^2 = "
+            f"{mass2(b.p - c.p):.3f} = -Q^2")
+        self.explain_state()
 
     # ---- self-check after every branching ----------------------------------
     def verify(self):
@@ -850,21 +1110,57 @@ class Shower:
             self.verify()
         while True:
             best = None
+            v1 = self.verbose >= 1
+            if v1:
+                self.say(1, banner(f"step {len(self.history) + 1}: evolve downwards from pT = {math.sqrt(pT2now):.3f} GeV"))
+                self.say(1, "  every dipole end and both incoming partons propose their next emission below this scale "
+                            "(Sudakov veto algorithm); the hardest proposal wins")
+            silent = []
             if self.do_fsr:
                 for end in self.dipole_ends():
+                    if v1:
+                        i, k, side = end
+                        rad, rec = self.ev.p[i], self.ev.p[k]
+                        m2Dip = mass2(rad.p + rec.p)
+                        mRec = 0.0 if not rec.final else rec.m
+                        m2corr = (math.sqrt(max(m2Dip, 0.0)) - mRec) ** 2 - rad.m ** 2
+                        info = (f"  FSR {self.end_label(end):42s} m_dip = {math.sqrt(max(m2Dip, 0)):8.3f}"
+                                f"  pT_max(phase space) = {0.5 * math.sqrt(max(m2corr, 0)):7.3f}")
                     t = self.pT2next_fsr(end, pT2now)
+                    if v1:
+                        if t:
+                            self.say(1, f"{info}  ->  proposes {t['kind']:9s} pT = {math.sqrt(t['pT2']):8.3f}  z = {t['z']:.4f}")
+                        else:
+                            silent.append(self.end_label(end))
                     if t and (best is None or t["pT2"] > best["pT2"]):
                         best = t
             if self.do_isr:
                 for side in (0, 1):
+                    ia = self.ev.incoming(side)
+                    if v1:
+                        info = (f"  ISR side {'A(+z)' if side == 0 else 'B(-z)'} #{ia} {pname(self.ev.p[ia].id):5s} "
+                                f"x = {self.ev.x(ia):.4e}{'':<20s}")
                     t = self.pT2next_isr(side, pT2now)
+                    if v1:
+                        if t:
+                            self.say(1, f"{info}  ->  proposes {t['ch']['kind']:9s} pT = {math.sqrt(t['pT2']):8.3f}  "
+                                        f"z = {t['z']:.4f}  x' = {t['kin']['xnew']:.4e}")
+                        else:
+                            silent.append(f"beam {'A' if side == 0 else 'B'} {pname(self.ev.p[ia].id)}")
                     if t and (best is None or t["pT2"] > best["pT2"]):
                         best = t
+            if v1 and silent:
+                shown = silent if len(silent) <= 8 else silent[:8] + [f"... and {len(silent) - 8} more"]
+                self.say(1, f"  no emission above the cut-off from {len(silent)} competitor(s): " + "; ".join(shown))
             if best is None:
+                self.say(1, "  nobody can radiate above the cut-off any more: the shower stops")
                 return
             if "end" in best:
+                self.say(1, f"  winner: FSR {best['kind']} of {self.end_label(best['end'])} at pT = {math.sqrt(best['pT2']):.3f} GeV")
                 self.branch_fsr(best)
             else:
+                self.say(1, f"  winner: ISR {best['ch']['kind']} on side {'A(+z)' if best['side'] == 0 else 'B(-z)'} "
+                            f"at pT = {math.sqrt(best['pT2']):.3f} GeV")
                 self.branch_isr(best)
             if self.check:
                 self.verify()
@@ -927,7 +1223,70 @@ def print_summary(s: dict, radius: float, history: list):
 
 
 # ---------------------------------------------------------------------------
-def shower_event(args, seed: int, pdf, alpha):
+def explain_setup(ev: Event, sh: Shower, hard: list, pT2max: float, alpha: AlphaStrong, pdf, seed: int):
+    """Narrate the input event and the scales before the shower starts (verbose >= 1)."""
+    say = print
+    say(banner("1. the running coupling alpha_s(Q^2)"))
+    say("  second-order running, Lambda_nf fixed by alpha_s(MZ) and continuity at the quark-mass thresholds:")
+    for nf in (3, 4, 5, 6):
+        say(f"    nf = {nf}: Lambda_{nf} = {math.sqrt(alpha.lambda2(nf)):.4f} GeV")
+    say(f"  {'Q [GeV]':>10s}{'nf':>4s}{'alpha_s (2nd)':>15s}{'alpha_s (1st)':>15s}{'ratio':>8s}   (the ratio is the veto weight)")
+    scales = sorted({math.sqrt(sh.pT2min_fsr), 1.0, MC, 2.0, MB, 10.0, 20.0, 50.0, math.sqrt(pT2max), MZ})
+    for q in scales:
+        nf = alpha.nf(q * q)
+        a2, a1 = alpha.alphaS(q * q), alpha.alphaS_1loop(q * q, nf)
+        say(f"  {q:10.3f}{nf:4d}{a2:15.4f}{a1:15.4f}{a2 / a1:8.4f}")
+    say(banner("2. the hard event that is showered"))
+    say(listing(ev, "Input hard process").rstrip())
+    xa, xb = ev.x(ev.inA), ev.x(ev.inB)
+    pin = ev.p[ev.inA].p + ev.p[ev.inB].p
+    s = (2.0 * ev.ebeam) ** 2
+    say(f"  beams: E_beam = {ev.ebeam:.1f} GeV, sqrt(s) = {2 * ev.ebeam:.1f} GeV")
+    say(f"  incoming partons: #{ev.inA} {pname(ev.p[ev.inA].id)} x_A = |p_z|/E_beam = {xa:.5e} (+z), "
+        f"#{ev.inB} {pname(ev.p[ev.inB].id)} x_B = {xb:.5e} (-z)")
+    say(f"  s_hat = x_A x_B s = {xa * xb * s:.2f} GeV^2, sqrt(s_hat) = {math.sqrt(max(mass2(pin), 0)):.3f} GeV; "
+        f"pTHat = {pt(ev.p[hard[0]].p):.3f} GeV")
+    for i in hard:
+        say(f"    outgoing #{i} {pname(ev.p[i].id):5s} m = {ev.p[i].m:.3f}  {fmt_p(ev.p[i].p)}")
+    m2avg = sum(ev.p[i].m ** 2 for i in hard) / len(hard)
+    say(f"  starting scale: pTmax^2 = pTHat^2 + (m3^2 + m4^2)/2 = {pt(ev.p[hard[0]].p) ** 2:.3f} + {m2avg:.3f} "
+        f"-> pTmax = {math.sqrt(pT2max):.3f} GeV (PYTHIA's factorisation scale of a 2 -> 2 QCD process)")
+    lam3 = math.sqrt(alpha.lambda2(3))
+    say(f"  cut-offs: pTmin(FSR) = max(TimeShower:pTmin, 1.6 Lambda_3 = {1.6 * lam3:.4f}) = {math.sqrt(sh.pT2min_fsr):.4f} GeV, "
+        f"pTmin(ISR) = max(SpaceShower:pTmin, 1.1 Lambda_3 = {1.1 * lam3:.4f}) = {math.sqrt(sh.pT2min_isr):.4f} GeV, "
+        f"pT0(ISR) = {math.sqrt(sh.pT20):.2f} GeV")
+    say(f"  the shower fills the range pT = {math.sqrt(pT2max):.2f} -> {math.sqrt(sh.pT2min_fsr):.3f} GeV, "
+        f"{math.log(pT2max / sh.pT2min_fsr) / (2 * math.log(2)):.1f} octaves; alpha_s runs from "
+        f"{alpha.alphaS(pT2max):.4f} to {alpha.alphaS(sh.pT2min_fsr):.3f} over that range")
+    if pdf is not None:
+        say(banner("3. the parton densities x f(x, Q^2) that the initial-state shower needs"))
+        say(f"  {pdf.name} member 0, frozen below Q = {math.sqrt(pdf.q2min):.2f} GeV; at the starting scale Q^2 = pTmax^2:")
+        flavs = [21, 2, 1, -2, -1, 3, -3, 4, 5]
+        say(f"  {'x':>12s}" + "".join(f"{pname(f):>9s}" for f in flavs))
+        for x in sorted({xa, xb, 0.01, 0.1, 0.5}):
+            say(f"  {x:12.4e}" + "".join(f"{pdf.xf(f, x, pT2max):9.4f}" for f in flavs))
+        for side, i in (("A", ev.inA), ("B", ev.inB)):
+            a = ev.p[i]
+            x = ev.x(i)
+            say(f"  backward evolution of side {side} ({pname(a.id)}, x = {x:.4e}) needs the ratios x'f_b(x/z)/x f_a(x) "
+                f"at Q^2 = pTmax^2 for every mother b; at z = 0.5 and 0.9:")
+            for ch in sh.isr_channels(0 if side == "A" else 1):
+                r = [sh.pdf_ratio(a.id, ch["idb"], x, z, pT2max) for z in (0.5, 0.9)]
+                say(f"    {ch['kind']:5s} mother {pname(ch['idb']):5s} emits {pname(ch['idc']):5s}: {r[0]:9.4f} {r[1]:9.4f}")
+    say(banner("4. the colour dipoles of the hard event"))
+    say("  every final-state coloured parton radiates against the other end of its colour line (final-state or beam parton):")
+    for end in sh.dipole_ends():
+        i, k, side = end
+        rad, rec = ev.p[i], ev.p[k]
+        m2Dip = mass2(rad.p + rec.p)
+        mRec = 0.0 if not rec.final else rec.m
+        m2corr = (math.sqrt(max(m2Dip, 0.0)) - mRec) ** 2 - rad.m ** 2
+        say(f"    {sh.end_label(end):42s} m_dip = {math.sqrt(max(m2Dip, 0)):8.3f} GeV, largest pT the dipole can host "
+            f"= sqrt(m2DipCorr)/2 = {0.5 * math.sqrt(max(m2corr, 0)):8.3f} GeV")
+    say(f"  random-number seed {seed}; the shower now starts at pT = {math.sqrt(pT2max):.3f} GeV")
+
+
+def shower_event(args, seed: int, pdf, alpha, verbose=None):
     ev = read_event(args.input)
     hard = [i for i, q in enumerate(ev.p) if q.status == 23 and q.coloured]
     if not hard:
@@ -937,12 +1296,24 @@ def shower_event(args, seed: int, pdf, alpha):
         pT2max = pt(ev.p[hard[0]].p) ** 2 + m2avg
     else:
         pT2max = args.ptmax ** 2
+    if verbose is None:
+        verbose = getattr(args, "verbose", 0)
     rng = np.random.default_rng(seed)
     sh = Shower(ev, alpha, pdf, rng, ptmin_fsr=args.ptmin_fsr, ptmin_isr=args.ptmin_isr, pt0_isr=args.pt0,
                 do_isr=not args.no_isr, do_fsr=not args.no_fsr, dampen_beam_recoil=not args.no_dampen,
-                check=args.check)
+                check=args.check, verbose=verbose)
     sh.track = {i: i for i in hard}
+    if verbose >= 1:
+        explain_setup(ev, sh, hard, pT2max, alpha, pdf, seed)
     sh.run(pT2max)
+    if verbose >= 1:
+        print(banner("the shower has finished"))
+        n_tr, n_pr = sh.n_trials, sh.n_proposals
+        print(f"  veto algorithm: {n_tr['FSR']} FSR and {n_tr['ISR']} ISR trial emissions produced {n_pr['FSR']} FSR and "
+              f"{n_pr['ISR']} ISR accepted proposals, of which {sh.n_fsr} FSR and {sh.n_isr} ISR won their step "
+              f"(the losers are thrown away and re-proposed from the winner's scale)")
+        print(f"  final event record (also written to the output file):")
+        print(listing(ev, "Standalone Event Listing after the shower").rstrip())
     return ev, sh, hard, math.sqrt(pT2max)
 
 
@@ -968,6 +1339,9 @@ def main():
     ap.add_argument("--check", action="store_true",
                     help="verify momentum conservation, masses and colour lines after every branching")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("-v", "--verbose", action="count", default=0,
+                    help="learning mode: -v narrates every step of the shower with all numbers, -vv also every "
+                         "trial of the veto algorithm (the event record is unchanged)")
     args = ap.parse_args()
 
     alpha = AlphaStrong(args.alphas, args.order)
@@ -982,6 +1356,8 @@ def main():
 
     ev, sh, hard, ptmax = shower_event(args, args.seed, pdf, alpha)
     summary = summarise(ev, sh, hard, args.radius)
+    if args.verbose:
+        print(banner("summary"))
     if not args.quiet:
         print(f"input {args.input}: hard process {' '.join(pname(ev.p[i].id) for i in (ev.inA, ev.inB))} -> "
               f"{' '.join(pname(ev.p[i].id) for i in hard)}, pTmax = {ptmax:.2f} GeV, seed = {args.seed}")
@@ -1000,7 +1376,7 @@ def main():
         acc = {k: [] for k in keys + ["x_A", "x_B"]}
         fam = {q["name"]: dict(pt_after=[], fam_pt=[], fam_n=[], fam_m=[]) for q in summary["partons"]}
         for n in range(args.repeat):
-            e2, s2, h2, _ = shower_event(args, args.seed + n, pdf, alpha)
+            e2, s2, h2, _ = shower_event(args, args.seed + n, pdf, alpha, verbose=0)
             s = summarise(e2, s2, h2, args.radius)
             for k in keys + ["x_A", "x_B"]:
                 acc[k].append(s[k])

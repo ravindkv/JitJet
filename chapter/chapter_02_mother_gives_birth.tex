@@ -123,6 +123,55 @@ shower is the first place where such children are lost. The cone is a
 bookkeeping device here, not a jet algorithm; the algorithm comes later and
 will not ask who the mother was.
 
+\paragraph{A second picture to carry: the project that keeps being
+subcontracted.} The family of this book tells you who is related to whom;
+it does not tell you how the shower decides what happens next. For that I
+find a second picture useful, and the numbers of our event fit it exactly.
+Think of the hard process as a large project awarded to two main
+contractors, the $b$ and the $\bar b$, each with a job already assigned.
+What the shower reveals, round by round, is how that work gets
+subcontracted.
+\begin{enumerate}[nosep]
+  \item \textbf{Contractors subcontract.} A quark emitting a gluon
+    ($q\to qg$) is a contractor who keeps the job and brings in a
+    subcontractor; a gluon splitting into two ($g\to gg$) is a
+    subcontractor dividing its work between two of its own kind; a gluon
+    turning into a quark pair ($g\to q\bar q$) hands the job to two
+    complementary specialists. Every new subcontractor may subcontract
+    again. That repeated subdivision \emph{is} the shower.
+  \item \textbf{Everybody proposes, the largest proposal goes first.} At
+    each round every eligible contractor, and the two suppliers upstream
+    (the incoming partons), proposes its next restructuring with a
+    ``size'' drawn at random according to the rules of QCD. In the first
+    round of our event the $\bar b$ proposed $2.2\GeV$, the $b$ $5.2\GeV$,
+    the $+z$ supplier $53.9\GeV$ and the $-z$ supplier $12.7\GeV$; the
+    $53.9\GeV$ proposal is carried out and everybody proposes afresh below
+    that size. A contractor may also propose \emph{nothing} above the
+    minimum size: that is the no-emission probability, the Sudakov form
+    factor. A losing proposal never becomes a contract: of the 467
+    proposals accepted in our event, 38 were built.
+  \item \textbf{Restructuring one contract changes a partner's
+    allocation.} Contractors work in a fixed network of partners, the
+    colour connections. When one divides its job, a connected partner must
+    adjust its own allocation so that the overall accounts balance. That
+    adjustment is \emph{recoil}, and it is why the mother's \pt moves from
+    $113$ to $94$, $92$ and $112\GeV$ before she has subcontracted anything
+    herself.
+  \item \textbf{Initial-state radiation is the upstream history.} For a
+    final-state contractor you ask ``whom does it subcontract to?''; for an
+    incoming parton you ask ``which larger organisation supplied this
+    contractor, and what else did that organisation hand out?''. The $\bar u$
+    that entered our hard process turns out to have been supplied by a
+    gluon that also sent a $u$ quark into the final state.
+\end{enumerate}
+The picture captures repeated branching, competition, no branching,
+connected partners, recoil and backward ancestry. Its one limitation should
+be said at once: the ``size'' is the shower's evolution scale, not a budget
+and not a particle's energy. Four-momentum is conserved exactly by the
+bookkeeping, and the division into individual emitters is an approximation
+to quantum radiation, good in the collinear and soft limits where the
+chapter derives it.
+
 \section{Watch the shower happen: the animated journey}
 \label{sec:mother_gives_birth:animation}
 
@@ -249,6 +298,8 @@ python3 standalone_parton_showering.py --seed 7 --history h.json
 python3 standalone_parton_showering.py --no-isr              # the two b quarks only
 python3 standalone_parton_showering.py --check               # assert conservation laws
 python3 standalone_parton_showering.py --repeat 2000 --quiet --history s.json
+python3 standalone_parton_showering.py -v > standalone_parton_showering.log   # learning mode
+python3 standalone_parton_showering.py -vv | less                             # ... every trial too
 \end{minted}
 The first command takes about a second, most of it parsing the tables, and
 prints
@@ -277,6 +328,23 @@ quantities of \cref{tab:mother_gives_birth:numbers} to
 \code{--radius} (the family cone). The output with \code{--seed 1} is
 byte-for-byte the committed record; any other seed gives another family,
 which is the point of Exercise~1.
+
+The two last commands are the ones to run with this chapter open.
+\code{-v} is a learning mode: before the shower it prints the running
+coupling at the scales that matter, the input record with $x_A$, $x_B$,
+$\shat$ and the starting scale, the parton densities and PDF ratios the
+backward evolution needs, and the colour dipoles with their masses; then,
+for every step, the competition (each dipole end and each beam with its
+proposed scale, $z$ and channel, or ``no emission''), the winner, and the
+winning branching worked out in full with every momentum before and after
+and the conservation checks. \code{-vv} adds every trial of the veto
+algorithm: the overestimate integrals, the random number and the scale it
+produces, the chosen $z$ and each factor of the acceptance weight. The
+random numbers are not touched, so the record is identical with and
+without the flags. The $1700$ lines of the \code{-v} output for seed~1 are
+committed as \file{example/PS/Standalone/standalone_parton_showering.log},
+and every number quoted in the theory sections that follow is taken from
+that file, so that you can put the formula and the log side by side.
 
 \subsection{Reading the record}
 \label{sec:mother_gives_birth:record_format}
@@ -317,6 +385,22 @@ it into the algorithm the script executes, follow \PYTHIA's construction of
 the shower step by step, and end by reading the record you have just
 written.
 
+Before we derive anything, a puzzle to carry through the next pages. Every
+gluon that is emitted costs one power of \alphas, which over the scales of
+our shower lies between $0.11$ and $0.2$. Three emissions should then be
+suppressed by $\alphas^3\approx10^{-3}$ relative to the Born process, and
+the $38$ branchings of our event by $\alphas^{38}\approx10^{-33}$. Yet
+every event looks like ours: \PYTHIA averaged $5$ initial- and $20$
+final-state branchings over the $2000$ showers of
+\cref{sec:mother_gives_birth:pythia}. Why does a chain that is suppressed
+at every link go on for dozens of links? Because \alphas never comes alone.
+Each power of the coupling is multiplied by an integral over the angle of
+the emission and by an integral over its energy, and both integrals are
+logarithms that in our event reach five. A small number times a large
+logarithm squared is of order one, and the expansion parameter of a shower
+is not \alphas but $\alphas\ln^2$. The propagator below shows where the two
+logarithms come from.
+
 Look out of the window at the mother leaving the hard process. In the
 partonic frame she carries $E=\sqrt{\shat}/2=198\GeV$ and is, at Born level,
 an on-shell quark of mass $4.8\GeV$. Now ask what the next order of
@@ -331,7 +415,12 @@ the amplitude contains the propagator of the $b$ just before the emission,
 where $\theta$ is the angle between the $b$ and the gluon and
 $\beta_b$ the $b$ velocity. For a massless quark $\beta_b=1$, and the
 denominator vanishes twice: when $\theta\to0$ (a \emph{collinear} emission)
-and when $E_g\to0$ (a \emph{soft} emission). Squaring the amplitude and
+and when $E_g\to0$ (a \emph{soft} emission). Our mother is not quite
+massless: in the laboratory she leaves the hard process with
+$E_b=252.06\GeV$ and $m_b=4.8\GeV$, so $\beta_b=0.99982$ and the factor
+$1-\beta_b\cos\theta$ never falls below $1.8\times10^{-4}$. Keep that
+number; it is the dead cone of \cref{sec:mother_gives_birth:dead_cone}, and
+for everything but the softest emissions it makes no difference. Squaring the amplitude and
 adding phase space, the emission probability in these limits factorises
 from the Born cross section,
 \begin{equation}
@@ -343,7 +432,13 @@ from the Born cross section,
   \label{eq:mother_gives_birth:collinear_limit}
 \end{equation}
 with $z$ the fraction of the parent's energy kept by the quark and $1-z$
-handed to the gluon. Read it as we read the factorisation formula of the
+handed to the gluon. Put two numbers into the kernel before reading on:
+$P_{qq}(0.5)=\tfrac43\cdot\tfrac{1.25}{0.5}=3.33$ and
+$P_{qq}(0.9)=\tfrac43\cdot\tfrac{1.81}{0.1}=24.1$. When the quark keeps
+$90\%$ of the energy and the gluon takes a soft $10\%$, the kernel is seven
+times larger than for an equal split; that is the preference for soft
+gluons, and the kernel is not a probability but a rate, which is why it may
+exceed one. Read the formula as we read the factorisation formula of the
 previous stop: the Born cross section does not know about the emission, the
 emission does not know about the Born process, and what connects them is a
 universal function of $z$ and a logarithmic measure in the angle. The
@@ -356,7 +451,13 @@ $1/(1-z)$ the soft one, and where both apply the probability is
   \label{eq:mother_gives_birth:double_log}
 \end{equation}
 which multiplied by $\alphas/\pi\approx0.04$ is not small once the
-logarithms reach five or ten. This is the whole reason for the shower.
+logarithms reach five or ten. They do: the shower of our event fills the
+range from $113.3\GeV$ down to the cut-off at $0.611\GeV$, seven and a half
+octaves, and $\ln(113.3/0.611)=5.2$, so that
+$(\alphas/\pi)\ln^2\approx0.04\times27\approx1$. That resolves the puzzle: each
+extra emission costs one power of \alphas and buys a logarithm squared of
+the same size, so the chain is not suppressed at all, and it is the whole
+reason for the shower.
 Fixed-order perturbation theory in $\alphas$ is an expansion in a small
 number multiplied by large logarithms, and the product is of order one; the
 shower resums the logarithms to all orders by iterating
@@ -384,6 +485,22 @@ our event it is louder than the mother's own.
 \subsection{The four splitting functions}
 \label{sec:mother_gives_birth:splitting_functions}
 
+Set the stage before the formulas. After the three initial-state branchings
+of our event there are five final-state partons and seven dipole ends;
+after thirty there are forty partons and sixty-seven ends, and at every
+round each of them may branch in one of several ways. A quark can only emit
+a gluon. A gluon may emit a gluon or split into a quark--antiquark pair of
+any flavour light enough at that scale. An incoming parton may be found to
+come from a quark or from a gluon. So which kind of branching do you expect
+to win most rounds, and which one almost never? Make your guess from three
+things: the colour charge of the emitter, the number of emitters of each
+kind at that moment, and whether the kernel favours a soft daughter. Then
+compare with the list of our event: $38$ branchings, of which $5$ are
+initial-state, $9$ are $q\to qg$, $19$ are $g\to gg$ and only $5$ are
+$g\to q\bar q$. \Cref{fig:mother_gives_birth:ladder} below the table shows
+them in the order in which they happened; the functions that set these
+proportions are the following.
+
 Every branching of the shower is one of four, and the probability of each is
 a leading-order Altarelli--Parisi splitting function of the momentum fraction
 $z$~\cite{ParticleDataGroup:2024cfk}:
@@ -408,13 +525,114 @@ that a gluon radiates $C_A/C_F=9/4$ times more than a quark; a gluon jet is
 broader and busier than a quark jet for exactly this reason, and every jet
 tagger in the later chapters exploits it.
 
+\Cref{tab:mother_gives_birth:kernels} evaluates the four kernels at the
+$z$ values the shower of our event actually drew, so that the formulas
+have faces. Two readings. Along a row, the gluon's $P_{gg}$ is always the
+largest, by the factor $C_A/C_F$ and by its second pole. Down the
+$q\to qg$ column, the kernel grows from $4.5$ for the mother's first
+emission at $z=0.60$ to $145$ for the soft proposal at $z=0.98$ she made in
+the first round; the latter was accepted and then lost, which is the
+shower's way of saying that soft gluons are frequent but not important.
+
+\begin{table}[htbp]\centering\small
+\caption[The splitting functions at the $z$ of our event]{The four
+splitting functions of \cref{eq:mother_gives_birth:splitting} at $z$
+values drawn in the shower of our event; the bold entry is the kernel the
+branching actually used. The kernels are rates, not probabilities, and
+exceed one freely.}
+\label{tab:mother_gives_birth:kernels}
+\begin{tabular}{llrrrr}\toprule
+branching & $z$ & $P_{qq}$ & $P_{gg}$ & $P_{qg}$ & $P_{gq}$ \\ \midrule
+mother's first emission, $b\to bg$ (branching 5) & $0.601$ & $\mathbf{4.55}$ & $14.5$ & $0.26$ & $2.57$ \\
+mother's first proposal, $b\to bg$ (round 1, lost) & $0.982$ & $\mathbf{145}$ & $326$ & $0.48$ & $1.36$ \\
+$g\to gg$ (branching 6) & $0.275$ & $1.98$ & $\mathbf{19.3}$ & $0.30$ & $7.39$ \\
+$g\to \bbbar$ (branching 10) & $0.350$ & $2.30$ & $15.7$ & $\mathbf{0.27}$ & $5.42$ \\
+ISR $\bar u\leftarrow g$ (branching 1) & $0.779$ & $9.69$ & $23.9$ & $\mathbf{0.33}$ & $1.80$ \\
+ISR $u\leftarrow u$ (branching 2) & $0.850$ & $\mathbf{15.3}$ & $35.7$ & $0.37$ & $1.61$ \\
+ISR $g\leftarrow g$ (branching 3) & $0.206$ & $1.75$ & $\mathbf{25.7}$ & $0.34$ & $10.6$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 One identity is worth checking yourself, because the standalone script relies
 on it: the second form of $P_{gg}$ follows from the first by putting the three
 terms over the common denominator $z(1-z)$ and recognising
 $z^2+(1-z)^2+z^2(1-z)^2=(1-z+z^2)^2$. Exercise~2 asks for it.
 
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}
+\caption[The ladder of branchings of our event]{The first scene of the
+film (\cref{sec:mother_gives_birth:animation}), stopped at branching 25 of
+38. Left: the branchings of our event in decreasing \ptevol, orange squares
+for the initial state, red and blue dots for the families of the $b$ and of
+the $\bar b$. The rows of \cref{tab:mother_gives_birth:kernels} are rungs of
+this ladder: the three orange squares at the top are the initial-state
+branchings 1--3, the blue and red dots at rungs 4 and 5 are the first
+emissions of the $\bar b$ and of the mother, rung 6 is the $g\to gg$ at
+$25.6\GeV$ and rung 10 the $g\to\bbbar$ at $6.0\GeV$. Right: the
+$(\eta,\phi)$ plane at that moment, with 27 final-state partons, 20 of them
+gluons (circles) and 7 quarks (diamonds), joined by the colour dipoles that
+do the radiating.}
+\label{fig:mother_gives_birth:ladder}
+\end{figure}
+
+Now read the table and the figure together. The ladder is steep at the top
+and flat at the bottom: the first ten branchings run from $53.9$ down to
+$6.0\GeV$, three octaves, while the last eighteen all lie between
+$1.02\GeV$ and the cut-off, less than one octave. That is the
+$\mathrm{d}\theta^2/\theta^2$ measure of
+\cref{eq:mother_gives_birth:collinear_limit} at work, helped by a coupling
+that grows from $0.14$ at $30\GeV$ to $0.53$ at $1\GeV$: the number of
+branchings per octave rises as the scale falls. Who branches is decided by
+the kernels. Every branching adds a gluon to the final state, and a gluon
+radiates with $C_A$ rather than $C_F$ from each of its two colour lines, so
+down the ladder the gluons take over the radiating: at rung 25 twenty of
+the 27 partons are gluons, at the end 27 of 40, and 19 of the 38
+branchings are $g\to gg$. The finite $P_{qg}$ keeps the $g\to q\bar q$
+splittings to five, and because that kernel has no soft enhancement its
+$z$ values, $0.35$ for the $g\to\bbbar$ of rung 10, sit in the middle of
+the range rather than near the ends. The two quark emissions at rungs 4
+and 5 both drew $z\approx0.6$, where $P_{qq}$ is a modest $4.5$; the soft
+end of the kernel, where it reaches $145$ at $z=0.98$, produced the
+mother's round-1 proposal at $5.2\GeV$, which lost. Soft emissions are the
+most frequent, but in a shower ordered in \pt they come late.
+
 \subsection{The Sudakov form factor}
 \label{sec:mother_gives_birth:sudakov}
+
+Start at the moment before the shower begins. Nothing has been emitted, so
+for each of the four candidates, the $b$, the $\bar b$ and the two incoming
+partons, the probability of having radiated is zero and the probability of
+not having radiated is exactly one. Now let the scale run down from
+$113\GeV$ and ask how that no-emission probability falls for each of them.
+Guess before you look at \cref{fig:mother_gives_birth:survival}: which
+curve falls fastest, and which two should lie on top of each other? The
+$b$ and the $\bar b$ carry the same colour charge and sit in dipoles of the
+same mass, $377.9\GeV$, so their curves must coincide. The two beams
+differ: the $u$ at $x=0.39$ is a valence quark whose density falls when it
+is asked for a larger $x$, while the $\bar u$ at $x=2.2\times10^{-3}$ can
+be resolved out of a gluon density more than fifteen times larger. The end
+whose curve falls fastest radiates first most often, and the figure,
+measured by letting each end propose $1500$ times from $\pt^{\max}$,
+confirms the guess: the $+z$ beam falls fastest and wins $57\%$ of the
+first branchings, the $b$ and $\bar b$ curves lie on top of each other and
+still stand at $0.7$ when the scale has fallen to $10\GeV$, and the dashed
+product of all four is the probability that nobody has radiated yet. The
+quantity on the vertical axis is the Sudakov form factor, and here is its
+definition.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=2,width=\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}
+\caption[Measured no-emission probabilities of the four radiators]{The
+second scene of the film (\cref{sec:mother_gives_birth:animation}). Left:
+the probability that an end has not yet radiated when the scale has fallen
+from $\pt^{\max}=113.3\GeV$ to \pt, measured from $1500$ proposals per end
+with the standalone shower; the dashed curve is the product of the four.
+Right: who made the hardest of the four proposals, that is who radiates
+first, as a histogram of that first scale. The first branching of the
+seed-1 event, at $53.9\GeV$, is marked.}
+\label{fig:mother_gives_birth:survival}
+\end{figure}
 
 Now the central object of the chapter. Take a parton produced at some hard
 scale and ask: what is the probability that it does \emph{not} branch while
@@ -453,6 +671,19 @@ probabilistic process rather than a perturbative expansion. The singular
 kernels of \cref{eq:mother_gives_birth:splitting} are not a problem any more:
 a divergence in $\hat P$ makes the form factor vanish, which just says that a
 parton certainly branches before reaching the singular region.
+
+The log shows both faces of the form factor. The ``branches at $t$'' face
+is every line that reads ``proposes''; the ``never branches'' face is every
+line that reads ``no emission above the cut-off'', and the second kind
+appears already in round~2 of our event, where the mother's own dipole end
+evolved from $53.9\GeV$ straight through the cut-off without an accepted
+emission, and dominates the end: in round~39 all $69$ competitors ($67$
+colour ends of the $40$ final partons plus the two beams) propose nothing,
+and the shower stops. Over the whole event the veto algorithm generated
+$3513$ final-state and $212$ initial-state trials, of which $433$ and $34$
+survived their own acceptance tests and $33$ and $5$ won their round. Three
+levels, then: a trial is a random number, an accepted proposal is a
+possible emission, and only the winner of a round becomes a parton.
 
 \paragraph{The double logarithm, once by hand.} Let me do for the mother
 what we did with the Jacobian at the previous stop, because every shower
@@ -497,6 +728,41 @@ at some $\pt^{\min}$ where the coupling stops making sense.
 \subsection{From a form factor to a random number: the veto algorithm}
 \label{sec:mother_gives_birth:veto}
 
+The form factor gives a probability; the computer needs a scale. Picture
+the mother at $113.3\GeV$ in round~1 with her survival curve of
+\cref{fig:mother_gives_birth:survival} in front of her. To decide where she
+branches next she should draw a uniform random number $R$, go to the height
+$R$ on that curve and read off the \pt, exactly as one samples a decay time
+from an exponential. The curve, however, is an integral over the full
+kernel and the running coupling and has no closed form, so nothing can be
+read off it. The way out is the oldest trick of Monte Carlo: replace the
+curve by a simpler one that lies \emph{below} it everywhere, that is, one
+that overestimates the branching rate; sample from that; then throw away
+the surplus with a second random number. \Cref{fig:mother_gives_birth:veto}
+shows the four steps with the mother's own numbers; keep it open while you
+read them.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{PS/Standalone/veto_algorithm.pdf}
+\caption[The veto algorithm step by step]{The four steps of the veto
+algorithm for the mother's first proposal in round~1, drawn by
+\file{plot\_veto\_algorithm.py} from the \code{-vv} log. Step~1: the kernel
+$P_{qq}$ and its overestimate $2C_F/(1-z)$; the shaded surplus is removed in
+step~4, and the two $z$ values of the mother's emissions are marked.
+Step~2: the second-order coupling and its first-order overestimate, with
+the ratio that becomes a weight; in the last octave above the cut-off the
+two curves cross. Step~3: the overestimated form factor
+$\Delta_{\mathrm{over}}$ for three draws in a row, each starting from the
+scale the previous one reached: $R=0.516$ gives $59.7\GeV$, rejected
+because the incoming $u$ would need $x'>1$; $R=0.777$ from $59.7\GeV$ gives
+$47.5\GeV$, rejected for the same reason; $R=0.040$ from $47.5\GeV$ gives
+$5.24\GeV$. The blue triangles are the eight draws the $\bar b$ needed in
+the same round. Step~4: the four factors of the acceptance weight of the
+$5.24\GeV$ trial, the light part of each bar being thrown away, and the
+$R'=0.062$ that accepted it.}
+\label{fig:mother_gives_birth:veto}
+\end{figure}
+
 Here is the part I would like you to do once with pencil and paper, because
 it is the engine of every shower and it fits on half a page. We want to
 sample the scale of the next branching from \cref{eq:mother_gives_birth:first},
@@ -509,7 +775,14 @@ and correct afterwards.
 $\hat P_{\mathrm{over}}\ge\hat P(t)$ for all $t$ in the interval. For
 $P_{qq}$ the script uses $2C_F/(1-z)$ integrated over the widest $z$ range
 that occurs in the interval, $c\equiv2C_F\ln\frac{1-z_{\min}}{1-z_{\max}}$;
-the missing factor $(1+z^2)/2\le1$ is applied later.
+the missing factor $(1+z^2)/2\le1$ is applied later. For the mother's
+dipole in round~1 the $z$ range is set by the lowest scale of the
+five-flavour segment, $\pt=\mb$, on a dipole of corrected mass squared
+$(377.9\GeV)^2-\mb^2=1.428\times10^5\GeV^2$:
+$z_{\min}=\tfrac12-\sqrt{\tfrac14-23.04/1.428\times10^5}=1.6\times10^{-4}$,
+$z_{\max}=1-z_{\min}$, and $c=\tfrac83\ln(0.99984/0.00016)=23.28$. The
+top-left panel of \cref{fig:mother_gives_birth:veto} shows the two
+curves; the band between them is what step~4 will throw away.
 
 \paragraph{Step 2: overestimate the coupling.} Use the first-order form
 \begin{equation}
@@ -518,7 +791,15 @@ the missing factor $(1+z^2)/2\le1$ is applied later.
   \label{eq:mother_gives_birth:alphas_1loop}
 \end{equation}
 which for the same $\Lambda$ lies above the second-order running (the
-correction term is negative) and which has an elementary integral.
+correction term is negative) and which has an elementary integral. The
+log prints both at the scales that matter: at $34.2\GeV$, where the
+$\bar b$ first radiates, $0.1633$ against the true $0.1386$; at $5.2\GeV$,
+$0.2608$ against $0.2106$; at $1\GeV$, $0.725$ against $0.530$. The ratio,
+$0.85$, $0.81$ and $0.73$, is the price of the overestimate and returns as
+a weight in step~4. In the last octave above the cut-off the two curves
+cross: at $0.611\GeV$ the first-order form gives $1.485$ and the
+second-order $1.563$, a ratio of $1.052$, and the ``overestimate'' is no
+longer one. The top-right panel shows the two curves crossing there.
 
 \paragraph{Step 3: invert.} With these two,
 \begin{equation}
@@ -540,7 +821,18 @@ This single line is what the standalone script executes at every trial
 recognise $\Lambda^2$, $b_0$ and $c$. Check the limits: $R=1$ gives
 $t=t_{\max}$ (no evolution), $R\to0$ gives $t\to\Lambda^2$ (the coupling
 blows up), and a large $c$, that is a strongly radiating parton, pushes $t$
-towards $t_{\max}$.
+towards $t_{\max}$. Now do it with the mother's numbers of round~1,
+$t_{\max}=113.32^2\GeV^2$, $\Lambda_5=0.2262\GeV$, $b_0=23/6=3.833$ and
+$c=23.28$, so that $b_0/c=0.1646$. The \code{-vv} log drew
+$R=0.51607$: $R^{0.1646}=0.8968$, $\ln(t_{\max}/\Lambda_5^2)=12.433$, and
+\cref{eq:mother_gives_birth:veto_solution} gives
+$\sqrt t=0.2262\,\mathrm{e}^{0.8968\times12.433/2}=59.67\GeV$. One random
+number has taken the mother from $113.3$ to $59.7\GeV$; the next two, in
+the same log, took her from $59.7$ to $47.5$ and from $47.5$ to
+$5.24\GeV$. Why three draws for one proposal is the business of step~4.
+The bottom-left panel draws the three curves $\Delta_{\mathrm{over}}$ of
+these draws, each one starting where the previous one stopped; a single
+curve from $113\GeV$ would have been the wrong distribution.
 
 \paragraph{Step 4: choose $z$ and correct.} Draw $z$ from the overestimate
 kernel (for $2C_F/(1-z)$ that is $1-z=(1-z_{\min})[(1-z_{\max})/(1-z_{\min})]^{R'}$),
@@ -563,6 +855,28 @@ of an incoming recoiler, is inserted through the weight of
 how often a weight exceeded one (14 times in our event, all from the
 coupling ratio in the last octave above the cut-off, where the second-order
 running is no longer below the first-order form).
+
+Here is the mother's first proposal, trial by trial, from the \code{-vv}
+log. The first draw, $59.7\GeV$, was rejected before any weight was
+computed: the recoiler is the incoming $u$, and absorbing that virtuality
+would have needed $x'=2.65$, more than the whole proton. The second,
+$47.5\GeV$, failed the same test with $x'=19$. The evolution continued
+from $47.5\GeV$, not from $113\GeV$, and the third draw gave $5.24\GeV$
+with $z=0.9819$ from the overestimate kernel. Then the weight of
+\cref{eq:mother_gives_birth:veto_weight}, factor by factor:
+\begin{equation*}
+  w=\underbrace{0.9818}_{(1+z^2)/2\text{, dead cone }0.0003}
+  \times\underbrace{0.8076}_{0.2106/0.2608}
+  \times\underbrace{0.2747}_{w_{\mathrm{damp}}\text{, \cref{eq:mother_gives_birth:dampen}}}
+  \times\underbrace{0.9810}_{xf_u(0.3944)/xf_u(0.3901)}
+  =0.2137 ,
+\end{equation*}
+against which $R'=0.0623$ was drawn: accepted (the bottom-right panel of
+\cref{fig:mother_gives_birth:veto}). That is the ``$5.241\GeV$,
+$z=0.9819$'' the mother proposed in round~1, and it lost to the
+$53.9\GeV$ of the $+z$ beam. The same three-level bookkeeping, trials,
+accepted proposals, winners, gave the $3513/433/33$ of
+\cref{sec:mother_gives_birth:sudakov}.
 
 \section{\PYTHIA's \texorpdfstring{\pt}{pT}-ordered dipole shower}
 \label{sec:mother_gives_birth:dipole_shower}
@@ -588,7 +902,39 @@ gluon has two lines and therefore two partners. Each such pair is a
 as its \emph{recoiler} [\code{dipole\_ends}]. The dipole picture is what
 makes the shower coherent: a soft gluon at a wide angle sees the total
 colour charge of the pair, not of one parton, and interference between the
-two ends is built in.
+two ends is built in (\cref{fig:mother_gives_birth:dipoles}(c)).
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_colour_dipoles}}
+\caption[Colour chains and dipoles of our event]{The colour lines of our
+event drawn as chains, with the tags and row numbers of the record. (a)~After
+the three initial-state branchings: the incoming gluon \#16 holds two
+lines, 103 to the $u$ quark emitted in branching~1 and 105 to the gluon
+\#17 of branching~3, which is tied by line 101 to the $\bar b$; the
+incoming $u$ \#11 is tied by 104 to the gluon \#18 of branching~2, which
+holds the mother on line 102. Every end of every line is a radiator and the
+other end its recoiler. (b)~After branchings 4 and 5: each emitted gluon has
+inserted itself into the line of its radiator with a new tag (106, 107),
+and the recoilers have become new copies with their old tags. (c)~Colour
+coherence: a soft gluon at an angle larger than the opening angle of a
+dipole cannot resolve its two ends and sees their summed colour charge.}
+\label{fig:mother_gives_birth:dipoles}
+\end{figure}
+
+\Cref{fig:mother_gives_birth:dipoles}(a) draws the chains as they stand
+when the first final-state branching is about to happen, after the three
+initial-state branchings have each inserted a parton into them. Read the
+log's line for branching~4 against it: ``radiator \#20 $\bar b$ radiates
+on its acol line (tag 101) against recoiler \#17 $g$'' is the right end of
+the upper chain radiating against its neighbour, and the dipole mass of
+$843\GeV$ is the invariant mass of that pair. The mother, at the right end
+of the lower chain, radiates against the gluon \#18 that the $-z$ beam
+emitted in branching~2, a dipole of only $80.6\GeV$. Panel~(b) is the same
+picture two branchings later and is the one to keep in mind for the rest
+of the section: the emitted gluons sit \emph{between} their radiator and
+recoiler on the chain, every new parton brings two new dipole ends, and
+the number of competitors in a round grows by two with every final-state
+branching, from seven ends to eleven here and to sixty-seven at the end.
 
 A branching $a\to bc$ of the radiator is parametrised by its virtuality
 $m_a$ and the energy fraction $z$ kept by $b$ in the dipole rest frame, and
@@ -598,7 +944,15 @@ the evolution variable is
   \label{eq:mother_gives_birth:pt_evol_fsr}
 \end{equation}
 where $m_{a,0}$ is the on-shell mass of the radiator ($4.8\GeV$ for the $b$,
-zero for a gluon). Check the small-angle limit: for a massless emitter with
+zero for a gluon). The mother's first emission, branching~5 of the log,
+had $\ptevol=32.070\GeV$ and $z=0.6013$, so her virtuality was
+\begin{equation*}
+  m_a^2=\mb^2+\frac{\ptevol^2}{z(1-z)}
+  =23.04+\frac{1028.49}{0.6013\times0.3987}=4313.0\GeV^2,
+  \qquad m_a=65.67\GeV ,
+\end{equation*}
+the invariant mass of the $b$--gluon pair she became, each daughter on
+shell. Check the small-angle limit: for a massless emitter with
 energy $E$ and opening angle $\theta$, $m_a^2\simeq z(1-z)E^2\theta^2$, so
 $\ptevol\simeq z(1-z)E\theta$, the transverse momentum of either
 daughter with respect to the parent. The three kernels are those of
@@ -610,12 +964,62 @@ with all three on shell, the recoiler keeping its direction in the dipole
 frame and giving up the longitudinal momentum needed for the radiator's
 virtuality [\code{fsr\_kinematics}].
 
+Read the construction once with the log's numbers for the $\bar b$'s first
+emission, branching~4 ($\ptevol=34.218\GeV$, $z=0.5939$,
+$m_a=69.84\GeV$), whose recoiler is the final-state gluon of the third
+initial-state branching. In the dipole rest frame, of mass
+$843.0\GeV$, the daughter pair gets $E_P=424.41\GeV$, the $\bar b$
+$E_1=zE_P=252.08\GeV$ and the gluon $(1-z)E_P=172.33\GeV$, and the
+daughter's transverse momentum with respect to the pair's axis,
+$\sqrt{E_1^2-\mb^2-p_{1z}^2}=34.15\GeV$, reproduces $\ptevol$ up to the
+mass term. The quoted $z$ is a fraction in \emph{this} frame. Back in the
+laboratory the accounts read
+\begin{equation*}
+  \underbrace{2449.447}_{\bar b}+\underbrace{79.117}_{\text{recoiler}}
+  =\underbrace{1467.400}_{\bar b'}+\underbrace{982.588}_{g}
+  +\underbrace{78.577}_{\text{recoiler}'}\ \GeV ,
+\end{equation*}
+balanced to $4\times10^{-12}\GeV$ in all four components, and the colour
+line is rethreaded: the $\bar b$ carried anticolour~101; after the
+branching the daughter $\bar b$ carries anticolour~106, the new gluon
+$(106,101)$ and the recoiler keeps $(101,105)$. The gluon has inserted
+itself into the existing line, and these new tags decide who radiates
+against whom from now on (\cref{fig:mother_gives_birth:dipoles}(b)). One more lesson from the same two branchings:
+there are three transverse momenta in the log and they are not the same
+quantity (\cref{tab:mother_gives_birth:three_pts}). For the mother's
+emission the evolution variable is $32.07\GeV$ but the daughter's
+transverse momentum in the construction frame is only $6.25\GeV$, because
+her $65.7\GeV$ virtuality uses up most of the $80.6\GeV$ dipole she shares
+with a nearby gluon; the emitted gluon nevertheless has $38.2\GeV$ in the
+laboratory. Decreasing evolution scales do not mean decreasing laboratory
+transverse momenta.
+
+\begin{table}[htbp]\centering\small
+\caption[Three transverse momenta in one branching]{Three transverse
+momenta that appear in the log of every final-state branching, for the
+first emission of each $b$ quark; all in GeV.}
+\label{tab:mother_gives_birth:three_pts}
+\begin{tabular}{llrr}\toprule
+quantity & meaning & $\bar b$, branching 4 & $b$, branching 5 \\ \midrule
+$\ptevol$ & evolution variable that orders the shower & $34.218$ & $32.070$ \\
+$\pt$ in the dipole frame & daughter's \pt relative to the pair's axis & $34.145$ & $6.246$ \\
+gluon's laboratory \pt & relative to the beam, what a detector sees & $67.305$ & $38.234$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 Two things happen when the recoiler is an incoming parton, as it is for both
 $b$ quarks at the start of our shower. First, the incoming parton cannot
 absorb recoil by changing direction; instead its momentum fraction grows,
 $x\to x'=x\,(1+\delta)$ with $\delta=(m_a^2-m_{a,0}^2)/(m_{\mathrm{dip}}^2-m_{a,0}^2)$,
 and the emission is weighted by the PDF ratio $xf(x')/xf(x)$ at the new
-fraction, which for a valence quark at $x=0.39$ is below one. Second,
+fraction, which for a valence quark at $x=0.39$ is below one. Our event
+has one such emission that was actually executed, branching~26, a gluon
+emitting at $0.820\GeV$ against the incoming gluon of the $+z$ side:
+$\delta=0.00188$, the incoming fraction moves from $0.0171076$ to
+$0.0171398$, and the $0.219\GeV$ the daughters gain is exactly what the
+beam parton now brings in more. The ``$x$ after ISR'' of the summary line
+therefore includes small shifts from final-state emissions too. Second,
 \PYTHIA damps such emissions by the factor
 \begin{equation}
   w_{\mathrm{damp}}=\frac{\ptrad\,\ptevol}
@@ -625,7 +1029,10 @@ fraction, which for a valence quark at $x=0.39$ is below one. Second,
 \end{equation}
 with $\ptrad$ the transverse momentum of the radiator itself,
 which suppresses large virtualities of a parton whose colour partner is a
-beam. This one factor turns out to be the single most sensitive ingredient
+beam. For the mother's round-1 proposal, $\ptrad=113.2\GeV$,
+$\ptevol=5.24\GeV$ and $m_a=39.6\GeV$, it is
+$593/(593+1567)=0.275$, the smallest of the four factors in the weight of
+\cref{sec:mother_gives_birth:veto}. This one factor turns out to be the single most sensitive ingredient
 of the whole shower: switching it off doubles the number of final-state
 branchings in \cref{tab:mother_gives_birth:numbers}
 (\cref{sec:mother_gives_birth:pythia}).
@@ -653,7 +1060,9 @@ $b$ there are to branch relative to how many $a$ there are to be found
 where $Q^2$ is the spacelike virtuality of $a$, and $p_{\mathrm{T}0}=2\GeV$
 (\code{SpaceShower:pT0Ref}) regularises the coupling and the measure,
 $\alphas(\pt^2)\to\alphas(\pt^2+p_{\mathrm{T}0}^2)$, so that the evolution can be
-continued to $\pt^{\min}=0.42\GeV$ without the coupling diverging. The
+continued to $\pt^{\min}=0.42\GeV$ without the coupling diverging: at
+$\ptevol=1\GeV$ the coupling is evaluated at $\sqrt5=2.24\GeV$ and is
+$0.29$ instead of $0.53$, and the measure is a quarter of $\mathrm{d}\pt^2/\pt^2$. The
 four channels [\code{isr\_channels}] are $q\leftarrow q$ (a gluon is
 emitted), $q\leftarrow g$ (an antiquark is emitted), $g\leftarrow g$ and
 $g\leftarrow q$ (a quark is emitted and the gluon continues). After the
@@ -664,6 +1073,47 @@ rotated so that everything balances [\code{isr\_kinematics}]. The
 \emph{recoil is taken by the entire event}: every final-state parton, the
 mother included, shifts. We will see her \pt jump by $20\GeV$ three times
 before she has emitted anything herself.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_isr_backward}}
+\caption[The initial-state branchings of our event as a diagram]{The three
+initial-state branchings of our event drawn as one diagram, with the row
+numbers of the record. Time runs from left to right: the $+z$ proton
+provides a gluon at $x''=1.36\times10^{-2}$, which radiates a gluon and
+continues as a spacelike gluon at $x'=2.79\times10^{-3}$, which splits into
+the $\bar u$ at $x=2.17\times10^{-3}$ that enters the hard process and a $u$
+quark that goes into the final state; the $-z$ proton provides a $u$ at
+$x'=0.459$ that emits a gluon before entering at $x=0.390$. The shower
+built this diagram from right to left, at $53.9$, $51.4$ and $42.2\GeV$
+(the circled numbers), asking at each step where the parton it already had
+came from.}
+\label{fig:mother_gives_birth:isr_diagram}
+\end{figure}
+
+Branching~1 of the log, the circled~1 of
+\cref{fig:mother_gives_birth:isr_diagram}, is \cref{eq:mother_gives_birth:isr}
+with every quantity filled in. The $\bar u$ of the hard process, $x=2.17429\times10^{-3}$,
+is found to come from a gluon with $z=0.77894$, so the gluon entered with
+\begin{equation*}
+  x'=\frac{x}{z}=\frac{2.17429\times10^{-3}}{0.77894}=2.79136\times10^{-3},
+  \qquad
+  Q^2=\frac{\ptevol^2}{1-z}=\frac{2902.735}{0.22106}=13130.8\GeV^2 ,
+\end{equation*}
+and the record confirms the meaning of $Q^2$: the four-momentum of the
+new incoming gluon minus that of the emitted $u$ squares to
+$-13130.8\GeV^2$, spacelike. The coupling is evaluated at
+$\pt^2+p_{\mathrm{T}0}^2=2906.7\GeV^2$, $\alphas=0.1282$, and the PDF
+ratio is $16.247/1.037=15.66$. The emitted $u$ quark has
+$(p_x,p_y)=(14.62,-42.81)\GeV$, that is $\pt=45.24\GeV$ in the
+laboratory against $\ptevol=53.88\GeV$, and an energy of $175.9\GeV$,
+although its parent gluon carries only $18.98\GeV$ along the beam: a
+spacelike branching is not a decay, and the energy comes from the whole
+scattering system. The $\bbbar$ pair, which has not radiated, is boosted
+to balance the $45\GeV$: the $\bar b$ goes from $113.22$ to $115.77\GeV$
+and the mother from $113.22$ to $93.74\GeV$, while their invariant mass
+stays at $396.10\GeV$ to the last digit. Including the new $u$ the
+partonic system now has a mass of $448.8\GeV$, as it must for the larger
+$x'$.
 
 The PDF ratio is where the initial state differs most from the final. In
 the collinear limit of \cref{eq:mother_gives_birth:collinear_limit} nothing
@@ -690,7 +1140,19 @@ and both incoming partons propose their next branching by the veto
 algorithm, the hardest proposal is executed, the event is updated, and all
 proposals are made afresh from that scale [\code{Shower.run}]. Nothing is
 remembered from the losing proposals; that is legitimate because the veto
-algorithm's survival probabilities factorise through every scale. In the
+algorithm's survival probabilities factorise through every scale. The
+ladder of our event reads
+\begin{equation*}
+  113.32\to53.88\to51.36\to42.16\to34.22\to32.07\to25.62\to\cdots
+  \to0.647\to0.644\GeV ,
+\end{equation*}
+38 rungs, and it is an ordering in resolution, not a clock: the first
+three rungs are initial-state branchings reconstructed backwards towards
+the beams, the next two are the first emissions of the two $b$ quarks.
+Watch what happens to a loser. In round~1 the $-z$ beam proposed
+$12.70\GeV$ and lost to $53.88$; in round~2 it proposed afresh, below
+$53.88$, and got $51.36\GeV$, which won. The $12.70\GeV$ was never a
+scheduled emission. In the
 full generator the multi-parton interactions of \cref{ch:uninvited_cousins}
 are interleaved in the same way, which is why the \CMSSW log quotes one
 ``max \pt scale'' for all three.
@@ -717,9 +1179,23 @@ coupling. The first is the origin of the warning
 of every CP5 log: the tune asks for $0.5\GeV$, and \PYTHIA refuses to go
 closer than a factor $1.6$ to the Landau pole. Below the cut-off the
 shower stops and hadronisation (\cref{ch:dressing_children}) takes over.
-The flavour thresholds of the running coupling, $m_c=1.5$ and $m_b=4.8\GeV$,
-also sit inside the evolution range: above $4.8\GeV$ a gluon may split into
-$\bbbar$, and in our event one does.
+The cut-offs apply to the evolution variable, not to what ends up in the
+record: the last branching of our event, number~38, is a $\bar d$ emitting
+a gluon at $\ptevol=0.644\GeV$ with $z=0.743$ and a pair mass of
+$1.47\GeV$, and the gluon has a laboratory \pt of $0.39\GeV$, below the
+cut-off, which is perfectly possible because the two are different
+quantities. Nor does the last emission sit at the cut-off: in round~39
+nobody proposed anything above it, and that, not reaching $0.611\GeV$, is
+what stops the shower. The flavour thresholds of the running coupling,
+$m_c=1.5$ and $m_b=4.8\GeV$, also sit inside the evolution range: above
+$4.8\GeV$ a gluon may split into $\bbbar$, and in our event one does, at
+branching~10, with $\ptevol=5.967\GeV$ and $z=0.350$. Its pair mass,
+$\sqrt{35.60/(0.350\times0.650)}=12.51\GeV$, clears the threshold
+$2\mb=9.6\GeV$; the two new quarks have $27.2$ and $40.1\GeV$ in the
+laboratory and are born $\dR=0.23$ apart. The gluon was the one the
+$\bar b$ had radiated at branching~4, so the event now contains two $b$
+and two $\bar b$ quarks, and ``a $b$ quark in the final state'' no longer
+says where it came from.
 
 \subsection{The CP5 shower settings and the coupling}
 \label{sec:mother_gives_birth:cp5}
@@ -765,10 +1241,18 @@ you ran in \cref{sec:mother_gives_birth:standalone_code}.
 
 \paragraph{Step 1: read the hard process and find the dipoles.} From
 \file{event_ME.lhe} the script takes the two incoming and two outgoing
-partons with their colour tags [\code{read\_event}]. Colour~102 links the $b$
+partons with their colour tags [\code{read\_event}]. The two incoming
+partons are as unequal as partons can be: the $\bar u$ carries
+$14.785\GeV$, $x_A=2.17\times10^{-3}$ of its proton, the $u$ carries
+$2652.9\GeV$, $x_B=0.390$, so that their laboratory energy is
+$2667.7\GeV$ but $\sqrt{\shat}=\sqrt{x_Ax_Bs}=396.1\GeV$, and both $b$
+quarks fly towards $-z$ with $\pt=113.221\GeV$ each. Colour~102 links the $b$
 to the incoming $u$, anticolour~101 the $\bar b$ to the incoming $\bar u$:
 two dipoles, four ends, and two beams that can radiate
-[\code{dipole\_ends}].
+[\code{dipole\_ends}]. Both dipoles have a mass of $377.9\GeV$ and could
+host emissions up to $188.9\GeV$; the starting scale is
+$\min(188.9,113.3)=113.3\GeV$, because phase space does not override the
+hard process.
 
 \paragraph{Step 2: set the scale.} $\pt^{\max}=113.32\GeV$ from
 \cref{eq:mother_gives_birth:ptmax}; $\pt^{\min}$ from
@@ -781,6 +1265,17 @@ algorithm of \cref{sec:mother_gives_birth:veto} with the FSR kernels and
 beam, the same with the ISR kernels and the PDF ratio of
 \cref{eq:mother_gives_birth:isr} [\code{pT2next\_isr}]. Each returns the
 scale of its next branching, or nothing if it evolved below the cut-off.
+Round~1 of our event:
+\begin{center}\small
+\begin{tabular}{llr}\toprule
+competitor & proposed branching & $\ptevol$ [GeV] \\ \midrule
+$\bar b$ against the incoming $\bar u$ & $\bar b\to\bar b g$, $z=0.953$ & $2.159$ \\
+$b$ against the incoming $u$ & $b\to bg$, $z=0.982$ & $5.241$ \\
+$+z$ beam, $\bar u$ at $x=2.17\times10^{-3}$ & $\bar u\leftarrow g$, $z=0.779$ & $\mathbf{53.877}$ \\
+$-z$ beam, $u$ at $x=0.390$ & $u\leftarrow u$, $z=0.797$ & $12.700$ \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \paragraph{Step 4: the hardest wins.} Execute that branching: new partons
 are appended to the record with \PYTHIA's status codes, the parents are
@@ -796,7 +1291,16 @@ anything above the cut-off [\code{Shower.run}].
 row with positive status. The script follows each hard $b$ quark down the
 record to its final copy, collects the final partons within $\dR<0.4$ of it
 and prints the family's \pt, energy, mass and multiplicity
-[\code{family}, \code{summarise}].
+[\code{family}, \code{summarise}]. The record of our event has $158$
+rows, of which $40$ have positive status: $2+5+33$, since every executed
+branching adds one parton. They are $27$ gluons and $13$ quarks, and you
+can count the gluons from the branching list itself,
+$4$ (emitted by ISR) $+\,9$ ($q\to qg$) $+\,19$ ($g\to gg$, one net each)
+$-\,5$ ($g\to q\bar q$) $=27$, and the quarks as
+$2+1+2\times5=13$. The two incoming partons now carry
+$x_A=0.01714$ and $x_B=0.46999$, that is $116.55$ and $3195.91\GeV$, which
+is the final-state energy sum of $3312.46\GeV$; the rest of the two
+protons is not in the record.
 
 For our event the sequence is 38 branchings long, and its first five are
 worth reading in order, because they set everything that follows:
@@ -839,7 +1343,34 @@ the \emph{dead cone}. For the mother at her birth, $E_b=252\GeV$ in the
 laboratory and $\theta_0=0.019$; in the $(\eta,\phi)$ plane, where angles
 near the transverse direction scale with $\pt$ rather than $E$, the relevant
 number is $\mb/\pt=0.042$, still an order of magnitude below the family
-cone. In the shower the effect enters through the quasi-collinear splitting
+cone. \Cref{fig:mother_gives_birth:dead_cone} draws the cone and the
+angular distribution behind it: for a soft gluon the massless
+$\mathrm{d}\theta^2/\theta^2$ of \cref{eq:mother_gives_birth:collinear_limit}
+becomes
+\begin{equation}
+  \frac{\mathrm{d}\theta^2}{\theta^2}\;\longrightarrow\;
+  \frac{\theta^2\,\mathrm{d}\theta^2}{(\theta^2+\theta_0^2)^2},
+  \label{eq:mother_gives_birth:dead_cone_angle}
+\end{equation}
+which is the massless form for $\theta\gg\theta_0$, a quarter of it at
+$\theta=\theta_0$, and $\theta^2\,\mathrm{d}\theta^2/\theta_0^4$, vanishing,
+inside the cone. Check the first limit yourself: drop $\theta_0$ in the
+denominator and the $\theta^2$ cancel. The radiation is not forbidden
+inside the cone, it is starved of its collinear enhancement, which is why
+the name is a little too dramatic.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_dead_cone}}
+\caption[The dead cone]{Left: the mother leaves the hard process and
+radiates gluons at angles $\theta$ to her direction; inside the cone
+$\theta<\theta_0=\mb/E_b$ the radiation is suppressed (the cone is drawn far
+wider than the $0.019$ of our mother). Right: the soft-gluon emission
+density per unit $\ln\theta$ of \cref{eq:mother_gives_birth:dead_cone_angle}
+relative to a massless quark, for which it is flat.}
+\label{fig:mother_gives_birth:dead_cone}
+\end{figure}
+
+In the shower the effect enters through the quasi-collinear splitting
 function
 \begin{equation}
   P_{qq}(z,\pt^2)=C_F\left[\frac{1+z^2}{1-z}

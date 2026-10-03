@@ -1,0 +1,55 @@
+% ---------------------------------------------------------------------------
+% The four splitting functions as vertices, with their kernels, colour
+% factors and the number of times each occurred among the 38 branchings of
+% our event (-v log of standalone_parton_showering.py: 9 q->qg, 19 g->gg,
+% 5 g->qqbar, 5 ISR of which 2 q<-q, 1 q<-g, 2 g<-g).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  fermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.6 with {\arrow[scale=1.0]{Stealth}}}},
+  antifermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.4 with {\arrowreversed[scale=1.0]{Stealth}}}},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=4pt,amplitude=1.8pt}},
+  vertex/.style={fill=black,circle,inner sep=1.5pt},
+  lab/.style={font=\scriptsize,align=center},
+  kern/.style={font=\scriptsize,align=left},
+  head/.style={font=\small\bfseries},
+  count/.style={draw,rounded corners=2pt,fill=orange!20,font=\scriptsize,inner sep=2pt}]
+\node[head,anchor=west] at (-0.4,2.6) {the four branchings of the shower, their kernels, and how often each happened in the 38 branchings of our event};
+% (1) q -> q g
+\begin{scope}
+\draw[fermion] (0,0) -- (1.4,0); \draw[fermion] (1.4,0) -- (2.6,0.8) node[right,lab] {$q$, keeps $z$};
+\draw[gluon] (1.4,0) -- (2.6,-0.8) node[right,lab] {$g$, takes $1-z$};
+\node[vertex] at (1.4,0) {};
+\node[lab,above] at (0.6,0.05) {$q$};
+\node[kern,anchor=north west] at (-0.2,-1.3) {$P_{qq}(z)=C_F\dfrac{1+z^2}{1-z}$\\[3pt] soft pole at $z\to1$;\\$C_F=\tfrac43$};
+\node[count] at (1.3,1.6) {$9\times$ ($b$, $\bar b$, $s$, $\bar s$ emitting)};
+\end{scope}
+% (2) g -> g g
+\begin{scope}[xshift=5.6cm]
+\draw[gluon] (0,0) -- (1.4,0); \draw[gluon] (1.4,0) -- (2.6,0.8) node[right,lab] {$g$, $z$};
+\draw[gluon] (1.4,0) -- (2.6,-0.8) node[right,lab] {$g$, $1-z$};
+\node[vertex] at (1.4,0) {};
+\node[lab,above] at (0.6,0.1) {$g$};
+\node[kern,anchor=north west] at (-0.2,-1.3) {$P_{gg}(z)=2C_A\dfrac{(1-z(1-z))^2}{z(1-z)}$\\[3pt] poles at both ends;\\$C_A=3$, $C_A/C_F=\tfrac94$};
+\node[count] at (1.3,1.6) {$19\times$, the most frequent};
+\end{scope}
+% (3) g -> q qbar
+\begin{scope}[xshift=11.2cm]
+\draw[gluon] (0,0) -- (1.4,0); \draw[fermion] (1.4,0) -- (2.6,0.8) node[right,lab] {$q$, $z$};
+\draw[antifermion] (1.4,0) -- (2.6,-0.8) node[right,lab] {$\bar q$, $1-z$};
+\node[vertex] at (1.4,0) {};
+\node[lab,above] at (0.6,0.1) {$g$};
+\node[kern,anchor=north west] at (-0.2,-1.3) {$P_{qg}(z)=T_R\,[z^2+(1-z)^2]$\\[3pt] no pole: a soft quark\\is not enhanced; $T_R=\tfrac12$};
+\node[count] at (1.3,1.6) {$5\times$ ($s\bar s$, $\bbbar$, \dots)};
+\end{scope}
+% (4) initial state: q <- q, q <- g, g <- g, g <- q
+\begin{scope}[xshift=16.8cm]
+\draw[fermion] (0,0.8) -- (1.4,0) node[pos=0.1,above,lab] {$b$ from the proton, $x/z$};
+\draw[fermion] (1.4,0) -- (2.8,0) node[right,lab] {$a$ into $\hat\sigma$, $x$};
+\draw[gluon] (1.4,0) -- (2.4,-1.0) node[right,lab] {$c$ emitted};
+\node[vertex] at (1.4,0) {};
+\node[kern,anchor=north west] at (-0.2,-1.3) {backward: $P_{ba}(z)\,\dfrac{x'f_b(x',\pt^2)}{xf_a(x,\pt^2)}$\\[3pt] the same kernels read\\upstream, times a PDF ratio};
+\node[count] at (1.3,1.6) {$5\times$ ($2\;q\leftarrow q$, $1\;q\leftarrow g$, $2\;g\leftarrow g$)};
+\end{scope}
+\node[lab,text=black!65,text width=19cm,anchor=north west] at (-0.4,-3.1) {The daughter that continues keeps the fraction $z$ of the parent's momentum; the kernels are rates per unit $\ln t$ and may exceed one. $P_{gq}(z)=P_{qq}(1-z)$ is the first vertex read with the gluon as the continuing parton, needed for $g\leftarrow q$ in the initial state. The gluon's double pole and its colour factor are why gluons take over the radiating as the shower proceeds: $27$ of the $40$ final partons of our event are gluons.};
+\end{tikzpicture}

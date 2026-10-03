@@ -1,0 +1,23 @@
+% ---------------------------------------------------------------------------
+% Where the couplings and the PDFs of a CMS CP5 event come from: one
+% alpha_s(mZ) = 0.118 at second order for the matrix element, the two showers
+% and the MPI, one PDF set for the hard process and the backward evolution.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  stage/.style={draw,rounded corners=3pt,thick,fill=orange!12,align=center,minimum height=13mm,text width=3.1cm,font=\scriptsize},
+  src/.style={draw,rounded corners=3pt,thick,fill=blue!8,align=center,minimum height=10mm,text width=4.6cm,font=\scriptsize},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick,gray!60},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.3,3.3) {one coupling, one PDF set, four places where they enter a CP5 event};
+\node[src] (A) at (2.5,2.0) {\textbf{\code{alphaSvalue = 0.118}, \code{alphaSorder = 2}}\\$\Lambda_5=0.226$, $\Lambda_4=0.328$, $\Lambda_3=0.382\GeV$};
+\node[src] (P) at (10.5,2.0) {\textbf{\code{PDF:pSet}: NNPDF3.1 NNLO}, member 0\\$xf(x,Q^2)$ for all flavours and the gluon};
+\node[stage] (ME) at (0,0) {\textbf{matrix element}\\\code{SigmaProcess:}\\$\alphas(\pthat^2+\mb^2)=0.1143$\\PDFs at $\muF=113\GeV$};
+\node[stage] (ISR) at (3.6,0) {\textbf{initial-state shower}\\\code{SpaceShower:}\\$\alphas(\pt^2+p_{\mathrm T0}^2)$\\PDF ratios at $\pt^2$};
+\node[stage] (FSR) at (7.2,0) {\textbf{final-state shower}\\\code{TimeShower:}\\$\alphas(\ptevol^2)$, $0.14\to1.56$\\no PDF};
+\node[stage,text width=3.7cm] (MPI) at (11.1,0) {\textbf{multi-parton interactions}\\\code{MultipartonInteractions:}\\$\alphas(\pt^2+p_{\mathrm T0}^2)$, PDFs\\(\cref{ch:uninvited_cousins})};
+\foreach \s in {ME,ISR,FSR,MPI} {\draw[flow] (A.south) -- (\s.north);}
+\foreach \s in {ME,ISR,MPI} {\draw[flow] (P.south) -- (\s.north);}
+\node[lab,text=black!65,text width=14.4cm,anchor=north west] at (-1.6,-1.0) {\PYTHIA's defaults would be $0.1365$ at first order for both showers; CP5 ties all four to the same $0.118$ at second order, the ``changes only'' lines of the \CMSSW settings table. The shower $\alphas$ is a tune parameter, not the $\overline{\mathrm{MS}}$ world average; the standalone script reproduces the running and the thresholds analytically (\code{AlphaStrong}) and embeds the PDF grid (\code{TablePDF}).};
+\end{tikzpicture}

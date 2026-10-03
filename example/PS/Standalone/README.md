@@ -21,6 +21,22 @@ python3 standalone_parton_showering.py -vv | less        # ... and every trial o
 On this Mac use `/usr/bin/python3` (NumPy + SciPy); one shower takes about
 0.3 s, the start-up (parsing the embedded PDF grid) about 0.8 s.
 
+## Theory plots of chapter 2
+
+`plot_theory_PS.py` (matplotlib; `/usr/bin/python3` on this Mac) draws
+`theory_parton_showering.pdf`, one page per theory section of chapter 2:
+the propagator and the branchings per octave, the splitting functions with
+the event's z values, the measured Sudakov form factors against the
+leading-log formula, evolution variable against laboratory pT, the
+backward-evolution integrand, the ladder and the competitors per round, the
+coupling and its overestimate, every proposal of every round, the dead-cone
+factors, and the mother's pT chain with the family against the cone radius.
+It replays the seed-1 shower with the classes of `standalone_parton_showering.py`,
+reads `../event_PS.lhe` with the parser of `../plot_journey_PS.py` and parses
+the committed `-v` log `standalone_parton_showering.log`; `make figures` in
+the book directory regenerates it. About a minute (1500 proposals per
+radiator for the survival curves; `--trials 400` is faster).
+
 ## Learning mode (`-v`, `-vv`)
 
 `-v` prints, before the shower, a table of alpha_s at the scales that

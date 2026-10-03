@@ -66,7 +66,8 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PS/journey_PS.pdf \
            example/PS/Standalone/animate_standalone_parton_showering_stills.pdf \
            example/PS/Standalone/veto_algorithm.pdf \
-           example/ME/Standalone/theory_qqbar_bbbar.pdf
+           example/ME/Standalone/theory_qqbar_bbbar.pdf \
+           example/PS/Standalone/theory_parton_showering.pdf
 
 figures: $(FIGURES)
 
@@ -99,6 +100,14 @@ example/ME/Standalone/theory_qqbar_bbbar.pdf: example/ME/Standalone/plot_theory_
 # The seven-point scale scan with the full integrator (LHAPDF + PYTHIA alpha_s, about 2 min).
 example/ME/Standalone/scale_scan.json: example/ME/Standalone/scan_scales.py example/ME/Standalone/qqbar_bbbar_xsec.py
 	example/ME/Standalone/.venv/bin/python example/ME/Standalone/scan_scales.py -o $@
+
+# The plots behind the theory sections of chapter 2 (one page per section): the
+# seed-1 shower replayed with the script's classes, the committed record and the
+# -v log (about a minute: 1500 proposals per radiator for the survival curves).
+example/PS/Standalone/theory_parton_showering.pdf: example/PS/Standalone/plot_theory_PS.py \
+		example/PS/Standalone/standalone_parton_showering.py example/PS/plot_journey_PS.py \
+		example/PS/event_PS.lhe example/PS/Standalone/standalone_parton_showering.log
+	$(PYTHON) example/PS/Standalone/plot_theory_PS.py -o $@
 
 # The four steps of the Sudakov veto algorithm with the numbers of the seed-1
 # shower (imports AlphaStrong from the shower script; needs matplotlib).

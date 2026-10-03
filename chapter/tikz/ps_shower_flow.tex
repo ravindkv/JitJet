@@ -1,0 +1,37 @@
+% ---------------------------------------------------------------------------
+% The six steps of the standalone shower as a flow chart, with the numbers of
+% the seed-1 event from the -v log (round 1 proposals, winner, record size).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  stepbox/.style={draw,rounded corners=3pt,thick,fill=orange!12,align=left,inner sep=5pt,minimum height=11mm,text width=5.4cm},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.4cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!40,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  loop/.style={-{Stealth[length=2.5mm,width=2mm]},thick,red!70!black},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.5) {the recipe};
+\node[head,anchor=west] at (6.5,1.5) {our event (seed 1), from the \code{-v} log};
+\node[stepbox] (S1) at (2.4,0) {\textbf{1\; read the hard process, find the dipoles}\\ incoming and outgoing partons with colour tags; every end of a colour line is a radiator};
+\node[stepbox,below=8mm of S1] (S2) {\textbf{2\; set the scales}\\ $\pt^{\max}$ from the hard process, $\pt^{\min}$ from $\Lambda_3$, $\Lambda_{3,4,5}$ from $\alphas(m_Z)$};
+\node[stepbox,below=8mm of S2] (S3) {\textbf{3\; let everybody propose}\\ veto algorithm for each dipole end (FSR) and each beam (ISR, with the PDF ratio)};
+\node[stepbox,below=8mm of S3] (S4) {\textbf{4\; the hardest wins}\\ execute it: new rows, status codes, recoil, colour tags handed on};
+\node[stepbox,below=8mm of S4] (S5) {\textbf{5\; repeat from the winning scale}\\ until nobody proposes anything above the cut-off};
+\node[stepbox,below=8mm of S5] (S6) {\textbf{6\; write the record, summarise}\\ final state = rows with positive status; follow each $b$ to its last copy; family within $\dR<0.4$};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6} {\draw[flow] (\a) -- (\b);}
+\draw[loop] (S5.west) -- ++(-0.6,0) |- (S3.west) node[pos=0.25,left,font=\scriptsize,text=red!70!black,align=center] {38\\rounds};
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {read\_event, dipole\_ends};
+\node[fn,anchor=south east] at (S3.north east) {pT2next\_fsr, pT2next\_isr};
+\node[fn,anchor=south east] at (S4.north east) {branch\_fsr, branch\_isr};
+\node[fn,anchor=south east] at (S5.north east) {Shower.run};
+\node[fn,anchor=south east] at (S6.north east) {family, summarise};
+\node[numbox,anchor=west] (N1) at (6.5,0 |- S1) {$\bar u$ \#3 ($x_A=2.17\times10^{-3}$) and $u$ \#4 ($x_B=0.390$) in; $\bar b$ \#5 and $b$ \#6 out, $\pt=113.22\GeV$ each\\ dipoles: $\bar b$--$\bar u$ on line 101, $b$--$u$ on line 102, both $m_{\mathrm{dip}}=377.9\GeV$; four ends and two beams can radiate};
+\node[numbox,anchor=west] (N2) at (6.5,0 |- S2) {$\pt^{\max}=\sqrt{113.22^2+4.8^2}=113.32\GeV$;\quad $\pt^{\min}$: $0.611$ (FSR), $0.420\GeV$ (ISR);\\ $\Lambda_5=0.2262$, $\Lambda_4=0.3282$, $\Lambda_3=0.3820\GeV$; $7.5$ octaves to fill};
+\node[numbox,anchor=west] (N3) at (6.5,0 |- S3) {round 1: $\bar b$ proposes $2.159\GeV$ ($z=0.953$), $b$ $5.241$ ($0.982$), $+z$ beam $53.877$ ($\bar u\leftarrow g$, $0.779$), $-z$ beam $12.700$ ($u\leftarrow u$, $0.797$)};
+\node[numbox,anchor=west] (N4) at (6.5,0 |- S4) {ISR $\bar u\leftarrow g$ at $53.877\GeV$: rows 7 ($g$, $x'=2.79\times10^{-3}$, status $-41$) and 8 ($u$, $45.2\GeV$, status 43); the $\bbbar$ pair recoils, $113.22\to115.77$ and $93.74\GeV$};
+\node[numbox,anchor=west] (N5) at (6.5,0 |- S5) {$113.32\to53.88\to51.36\to42.16\to34.22\to32.07\to\cdots\to0.647\to0.644\GeV$; in round 39 all $69$ competitors are silent};
+\node[numbox,anchor=west] (N6) at (6.5,0 |- S6) {158 rows, 40 final ($27$ gluons, $13$ quarks); $x_A=0.0171$, $x_B=0.470$;\\ $b$: $113.22\to78.12\GeV$, family $100.45\GeV$, $m=13.52$, $n=3$;\quad $\bar b$: $73.18$, family $92.13\GeV$};
+\foreach \s/\n in {S1/N1,S2/N2,S3/N3,S4/N4,S5/N5,S6/N6} {\draw[flow,gray!60] (\s.east) -- (\n.west);}
+\end{tikzpicture}

@@ -1,0 +1,36 @@
+% ---------------------------------------------------------------------------
+% The Sudakov veto algorithm as a flow chart, annotated with the mother's
+% first proposal in round 1 of the seed-1 shower (-vv log): three draws,
+% 59.67 -> 47.54 -> 5.24 GeV, the four weight factors and R' = 0.062.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=orange!12,align=center,inner sep=5pt,text width=4.6cm},
+  decision/.style={draw,thick,diamond,aspect=2.6,fill=blue!8,align=center,inner sep=1pt,text width=3.6cm,font=\scriptsize},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=6.9cm,font=\scriptsize},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  no/.style={flow,red!70!black},
+  yes/.style={flow,green!50!black},
+  head/.style={font=\small\bfseries},
+  lab/.style={font=\scriptsize,align=center}]
+\node[head,anchor=west] at (-2.6,1.4) {the veto algorithm, one proposal};
+\node[head,anchor=west] at (7.0,1.4) {the mother's proposal in round 1 (\code{-vv} log)};
+\node[box] (A) at (0,0) {\textbf{start} at the current scale $t$ (first: $t_{\max}$)};
+\node[box,below=6mm of A] (B) {\textbf{draw $R$}, solve $\Delta_{\mathrm{over}}(t,t')=R$ for the next trial scale $t'$ (\cref{eq:mother_gives_birth:veto_solution})};
+\node[decision,below=6mm of B] (C) {$t'$ above the cut-off and kinematically allowed?};
+\node[box,below=6mm of C] (D) {\textbf{draw $z$} from the overestimate kernel; compute the weight $w$ of \cref{eq:mother_gives_birth:veto_weight}};
+\node[decision,below=6mm of D] (E) {draw $R'$: $R'\le w$?};
+\node[box,below=6mm of E,fill=green!12] (F) {\textbf{accept}: this end proposes $t'$, $z$ (it still has to win the round)};
+\node[box,fill=gray!12] (G) at (-6.4,0 |- C) {\textbf{no emission}: this end is silent in this round};
+\draw[flow] (A) -- (B); \draw[flow] (B) -- (C); \draw[yes] (C) -- (D) node[midway,right,lab] {yes}; \draw[flow] (D) -- (E); \draw[yes] (E) -- (F) node[midway,right,lab] {yes};
+\draw[no] (C) -- (G) node[pos=0.3,above,lab] {below the cut-off};
+\draw[no] (E.east) -- ++(1.6,0) |- (A.east); \node[lab,text=red!70!black,anchor=west] at (4.3,0 |- E) {no: \textbf{continue from $t'$},\\not from $t_{\max}$};
+\draw[no] (C.east) -- ++(1.0,0) |- ($(A.east)+(0,-0.25)$); \node[lab,text=red!70!black,anchor=west] at (4.3,0 |- C) {not allowed:\\continue from $t'$};
+% the numbers
+\node[numbox,anchor=west] (N1) at (7.0,0 |- B) {draw 1: $R=0.51607$ from $113.32\GeV$ $\to$ $t'^{1/2}=59.67\GeV$};
+\node[numbox,anchor=west] (N2) at (7.0,0 |- C) {$59.67$: recoiler is the incoming $u$, would need $x'=2.65>1$: not allowed\\draw 2: $R=0.77668$ from $59.67$ $\to$ $47.54\GeV$: $x'=19$, not allowed\\draw 3: $R=0.03959$ from $47.54$ $\to$ $5.24\GeV$: allowed};
+\node[numbox,anchor=west] (N3) at (7.0,0 |- D) {$z=0.9819$ from $2C_F/(1-z)$;\quad $w=0.9818\times0.8076\times0.2747\times0.9810=0.2137$\\(kernel ratio, coupling ratio, beam-recoil damping, PDF ratio)};
+\node[numbox,anchor=west] (N4) at (7.0,0 |- E) {$R'=0.0623\le0.2137$: accepted};
+\node[numbox,anchor=west] (N5) at (7.0,0 |- F) {the mother proposes $5.241\GeV$, $z=0.9819$; the $+z$ beam proposes $53.877\GeV$ and wins the round. Over the event: $3513$ draws, $433$ accepted, $33$ winners.};
+\foreach \s/\n in {B/N1,C/N2,D/N3,E/N4,F/N5} {\draw[flow,gray!60] ($(\s.east)+(0.1,0)$) -- (\n.west);}
+\end{tikzpicture}

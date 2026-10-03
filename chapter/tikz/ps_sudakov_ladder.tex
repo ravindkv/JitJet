@@ -1,0 +1,35 @@
+% ---------------------------------------------------------------------------
+% The Sudakov form factor as a product of survival probabilities, step by
+% step down the scale, and its two faces (branch at t / never branch) with
+% the numbers of our event (-v log: 3513 trials, 433 proposals, 33 winners
+% for FSR; "no emission" in round 2 for the mother's end; 69 silent
+% competitors in round 39).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  axis/.style={-{Stealth},thick},
+  stepbox/.style={draw,thick,fill=blue!8,minimum height=7mm,minimum width=20mm,font=\scriptsize,align=center},
+  branch/.style={draw,thick,fill=red!15,minimum height=7mm,minimum width=16mm,font=\scriptsize,align=center},
+  flow/.style={-{Stealth},thick}]
+% ---------------- (a) the product of survivals --------------------------------------------------
+\node[head,anchor=west] at (-0.3,2.4) {(a) a no-emission probability is a product of survivals};
+\draw[axis] (-0.3,0) -- (11.2,0); \node[lab,below] at (10.3,-0.1) {$\ln t$ runs \emph{down} $\to$};
+\foreach \i/\x/\t in {1/0.3/{$t_{\max}$},2/2.6/{$t_1$},3/4.9/{$t_2$},4/7.2/{$t_3$},5/9.5/{$\cdots$}} {
+  \draw (\x,-0.1) -- (\x,0.1); \node[lab,below] at (\x,-0.1) {\t};}
+\foreach \x/\lab in {1.45/{$1-\frac{\alphas\hat P}{2\pi}\delta\ln t\big|_{t_1}$},3.75/{$1-\frac{\alphas\hat P}{2\pi}\delta\ln t\big|_{t_2}$},6.05/{$1-\frac{\alphas\hat P}{2\pi}\delta\ln t\big|_{t_3}$},8.35/{$\cdots$}} {
+  \node[stepbox] at (\x,0.9) {\lab};}
+\node[lab] at (9.9,0.9) {$\times\;\cdots$};
+\node[lab,text=black!65,text width=10.4cm,anchor=north west] at (-0.3,-0.75) {Survive the first step, \emph{and} the second, \emph{and} the third: multiply. In the limit $\delta\ln t\to0$ the product becomes $\exp[-\int\mathrm{d}\ln t\,\frac{\alphas}{2\pi}\hat P]=\Delta(t_{\max},t)$, \cref{eq:mother_gives_birth:sudakov}, the same mathematics as a decay with a time-dependent rate. The probability of the \emph{first} branching at $t$ is the rate there times the survival down to there, \cref{eq:mother_gives_birth:first}.};
+% ---------------- (b) two faces -------------------------------------------------------------
+\begin{scope}[xshift=13.4cm]
+\node[head,anchor=west] at (-0.3,2.4) {(b) the two faces in the log of our event};
+\node[stepbox,minimum width=30mm] (S) at (1.6,1.2) {a dipole end at scale $t_{\max}$};
+\node[branch,minimum width=30mm] (B) at (-0.6,-0.6) {``proposes \dots\ pT = \dots''\\branches at $t$};
+\node[stepbox,minimum width=30mm,fill=gray!12] (N) at (3.8,-0.6) {``no emission above\\the cut-off''};
+\draw[flow] (S) -- (B) node[midway,left,lab] {$1-\Delta(t_{\max},t_{\min})$};
+\draw[flow] (S) -- (N) node[midway,right,lab] {$\Delta(t_{\max},t_{\min})$};
+\node[lab,text=black!65,text width=7.4cm,anchor=north west] at (-2.1,-1.35) {The two add up to one: unitarity. In round~2 the mother's own end took the right branch from $53.9\GeV$ straight through the cut-off; in round~39 all $69$ competitors did, and the shower stopped. Three levels of bookkeeping over the event: $3513$ trial scales, $433$ accepted proposals, $33$ winners (final state).};
+\end{scope}
+\end{tikzpicture}

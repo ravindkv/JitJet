@@ -1,0 +1,37 @@
+% ---------------------------------------------------------------------------
+% The scales of the shower on a logarithmic ladder: the starting scale, the
+% quark-mass thresholds of the coupling, pT0 of the initial state, the two
+% cut-offs and Lambda_3, with the 38 rungs of our event's ladder (-v log).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  tick/.style={thick},
+  ladder/.style={-{Stealth},very thick},
+  rung/.style={line width=1.6pt}]
+\node[head,anchor=west] at (-0.3,4.1) {the scales of the shower, $\log_{10}(\pt/\mathrm{GeV})$: the interleaved evolution runs from right to left};
+% axis: log10 from -0.6 (0.25 GeV) to 2.3 (200 GeV); 1 decade = 5.2 cm; x = (log10 v + 0.6) * 5.2
+\draw[ladder] (15.6,0) -- (-0.4,0);
+\foreach \l/\t in {0/{$1$},1/{$10$},2/{$100$}} {\draw[tick] ({(\l+0.6)*5.2},-0.12) -- ({(\l+0.6)*5.2},0.12); \node[lab,below] at ({(\l+0.6)*5.2},-0.15) {\t};}
+\node[lab,below] at ({(-0.301+0.6)*5.2},-0.15) {$0.5$}; \draw[tick] ({(-0.301+0.6)*5.2},-0.08) -- ({(-0.301+0.6)*5.2},0.08);
+\node[lab,below] at ({(0.699+0.6)*5.2},-0.15) {$5$}; \draw[tick] ({(0.699+0.6)*5.2},-0.08) -- ({(0.699+0.6)*5.2},0.08);
+\node[lab,below] at ({(1.699+0.6)*5.2},-0.15) {$50$}; \draw[tick] ({(1.699+0.6)*5.2},-0.08) -- ({(1.699+0.6)*5.2},0.08);
+% the 38 rungs of our event (pT_evol in GeV), FSR red/blue by family is not known here: orange = ISR, black = FSR
+\foreach \v in {53.877,51.361,42.157,5.933,1.245} {\draw[rung,orange!90!black] ({(ln(\v)/ln(10)+0.6)*5.2},0.0) -- ({(ln(\v)/ln(10)+0.6)*5.2},0.75);}
+\foreach \v in {34.218,32.070,25.615,22.096,13.377,10.618,5.967,5.802,4.402,2.571,2.485,2.256,1.866,1.771,1.489,1.022,0.985,0.864,0.861,0.823,0.820,0.803,0.767,0.746,0.737,0.735,0.730,0.724,0.714,0.700,0.675,0.647,0.644}
+  {\draw[rung,black!70] ({(ln(\v)/ln(10)+0.6)*5.2},0.0) -- ({(ln(\v)/ln(10)+0.6)*5.2},0.5);}
+\node[lab,anchor=west] at (11.0,0.95) {orange: the $5$ initial-state branchings};
+\node[lab,anchor=west] at (11.0,0.6) {black: the $33$ final-state branchings};
+% scales above
+\draw[thick,red!70!black] ({(2.0544+0.6)*5.2},0) -- ({(2.0544+0.6)*5.2},2.9); \node[lab,above,text=red!70!black] at ({(2.0544+0.6)*5.2},2.9) {$\pt^{\max}=113.3\GeV$\\$\sqrt{\pthat^2+\mb^2}$, the hard process};
+\draw[thick] ({(0.6812+0.6)*5.2},0) -- ({(0.6812+0.6)*5.2},2.0); \node[lab,above] at ({(0.6812+0.6)*5.2},2.0) {$\mb=4.8\GeV$: $n_f$ $5\to4$,\\$g\to\bbbar$ possible above};
+\draw[thick] ({(0.1761+0.6)*5.2},0) -- ({(0.1761+0.6)*5.2},2.9); \node[lab,above] at ({(0.1761+0.6)*5.2},2.9) {$m_c=1.5\GeV$: $n_f$ $4\to3$};
+\draw[thick,blue!60!black] ({(0.301+0.6)*5.2},0) -- ({(0.301+0.6)*5.2},1.1); \node[lab,above,text=blue!60!black,anchor=south west] at ({(0.301+0.6)*5.2},1.1) {$p_{\mathrm{T}0}=2\GeV$\\regularises ISR};
+% below
+\draw[thick,gray!70] ({(-0.2140+0.6)*5.2},0) -- ({(-0.2140+0.6)*5.2},-1.0); \node[lab,anchor=north west,text=gray!80!black] at ({(-0.2140+0.6)*5.2},-1.0) {$\pt^{\min,\mathrm{FSR}}=1.6\Lambda_3=0.611\GeV$};
+\draw[thick,gray!70] ({(-0.3766+0.6)*5.2},0) -- ({(-0.3766+0.6)*5.2},-1.9); \node[lab,anchor=north west,text=gray!80!black] at ({(-0.3766+0.6)*5.2},-1.7) {$\pt^{\min,\mathrm{ISR}}=1.1\Lambda_3=0.420\GeV$};
+\draw[thick,gray!70,dashed] ({(-0.4179+0.6)*5.2},0) -- ({(-0.4179+0.6)*5.2},-2.8); \node[lab,anchor=north west,text=gray!80!black] at ({(-0.4179+0.6)*5.2},-2.4) {$\Lambda_3=0.382\GeV$: the Landau pole of the three-flavour coupling};
+\node[lab,anchor=north west,text=black!65] at (6.3,-1.75) {$\alphas$: $0.114$ at $113\GeV$, $0.14$ at $32$, $0.18$ at $10$, $0.21$ at $5$, $0.53$ at $1\GeV$, $1.56$ at the cut-off};
+\node[lab,text=black!65,text width=15.6cm,anchor=north west] at (-0.3,-3.1) {The first ten rungs span three octaves ($53.9\to6.0\GeV$), the last eighteen less than one ($1.02\to0.64$): the number of branchings per octave rises as the scale falls and the coupling grows. Emissions harder than $\pt^{\max}$ are forbidden; below the cut-off nobody proposes anything and hadronisation takes over.};
+\end{tikzpicture}

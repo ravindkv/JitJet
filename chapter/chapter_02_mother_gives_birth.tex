@@ -209,8 +209,9 @@ formulae catch up.
     the $b$ and $\bar b$ curves lie on top of each other, the $+z$ beam at
     small $x$ falls fastest, and the dashed product is the probability that
     nobody has radiated yet. On the right, the histogram of the hardest of
-    the four proposals, coloured by who made it: the $+z$ beam wins $57\%$
-    of the time, the $-z$ beam and the $\bar b$ $15\%$ each, the $b$ $12\%$,
+    the four proposals, coloured by who made it: the $+z$ beam wins about
+    $53\%$ of the time, the $-z$ beam $18\%$, the $b$ and the $\bar b$ some
+    $15\%$ each,
     and in one trial in a thousand nobody radiates at all. The seed-1
     event's first branching at $53.9\GeV$ is marked.
   \item \textbf{Momentum bookkeeping} (\cref{sec:mother_gives_birth:runaways}).
@@ -345,6 +346,14 @@ without the flags. The $1700$ lines of the \code{-v} output for seed~1 are
 committed as \file{example/PS/Standalone/standalone_parton_showering.log},
 and every number quoted in the theory sections that follow is taken from
 that file, so that you can put the formula and the log side by side.
+The plots of the theory sections come from a sibling script,
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/PS/Standalone/plot_theory_PS.py      # -> theory_parton_showering.pdf, one page per section
+\end{minted}
+which replays the seed-1 shower with the classes of the shower script,
+reads the committed record and parses the \code{-v} log, so that every
+curve and every marker in those figures can be traced to a line of the
+log; \code{make figures} regenerates the PDF.
 
 \subsection{Reading the record}
 \label{sec:mother_gives_birth:record_format}
@@ -400,6 +409,12 @@ logarithms that in our event reach five. A small number times a large
 logarithm squared is of order one, and the expansion parameter of a shower
 is not \alphas but $\alphas\ln^2$. The propagator below shows where the two
 logarithms come from.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_emission_propagator}}
+\caption[The propagator that makes a quark radiate, and the double-logarithmic phase space]{(a) The real correction to the hard process: the outgoing $b$ is off shell before it emits the gluon, and the propagator $1/(2p_b\cdot k)$ of \cref{eq:mother_gives_birth:propagator} is large for a collinear and for a soft gluon; for our massive mother the collinear growth stops at $1-\beta_b$, the dead cone of \cref{sec:mother_gives_birth:dead_cone}. (b) The phase space of one emission in the plane of $\ln(1/\theta)$ and $\ln(E_b/E_g)$: the emission probability is $\alphas/\pi$ times the area of the triangle bounded by the cut-off and the dead cone, the double logarithm of \cref{eq:mother_gives_birth:double_log}. The mother's two hardest emissions of the \code{-v} log are marked.}
+\label{fig:mother_gives_birth:propagator_sketch}
+\end{figure}
 
 Look out of the window at the mother leaving the hard process. In the
 partonic frame she carries $E=\sqrt{\shat}/2=198\GeV$ and is, at Born level,
@@ -464,6 +479,21 @@ shower resums the logarithms to all orders by iterating
 \cref{eq:mother_gives_birth:collinear_limit} emission after emission, at the
 price of keeping only the collinear and soft parts of each matrix element.
 
+\Cref{fig:mother_gives_birth:propagator_plot} shows the two statements in
+numbers. The propagator factor of a massless quark grows as $2/\theta^2$
+without limit; for our mother it saturates at $1/(1-\beta_b)=5515$ below
+$\theta_0=0.019$. And the $38$ branchings of our event, counted per octave
+of the evolution variable, rise from one or two per octave at the top to
+sixteen in the last octave above the cut-off, where the coupling has grown
+from $0.11$ to $0.5$: the first ten branchings span three octaves, the
+last eighteen less than one.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The collinear singularity and the branchings per octave of our event]{Why a quark cannot travel alone, from \file{plot_theory_PS.py}. (a) The factor $1/(1-\beta\cos\theta)$ of \cref{eq:mother_gives_birth:propagator} against the emission angle, for a massless quark and for our mother with $E_b=252\GeV$; the mass turns the singularity into a plateau below $\theta_0=\mb/E_b$. (b) The $38$ branchings of the seed-1 shower per octave of $\ptevol$ below $\pt^{\max}$, coloured by kind, with the running coupling on the right axis: the rate per octave grows as the scale falls, the $\mathrm{d}\theta^2/\theta^2$ measure of \cref{eq:mother_gives_birth:collinear_limit} helped by the growing coupling.}
+\label{fig:mother_gives_birth:propagator_plot}
+\end{figure}
+
 Two remarks before we move on. First, the singularities are not artefacts:
 they tell us that a bare quark is not an observable, and that any
 calculation that stops at a fixed order needs to be combined with a
@@ -500,6 +530,12 @@ initial-state, $9$ are $q\to qg$, $19$ are $g\to gg$ and only $5$ are
 $g\to q\bar q$. \Cref{fig:mother_gives_birth:ladder} below the table shows
 them in the order in which they happened; the functions that set these
 proportions are the following.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_splittings}}
+\caption[The four branchings of the shower as vertices, with their kernels and their counts in our event]{The four branchings of the shower as vertices: the parent on the left, the daughter that keeps the fraction $z$ above, the emitted parton below, with the kernel of \cref{eq:mother_gives_birth:splitting}, its colour factor and the number of times it occurred among the $38$ branchings of the seed-1 shower (\code{-v} log). The fourth vertex is the initial state: the same kernels read upstream, weighted by the ratio of parton densities of \cref{eq:mother_gives_birth:isr}.}
+\label{fig:mother_gives_birth:splittings_sketch}
+\end{figure}
 
 Every branching of the shower is one of four, and the probability of each is
 a leading-order Altarelli--Parisi splitting function of the momentum fraction
@@ -558,6 +594,19 @@ One identity is worth checking yourself, because the standalone script relies
 on it: the second form of $P_{gg}$ follows from the first by putting the three
 terms over the common denominator $z(1-z)$ and recognising
 $z^2+(1-z)^2+z^2(1-z)^2=(1-z+z^2)^2$. Exercise~2 asks for it.
+\Cref{fig:mother_gives_birth:kernels_plot} draws the four kernels over the
+whole range of $z$ with the $33$ final-state branchings of our event placed
+on them, and the distribution of the $z$ values by kind: the quark
+emissions cluster at $z>0.6$ where $P_{qq}$ is large, the gluon splittings
+pile up at both ends where $P_{gg}$ has its two poles, and the five
+$g\to q\bar q$ splittings sit where they fall, because $P_{qg}$ has no
+preference.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=2,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The splitting functions and the $z$ values drawn in our event]{The splitting functions at work, from \file{plot_theory_PS.py}. (a) The four kernels of \cref{eq:mother_gives_birth:splitting} and the overestimate $2C_F/(1-z)$ of the veto algorithm; each dot is one of the $33$ final-state branchings of the seed-1 shower at its drawn $z$, the mother's two hardest emissions labelled. (b) The distribution of $z$ for the $38$ branchings by kind: soft daughters dominate the gluon splittings, the quark emissions of our event drew $z$ between $0.6$ and $1$.}
+\label{fig:mother_gives_birth:kernels_plot}
+\end{figure}
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=1,width=\textwidth]{PS/Standalone/animate_standalone_parton_showering_stills.pdf}
@@ -614,9 +663,9 @@ is asked for a larger $x$, while the $\bar u$ at $x=2.2\times10^{-3}$ can
 be resolved out of a gluon density more than fifteen times larger. The end
 whose curve falls fastest radiates first most often, and the figure,
 measured by letting each end propose $1500$ times from $\pt^{\max}$,
-confirms the guess: the $+z$ beam falls fastest and wins $57\%$ of the
+confirms the guess: the $+z$ beam falls fastest and wins $53\%$ of the
 first branchings, the $b$ and $\bar b$ curves lie on top of each other and
-still stand at $0.7$ when the scale has fallen to $10\GeV$, and the dashed
+still stand at $0.8$ when the scale has fallen to $10\GeV$, and the dashed
 product of all four is the probability that nobody has radiated yet. The
 quantity on the vertical axis is the Sudakov form factor, and here is its
 definition.
@@ -672,6 +721,12 @@ kernels of \cref{eq:mother_gives_birth:splitting} are not a problem any more:
 a divergence in $\hat P$ makes the form factor vanish, which just says that a
 parton certainly branches before reaching the singular region.
 
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_sudakov_ladder}}
+\caption[The Sudakov form factor as a product of survival probabilities, and its two faces in the log]{(a) The no-emission probability as a product of survivals: divide the evolution in $\ln t$ into small steps, survive each with probability one minus the branching probability of the step, and multiply; the limit is the exponential of \cref{eq:mother_gives_birth:sudakov}. (b) The two faces of the form factor in the \code{-v} log of our event: every line that reads ``proposes'' is the branching face, every ``no emission above the cut-off'' is the surviving face, and the two add up to one. The counts are those of the seed-1 shower.}
+\label{fig:mother_gives_birth:sudakov_sketch}
+\end{figure}
+
 The log shows both faces of the form factor. The ``branches at $t$'' face
 is every line that reads ``proposes''; the ``never branches'' face is every
 line that reads ``no emission above the cut-off'', and the second kind
@@ -715,7 +770,7 @@ $\alphas=0.118$ the probability that she emits nothing above $10\GeV$ is
 and with the running coupling of \cref{sec:mother_gives_birth:cp5} in the
 integrand it drops to $0.48$. Scene~2 of the film (\cref{sec:mother_gives_birth:animation})
 measured the same quantity from the standalone shower itself and found
-about $0.7$. The difference is what the leading logarithm leaves out: the
+about $0.8$ (\cref{fig:mother_gives_birth:sudakov_plot}). The difference is what the leading logarithm leaves out: the
 full kernel is smaller than $2C_F/(1-z)$ away from $z=1$, the exact $z$
 range of the dipole is narrower than $1-z\ge\pt/Q$, and an emission that
 recoils against an incoming parton is further weighted by the PDF ratio
@@ -724,6 +779,20 @@ The estimate is nevertheless worth having: it tells you at a glance that a
 $100\GeV$ quark radiates a $10\GeV$ gluon about half the time, a
 $1\GeV$ gluon almost always, and it shows why the evolution must be cut off
 at some $\pt^{\min}$ where the coupling stops making sense.
+\Cref{fig:mother_gives_birth:sudakov_plot} puts the estimate next to the
+measured curves: the leading-logarithmic form factor with a fixed and with a
+running coupling, both for the mother's dipole, against the survival
+probabilities of all four radiators measured from $1500$ proposals each
+with the shower script itself, the same measurement as scene~2 of the film.
+The two leading-log curves fall below the measured one for the reasons
+listed above, and all three agree that the mother emits nothing above
+$30\GeV$ in most showers and nothing above $1\GeV$ almost never.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The measured Sudakov form factors against the leading-log formula]{The Sudakov form factor, from \file{plot_theory_PS.py}. (a) The probability that each of the four radiators of the hard event has not yet branched when the scale has fallen from $\pt^{\max}$ to \pt, measured from $1500$ proposals per radiator with the veto algorithm of the script; the dashed black curve is their product. For the mother's dipole the leading-logarithmic estimate \cref{eq:mother_gives_birth:double_log_sudakov} is drawn with a fixed coupling (dotted) and with the running coupling in the integrand (dash-dotted). (b) The scale of the first branching, the hardest of the four proposals, coloured by who made it; the $+z$ beam at small $x$ wins most often, as in the seed-1 event.}
+\label{fig:mother_gives_birth:sudakov_plot}
+\end{figure}
 
 \subsection{From a form factor to a random number: the veto algorithm}
 \label{sec:mother_gives_birth:veto}
@@ -741,6 +810,12 @@ that overestimates the branching rate; sample from that; then throw away
 the surplus with a second random number. \Cref{fig:mother_gives_birth:veto}
 shows the four steps with the mother's own numbers; keep it open while you
 read them.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_veto_flow}}
+\caption[The veto algorithm as a flow chart, with the mother's first proposal]{The veto algorithm as a flow chart. Left: one proposal of one radiator, from the current scale to an accepted trial or to silence; the two red loops are the instruction that makes the algorithm exact, to continue from the rejected scale and not from $t_{\max}$. Right: the mother's proposal in round~1 of the seed-1 shower from the \code{-vv} log, three draws and four weight factors long, which produced the $5.24\GeV$ that lost to the $+z$ beam.}
+\label{fig:mother_gives_birth:veto_flow}
+\end{figure}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\textwidth]{PS/Standalone/veto_algorithm.pdf}
@@ -893,6 +968,11 @@ brackets, so that you can read the two side by side.
 \subsection{Final-state radiation}
 \label{sec:mother_gives_birth:fsr}
 
+Whom does the mother radiate against? The natural guess is her twin, the
+$\bar b$ she was born with, and it is wrong: the two quarks of our hard
+process are not colour-connected to each other at all, and the mother's
+partner is a parton in the beam. That one fact decides the recoil of every
+one of her emissions, so it has to be settled before the kinematics.
 Start from what the two colour columns of \file{event_ME.lhe} record. A
 quark carries one of $N_c=3$ colours, an antiquark one of three
 anticolours, and a gluon one colour and one anticolour, eight of the nine
@@ -1085,11 +1165,30 @@ of the whole shower: switching it off doubles the number of final-state
 branchings in \cref{tab:mother_gives_birth:numbers}
 (\cref{sec:mother_gives_birth:pythia}).
 
+\Cref{fig:mother_gives_birth:fsr_plot} shows both lessons of this subsection
+over the whole event: for the $33$ final-state branchings the evolution
+variable and the laboratory \pt of the emitted parton differ by a factor
+of three either way as a matter of course, and the damping factor of
+\cref{eq:mother_gives_birth:dampen} falls steeply for soft emissions at
+large virtuality against a beam recoiler, which is what made the mother's
+round-1 proposal so expensive.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=4,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[Evolution variable against laboratory $\pt$, and the beam-recoil damping]{Final-state radiation, from \file{plot_theory_PS.py}. (a) For each of the $33$ final-state branchings of the seed-1 shower, the evolution variable $\ptevol$ against the laboratory \pt of the emitted parton read from the record, coloured by kind; the dotted line is equality, and the first emissions of the two $b$ quarks and the mother's second are labelled. (b) The factor $w_{\mathrm{damp}}$ of \cref{eq:mother_gives_birth:dampen} for a radiator of $\pt=113\GeV$ against a beam recoiler, as a function of $\ptevol$ for three values of $z$; the star is the mother's round-1 proposal with its $0.275$.}
+\label{fig:mother_gives_birth:fsr_plot}
+\end{figure}
+
 \subsection{Initial-state radiation: backward evolution}
 \label{sec:mother_gives_birth:isr}
 
-The two incoming partons radiate too, and here the shower runs backwards
-in time. The hard process fixed the parton $a$ entering it with momentum
+Which of the two incoming partons of our event radiates first, and how? The
+$\bar u$ with $x=2\times10^{-3}$ or the $u$ with $x=0.39$? Most people
+guess the valence quark, because it carries more momentum; the answer is
+the sea antiquark, in more than half of all showers, and not by emitting a
+gluon but by turning out to have been a gluon. Keep the guess and see what
+the formula says. The two incoming partons radiate too, and here the shower
+runs backwards in time. The hard process fixed the parton $a$ entering it with momentum
 fraction $x$ at the scale $\pt^{\max}$; the question is which parton $b$ at
 a lower scale and larger fraction $x'=x/z$ branched into $a$ plus an emitted
 parton $c$. The probability is the DGLAP kernel weighted by how many partons
@@ -1179,9 +1278,32 @@ gluon emission; that is the general pattern at the LHC, and it is why in
 scene~2 of the film (\cref{sec:mother_gives_birth:animation}) the $+z$ beam
 won the first branching more than half the time.
 
+\Cref{fig:mother_gives_birth:isr_plot} draws the integrand of
+\cref{eq:mother_gives_birth:isr} for both beams as a function of $z$ at the
+starting scale, kernel times PDF ratio: on the $+z$ side the
+$\bar u\leftarrow g$ channel is ten to a hundred times larger than
+$\bar u\leftarrow\bar u$ over the whole range, on the $-z$ side the
+$u\leftarrow u$ channel wins and $u\leftarrow g$ is suppressed by the
+vanishing of the gluon density at $x'>0.4$. It also shows what the
+$p_{\mathrm{T}0}$ regularisation does to the coupling and to the measure in
+the last decade above the cut-off.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=5,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The backward-evolution integrand of the two beams, and the infrared regularisation of the initial state]{Initial-state radiation, from \file{plot_theory_PS.py}. (a) The integrand $P_{ba}(z)\,x'f_b(x')/xf_a(x)$ of \cref{eq:mother_gives_birth:isr} at $Q^2=(\pt^{\max})^2$ for the two channels of each beam of our event, with the $z$ values of branchings~1 and~2 marked: the small-$x$ antiquark evolves backwards into a gluon, the valence quark into a quark. (b) The coupling evaluated at $\pt^2+p_{\mathrm{T}0}^2$ against the final-state $\alphas(\pt^2)$, and the measure factor $\pt^2/(\pt^2+p_{\mathrm{T}0}^2)$, with $p_{\mathrm{T}0}=2\GeV$.}
+\label{fig:mother_gives_birth:isr_plot}
+\end{figure}
+
 \subsection{Interleaving, the starting scale and the cut-offs}
 \label{sec:mother_gives_birth:scales}
 
+In which order do things happen in a shower? Guess before reading: does the
+initial state radiate first and the final state afterwards, or do the two
+$b$ quarks shower while the protons are still deciding what to send in?
+Neither; there is no ``afterwards'', only a scale that runs down, and
+whoever proposes the hardest emission at each round goes next, whichever
+side of the hard process it belongs to. The scales involved are laid out in
+\cref{fig:mother_gives_birth:scale_ladder}.
 Both showers evolve in the same variable, so \PYTHIA runs them as one
 sequence~\cite{Sjostrand:2004ef}: from the current scale every dipole end
 and both incoming partons propose their next branching by the veto
@@ -1204,6 +1326,12 @@ scheduled emission. In the
 full generator the multi-parton interactions of \cref{ch:uninvited_cousins}
 are interleaved in the same way, which is why the \CMSSW log quotes one
 ``max \pt scale'' for all three.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_scale_ladder}}
+\caption[The scales of the shower on a logarithmic ladder with the 38 rungs of our event]{The scales of the shower on a logarithmic ladder, the evolution running from right to left: the starting scale \cref{eq:mother_gives_birth:ptmax}, the quark-mass thresholds of the coupling, the $p_{\mathrm{T}0}$ of the initial state, the two cut-offs \cref{eq:mother_gives_birth:ptmin} and the Landau pole $\Lambda_3$ below them, with the $38$ rungs of the seed-1 shower drawn as ticks (orange: initial state). The coupling at the marked scales is that of the \code{-v} log.}
+\label{fig:mother_gives_birth:scale_ladder}
+\end{figure}
 
 The starting scale is \PYTHIA's factorisation scale of the $2\to2$ process,
 \begin{equation}
@@ -1245,9 +1373,25 @@ $\bar b$ had radiated at branching~4, so the event now contains two $b$
 and two $\bar b$ quarks, and ``a $b$ quark in the final state'' no longer
 says where it came from.
 
+\Cref{fig:mother_gives_birth:interleaving_plot} draws the ladder against the
+round number together with the thresholds and cut-offs, and counts the
+competitors of every round from the \code{-v} log: seven dipole ends and
+two beams in round~1, growing by two with every final-state branching to
+sixty-nine in round~39, where all of them are silent.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=6,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The ladder of our event and the number of competitors in every round]{The interleaved evolution, from \file{plot_theory_PS.py}. (a) The $38$ rungs of the seed-1 shower against the round number, coloured by kind, with the starting scale, the quark-mass thresholds, $p_{\mathrm{T}0}$ and the two cut-offs as horizontal lines. (b) The competitors of every round parsed from the \code{-v} log: dipole ends and beams that proposed an emission, and those that evolved below the cut-off and stayed silent.}
+\label{fig:mother_gives_birth:interleaving_plot}
+\end{figure}
+
 \subsection{The CP5 shower settings and the coupling}
 \label{sec:mother_gives_birth:cp5}
 
+How many strong couplings does a CMS event have? One, you would hope; in
+fact \PYTHIA keeps four, one each for the matrix element, the two showers
+and the multi-parton interactions, and the tune decides whether they
+agree (\cref{fig:mother_gives_birth:cp5_sketch}).
 The CP5 tune~\cite{CMS:2019csb} touches the showers in one place: it sets
 \code{TimeShower:alphaSvalue} and \code{SpaceShower:alphaSvalue} to
 $0.118$ with second-order running (\code{alphaSorder = 2}), where \PYTHIA's
@@ -1270,6 +1414,12 @@ cut-off, and for the excess of soft emissions in
 is where the coupling is largest and where any difference in the treatment
 of the infrared region shows.
 
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_cp5_couplings}}
+\caption[One coupling and one PDF set, four places where they enter a CP5 event]{Where the coupling and the parton densities of a CP5 event come from: a single $\alphas(m_Z)=0.118$ at second order feeds the matrix element, the two showers and the multi-parton interactions, each evaluating it at its own scale, and a single PDF set serves the hard process, the backward evolution and the multi-parton interactions.}
+\label{fig:mother_gives_birth:cp5_sketch}
+\end{figure}
+
 The PDFs of the backward evolution are the same NNPDF3.1 set as at the
 first stop, now needed for all flavours and the gluon from the cut-off up to
 $\pt^{\max}$, and for all $x$ from the smallest incoming fraction up to one.
@@ -1279,6 +1429,18 @@ state, matrix-element corrections, QED radiation, spin correlations, is
 either \PYTHIA default or left out of the standalone version; the list is in
 \cref{sec:mother_gives_birth:caveats}.
 
+\Cref{fig:mother_gives_birth:coupling_plot} draws the coupling the script
+uses, with its thresholds and the values quoted above, next to the
+first-order form that the veto algorithm overestimates it with; their ratio
+is the coupling factor of \cref{eq:mother_gives_birth:veto_weight}, between
+$0.73$ and $0.87$ over the shower and above one only in the last octave.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=7,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The CP5 shower coupling with its thresholds, and the first-order overestimate]{The shower coupling, from \file{plot_theory_PS.py}. (a) \PYTHIA's second-order $\alphas(Q^2)$ with $\alphas(m_Z)=0.118$ and the flavour thresholds at $m_c$ and $m_b$, as reproduced by \code{AlphaStrong}, with the values of section~[1] of the \code{-v} log marked, and the first-order form \cref{eq:mother_gives_birth:alphas_1loop} with the same $\Lambda_{n_f}$. (b) Their ratio, the coupling factor of the acceptance weight: the price of the overestimate, and the place where it fails.}
+\label{fig:mother_gives_birth:coupling_plot}
+\end{figure}
+
 \subsection{From formula to event: the shower step by step}
 \label{sec:mother_gives_birth:step_by_step}
 
@@ -1286,6 +1448,12 @@ We now have everything needed to turn the hard-process record into a
 showered event, and as at the previous stop I want you to see the machine,
 not just the output. The steps below are those of the standalone script
 you ran in \cref{sec:mother_gives_birth:standalone_code}.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_shower_flow}}
+\caption[The six steps of the shower, with the numbers of our event]{The six steps of the standalone shower as a flow chart, with the function names of the script. Right: the same steps for the seed-1 shower of our event, every number from the \code{-v} log, from the two dipoles of the hard process to the $158$ rows of the record.}
+\label{fig:mother_gives_birth:shower_flow}
+\end{figure}
 
 \paragraph{Step 1: read the hard process and find the dipoles.} From
 \file{event_ME.lhe} the script takes the two incoming and two outgoing
@@ -1334,6 +1502,19 @@ the new dipoles can be found.
 \paragraph{Step 5: repeat from the winning scale.} Back to step~3 with
 $\pt^{\max}$ replaced by the scale just reached, until nobody proposes
 anything above the cut-off [\code{Shower.run}].
+\Cref{fig:mother_gives_birth:competition_plot} is steps~3 to~5 for the
+whole event: every proposal of every round from the \code{-v} log, the
+winner of each round joined by the black line, and the scale the next
+round starts from. Read round~1 on the left, the four numbers of the table
+above; read how the losers of a round reappear below the winner's scale in
+the next; and watch the proposals thin out towards the cut-off until, in
+round~39, there are none.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=8,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[Every proposal of every round of our event, and the winner]{Everybody proposes, the hardest wins: every proposal of every round of the seed-1 shower, parsed from the \code{-v} log by \file{plot_theory_PS.py}. Green dots are proposals of dipole ends, orange squares those of the two beams, the open circles joined by the black line the winners, and the red dashed line the scale each round starts from, which is the previous winner. Losers are thrown away and propose afresh below the winner's scale.}
+\label{fig:mother_gives_birth:competition_plot}
+\end{figure}
 
 \paragraph{Step 6: write the record and summarise.} The final state is every
 row with positive status. The script follows each hard $b$ quark down the
@@ -1368,7 +1549,7 @@ worth reading in order, because they set everything that follows:
 Three initial-state branchings, each harder than anything the mother does,
 came first. That is not an accident of the seed: scene~2 of the film
 (\cref{sec:mother_gives_birth:animation}) showed that the $+z$ beam, at small
-$x$ where the gluon density is huge, wins the first branching in $57\%$ of
+$x$ where the gluon density is huge, wins the first branching in $53\%$ of
 the trials. Then follow 33 more, softer and softer: gluons splitting into
 gluons, a gluon splitting into $s\bar s$ at $6\GeV$, another into
 $\bbbar$ at $6\GeV$, and from $2.6\GeV$ down a long tail of emissions
@@ -1432,11 +1613,13 @@ $\ptevol\lesssim\mb(1-z)$. Translate that back through
 $\ptevol\simeq(1-z)E\theta$ and you recover
 $\theta\lesssim\mb/E$.
 
-How much does it matter for our event? The mother's three own emissions in the
-record had $(\ptevol,z)=(32.1\GeV,0.60)$, $(4.4\GeV,0.86)$ and
-$(1.9\GeV,0.80)$; the mass term reduces the kernel by $0.3\%$, $2\%$ and
-$25\%$ respectively. The hard emissions do not notice the mass at all; only
-the softest one, near the cut-off, is visibly suppressed. Averaged over many
+How much does it matter for our event? The mother's two own emissions in the
+record had $(\ptevol,z)=(32.1\GeV,0.60)$ and $(4.4\GeV,0.86)$; the mass
+term reduces the kernel by $0.3\%$ and $2\%$. The softest $b$-quark emission
+of the whole event, branching~17 of the log, in which the $\bar b$ born from
+the gluon splitting of branching~10 radiates at $(1.9\GeV,0.80)$, is
+reduced by $25\%$. The hard emissions do not notice the mass at all; only
+the softest ones, near the cut-off, are visibly suppressed. Averaged over many
 showers the dead cone removes a few percent of the soft, collinear radiation
 of a $100\GeV$ $b$ quark, and this is one of the reasons $b$ jets are
 slightly narrower and carry a slightly larger fraction of their energy in
@@ -1446,6 +1629,18 @@ angular distribution of the splittings to that of light jets
 \cite{ALICE:2021aqk}; for the top quark, at $m_t/E_t\sim0.4$ for a
 $400\GeV$ top, it is not a correction but the dominant feature, and it
 returns in \cref{ch:three_families}.
+\Cref{fig:mother_gives_birth:dead_cone_plot} shows the mass correction of
+\cref{eq:mother_gives_birth:dead_cone_kernel} as a function of $\ptevol$
+and $z$ with the mother's two emissions on it, and the angular density of
+\cref{eq:mother_gives_birth:dead_cone_angle} with the actual opening angles
+of those emissions: both are tens of dead-cone angles away from her
+direction.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=9,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The mass correction of the $b\to bg$ kernel and the dead-cone angular density, with the mother's emissions]{The dead cone in numbers, from \file{plot_theory_PS.py}. (a) The ratio of the quasi-collinear kernel \cref{eq:mother_gives_birth:dead_cone_kernel} to the massless one as a function of $\ptevol$ for four values of $z$, with the mother's two emissions of the seed-1 shower marked and their reductions quoted. (b) The soft-gluon density per unit $\ln\theta$ of \cref{eq:mother_gives_birth:dead_cone_angle} relative to a massless quark, against $\theta/\theta_0$, with the opening angles of the same two emissions computed from the record.}
+\label{fig:mother_gives_birth:dead_cone_plot}
+\end{figure}
 
 There is a second, less obvious consequence of the mass. The virtuality
 window available to a heavy quark is smaller: in
@@ -1475,6 +1670,12 @@ $\ptevol$ is a transverse momentum in the dipole frame with
 respect to the dipole axis, not the \pt of the gluon in the detector (the
 gluon in question has $20\GeV$ in the laboratory). Do not read a shower
 history as a list of jet constituents.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/ps_recoil_chain}}
+\caption[The mother's $\pt$ copy by copy, and the family cone around her last copy]{(a) The mother's \pt through the record, copy by copy, with what moved it: the recoils of the initial-state branchings (orange), her own two emissions (red) and the final-state recoils, from the \code{-v} log. (b) The family cone of $\dR<0.4$ around her last copy with its three members, the $0.8$ cone of the large-radius jets of later chapters, and the runaway: the $u\bar u$ pair from her first gluon at $\dR\approx1$.}
+\label{fig:mother_gives_birth:recoil_chain}
+\end{figure}
 
 \paragraph{The family.} The final partons within $\dR<0.4$ of the $b$ are
 the $b$ itself at $78.1\GeV$ and two gluons at $20.7$ and $1.8\GeV$;
@@ -1512,6 +1713,20 @@ shower does this in a few percent of events, and at the registry office
 (\cref{ch:registry_office}) it is one of the reasons a ``$b$ jet'' needs a
 definition rather than a label: which of the two $b$ quarks at
 $\eta\approx-3.3$ is the jet's flavour? Keep the question.
+
+\Cref{fig:mother_gives_birth:runaways_plot} is the same ledger as a function of
+the cone radius: the family grows from the bare quark at $78\GeV$ to
+$100.45\GeV$ at $R=0.4$, where the $20.7\GeV$ gluon is inside, and only
+beyond $R\approx1$, when the $u\bar u$ pair of the first gluon is captured,
+does it climb back towards the Born value, together with partons that are
+not her descendants at all. The radius a jet algorithm chooses is the
+radius at which this curve is read.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=10,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
+\caption[The mother's $\pt$ chain, her descendants, and the family $\pt$ against the cone radius]{Children who run away, from \file{plot_theory_PS.py} and the record \file{event_PS.lhe}. (a) The \pt of the mother's current copy against the branching number: the three initial-state recoils, her own emissions (dotted lines) and the final-state recoils. (b) Every final parton in the plane of $\dR$ from her last copy and \pt, her descendants in red and everything else in grey, with the $0.4$ and $0.8$ cones. (c) The vector-summed \pt inside a cone of radius $R$ around her, for all partons and for her descendants alone; the ledger reads this curve at $R=0.4$.}
+\label{fig:mother_gives_birth:runaways_plot}
+\end{figure}
 
 \section{Validation from official packages}
 \label{sec:mother_gives_birth:validation}
@@ -1818,74 +2033,18 @@ The \pt-ordered dipole shower and its interleaving with multi-parton
 interactions were introduced in \cite{Sjostrand:2004ef}; the \PYTHIA~8.3
 guide~\cite{Bierlich:2022pfr}, chapters on parton showers and on the
 generator's settings, is the reference for every option named here and
-documents the newer dipole-recoil and \code{Vincia}/\code{Dire} showers
-that the standalone script does not attempt. The splitting functions and
-the Sudakov form factor are reviewed in the QCD section of the Particle
-Data Group~\cite{ParticleDataGroup:2024cfk}. The CP5 tune is documented in
-\cite{CMS:2019csb}. The direct observation of the dead cone is
-\cite{ALICE:2021aqk}. Matching and merging, the answer to what happens
-above $\pt^{\max}$, are the subject of the next chapter and of
-\cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
-
-\subsection*{Open problems in the context of Phase-2 LHC}
-\label{sec:mother_gives_birth:open_problems}
-
-The shower is where the simulation stops being a calculation and becomes a
-model, and the High-Luminosity LHC will measure jets precisely enough to
-notice. Each of the following can be started with the scripts of this
-chapter.
-\begin{enumerate}
-  \item \textbf{Shower uncertainties as weights.} \PYTHIA can vary the
-    shower's $\alphas$ and the non-singular terms of its kernels on the fly
-    through its \code{UncertaintyBands} settings and return one weight per
-    variation, and CMS stores such weights in its samples. Reproduce the idea in the standalone script: scale $\alphas$
-    by a factor $\sqrt2$ up and down in the veto weight, keep the same
-    random numbers, and measure how much the family \pt of
-    \cref{tab:mother_gives_birth:numbers} moves. Is the weight approach
-    equivalent to rerunning with \code{--alphas}, and where does it break
-    down?
-  \item \textbf{The last octave.} The $7\%$ excess of soft branchings in
-    \cref{sec:mother_gives_birth:pythia} is invisible at parton level
-    and may not be after hadronisation. A Phase-2 measurement of jet
-    constituent multiplicity at $\pt\sim100\GeV$ will have a statistical
-    error far below that. Which hadron-level observables are sensitive to
-    the shower cut-off region and which are protected by hadronisation?
-    The answer decides what a Run-4 tune can constrain.
-  \item \textbf{Rapidity ordering and the third jet.} \PYTHIA's rapidity
-    ordering of ISR changes the soft initial-state activity by a third
-    (\cref{sec:mother_gives_birth:pythia}). Run the validation script
-    with and without \code{--rapidity-order} and compare the \pt spectrum
-    and rapidity of the hardest initial-state parton, the ``third jet'' of
-    a dijet event. Which existing CMS measurement constrains this option,
-    and would a $14\TeV$ measurement of the third-jet rate at high
-    rapidity do better?
-  \item \textbf{The dead cone at the HL-LHC.} ALICE saw the dead cone in
-    charm jets at low \pt~\cite{ALICE:2021aqk}. Using \code{--repeat} with
-    the mass term switched on and off in \code{pT2next\_fsr}, predict the
-    ratio of the angular distributions of the first splitting for $b$ jets
-    at $\pt=100\GeV$ and $500\GeV$. With $3000\,\mathrm{fb}^{-1}$ of $b$
-    jets, could CMS measure the $b$-quark dead cone, and what would the
-    result tell us about the $b$ mass in the shower, $4.8\GeV$ here and a
-    tune parameter elsewhere?
-  \item \textbf{Which \pt is the jet's \pt?} The ledger row of this chapter
-    is the family within $\dR<0.4$; CMS status flags offer
-    \code{LastCopyBeforeFSR} ($122.8\GeV$ in the \CMSSW event), the last
-    copy ($91.7\GeV$) and the hard-process copy ($113.2\GeV$) as
-    ``the $b$ quark''. Jet energy corrections in
-    \cref{ch:fair_price} are derived against generator jets, not quarks.
-    Quantify, with \code{--repeat} and different \code{--radius}, how much of
-    the difference between the three quark definitions and the family is
-    out-of-cone radiation and how much is ISR recoil, as a function of
-    radius; then ask which definition a Phase-2 top-mass measurement should
-    use.
-  \item \textbf{A shower for $14\TeV$.} The CP5 tune was fitted at $13\TeV$
-    with the shower $\alphas$ tied to the matrix-element and MPI values.
-    Change the beam energy in \file{event_ME.lhe} and the starting scale,
-    and see whether the initial-state shower of a $\pthat=113\GeV$ event
-    changes at all between $13.6$ and $14\TeV$. If it does not, which
-    observables of the Run-4 tune will actually constrain the shower rather
-    than the underlying event?
-\end{enumerate}
+documents the newer dipole-recoil and \code{Vincia}~\cite{Fischer:2016vfv}
+and \code{Dire}~\cite{Hoche:2015sya} showers that the standalone script
+does not attempt; the angular-ordered alternative is Herwig's
+\cite{Bellm:2019zci}. The splitting functions and the Sudakov form factor
+are reviewed in the QCD section of the Particle Data
+Group~\cite{ParticleDataGroup:2024cfk} and derived at textbook length in
+\cite{Ellis:1996mzs}. The CP5 tune is documented in \cite{CMS:2019csb}, the
+automated shower variations of \PYTHIA in \cite{Mrenna:2016sih}. The direct
+observation of the dead cone is \cite{ALICE:2021aqk}, its exposure with
+jet-substructure techniques \cite{Maltoni:2016ays}. Matching and merging,
+the answer to what happens above $\pt^{\max}$, are the subject of the next
+chapter and of \cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
 
 \begin{pitfalls}
 \begin{itemize}[nosep]
@@ -1980,7 +2139,7 @@ chapter.
   and $Q=53.9\GeV$, and $x'f_u(x')/xf_u(x)$ at $x=0.390$, $z=0.850$ and
   $Q=51.4\GeV$, confirming $15.7$ and $0.65$. Multiply each by the
   corresponding kernel of \cref{eq:mother_gives_birth:splitting} and explain
-  why the $+z$ beam nevertheless wins the first branching in only $57\%$ and
+  why the $+z$ beam nevertheless wins the first branching in only $53\%$ and
   not $95\%$ of the trials. (Look at the $z$ ranges.)
 \item \textbf{Follow the recoil.} From the rows of \file{event_PS.lhe}
   compute the \pt of the mother's copies 6, 10, 15, 21, 25, 46, 60, 89 and
@@ -2028,4 +2187,109 @@ chapter.
   now contains three $b$-flavoured quarks. Which of them will the forward
   calorimeter see as one object, and can any detector tell that the
   cluster is heavy-flavoured? Keep the answer for \cref{ch:registry_office}.
+\item \textbf{Read the competition.} In the \code{-v} log, list for rounds
+  1 to 5 every proposal, its scale and its fate, and reproduce panel~(b) of
+  \cref{fig:mother_gives_birth:interleaving_plot} for those rounds by hand.
+  Then explain, with \cref{eq:mother_gives_birth:first}, why the losers of
+  a round may be thrown away and re-drawn below the winner's scale without
+  biasing the result.
+\item \textbf{The ledger against the cone.} Reproduce panel~(c) of
+  \cref{fig:mother_gives_birth:runaways_plot} from \file{event_PS.lhe} with
+  the reader of \file{plot_journey_PS.py}: the vector-summed \pt of all
+  final partons within $R$ of the mother's last copy, for $R$ from $0$ to
+  $3$. At which $R$ does the curve first exceed the Born value, and which
+  partons are responsible? Repeat with \code{--seed 2} and \code{3} and
+  compare the $R=0.4$ and $R=0.8$ values with \cref{tab:mother_gives_birth:numbers}.
 \end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:mother_gives_birth:open_problems}
+
+The shower is where the simulation stops being a calculation and becomes a
+model, and the High-Luminosity LHC will measure jets precisely enough to
+notice~\cite{Azzi:2019yne}. Two developments frame everything below. The
+first is the question of what a shower is actually accurate for: the
+programme started in \cite{Dasgupta:2018nvj} showed that the standard
+dipole showers, \PYTHIA's included, fail to be even leading-logarithmic
+for some observables, and the PanScales showers of
+\cite{Dasgupta:2020fwr,Hamilton:2020rcu,vanBeekveld:2022zhl,vanBeekveld:2023chs}
+and the angular-ordered analysis of \cite{Bewick:2019rbu} are the response.
+The second is the cost of running any of this for $3000\,\mathrm{fb}^{-1}$
+\cite{HSFPhysicsEventGeneratorWG:2020gxw}. Each of the following can be
+started with the scripts of this chapter.
+\begin{enumerate}
+  \item \textbf{Shower uncertainties as weights.} \PYTHIA can vary the
+    shower's $\alphas$ and the non-singular terms of its kernels on the fly
+    through its \code{UncertaintyBands} settings and return one weight per
+    variation~\cite{Mrenna:2016sih}, Herwig does the
+    same~\cite{Bellm:2016rhh}, and CMS stores such weights in its samples.
+    Reproduce the idea in the standalone script: scale $\alphas$ by a factor
+    $\sqrt2$ up and down in the veto weight, keep the same random numbers,
+    and measure how much the family \pt of
+    \cref{tab:mother_gives_birth:numbers} moves. Is the weight approach
+    equivalent to rerunning with \code{--alphas}, and where does it break
+    down, in particular when the weight of \cref{eq:mother_gives_birth:veto_weight}
+    would have to exceed one?
+  \item \textbf{The last octave.} The $7\%$ excess of soft branchings in
+    \cref{sec:mother_gives_birth:pythia} is invisible at parton level and
+    may not be after hadronisation. CMS has already used jet-substructure
+    observables in $\ttbar$ events to constrain the shower
+    coupling~\cite{CMS:2018ypj}, and a Phase-2 measurement of constituent
+    multiplicity at $\pt\sim100\GeV$ will have a statistical error far
+    below $7\%$. Which hadron-level observables are sensitive to the shower
+    cut-off region and which are protected by hadronisation? Groomed
+    observables such as the soft-drop mass isolate the collinear
+    dynamics~\cite{Anderle:2020mxj}; the answer decides what a Run-4 tune
+    can constrain.
+  \item \textbf{Rapidity ordering and the third jet.} \PYTHIA's rapidity
+    ordering of ISR changes the soft initial-state activity by a third
+    (\cref{sec:mother_gives_birth:pythia}). Run the validation script with
+    and without \code{--rapidity-order} and compare the \pt spectrum and
+    rapidity of the hardest initial-state parton, the ``third jet'' of a
+    dijet event. This is a region where the logarithmic accuracy of dipole
+    showers is known to be deficient~\cite{Dasgupta:2018nvj,vanBeekveld:2022zhl};
+    which existing CMS measurement constrains the option, and would a
+    $14\TeV$ measurement of the third-jet rate at high rapidity do better?
+  \item \textbf{The dead cone at the HL-LHC.} ALICE saw the dead cone in
+    charm jets at low \pt~\cite{ALICE:2021aqk}, following the
+    reclustering strategy of \cite{Maltoni:2016ays}. Using \code{--repeat}
+    with the mass term switched on and off in \code{pT2next\_fsr}, predict
+    the ratio of the angular distributions of the first splitting for $b$
+    jets at $\pt=100\GeV$ and $500\GeV$. With $3000\,\mathrm{fb}^{-1}$ of
+    $b$ jets, could CMS measure the $b$-quark dead cone, and what would the
+    result tell us about the $b$ mass in the shower, $4.8\GeV$ here and a
+    tune parameter elsewhere?
+  \item \textbf{Which \pt is the jet's \pt?} The ledger row of this chapter
+    is the family within $\dR<0.4$; CMS status flags offer
+    \code{LastCopyBeforeFSR} ($122.8\GeV$ in the \CMSSW event), the last
+    copy ($91.7\GeV$) and the hard-process copy ($113.2\GeV$) as ``the $b$
+    quark''. Jet energy corrections in \cref{ch:fair_price} are derived
+    against generator jets, not quarks, and the same ambiguity is at the
+    heart of the interpretation of the top-quark
+    mass~\cite{Nason:2017cxd,Hoang:2020iah}. Quantify, with \code{--repeat}
+    and different \code{--radius}, how much of the difference between the
+    three quark definitions and the family is out-of-cone radiation and how
+    much is ISR recoil, as a function of radius
+    (\cref{fig:mother_gives_birth:runaways_plot}c); then ask which
+    definition a Phase-2 top-mass measurement should use.
+  \item \textbf{A shower for $14\TeV$.} The CP5 tune~\cite{CMS:2019csb}
+    was fitted at $13\TeV$ with the shower $\alphas$ tied to the
+    matrix-element and MPI values. Change the beam energy in
+    \file{event_ME.lhe} and the starting scale, and see whether the
+    initial-state shower of a $\pthat=113\GeV$ event changes at all between
+    $13.6$ and $14\TeV$. If it does not, which observables of the Run-4 tune
+    will actually constrain the shower rather than the underlying event?
+  \item \textbf{Beyond leading logarithms.} The shower of this chapter, like
+    \PYTHIA's, is built from the collinear limit and recovers soft
+    wide-angle radiation only through the dipole picture. Compare the
+    standalone shower's distribution of the first emission against the
+    mother with the NLL expectation for a global observable such as the
+    jet mass~\cite{Dasgupta:2020fwr}, using the LL double logarithm of
+    \cref{eq:mother_gives_birth:double_log_sudakov} as the first step. Where
+    in $(\ln1/\theta,\ln E_g)$ of \cref{fig:mother_gives_birth:propagator_sketch}
+    does the dipole shower deviate, and will Run-4 jet-substructure
+    measurements at the per-cent level be able to tell a PanScales shower
+    from the one CMS uses today?
+\end{enumerate}
+Later stops will add their own lists; the ones about the detector will be
+longer.

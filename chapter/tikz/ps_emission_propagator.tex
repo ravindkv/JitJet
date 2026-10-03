@@ -1,0 +1,44 @@
+% ---------------------------------------------------------------------------
+% The emission of a gluon by the outgoing b: the propagator that makes a
+% quark radiate, its two singular limits, and the double-logarithmic phase
+% space in the (ln 1/theta, ln E_g) plane. Numbers from the -v log of
+% standalone_parton_showering.py (section 2 and branching 5) and from
+% chapter 2's text (beta_b = 0.99982, 7.5 octaves, ln = 5.2).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  fermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.55 with {\arrow[scale=1.1]{Stealth}}}},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=4.5pt,amplitude=2pt}},
+  vertex/.style={fill=black,circle,inner sep=1.6pt},
+  lab/.style={font=\scriptsize,align=center},
+  fac/.style={font=\scriptsize,align=center,text=orange!80!black},
+  head/.style={font=\small\bfseries},
+  axis/.style={-{Stealth},thick}]
+% ---------------- (a) the propagator -----------------------------------------------------------
+\node[head,anchor=west] at (-0.3,3.4) {(a) the real correction $q\bar q\to\bbbar g$: the propagator};
+\node[circle,draw,thick,fill=orange!25,minimum size=11mm] (H) at (0.6,0) {$\hat\sigma$};
+\draw[fermion] (H.east) -- (3.2,0) node[midway,below,lab] {$b^*$, off shell:\\$(p_b+k)^2-\mb^2=2p_b\!\cdot\!k$};
+\draw[fermion] (3.2,0) -- (6.0,0.9) node[right,lab,text=red!80!black] {$b$, $E_b=252\GeV$, $\beta_b=0.99982$};
+\draw[gluon] (3.2,0) -- (6.0,-1.1) node[right,lab] {$g$, energy $E_g$, angle $\theta$ to the $b$};
+\node[vertex] at (3.2,0) {};
+\draw[-{Stealth},thin] (4.4,0.39) arc[start angle=18,end angle=-21,radius=1.25];
+\node[lab] at (4.75,-0.05) {$\theta$};
+\draw[fermion] (H.north east) -- (2.2,1.8) node[above right,lab,text=blue!80!black] {$\bar b$};
+\node[fac,text width=6.8cm,anchor=north west] at (-0.3,-1.6) {$\dfrac{1}{2p_b\!\cdot\!k}=\dfrac{1}{2E_bE_g\,(1-\beta_b\cos\theta)}$: large when $\theta\to0$ (collinear) and when $E_g\to0$ (soft). For a massless quark $1-\cos\theta\to0$; for our mother $1-\beta_b\cos\theta\ge1.8\times10^{-4}$, the dead cone.};
+% ---------------- (b) the double-logarithmic phase space -----------------------------------------
+\begin{scope}[xshift=11.4cm]
+\node[head,anchor=west] at (-0.3,3.4) {(b) the phase space of one emission: an area};
+\fill[blue!8] (0,0) -- (5.6,0) -- (5.6,2.4) -- cycle;
+\draw[axis] (-0.3,0) -- (6.4,0) node[below left,lab] {$\ln(1/\theta)$: more collinear $\to$};
+\draw[axis] (0,-0.3) -- (0,2.7) node[right,lab,anchor=south west] at (0,2.5) {$\ln(E_b/E_g)$: softer $\uparrow$};
+\draw[thick] (0,0) -- (5.6,2.4) node[pos=0.6,above,sloped,lab] {$\pt=E_g\theta=\pt^{\min}$: the cut-off};
+\draw[thick] (5.6,-0.1) -- (5.6,2.5) node[right,lab] {$\theta=\theta_0=\mb/E_b$\\the dead cone};
+\node[lab,anchor=west] at (0.15,0.25) {$\pt\approx\pt^{\max}$};
+\draw[thick,gray!70] (0,0.0) -- (0,0.0);
+\node[star,star points=5,star point ratio=2.2,fill=red!80!black,draw=white,inner sep=0pt,minimum size=3mm] at (2.7,0.55) {};
+\node[lab,text=red!80!black,anchor=west] at (2.85,0.55) {br.\ 5: $\ptevol=32\GeV$, $z=0.60$};
+\node[star,star points=5,star point ratio=2.2,fill=red!80!black,draw=white,inner sep=0pt,minimum size=3mm] at (4.4,1.45) {};
+\node[lab,text=red!80!black,anchor=west] at (4.55,1.45) {br.\ 13: $4.4\GeV$, $z=0.86$};
+\node[lab,text=black!65,text width=6.6cm,anchor=north west] at (-0.3,-0.55) {Every point of the triangle costs $\alphas/\pi$ and the measure $\mathrm{d}\ln\theta^2\,\mathrm{d}\ln(1/(1-z))$ is flat in it, so the emission probability is $\alphas/\pi$ times an \emph{area}: the two logarithms of \cref{eq:mother_gives_birth:double_log}. For our shower both sides reach $\ln(113/0.611)=5.2$, and $(\alphas/\pi)\times5.2^2\approx1$.};
+\end{scope}
+\end{tikzpicture}

@@ -893,35 +893,83 @@ brackets, so that you can read the two side by side.
 \subsection{Final-state radiation}
 \label{sec:mother_gives_birth:fsr}
 
-Every final-state parton with a colour line has a partner at the other end
-of that line: the $b$ of our event carries colour~102, which it shares with
-the incoming $u$; the $\bar b$ carries anticolour~101, shared with the
-incoming $\bar u$ (look at the colour columns of \file{event_ME.lhe}). A
-gluon has two lines and therefore two partners. Each such pair is a
-\emph{dipole}, and each end of a dipole is a radiator, with the other end
-as its \emph{recoiler} [\code{dipole\_ends}]. The dipole picture is what
-makes the shower coherent: a soft gluon at a wide angle sees the total
-colour charge of the pair, not of one parton, and interference between the
-two ends is built in (\cref{fig:mother_gives_birth:dipoles}(c)).
+Start from what the two colour columns of \file{event_ME.lhe} record. A
+quark carries one of $N_c=3$ colours, an antiquark one of three
+anticolours, and a gluon one colour and one anticolour, eight of the nine
+combinations, since the colour-singlet one is not a gluon. A generator does
+not propagate SU(3) amplitudes through forty branchings. It keeps the
+leading term of the expansion in $1/N_c$, in which the colour structure of
+any diagram is a set of \emph{lines}, each carrying one colour index
+unchanged from where it starts to where it ends: a quark is one line
+pointing along its motion, an antiquark one line pointing against it, and
+a gluon is a pair of lines with opposite arrows, 't~Hooft's double-line
+notation. The Les Houches record numbers the lines from 101 upwards, and
+the two colour columns of a parton are the tags of the line and the
+anti-line it holds. For our hard process the assignment follows from one
+identity. The $s$-channel gluon couples the two quark currents through
+\begin{equation}
+  T^a_{ij}\,T^a_{kl}
+  =\frac12\left(\delta_{il}\delta_{jk}-\frac{1}{N_c}\,\delta_{ij}\delta_{kl}\right),
+  \label{eq:mother_gives_birth:fierz}
+\end{equation}
+where $j$ and $i$ are the colour indices of the incoming $u$ and $\bar u$
+and $k$ and $l$ those of the outgoing $b$ and $\bar b$. The first term
+identifies the colour of the $u$ with that of the $b$ and the anticolour
+of the $\bar u$ with that of the $\bar b$; the second, a colour-singlet
+exchange suppressed by $1/N_c$, is dropped. That is
+\cref{fig:mother_gives_birth:dipoles}(a): colour~102 runs from the
+incoming $u$ through the virtual gluon to the $b$, anticolour~101 from the
+incoming $\bar u$ to the $\bar b$, and nothing connects the mother to her
+twin. Her colour partner is a beam parton. The price of the approximation
+is of order $1/N_c^2$, and \PYTHIA recovers part of it by letting a quark
+end radiate with $C_F=4/3$ rather than with the strict large-$N_c$ value
+$N_c/2$.
+
+Every final-state parton with a colour line thus has a partner at the
+other end of that line, and a gluon has two lines and therefore two
+partners. Each such pair is a \emph{dipole}, and each end of a dipole is a
+radiator, with the other end as its \emph{recoiler} [\code{dipole\_ends}].
+The initial-state shower rethreads the lines too.
+\Cref{fig:mother_gives_birth:dipoles}(b) shows branching~1
+(\cref{sec:mother_gives_birth:isr}): backward evolution finds that the
+$\bar u$ came out of a gluon, and a gluon holds two lines, the 101 that the
+$\bar u$ already had, which now begins at the beam gluon \#7, and a new
+103 that leaves with the emitted $u$ \#8. The hard process is untouched,
+but the dipole 101 has a new end and its mass has grown from $377.9$ to
+$420.5\GeV$ (step~2 of the log). The dipole picture is what makes the
+shower coherent: a soft gluon at a wide angle sees the total colour charge
+of the pair, not of one parton, and interference between the two ends is
+built in (\cref{fig:mother_gives_birth:dipoles}(e)). The same lines
+outlive the shower: hadronisation will stretch a string along every one of
+them (\cref{ch:dressing_children}).
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/ps_colour_dipoles}}
-\caption[Colour chains and dipoles of our event]{The colour lines of our
-event drawn as chains, with the tags and row numbers of the record. (a)~After
-the three initial-state branchings: the incoming gluon \#16 holds two
-lines, 103 to the $u$ quark emitted in branching~1 and 105 to the gluon
-\#17 of branching~3, which is tied by line 101 to the $\bar b$; the
-incoming $u$ \#11 is tied by 104 to the gluon \#18 of branching~2, which
-holds the mother on line 102. Every end of every line is a radiator and the
-other end its recoiler. (b)~After branchings 4 and 5: each emitted gluon has
+\caption[Colour flow and dipoles of our event]{The colour lines of our
+event, first in colour-flow notation and then as the chains the shower
+keeps, with the tags and row numbers of the record. (a)~The hard process
+in double-line notation: the $s$-channel gluon carries one colour line and
+one anticolour line, so the colour of the incoming $u$ (tag 102) passes
+straight through to the $b$ and the anticolour of the $\bar u$ (101) to
+the $\bar b$. These two lines are the two dipoles the shower starts from,
+both of mass $377.9\GeV$. (b)~After the first initial-state branching: the
+$\bar u$ is resolved as coming out of the gluon \#7, whose two lines are
+the old 101, now anchored at the beam, and a new 103 that leaves with the
+emitted $u$ \#8; the box explains the notation. (c)~After the three
+initial-state branchings: the incoming gluon \#16 holds two lines, 103 to
+the $u$ quark emitted in branching~1 and 105 to the gluon \#17 of
+branching~3, which is tied by line 101 to the $\bar b$; the incoming $u$
+\#11 is tied by 104 to the gluon \#18 of branching~2, which holds the
+mother on line 102. Every end of every line is a radiator and the other
+end its recoiler. (d)~After branchings 4 and 5: each emitted gluon has
 inserted itself into the line of its radiator with a new tag (106, 107),
-and the recoilers have become new copies with their old tags. (c)~Colour
+and the recoilers have become new copies with their old tags. (e)~Colour
 coherence: a soft gluon at an angle larger than the opening angle of a
 dipole cannot resolve its two ends and sees their summed colour charge.}
 \label{fig:mother_gives_birth:dipoles}
 \end{figure}
 
-\Cref{fig:mother_gives_birth:dipoles}(a) draws the chains as they stand
+\Cref{fig:mother_gives_birth:dipoles}(c) draws the chains as they stand
 when the first final-state branching is about to happen, after the three
 initial-state branchings have each inserted a parton into them. Read the
 log's line for branching~4 against it: ``radiator \#20 $\bar b$ radiates
@@ -929,7 +977,7 @@ on its acol line (tag 101) against recoiler \#17 $g$'' is the right end of
 the upper chain radiating against its neighbour, and the dipole mass of
 $843\GeV$ is the invariant mass of that pair. The mother, at the right end
 of the lower chain, radiates against the gluon \#18 that the $-z$ beam
-emitted in branching~2, a dipole of only $80.6\GeV$. Panel~(b) is the same
+emitted in branching~2, a dipole of only $80.6\GeV$. Panel~(d) is the same
 picture two branchings later and is the one to keep in mind for the rest
 of the section: the emitted gluons sit \emph{between} their radiator and
 recoiler on the chain, every new parton brings two new dipole ends, and
@@ -984,7 +1032,7 @@ line is rethreaded: the $\bar b$ carried anticolour~101; after the
 branching the daughter $\bar b$ carries anticolour~106, the new gluon
 $(106,101)$ and the recoiler keeps $(101,105)$. The gluon has inserted
 itself into the existing line, and these new tags decide who radiates
-against whom from now on (\cref{fig:mother_gives_birth:dipoles}(b)). One more lesson from the same two branchings:
+against whom from now on (\cref{fig:mother_gives_birth:dipoles}(d)). One more lesson from the same two branchings:
 there are three transverse momenta in the log and they are not the same
 quantity (\cref{tab:mother_gives_birth:three_pts}). For the mother's
 emission the evolution variable is $32.07\GeV$ but the daughter's

@@ -1,0 +1,48 @@
+% ---------------------------------------------------------------------------
+% The seven steps of the standalone integrator as a flow chart, with the
+% numbers of our event's point in the unit cube (section [2] of the -v log of
+% standalone_qqbar_bbbar_xsec.py) on the left and the pass of 2^16 points
+% (section [3]) on the right. Function names in brackets.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=11mm,text width=5.4cm},
+  stepbox/.style={box,fill=orange!12},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.2cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!40,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.5) {the recipe, one Sobol point at a time};
+\node[head,anchor=west] at (6.5,1.5) {the same steps for our event's point $(u_1,u_2,u_3)=(0.1617,0.1331,0.9505)$};
+\node[stepbox] (S1) at (2.4,0) {\textbf{1\; choose the variables}\\ $(u_1,u_2,u_3)\mapsto(\ln\tau,\,Y,\,|\cos\theta|)$, each map linear on its interval};
+\node[stepbox,below=8mm of S1] (S2) {\textbf{2\; compute the kinematics}\\ $\shat=\tau s$, $x_{1,2}$, $p^*$, $\pthat$, $Q^2=\pthat^2+\mb^2$};
+\node[stepbox,below=8mm of S2] (S3) {\textbf{3\; evaluate the ingredients}\\ $\alphas(Q^2)$, ten $xf$ values, $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta$};
+\node[stepbox,below=8mm of S3] (S4) {\textbf{4\; form the weight}\\ Jacobian $\times$ matrix element $\times$ PDF products of both orientations};
+\node[stepbox,below=8mm of S4] (S5) {\textbf{5\; average over the cube}\\ $2^{16}$ scrambled Sobol points; $\sigma=\langle w\rangle$};
+\node[stepbox,below=8mm of S5] (S6) {\textbf{6\; estimate the error}\\ $R$ scrambles, spread of the $R$ averages};
+\node[stepbox,below=8mm of S6] (S7) {\textbf{7\; convert the units}\\ $\mathrm{GeV}^{-2}\to$ pb};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7} {\draw[flow] (\a) -- (\b);}
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {born\_weights (steps 1--4)};
+\node[fn,anchor=south east] at (S5.north east) {integrate (steps 5--6)};
+% the numbers
+\node[numbox,anchor=west] (N1) at (6.5,0) {$\ln\tau=\ln\tau_{\min}+u_1\ln(1/\tau_{\min})=-8.437+0.1617\times8.437=-7.072$\\
+  $Y=(2u_2-1)\,Y_{\max}=(-0.734)\times3.536=-2.595$\\
+  $|\cos\theta|=u_3\,c_{\max}=0.9505\times0.8631=0.820$};
+\node[numbox,anchor=west] (N2) at (6.5,0 |- S2) {$\tau=8.483\times10^{-4}$, $\shat=156\,895\GeV^2$, $\sqrt{\shat}=396.1\GeV$\\
+  $x_1=\sqrt\tau e^{Y}=2.174\times10^{-3}$, $x_2=\sqrt\tau e^{-Y}=0.3901$\\
+  $p^*=198.0\GeV$, $\pthat=p^*\sin\theta=113.2\GeV$, $Q^2=12\,842\GeV^2$};
+\node[numbox,anchor=west] (N3) at (6.5,0 |- S3) {$\alphas(Q^2)=0.11425$ \quad[TableAlphaS]\\
+  $x_1f_{\bar u}=1.1455$, $x_2f_u=0.2107$, $x_1f_u=1.2566$, $x_2f_{\bar u}=0.0012$, \dots\quad[TablePDF.xf]\\
+  $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=18.92\pb$ \quad[dsigma\_dcostheta]};
+\node[numbox,anchor=west] (N4) at (6.5,0 |- S4) {Jacobian $8.437\times7.072\times1.726=103.0$\\
+  $w_u=103.0\times18.92\times(1.2566\times0.0012+1.1455\times0.2107)=473.2\pb$\\
+  $w_d=155.3$, $w_s=12.3$, $w_c=9.1$, $w_b=0.9$;\quad $\textstyle\sum_q w_q=650.7\pb$};
+\node[numbox,anchor=west] (N5) at (6.5,0 |- S5) {running average: $394.5$ ($N=16$), $338.7$ ($2^8$), $345.22$ ($2^{10}$), $345.28$ ($2^{14}$), $345.320\pb$ ($2^{16}$)\\
+  per flavour: $u\bar u$ $178.3$, $d\bar d$ $118.6$, $s\bar s$ $30.3$, $c\bar c$ $12.7$, $b\bar b$ $5.5\pb$};
+\node[numbox,anchor=west] (N6) at (6.5,0 |- S6) {eight scrambles: $345.320$, $.318$, $.324$, $.321$, $.323$, $.321$, $.324$, $.320\pb$\\
+  $\bar\sigma=345.322\pb$, $\Delta\sigma=0.001\pb$ ($3\times10^{-6}$)};
+\node[numbox,anchor=west] (N7) at (6.5,0 |- S7) {$3.893\,793\,72\times10^{8}\pb\,\mathrm{GeV}^2$, applied inside \texttt{dsigma\_dcostheta}, so every weight is already in pb};
+\foreach \s/\n in {S1/N1,S2/N2,S3/N3,S4/N4,S5/N5,S6/N6,S7/N7} {\draw[flow,gray!60] (\s.east) -- (\n.west);}
+\end{tikzpicture}

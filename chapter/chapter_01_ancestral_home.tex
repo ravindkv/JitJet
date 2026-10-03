@@ -15,10 +15,11 @@ single step we must know how much energy she was given, because everything
 that follows on this journey is measured against it.
 \end{journeybox}
 
-\physicsline{factorisation, PDFs, the leading-order matrix element for
-$q\bar q\to\bbbar$, the change of variables behind every Monte Carlo
-integrator, scale choices, \PYTHIA's \code{HardQCD:qqbar2bbbar} process inside
-\CMSSW, the same process in \MG, the hard-process record of our event}
+\physicsline{factorisation, PDFs and their DGLAP evolution, the leading-order
+matrix element for $q\bar q\to\bbbar$, the change of variables behind every
+Monte Carlo integrator, the running coupling and the scale choice, the
+seven-point scale variation, \PYTHIA's \code{HardQCD:qqbar2bbbar} process
+inside \CMSSW, the same process in \MG, the hard-process record of our event}
 
 \section{Welcome aboard: what we will see at this first stop}
 \label{sec:ancestral_home:what_we_compute}
@@ -74,6 +75,18 @@ follow, the bottom quark of this chapter and the top quark of
 \cref{ch:three_families}. The two directions do not conflict. The road is
 walked from its beginning to its end; each stop along it is explained from
 the top down.
+
+\paragraph{How each derivation is told.} The theory part of every stop is
+itself told the same way, section after section, and it is worth knowing the
+pattern before you meet it. Each section opens with a question you should
+try to answer before reading on; then comes a sketch or a Feynman diagram of
+what the section is about; then the equation; then the numbers that the
+equation gives for \emph{our} event, every one of them copied from the log
+that the standalone script writes in its learning mode
+(\cref{sec:ancestral_home:learning_mode}); and finally a plot, drawn from the
+same code, that shows the equation at work over the whole phase space rather
+than at one point. Equation, number, picture: if one of the three does not
+make sense to you, the other two are there to help.
 
 \begin{table}[htbp]\centering\small
 \caption[The $q\bar q\to\bbbar$ cross section obtained four ways]{The
@@ -260,6 +273,46 @@ $5\times10^{-6}$ for the same Sobol seed, so the tables lose nothing; if the
 PDF set, the coupling or the kinematic range is changed the tables must be
 regenerated, and the script says so.
 
+\subsection{The learning mode: where every number of this chapter comes from}
+\label{sec:ancestral_home:learning_mode}
+
+The script has a second voice. With \code{-v} it narrates the calculation
+before it performs it: the constants of the integral, then our own event
+(read from \file{example/ME/event_ME.lhe}, the record of
+\cref{sec:ancestral_home:our_jet}) pushed through \code{born\_weights} one
+factor at a time, and finally the first Sobol pass with its running average
+after $4, 8, 16, \dots, 65\,536$ points:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py -v
+python3 example/ME/Standalone/standalone_qqbar_bbbar_xsec.py -v --event my_record.lhe
+\end{minted}
+The output of the first command is saved as
+\file{example/ME/Standalone/standalone_qqbar_bbbar_xsec.log}, about a hundred
+lines in three numbered sections, and every number quoted in the theory
+sections below is taken from it, so that you can put your finger on each
+one. Here is the heart of section~[2], the weight of our event's point:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+  step 4  the weight (eq. weight)
+    Jacobian: ln(1/tau_min) x 2 Y_max x 2 c_max = 8.4367 x 7.0723 x 1.7262 = 102.995
+      w_d = 102.995 x 18.916 pb x (1.21237 x 0.00295 + 1.14825 x 0.06629) = 155.268 pb
+      w_u = 102.995 x 18.916 pb x (1.25664 x 0.00122 + 1.14546 x 0.21068) = 473.161 pb
+      w_s = 102.995 x 18.916 pb x (1.06545 x 0.00060 + 1.06637 x 0.00532) =  12.298 pb
+      w_c = 102.995 x 18.916 pb x (0.84207 x 0.00278 + 0.84207 x 0.00278) =   9.114 pb
+      w_b = 102.995 x 18.916 pb x (0.60747 x 0.00038 + 0.60747 x 0.00038) =   0.902 pb
+    sum_q w_q = 650.742 pb at this point
+\end{minted}
+You cannot read this yet; by the end of \cref{sec:ancestral_home:from_formula_to_number}
+you will be able to reproduce every factor of it by hand. The plots of the
+theory sections come from a sibling script in the same directory,
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/ME/Standalone/plot_theory_ME.py        # -> theory_qqbar_bbbar.pdf, one page per section
+\end{minted}
+which imports the standalone script and uses nothing but its tables and its
+\code{born\_weights}; \code{make figures} in the book directory regenerates
+the PDF. The only page it cannot draw from the embedded tables is the scale
+variation, for which the full script of the next subsection is run through
+\file{scan_scales.py}.
+
 \subsection{The same calculation with LHAPDF and \PYTHIA}
 
 The sibling script \file{qqbar_bbbar_xsec.py} in the same directory does the
@@ -293,9 +346,27 @@ for the variations that the standalone one does not expose.
 \label{sec:ancestral_home:two_protons_meet}
 
 You have watched the number appear, and you have made it appear yourself.
-Now we earn it. The next four sections derive, factor by factor, the
-integral that the script evaluates, and end with the seven steps that its
-\code{born\_weights} and \code{integrate} functions execute.
+Now we earn it. The next five sections derive, factor by factor, the
+integral that the script evaluates, end with the seven steps that its
+\code{born\_weights} and \code{integrate} functions execute, and close with
+an honest estimate of how much the result can be trusted.
+
+Before any formula, a question to guess at. The two protons bring
+$13\,600\GeV$ into the collision. How much of it did the hard process of our
+event get to use? If your instinct says ``most of it'', look at the record in
+\cref{sec:ancestral_home:our_jet}: the pair of $b$ quarks has a mass of
+$396\GeV$, under three per cent of the beam energy, and one of the two
+colliding partons carried only $15\GeV$. That is the normal case, not an
+accident, and the reason is the subject of this section: a proton is not a
+particle you can scatter, it is a bag of partons, each carrying a small and
+random fraction of the momentum, and the formula below says how to add up
+all the ways two of them can meet (\cref{fig:ancestral_home:factorisation_sketch}).
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_factorisation}}
+\caption[The factorisation theorem as a picture]{The factorisation theorem as a picture. Two protons approach along the beam; from each a single parton is resolved at the scale $\muF$ with a momentum fraction $x$ given by the parton distribution function, and the two partons meet in the short-distance process $\hat\sigma$ that we calculate. The numbers are those of our event, from section~[2] of the \code{-v} log: $x_1=2.17\times10^{-3}$, $x_2=0.390$, $\sqrt{\shat}=396\GeV$. The remnants carry the rest of the two protons away and are forgotten until \cref{ch:whose_child}.}
+\label{fig:ancestral_home:factorisation_sketch}
+\end{figure}
 
 Look out of the left window: two protons are approaching each other at
 $6800\GeV$ apiece. You cannot scatter a proton in perturbation theory; it is
@@ -327,6 +398,29 @@ both a $q$ from beam~1 meeting a $\bar q$ from beam~2 and the reverse. Forget
 one orientation and you lose half the cross section; it is the first thing to
 check in any integrator.
 
+\paragraph{The numbers.} Section~[2] of the log evaluates the formula at
+our event. The $\bar u$ from beam~A carries $x_1=2.174\times10^{-3}$ and the
+$u$ from beam~B $x_2=0.3901$, so $\shat=x_1x_2s=156\,895\GeV^2$ and
+$\sqrt{\shat}=396.1\GeV$, the mass that the record prints as its momentum
+sum. The two orientations of the sum are far from equal at this one point:
+the $\bar u$-from-A, $u$-from-B term is $470.2\pb$ of the $u$-flavour weight
+and the reverse term $3.0\pb$, because a $u$ quark with $x=2\times10^{-3}$
+is common and a $\bar u$ with $x=0.39$ is rare. Integrated over the whole
+phase space the two orientations contribute exactly equally, by the symmetry
+of the two beams, which is why forgetting one costs a factor of two and not
+some odd fraction. \Cref{fig:ancestral_home:factorisation_plot} shows the
+same integrand over all of phase space: the rate is concentrated just above
+the threshold, $63\%$ of it below $\sqrt{\shat}=305\GeV$, and spread over
+five units of pair rapidity; our event, at $396\GeV$ and $Y=-2.59$, sits on
+the slope of both distributions, and only $9\%$ of all pairs are boosted
+even more than ours.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The integrand of the factorisation formula over the phase space]{The integrand of the factorisation formula, from one Sobol pass of $2^{18}$ points of \file{plot_theory_ME.py}, split by incoming flavour. (a) The distribution in the pair mass $\sqrt{\shat}$: the PDFs rise towards small $x$ and $\hat\sigma\propto1/\shat$, so most of the rate sits just above the threshold $\sqrt{\shat_{\min}}=200\GeV$ set by the $\pthat$ cut. (b) The distribution in the pair rapidity $Y$: flat where both $x$ are small, falling where one parton has to be a valence quark at large $x$. Our event is the dashed line in both panels.}
+\label{fig:ancestral_home:factorisation_plot}
+\end{figure}
+
 \subsection{Better variables, and a Jacobian you should do once by hand}
 \label{sec:ancestral_home:better_variables}
 
@@ -344,6 +438,12 @@ Check the inverse yourself: $x_1x_2=\tau$ and
 $\tfrac12\ln(x_1/x_2)=\tfrac12\ln e^{2Y}=Y$. $Y$ is the rapidity of the
 $\bbbar$ pair in the laboratory, and it will turn out to be the single number
 that decides where in the detector our mother is born.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_jacobian}}
+\caption[The change of variables from $(x_1,x_2)$ to $(\ln\tau,Y)$]{The change of variables from $(x_1,x_2)$ to $(\ln\tau,Y)$. (a) In the $(\ln x_1,\ln x_2)$ plane the allowed region is a triangle bounded by $x_1x_2=\tau_{\min}$; $\tau$ is constant along one diagonal direction and $Y$ along the other. (b) In the $(\ln\tau,Y)$ plane the same region is the triangle $|Y|\le-\tfrac12\ln\tau$, onto which the unit square of $(u_1,u_2)$ is mapped linearly. (c) A small rectangle $\mathrm{d}\ln\tau\,\mathrm{d}Y$ becomes a parallelogram of area $\tau\,\mathrm{d}\ln\tau\,\mathrm{d}Y$ in the linear $(x_1,x_2)$ plane: the Jacobian of \cref{eq:ancestral_home:jacobian}. Our event is marked with the numbers of section~[2] of the log.}
+\label{fig:ancestral_home:jacobian_sketch}
+\end{figure}
 
 Now the part I would like you to do once with pencil and paper, because
 every Monte Carlo integrator you will ever meet hides it. When we change
@@ -395,8 +495,47 @@ $(\ln x_1,\ln x_2)$ plane is a triangle, and you have seen it drawn in
 scene~2 of the film (\cref{sec:ancestral_home:animation}). \Cref{app:kinematics} collects these
 variables together with the rest of the kinematic vocabulary of the book.
 
+\paragraph{The numbers.} At our event the log gives $\tau=8.483\times10^{-4}$,
+$\ln\tau=-7.072$ and $Y=-2.595$; the rapidity range allowed at this $\tau$ is
+$|Y|\le Y_{\max}=3.536$, of which our pair uses $73\%$, and the constants of
+section~[1] are $\tau_{\min}=2.168\times10^{-4}$ and $\ln(1/\tau_{\min})=8.437$,
+the length of the $\ln\tau$ interval. The cancellation of
+\cref{eq:ancestral_home:xf} is checked explicitly: the library values are
+$x_1f_{\bar u}=1.1455$ and $x_2f_u=0.2107$, the densities themselves are
+$f_{\bar u}(x_1)=526.8$ and $f_u(x_2)=0.540$, and
+$f_{\bar u}f_u\,\tau=0.24133=[x_1f_{\bar u}][x_2f_u]$ to five digits. The
+reason for sampling $\ln\tau$ rather than $\tau$ is in
+\cref{fig:ancestral_home:variables_plot}: with the logarithmic map the first
+of $24$ bins in $u_1$ carries $26\%$ of the integral and the rest fall off
+smoothly, which an integrator can handle; with a linear map in $\tau$ the
+first bin would carry more than $99.99\%$, and $96\%$ of the points would be
+spent where there is nothing to integrate.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=2,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The allowed triangle and the choice of $\ln\tau$ as integration variable]{The change of variables at work, from \file{plot_theory_ME.py}. (a) The integrand $\mathrm{d}^2\sigma/\mathrm{d}\log_{10}x_1\,\mathrm{d}\log_{10}x_2$ over the allowed triangle, with lines of constant $\tau$ and constant $Y$ and our event marked; the colour scale spans five orders of magnitude. (b) The fraction of the integral in each of $24$ bins of $u_1$ when $\ln\tau$ is sampled, as the script does. (c) The same fraction in bins of a coordinate linear in $\tau$: essentially all of the integral falls in the first bin, and a uniform sample would waste almost every point.}
+\label{fig:ancestral_home:variables_plot}
+\end{figure}
+
 \section{Parton distribution functions: where the mother comes from}
 \label{sec:ancestral_home:pdfs}
+
+A question before the formula. A proton is two $u$ quarks and a $d$ quark;
+where, then, did the $\bar u$ antiquark of our event come from, and how
+likely was it that a proton contained one with a momentum fraction of two
+parts in a thousand? Guess a number, then look at the second row of
+\cref{tab:ancestral_home:pdf_values}: $x_1f_{\bar u}=1.15$, an antiquark
+density \emph{larger} than the valence density $x_2f_u=0.21$ that the $u$
+quark of beam~B came with. At small $x$ a proton is mostly gluons and
+quark--antiquark pairs that the gluons have split into, and the three valence
+quarks are a minority (\cref{fig:ancestral_home:proton_sketch}). The parton
+distribution function is the bookkeeping of this crowd.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_proton_pdf}}
+\caption[What a parton distribution function describes]{What a parton distribution function describes. (a) A proton resolved at the scale $\muF=113\GeV$ of our event: three valence quarks, the gluons that bind them and a sea of quark--antiquark pairs from gluon splitting. The $u$ of beam~B is a valence quark at $x_2=0.39$, the $\bar u$ of beam~A a sea antiquark at $x_1=2.2\times10^{-3}$, where $xf$ is of order one. (b) The same proton resolved at half and at twice the scale: raising $\muF$ resolves more of the sea and softens the valence quarks, the DGLAP evolution of \cref{eq:ancestral_home:dglap}. The percentages are those of section~[2] of the \code{-v} log.}
+\label{fig:ancestral_home:proton_sketch}
+\end{figure}
 
 The PDFs cannot be computed from first principles; they are fitted to data
 and evolved in $Q^2$ with the DGLAP equations. CMS Run~3 simulation uses the
@@ -405,6 +544,38 @@ NNPDF3.1 NNLO set with $\alphas(m_Z)=0.118$~\cite{NNPDF:2017mvq}, member~0
 name \code{NNPDF31\_nnlo\_as\_0118} and the numeric ID~303600. The set is
 distributed as a table of $x f(x,Q^2)$ on a grid of knots in $x$ and $Q$;
 LHAPDF interpolates between the knots with cubic splines in $(\ln x,\ln Q^2)$.
+
+\paragraph{The equations.} Three statements define what the table means.
+First the definition itself: $f_i(x,\muF^2)\,\mathrm{d}x$ is the number of
+partons of flavour $i$ with momentum fraction in $[x,x+\mathrm{d}x]$ when the
+proton is probed at the resolution $\muF$. Second the sum rules that pin the
+normalisation,
+\begin{equation}
+  \int_0^1\!\mathrm{d}x\,\bigl[u(x)-\bar u(x)\bigr]=2,\qquad
+  \int_0^1\!\mathrm{d}x\,\bigl[d(x)-\bar d(x)\bigr]=1,\qquad
+  \sum_i\int_0^1\!\mathrm{d}x\;x f_i(x,\muF^2)=1 ,
+  \label{eq:ancestral_home:sumrules}
+\end{equation}
+which say that the proton has two valence $u$ quarks and one valence $d$
+whatever the scale, and that the partons together carry all of its momentum;
+the gluon, absent from our process, takes about half. Third the DGLAP
+evolution equation, which is the only part of a PDF that perturbation theory
+predicts: the dependence on the scale,
+\begin{equation}
+  \muF^2\,\frac{\partial f_i(x,\muF^2)}{\partial\muF^2}
+  =\frac{\alphas(\muF^2)}{2\pi}\sum_j\int_x^1\frac{\mathrm{d}z}{z}\,
+  P_{ij}(z)\,f_j\!\left(\frac{x}{z},\muF^2\right).
+  \label{eq:ancestral_home:dglap}
+\end{equation}
+Read it as a flow: when the resolution is raised, a parton $j$ at $x/z$ is
+seen to split into a parton $i$ that keeps the fraction $z$ of its momentum,
+with the probability $P_{ij}(z)$. The splitting function $P_{qg}$ feeds the
+sea from the gluon, so sea densities at small $x$ \emph{rise} with $\muF$;
+the function $P_{qq}$ moves a valence quark to smaller $x$ by radiating a
+gluon, so the valence density at large $x$ \emph{falls}. Both signs will
+matter for us. The $P_{ij}$ themselves are the splitting functions of the
+parton shower, and \cref{ch:mother_gives_birth} derives them; here they
+are the fit's evolution kernel and the data fix the rest.
 
 Three conventions of the interface matter for reproducing \PYTHIA's numbers,
 and you would not guess any of them from the physics:
@@ -456,10 +627,43 @@ $\alphas(Q^2)$ from the PDF set & & $0.11425$ \\
 \end{tabular}
 \end{table}
 
+\paragraph{The numbers.} The scale dependence of \cref{eq:ancestral_home:dglap}
+is visible in the log, which evaluates the two densities of our event at a
+quarter and at four times the scale $Q^2=12\,842\GeV^2$. At $Q^2/4$ the sea
+antiquark density is $x_1f_{\bar u}=1.0450$, $8.8\%$ below its central value,
+while the valence density is $x_2f_u=0.2322$, $10.2\%$ above; at $4Q^2$ the
+two move the other way, by $+8.0\%$ and $-8.5\%$. Their product, which is
+what the cross section sees, moves by only $+0.6\%$ and $-1.1\%$: the two
+flows of the DGLAP equation nearly cancel at our event, and that is the
+origin of the small $\muF$ rows of \cref{tab:ancestral_home:variations}.
+\Cref{fig:ancestral_home:pdf_plot} draws the whole table at the event's
+scale and the two densities as functions of $Q^2$.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The parton distribution functions of the embedded table]{The parton distribution functions of the embedded table, drawn by \file{plot_theory_ME.py}. (a) $xf(x,Q^2)$ for the five quark flavours and three light antiquarks at the event's scale $Q^2=12\,842\GeV^2$; the gluon is not part of the table because the process does not use it. The two stars are the partons of our event: the sea $\bar u$ at small $x$ and the valence $u$ on the broad bump. (b) The two densities as functions of $Q^2$, relative to their value at the event's scale: the sea rises, the valence falls, and their product is nearly flat, the DGLAP flows of \cref{eq:ancestral_home:dglap} at work.}
+\label{fig:ancestral_home:pdf_plot}
+\end{figure}
+
 \section{The matrix element for \texorpdfstring{$\bbbar$}{bb} production}
 \label{sec:ancestral_home:matrix_element}
 
 \subsection{The \texorpdfstring{$q\bar q\to\bbbar$}{qq->bb} channel at leading order}
+
+How large is a cross section of $30\pb$? Guess before you compute: a
+picobarn is $10^{-40}\,\mathrm{m}^2$, so $30\pb$ is a disc of radius
+$10^{-19}\,\mathrm{m}$, a ten-thousandth of the proton's size. That is the
+area a $u\bar u$ pair of $396\GeV$ presents for turning into a $\bbbar$ pair,
+and it is small for two reasons that the one-line formula below makes
+explicit: two powers of a coupling of $0.11$, and a $1/\shat$ that says a
+hard process is a short-distance process
+(\cref{fig:ancestral_home:feynman_qqbar}).
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_feynman_qqbar}}
+\caption[The leading-order diagram and the kinematics of the partonic frame]{The leading-order process. (a) The only Feynman diagram of $q\bar q\to\bbbar$ at this order, an $s$-channel gluon, with the factors that build \cref{eq:ancestral_home:dsigma}: a coupling $g_{\mathrm s}T^a$ at each vertex, the propagator $1/\shat$, and the colour and spin averages. (b) The kinematics in the partonic centre-of-mass frame: the quarks leave back to back at the angle $\theta^*$ to the beam with momentum $p^*$, and the generator cut $\pthat\ge100\GeV$ is a tube around the beam through whose wall both must leave, $|\cos\theta|\le c_{\max}$ (\cref{eq:ancestral_home:cmax}). Numbers from section~[2] of the \code{-v} log.}
+\label{fig:ancestral_home:feynman_qqbar}
+\end{figure}
 
 Here is the engine of the whole stop, and it fits on one line. The Born
 process is a single $s$-channel gluon exchange. Averaging over the spins and
@@ -505,6 +709,12 @@ $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=18.9\pb$ at the actual
 $\cos\hat\theta=-0.820$; you are asked to verify both in Exercise~2. The
 conversion from natural units is
 $(\hbar c)^2 = 0.389\,379\,372\GeV^2\,\mathrm{mb} = 3.893\,793\,72\times10^{8}\GeV^2\,\mathrm{pb}$.
+Section~[2] of the log prints both numbers to more digits, from the very
+function the integrator calls: $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=18.916\pb$
+at $\cos\theta^*=-0.8203$, and $\hat\sigma=30.157\pb$, with $\rho=5.87\times10^{-4}$
+and $\beta=0.99971$: at this energy the $b$ mass is invisible in the matrix
+element, and the massless $8\pi\alphas^2/(27\shat)$ would be off by three
+parts in ten thousand.
 
 \paragraph{Kinematics of the two quarks.} In the partonic frame the two
 quarks share the energy equally, $E_b=\sqrt{\shat}/2$, so each has momentum
@@ -548,9 +758,37 @@ partonic cross section because of the $1+\cos^2\theta$ shape. Note finally
 that rapidity $y$ and pseudorapidity $\eta$ differ for a massive quark; the
 difference is $0.001$ at $\pt=113\GeV$ and would be far larger near
 threshold.
+The log confirms the three numbers of the cut at our event, $c_{\max}=0.8631$,
+a removed solid-angle fraction of $0.137$ and a surviving fraction of
+$\hat\sigma$ of $0.808$, and it recovers the record's own kinematics from
+the formulae: $p^*=197.99\GeV$ against $197.995$ from the boosted
+four-vectors, $\pthat=113.23\GeV$ against $113.22$, and the two rapidities
+$y_b=-1.438$ and $y_{\bar b}=-3.752$. \Cref{fig:ancestral_home:matrix_element_plot}
+shows the three functions of this subsection over their whole range.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=4,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The Born matrix element and the effect of the $\pthat$ cut]{The Born matrix element and what the generator cut does to it, from \file{plot_theory_ME.py}. (a) The angular distribution \cref{eq:ancestral_home:dsigma} at the $\shat$ of our event, with the regions removed by $|\cos\theta|>c_{\max}$ shaded and our event's $\cos\theta^*$ marked. (b) The integrated $\hat\sigma(\shat)$ of \cref{eq:ancestral_home:sigmahat} at fixed $\alphas$ from the $2\mb$ threshold, where $\beta\to0$, to $3\TeV$; the massless form is indistinguishable above a few tens of GeV. (c) The cut as a cut on the angle: $c_{\max}$ and the fraction of $\hat\sigma$ that survives, as functions of $\sqrt{\shat}$; near the threshold $\sqrt{\shat_{\min}}=200\GeV$ almost everything is removed, at our event $81\%$ survives.}
+\label{fig:ancestral_home:matrix_element_plot}
+\end{figure}
 
 \subsection{The \texorpdfstring{$gg$}{gg} channel, the incoming \texorpdfstring{$b$}{b}, and four versus five flavours}
 \label{sec:ancestral_home:gg_and_flavours}
+
+Which quark flavour makes most of our $\bbbar$ pairs, and which makes the
+fewest? Most readers guess $u\bar u$ first, correctly, because the proton has
+two valence $u$ quarks; fewer guess that $d\bar d$ is a third of the total
+rather than a half of the $u\bar u$ share, and almost nobody expects an
+incoming \emph{bottom} quark to contribute at all. It does, at the per cent
+level, and whether it should is a question of convention that this
+subsection has to settle before the number can be compared with anything
+(\cref{fig:ancestral_home:feynman_gg}).
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_feynman_gg_bb}}
+\caption[What is left out: the $gg$ channel, the $t$-channel $b\bar b$ diagram, and the two flavour schemes]{What is left out of the calculation and why. (a) The three diagrams of $gg\to\bbbar$, switched off in our configuration; they dominate an inclusive $\bbbar$ sample. (b) For an incoming $b$ the process $b\bar b\to b\bar b$ has an $s$-channel and a $t$-channel diagram; \PYTHIA process~124, and our integrators, keep only the first. (c) The five-flavour scheme puts the $g\to\bbbar$ splitting into the PDF $f_b$ and resums its logarithm; the four-flavour scheme keeps the $b$ out of the proton and puts the same splitting into the matrix element. The $1.6\%$ is the incoming-$b$ share of section~[3] of the \code{-v} log.}
+\label{fig:ancestral_home:feynman_gg}
+\end{figure}
 
 At LHC energies the gluon luminosity is so large that $gg\to\bbbar$ dominates
 the inclusive $\bbbar$ rate. Our example switches it off
@@ -567,6 +805,31 @@ so do our integrators. This is a convention we reproduce, not a complete
 calculation. It matters at the $1.6\%$ level, the size of the incoming-$b$
 term (\cref{tab:ancestral_home:flavours}).
 
+Written out, the flavour sum of \cref{eq:ancestral_home:factorisation} for
+our process is
+\begin{equation}
+  \sigma=\sum_{q=d,u,s,c,b}\sigma_q,\qquad
+  \sigma_q=\int\!\mathrm{d}x_1\mathrm{d}x_2\,
+  \bigl[f_q(x_1)f_{\bar q}(x_2)+f_{\bar q}(x_1)f_q(x_2)\bigr]\,
+  \hat\sigma_{q\bar q\to\bbbar}(\shat),
+  \label{eq:ancestral_home:flavoursum}
+\end{equation}
+with the \emph{same} $\hat\sigma$ for every flavour; the flavours differ only
+through their PDFs. The shares are therefore a statement about the proton,
+not about the matrix element. Section~[3] of the log lists them for the
+default run: $u\bar u$ $51.6\%$, $d\bar d$ $34.3\%$, $s\bar s$ $8.8\%$,
+$c\bar c$ $3.7\%$ and $b\bar b$ $1.6\%$. The $u$-to-$d$ ratio of $1.5$ rather
+than $2$ is the valence-quark count diluted by the sea, which is
+flavour-symmetric to a first approximation; and the heavy-quark shares are
+nothing but the heavy sea of \cref{fig:ancestral_home:pdf_plot}, which is
+why the $b\bar b$ term exists at all. At our event's own point the weights
+are $w_u=473.2$, $w_d=155.3$, $w_s=12.3$, $w_c=9.1$ and $w_b=0.9\pb$, more
+$u$-heavy than the average because the valence $u$ at $x_2=0.39$ is three times as
+abundant as the valence $d$ there, by the $xf$ values of the log. \Cref{fig:ancestral_home:flavours_plot}
+follows the shares as the generator cut is raised: the valence $u$ wins
+steadily because a higher cut forces larger $x$, and the incoming $b$ falls
+from two per cent at $30\GeV$ to two per mille at $800\GeV$.
+
 Treating the $b$ as a massless parton inside the proton while giving it a
 mass in the final state is the \emph{five-flavour scheme} (5FS). The
 alternative \emph{four-flavour scheme} (4FS) keeps the $b$ out of the proton
@@ -577,8 +840,30 @@ are included; at leading order they do not, and the 5FS with
 \cref{eq:ancestral_home:dsigma} is simply what \PYTHIA and CMS use. \MG, as
 we will see, takes the 4FS road by default.
 
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=5,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The share of each incoming flavour as a function of the generator cut]{The share of each incoming flavour, from single Sobol passes of the standalone script at eleven values of the generator cut (\file{plot_theory_ME.py}). (a) The stacked shares: the valence $u$ grows from $45\%$ at $30\GeV$ to $63\%$ at $800\GeV$, the sea flavours shrink, and the incoming $b$ falls from $2.2\%$ to $0.2\%$. The percentages at $100\GeV$ are those of \cref{tab:ancestral_home:flavours}. (b) The total cross section against the cut, with the local power $n$ of $\sigma\propto(\pthat^{\min})^{-n}$ between neighbouring points: dimensional analysis alone would give $n=4$, the falling PDFs and the running coupling make it steeper at high \pt, and the cut on an angle rather than on an energy makes it flatter at low \pt.}
+\label{fig:ancestral_home:flavours_plot}
+\end{figure}
+
 \subsection{Scales and the coupling}
 \label{sec:ancestral_home:scales_and_coupling}
+
+Here is a question with no right answer, which is exactly the point. The
+hard process of our event involves a $b$ mass of $4.8\GeV$, a transverse
+momentum of $113\GeV$, a pair mass of $396\GeV$ and a beam energy of
+$13\,600\GeV$. At which of these should the strong coupling be evaluated?
+QCD does not say; it only says that the full answer, to all orders, does not
+depend on the choice, and that a leading-order answer does
+(\cref{fig:ancestral_home:scales_sketch}). Guess how much it depends,
+then read on.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_scales}}
+\caption[Where the two scales enter, and the scales of our event on a logarithmic ladder]{The scales of the hard process. (a) Where $\muF$ and $\muR$ enter the factorised picture: $\muF$ decides which radiation is counted as part of the proton and which as part of $\hat\sigma$, $\muR$ is the argument of the two powers of $\alphas$. (b) The scales of our event on a logarithmic ladder, with the coupling at each from section~[2] of the \code{-v} log and from the embedded table: the hard process lives one decade above $\mb$ and four above $\Lambda_{\mathrm{QCD}}$, and a factor of two in $\muR$ moves $\alphas^2$ by about $20\%$.}
+\label{fig:ancestral_home:scales_sketch}
+\end{figure}
 
 Every leading-order calculation has to choose $\muR$ and $\muF$. \PYTHIA's
 default for a $2\to2$ process with two equal-mass final particles is the
@@ -593,6 +878,30 @@ code~4 uses $\shat$ and code~5 a fixed value. The multipliers
 \emph{squared} scale, a source of factor-of-two confusion when one tries to
 ``double the scale''.
 
+\paragraph{The running coupling.} What the choice of $\muR$ changes is the
+value of $\alphas$, through the renormalisation-group equation
+$\mathrm{d}\alphas/\mathrm{d}\ln\mu^2=-\beta_0\alphas^2/(4\pi)-\beta_1\alphas^3/(4\pi)^2-\dots$,
+whose two-loop solution is the function \PYTHIA evaluates:
+\begin{equation}
+  \alphas(\mu^2)=\frac{4\pi}{\beta_0L}\left[1-\frac{\beta_1}{\beta_0^2}\frac{\ln L}{L}\right],
+  \qquad L=\ln\frac{\mu^2}{\Lambda^2},\quad
+  \beta_0=11-\tfrac23n_f,\quad \beta_1=102-\tfrac{38}{3}n_f ,
+  \label{eq:ancestral_home:running}
+\end{equation}
+with $n_f=5$ active flavours above the $b$ threshold, so $\beta_0=23/3$ and
+$\beta_1=116/3$. The one free parameter $\Lambda$ is fixed by the input
+$\alphas(m_Z^2)=0.118$; for \cref{eq:ancestral_home:running} with five
+flavours that gives $\Lambda_5=0.226\GeV$, and the formula then reproduces
+the embedded table to five digits at the scale of our event,
+$\alphas(12\,842\GeV^2)=0.11425$, and at a quarter of it, $0.12715$. Above
+the top threshold \PYTHIA switches to $n_f=6$ and the simple formula starts
+to drift, by $0.4\%$ at $4Q^2$ and $1\%$ at $\shat$; the table carries the
+exact values. The numbers that matter for the next section are the two
+ratios the log prints: $\alphas^2(Q^2/4)/\alphas^2(Q^2)=1.239$ and
+$\alphas^2(4Q^2)/\alphas^2(Q^2)=0.831$. A factor of two in the scale is
+$24\%$ one way and $17\%$ the other in the leading-order rate, before the
+PDFs have moved at all.
+
 The coupling in the hard process is a separate object from the coupling in
 the parton shower and from the one stored with the PDF set. The CP5
 tune~\cite{CMS:2019csb} sets \code{SigmaProcess:alphaSvalue = 0.118} with
@@ -606,6 +915,13 @@ $\alphas(12\,842\GeV^2)=0.1143$ either way
 runnings from the same $\alphas(m_Z)$ and the scale is close to $m_Z$;
 at the $30\GeV$ draft's $Q^2=1178\GeV^2$ they differed in the third digit.
 
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=6,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The running coupling of the embedded table and the scales the integral visits]{The coupling and the scale, from \file{plot_theory_ME.py}. (a) \PYTHIA's second-order $\alphas(Q^2)$ as embedded in the standalone script, with the values at $m_Z^2$, at our event's $Q^2=12\,842\GeV^2$ and at a quarter and four times that scale. (b) The distribution of the cross section in the scale $Q=\sqrt{\pthat^2+\mb^2}$ that \cref{eq:ancestral_home:scale_choice} assigns to each point: half of the rate is evaluated below $Q=122\GeV$, within a quarter of the cut, so the single number $\alphas(113\GeV)$ of our event is representative of the whole sample.}
+\label{fig:ancestral_home:scales_plot}
+\end{figure}
+
 \section{From formula to number: the cross section step by step}
 \label{sec:ancestral_home:from_formula_to_number}
 
@@ -614,6 +930,12 @@ into $345\pb$, and I want you to see the whole machine, not just the output.
 The steps below are, one for one, the steps of the standalone script you
 ran in \cref{sec:ancestral_home:standalone_code}; the function names in
 brackets point to it.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_recipe_flow}}
+\caption[The seven steps of the integrator, with the numbers of our event's point]{The seven steps of the integrator as a flow chart. Left: the recipe, one Sobol point at a time; steps~1 to~4 are the function \code{born\_weights}, steps~5 and~6 the function \code{integrate}. Right: the same steps for the point of the unit cube that corresponds to our event, with every intermediate number from sections~[2] and~[3] of the \code{-v} log, ending in the weight $650.7\pb$ of that one point and the average $345.320\pb$ over the $65\,536$ points of the first pass.}
+\label{fig:ancestral_home:recipe_flow}
+\end{figure}
 
 \paragraph{Step 1: choose the integration variables.} Every Monte Carlo
 integrator wants to sample a unit cube, so we map
@@ -698,6 +1020,32 @@ is summed within each pass before the spread is taken.
 \paragraph{Step 7: convert units.} Multiply by $3.893\,793\,72\times10^{8}$
 to go from $\GeV^{-2}$ to pb.
 
+\paragraph{The numbers.} Section~[3] of the log is the first Sobol pass
+told in full. Of its $65\,536$ points all but $31$ have a positive weight;
+the weights range from zero to $4576\pb$, their median is $1.0\pb$ and their
+mean is $345.32\pb$, which is the cross section. The mean is three hundred
+times the median because the integrand is steep: the largest tenth of the
+weights carries $75\%$ of the integral and the largest hundredth $11\%$, and
+in terms of $u_1$ the first tenth of the interval, $\sqrt{\shat}$ between
+$200$ and $305\GeV$, holds $63\%$ of it, the top seventy per cent of the
+interval, above $710\GeV$, under two. Our event's own point weighs
+$650.7\pb$, about twice the mean. The running average swings as predicted:
+$26\pb$ after four points, $401$ after eight, $394$ after sixteen, $339$
+after $256$, $345.22$ after $1024$, and from $2^{14}$ points on it does not
+move beyond the second decimal, $345.28\to345.319\to345.320\pb$. The
+relative spread of the weights is $2.37$, so pseudo-random points would give
+an error of $2.37\times345/\sqrt{65\,536}=3.19\pb$ for the same effort;
+eight scrambled Sobol passes give $0.001\pb$
+(\cref{tab:ancestral_home:three_numbers}). \Cref{fig:ancestral_home:convergence_plot}
+shows the weight distribution, the running average and the error against
+$N$ for both kinds of points.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=7,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[The weights, the running average and the error of the Sobol integration]{From formula to number, from \file{plot_theory_ME.py}. (a) The distribution of the $65\,536$ weights of the first Sobol pass on a logarithmic scale; the mean, which is the cross section, and the weight of our event's point are marked. (b) The running average against the number of points for the scrambled Sobol sequence of the script and for pseudo-random points with the same seed; the band is the \PYTHIA result of \cref{sec:ancestral_home:cmssw} with its statistical error. (c) The spread of eight independent estimates against $N$: pseudo-random points follow $N^{-1/2}$, the Sobol sequence is close to $N^{-1}$ and is a thousand times more precise at $2^{16}$ points.}
+\label{fig:ancestral_home:convergence_plot}
+\end{figure}
+
 The results are in \cref{tab:ancestral_home:three_numbers} and, per flavour,
 in \cref{tab:ancestral_home:flavours}. Up quarks dominate, more so than at
 $30\GeV$, because the higher cut pushes the valence fraction $x_2$ up to
@@ -772,6 +1120,113 @@ you should carry with you to the later stops:
     any post-shower selection that a production configuration might add are
     not reproduced.
 \end{itemize}
+
+\section{Scale choices and their uncertainties}
+\label{sec:ancestral_home:scales}
+
+I have been quoting cross sections to six digits, and it is time to confess
+how many of them mean anything. A leading-order cross section depends on
+$\muR$ through $\alphas^2$ and on $\muF$ through the PDFs, and neither
+dependence is compensated by anything at this order. The conventional
+estimate of the missing higher orders is to vary both scales by factors of
+two around the central choice \cref{eq:ancestral_home:scale_choice}.
+\Cref{tab:ancestral_home:variations} shows the result for our process,
+computed with the full integrator, and \cref{fig:ancestral_home:seven_point_sketch}
+arranges the seven values that enter the standard prescription on the
+$(\muR,\muF)$ grid. Guess first whether a factor of two in $\muR$ or in
+$\muF$ matters more, and in which direction each moves the rate.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/me_seven_point}}
+\caption[The seven-point scale variation on the $(\muR,\muF)$ grid]{The seven-point scale variation. The nine combinations of $\muR,\muF\in\{\tfrac12,1,2\}\times\mu_0$ with $\mu_0^2=\pthat^2+\mb^2$, without the two opposite extremes, with the cross sections of \cref{tab:ancestral_home:variations}. Red cells raise the rate, blue cells lower it; the envelope of the seven values is the quoted theoretical uncertainty.}
+\label{fig:ancestral_home:seven_point_sketch}
+\end{figure}
+
+\begin{table}[htbp]\centering
+\caption[Scale, flavour, mass and PDF-convention variations]{Variations of
+the default calculation, computed with \file{qqbar_bbbar_xsec.py} ($2^{15}$
+Sobol points, two repeats; integration errors below $0.002\%$). The central
+value is $345.32\pb$.}
+\label{tab:ancestral_home:variations}
+\begin{tabular}{llrr}\toprule
+Variation & Option & $\sigma$ [pb] & change \\ \midrule
+$\muR\times2$              & \code{--mur-factor 2}                   & $288.83$ & $-16.4\%$ \\
+$\muR\times\tfrac12$       & \code{--mur-factor 0.5}                 & $425.34$ & $+23.2\%$ \\
+$\muF\times2$              & \code{--muf-factor 2}                   & $357.19$ & $+3.4\%$ \\
+$\muF\times\tfrac12$       & \code{--muf-factor 0.5}                 & $330.19$ & $-4.4\%$ \\
+$\muR,\muF\times2$         & \code{--mur-factor 2 --muf-factor 2}     & $298.70$ & $-13.5\%$ \\
+$\muR,\muF\times\tfrac12$  & \code{--mur-factor 0.5 --muf-factor 0.5} & $406.61$ & $+17.7\%$ \\ \midrule
+no incoming $b$            & \code{--nquark 4}                       & $339.85$ & $-1.6\%$ \\
+$\mb=4.7\GeV$              & \code{--mb 4.7}                         & $345.37$ & $+0.01\%$ \\
+negative PDFs kept         & \code{--signed-pdfs}                    & $345.04$ & $-0.08\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The estimate you can do by hand.} The size of the $\muR$ rows
+follows from \cref{eq:ancestral_home:running} alone. Since $\sigma\propto\alphas^2(\muR^2)$
+at this order, and since to one loop
+$\mathrm{d}\alphas/\mathrm{d}\ln\mu^2=-\beta_0\alphas^2/(4\pi)$,
+\begin{equation}
+  \frac{\Delta\sigma}{\sigma}\simeq2\,\frac{\Delta\alphas}{\alphas}
+  \simeq-\frac{\beta_0\,\alphas(\mu_0^2)}{2\pi}\,\ln\frac{\muR^2}{\mu_0^2}
+  =\mp\frac{23}{3}\cdot\frac{0.1143}{2\pi}\cdot\ln4=\mp19\%
+  \quad\text{for }\muR=2\mu_0,\ \tfrac12\mu_0 .
+  \label{eq:ancestral_home:scale_estimate}
+\end{equation}
+The full integrator gives $-16.4\%$ and $+23.2\%$: the two-loop running is
+slower than the one-loop estimate above $\mu_0$ and faster below it, which
+is what the exact ratios $0.831$ and $1.239$ of the log already said, and the
+rest is the spread of $Q$ over the sample (\cref{fig:ancestral_home:scales_plot}).
+The $\muF$ rows cannot be estimated this simply because they are the
+difference of two DGLAP flows; at our event the log gives $+0.6\%$ and
+$-1.1\%$ for the product of the two densities, and the integrated result,
+$+3.4\%$ and $-4.4\%$, is of the same small size and the same sign. The
+envelope of the seven points is then
+\begin{equation}
+  \sigma_{\mathrm{LO}}=345.3\,^{+80.0}_{-56.5}\pb
+  =345.3\,^{+23\%}_{-16\%}\pb ,
+  \label{eq:ancestral_home:envelope}
+\end{equation}
+and \cref{fig:ancestral_home:scale_variation_plot} shows how the three
+curves behind it look between the extremes.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=8,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
+\caption[Scale variations of the leading-order cross section]{Scale variations of the leading-order cross section, computed with the full integrator through \file{scan_scales.py} and drawn by \file{plot_theory_ME.py}. (a) The cross section against the scale factor for $\muR$ alone, $\muF$ alone and both together, on a logarithmic axis in the factor; the band is the \PYTHIA result with its $1.8\%$ statistical error. (b) The same seven values on the $(\muR,\muF)$ grid, coloured by the change.}
+\label{fig:ancestral_home:scale_variation_plot}
+\end{figure}
+
+Three lessons are in the table. First, the scale uncertainty of this
+leading-order number is of order $20\%$, three orders of magnitude larger
+than the integration errors and ten times the statistical error of the
+\CMSSW run; agreement between two leading-order codes at $0.3\%$ says
+nothing about agreement with nature. Second, $\muR$ and $\muF$ pull in
+opposite directions: a larger $\muR$ lowers $\alphas$, while a larger $\muF$
+raises the small-$x$ sea that our $\bar u$ came from, because DGLAP evolution
+feeds the sea from the gluon as $Q^2$ grows, and at the same time lowers the
+valence $u$ at $x=0.39$. At $\pthat\ge30\GeV$ the sea won clearly and the
+$\muF$ variation was $\pm15\%$; at $100\GeV$ the two nearly cancel and it
+is $\pm4\%$. Exercise~6 lets you watch this happen. Varying both scales
+together therefore under-estimates the uncertainty, which is why the standard
+prescription is the envelope of a seven-point variation ($\muR,\muF$ each
+$\times\tfrac12,1,2$ without the two extreme opposite combinations). Third,
+the ``convention'' rows are small: whether negative PDF values are clipped is
+irrelevant, the $b$ mass is invisible at this \pt, and the incoming-$b$
+approximation of \cref{sec:ancestral_home:gg_and_flavours} is a $1.6\%$
+effect.
+
+Beyond scales, a complete uncertainty would add the PDF uncertainty from the
+other members of the set (100 replicas for NNPDF3.1, run with
+\code{--member}), the variation of $\alphas(m_Z)$ by $\pm0.001$
+(\code{--alphas-mz}), and the choice of $\mb$, which enters through $\rho$
+and through the scale. The real cure is the next order: at NLO the $\muR$
+and $\muF$ dependence of the Born term is cancelled by the explicit
+logarithms of the one-loop and real-emission corrections, and the residual
+uncertainty shrinks to about $10\%$. That is what \MG at
+NLO~\cite{Alwall:2014hca} provides, and why CMS uses NLO samples where the
+cross section itself matters. For following one jet through the detector,
+leading order is enough; for a measurement it is not.
 
 \section{Validation from official packages}
 \label{sec:ancestral_home:validation}
@@ -1019,145 +1474,26 @@ later row will be compared with this one.
   \ledgerrow{$b$ quark in the hard-process record}{113.22}{4.80}{1}{--}
 \end{ledger}
 
-\section{Scale choices and their uncertainties}
-\label{sec:ancestral_home:scales}
-
-I have been quoting cross sections to six digits, and it is time to confess
-how many of them mean anything. A leading-order cross section depends on
-$\muR$ through $\alphas^2$ and on $\muF$ through the PDFs, and neither
-dependence is compensated by anything at this order. The conventional
-estimate of the missing higher orders is to vary both scales by factors of
-two around the central choice \cref{eq:ancestral_home:scale_choice}.
-\Cref{tab:ancestral_home:variations} shows the result for our process,
-computed with the full integrator.
-
-\begin{table}[htbp]\centering
-\caption[Scale, flavour, mass and PDF-convention variations]{Variations of
-the default calculation, computed with \file{qqbar_bbbar_xsec.py} ($2^{15}$
-Sobol points, two repeats; integration errors below $0.002\%$). The central
-value is $345.32\pb$.}
-\label{tab:ancestral_home:variations}
-\begin{tabular}{llrr}\toprule
-Variation & Option & $\sigma$ [pb] & change \\ \midrule
-$\muR\times2$              & \code{--mur-factor 2}                   & $288.83$ & $-16.4\%$ \\
-$\muR\times\tfrac12$       & \code{--mur-factor 0.5}                 & $425.34$ & $+23.2\%$ \\
-$\muF\times2$              & \code{--muf-factor 2}                   & $357.19$ & $+3.4\%$ \\
-$\muF\times\tfrac12$       & \code{--muf-factor 0.5}                 & $330.19$ & $-4.4\%$ \\
-$\muR,\muF\times2$         & \code{--mur-factor 2 --muf-factor 2}     & $298.70$ & $-13.5\%$ \\
-$\muR,\muF\times\tfrac12$  & \code{--mur-factor 0.5 --muf-factor 0.5} & $406.61$ & $+17.7\%$ \\ \midrule
-no incoming $b$            & \code{--nquark 4}                       & $339.85$ & $-1.6\%$ \\
-$\mb=4.7\GeV$              & \code{--mb 4.7}                         & $345.37$ & $+0.01\%$ \\
-negative PDFs kept         & \code{--signed-pdfs}                    & $345.04$ & $-0.08\%$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Three lessons are in the table. First, the scale uncertainty of this
-leading-order number is of order $20\%$, three orders of magnitude larger
-than the integration errors and ten times the statistical error of the
-\CMSSW run; agreement between two leading-order codes at $0.3\%$ says
-nothing about agreement with nature. Second, $\muR$ and $\muF$ pull in
-opposite directions: a larger $\muR$ lowers $\alphas$, while a larger $\muF$
-raises the small-$x$ sea that our $\bar u$ came from, because DGLAP evolution
-feeds the sea from the gluon as $Q^2$ grows, and at the same time lowers the
-valence $u$ at $x=0.39$. At $\pthat\ge30\GeV$ the sea won clearly and the
-$\muF$ variation was $\pm15\%$; at $100\GeV$ the two nearly cancel and it
-is $\pm4\%$. Exercise~6 lets you watch this happen. Varying both scales
-together therefore under-estimates the uncertainty, which is why the standard
-prescription is the envelope of a seven-point variation ($\muR,\muF$ each
-$\times\tfrac12,1,2$ without the two extreme opposite combinations). Third,
-the ``convention'' rows are small: whether negative PDF values are clipped is
-irrelevant, the $b$ mass is invisible at this \pt, and the incoming-$b$
-approximation of \cref{sec:ancestral_home:gg_and_flavours} is a $1.6\%$
-effect.
-
-Beyond scales, a complete uncertainty would add the PDF uncertainty from the
-other members of the set (100 replicas for NNPDF3.1, run with
-\code{--member}), the variation of $\alphas(m_Z)$ by $\pm0.001$
-(\code{--alphas-mz}), and the choice of $\mb$, which enters through $\rho$
-and through the scale. The real cure is the next order: at NLO the $\muR$
-and $\muF$ dependence of the Born term is cancelled by the explicit
-logarithms of the one-loop and real-emission corrections, and the residual
-uncertainty shrinks to about $10\%$. That is what \MG at
-NLO~\cite{Alwall:2014hca} provides, and why CMS uses NLO samples where the
-cross section itself matters. For following one jet through the detector,
-leading order is enough; for a measurement it is not.
-
 \section{Further reading}
 \label{sec:ancestral_home:further_reading}
-The factorisation theorem and the massive-quark Born formula are reviewed in
-the Particle Data Group's ``Cross-section formulae'' and ``QCD'' sections
-\cite{ParticleDataGroup:2024cfk}. NNPDF3.1 is described in
-\cite{NNPDF:2017mvq}, the LHAPDF library in \cite{Buckley:2014ana}, and the
-PDF4LHC recommendations for combining PDF uncertainties in
-\cite{Butterworth:2015oua}. The \PYTHIA~8.3 guide~\cite{Bierlich:2022pfr},
-chapters on hard processes and on couplings and scales, is the reference for
-process~124 and the scale codes; the CP5 tune is documented in
-\cite{CMS:2019csb}. \MG and its NLO capabilities are described in
-\cite{Alwall:2014hca}.
-
-\subsection*{Open problems in the context of Phase-2 LHC}
-\label{sec:ancestral_home:open_problems}
-
-The High-Luminosity LHC (Run~4 and beyond) will collide protons at
-$\sqrt{s}=14\TeV$ with up to 200 simultaneous interactions per crossing and
-collect some $3000\,\mathrm{fb}^{-1}$. Almost nothing at this first stop is
-affected by the pile-up; almost everything is affected by the statistics.
-Here are a few questions that are open, or at least unsettled, at the time
-of writing. None of them needs more than the scripts of this chapter to make
-a start, and each is the kind of study whose result the generator authors
-and the CMS generator group would like to hear about.
-\begin{enumerate}
-  \item \textbf{The energy step.} Change \code{--ecm} to $14000$ and see
-    how much of the $\bbbar$ rate at fixed $\pthat$ comes from the $3\%$
-    extra energy and how much from the smaller $x$ it reaches. Then ask the
-    harder question: the CP5 tune was fitted to $13\TeV$ data, and its
-    energy scaling of the multi-parton-interaction cut-off
-    (\code{MultipartonInteractions:ecmPow}) is an extrapolation. What
-    early Run-4 measurement would pin it down, and how would the answer feed
-    back into the underlying event of every jet in this book?
-  \item \textbf{Which PDF set?} NNPDF3.1 is a 2017 fit. Rerun the full
-    script with \code{--pdf} set to NNPDF4.0, PDF4LHC21, CT18 or MSHT20 and
-    compare the Born rate at $\pthat\ge100\GeV$ and its member-to-member
-    spread. Which sets differ in the $b$ density, and does the 5FS
-    incoming-$b$ term change sign between them? A Run-4 tune will be built
-    on one of these; the choice is not yet made.
-  \item \textbf{Leading order is not enough, and NLO is expensive.} With
-    $3000\,\mathrm{fb}^{-1}$ the statistical error of a $b$-jet measurement
-    at $\pt\sim100\GeV$ will be far below the $20\%$ of
-    \cref{tab:ancestral_home:variations}, so production samples will have to
-    be NLO. NLO event samples contain negative-weight events, each of which
-    costs a full detector simulation and cancels against a positive one.
-    Generate $pp\to\bbbar$ at NLO in \MG at $14\TeV$ with our cut, measure
-    the negative-weight fraction, and estimate the simulation CPU it wastes
-    per unit of statistical precision. Techniques to reduce it exist; which
-    are usable in a CMS production?
-  \item \textbf{Slicing the spectrum.} \Cref{tab:ancestral_home:ptscan}
-    falls by four orders of magnitude between $30$ and $300\GeV$. A single
-    sample cannot serve both ends, so HL-LHC productions are sliced in
-    $\pthat$ or biased in \pt. Using \code{--ptmin} and \code{--ptmax},
-    design a set of $\pthat$ slices for $\bbbar$ at $14\TeV$ whose events,
-    after weighting, populate a jet \pt spectrum up to $2\TeV$ with a
-    roughly constant statistical error, and estimate the total number of
-    events to simulate. Compare with the biasing option
-    \code{PhaseSpace:bias2SelectionPow} of \PYTHIA.
-  \item \textbf{The $b$ mass and the flavour scheme.} $\mb=4.8\GeV$ is a
-    generator convention, and 4FS versus 5FS is a scheme choice that
-    changes the answer at leading order by a few percent
-    (\cref{tab:ancestral_home:variations}). Precision measurements with $b$
-    jets, such as $Z+b$ or $H\to\bbbar$, will need a consistent scheme
-    across matrix element, PDF and shower. Compare 4FS and 5FS $\bbbar$
-    production in \MG at LO and NLO at $14\TeV$ and identify where in
-    $\pthat$ they differ most.
-  \item \textbf{The coupling.} The world average of $\alphas(m_Z)$ has
-    moved and its uncertainty has shrunk since the tune was made. Propagate
-    $\alphas(m_Z)=0.1180\pm0.0009$ through the full script with
-    \code{--alphas-mz} and compare the shift with the PDF uncertainty; then
-    ask whether the four couplings of the CP5 tune (matrix element, two
-    showers, MPI) should all move together.
-\end{enumerate}
-Later stops will add their own lists; the ones about the detector will be
-longer.
+The factorisation theorem is proved, as far as it is proved, in
+\cite{Collins:1989gx}; the textbook account of everything in this chapter,
+from the parton model to heavy-quark production, is \cite{Ellis:1996mzs},
+and the Particle Data Group's ``Cross-section formulae'' and ``QCD'' reviews
+\cite{ParticleDataGroup:2024cfk} give the massive-quark Born formula and the
+running coupling in the conventions used here. The leading-order
+heavy-quark cross sections are due to \cite{Combridge:1978kx}, their
+next-to-leading-order completion to \cite{Nason:1987xz}. NNPDF3.1 is
+described in \cite{NNPDF:2017mvq}, the LHAPDF library in
+\cite{Buckley:2014ana}, and the PDF4LHC recommendations for combining PDF
+uncertainties in \cite{Butterworth:2015oua}. The \PYTHIA~8.3
+guide~\cite{Bierlich:2022pfr}, chapters on hard processes and on couplings
+and scales, is the reference for process~124 and the scale codes; the CP5
+tune is documented in \cite{CMS:2019csb}. \MG and its NLO capabilities are
+described in \cite{Alwall:2014hca}. On the numerical side, the adaptive
+importance sampling that generators use is \cite{Lepage:1977sw}, and the
+Sobol sequence of the scripts goes back to \cite{Sobol:1967} with the
+direction numbers of \cite{Joe:2008}.
 
 \begin{pitfalls}
 \begin{itemize}[nosep]
@@ -1278,4 +1614,114 @@ longer.
   Which CMS subdetectors will see it, and which will not? Will it become a
   jet in \cref{ch:the_inn}, and can it ever be $b$-tagged? Keep your
   answer; \cref{ch:registry_office} will check it.
+\item \textbf{The learning mode by hand.} Run the standalone script with
+  \code{-v} and reproduce section~[2] of its log with a pocket calculator:
+  from $x_1$, $x_2$ and $\cos\theta^*$ of \file{event_ME.lhe} compute
+  $(u_1,u_2,u_3)$, the three Jacobian factors, the ten PDF products and the
+  five weights $w_q$. Where does the $650.7\pb$ come from, and why is it
+  twice the mean weight although the event sits on the falling slope of
+  \cref{fig:ancestral_home:factorisation_plot}?
+\item \textbf{Sobol against random.} Replace the Sobol generator in
+  \code{integrate} by NumPy's \code{default\_rng(seed)} and its
+  \code{random((N,3))} method, and rerun with \code{--repeats 8}. Compare the error with
+  \cref{tab:ancestral_home:three_numbers} and with panel~(c) of
+  \cref{fig:ancestral_home:convergence_plot}. How many pseudo-random points
+  would you need to reach the Sobol precision of $0.001\pb$, and why does the
+  Sobol advantage shrink when the integrand has sharp edges, as it would with
+  an upper cut \code{--ptmax} close to \code{--ptmin}?
 \end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:ancestral_home:open_problems}
+
+The High-Luminosity LHC will collide protons at $\sqrt{s}=14\TeV$ with up to
+200 simultaneous interactions per crossing and collect some
+$3000\,\mathrm{fb}^{-1}$. The Standard Model programme that this makes
+possible is surveyed in the HL-LHC Yellow Report~\cite{Azzi:2019yne}; the
+expected gain in PDF precision in \cite{AbdulKhalek:2018rok}; and the strain
+that the statistics put on event generation, in CPU time and in theoretical
+accuracy, in the HSF generator report~\cite{HSFPhysicsEventGeneratorWG:2020gxw}.
+Almost nothing at this first stop is affected by the pile-up; almost
+everything is affected by the statistics. Here are six questions that are
+open, or at least unsettled, at the time of writing, each with the state of
+the art as I understand it. None of them needs more than the scripts of this
+chapter to make a start, and each is the kind of study whose result the
+generator authors and the CMS generator group would like to hear about.
+\begin{enumerate}
+  \item \textbf{The energy step.} Change \code{--ecm} to $14000$ and see
+    how much of the $\bbbar$ rate at fixed $\pthat$ comes from the $3\%$
+    extra energy and how much from the smaller $x$ it reaches. Then ask the
+    harder question: the CP5 tune~\cite{CMS:2019csb} was fitted to $13\TeV$
+    data, and its energy scaling of the multi-parton-interaction cut-off,
+    \code{MultipartonInteractions:ecmPow}, is an extrapolation whose form
+    goes back to the Monash tune~\cite{Skands:2014pea} and ultimately to the
+    model of \cite{Sjostrand:1987su}. What early Run-4 measurement would pin
+    it down, and how would the answer feed back into the underlying event of
+    every jet in this book?
+  \item \textbf{Which PDF set?} NNPDF3.1 is a 2017 fit~\cite{NNPDF:2017mvq}.
+    Since then NNPDF4.0~\cite{NNPDF:2021njg}, CT18~\cite{Hou:2019efy} and
+    MSHT20~\cite{Bailey:2020ooq} have appeared, and the PDF4LHC21
+    combination~\cite{PDF4LHCWorkingGroup:2022cjn} averages them; the sets
+    disagree most where our process is most sensitive, in the sea and in the
+    heavy flavours, and NNPDF has since claimed evidence for an intrinsic
+    charm component~\cite{Ball:2022qks}. Rerun the full script with
+    \code{--pdf} set to each of these and compare the Born rate at
+    $\pthat\ge100\GeV$ and its member-to-member spread. Which sets differ in
+    the $b$ density, and does the 5FS incoming-$b$ term change by more than
+    its own size between them? A Run-4 tune will be built on one of these;
+    the choice is not yet made, and \cite{AbdulKhalek:2018rok} estimates how
+    much HL-LHC data will narrow the spread.
+  \item \textbf{Leading order is not enough, and NLO is expensive.} With
+    $3000\,\mathrm{fb}^{-1}$ the statistical error of a $b$-jet measurement
+    at $\pt\sim100\GeV$ will be far below the $20\%$ of
+    \cref{eq:ancestral_home:envelope}, so production samples will have to
+    be NLO~\cite{Nason:1987xz,Alwall:2014hca}, and for the cross section
+    itself NNLO exists~\cite{Catani:2020kkl}. NLO event samples matched to a
+    shower with the MC@NLO method contain negative-weight events, each of
+    which costs a full detector simulation and cancels against a positive
+    one; the HSF report~\cite{HSFPhysicsEventGeneratorWG:2020gxw} quantifies
+    the CPU cost. Remedies exist on the generator side, the MC@NLO-$\Delta$
+    prescription~\cite{Frederix:2020trv}, or the POWHEG method, which is
+    positive by construction~\cite{Alioli:2010xd}, and on the sample side,
+    positive resampling~\cite{Andersen:2020sjs}, cell
+    resampling~\cite{Andersen:2021mvw} and neural
+    resampling~\cite{Nachman:2020fff}. Generate $pp\to\bbbar$ at NLO in \MG
+    at $14\TeV$ with our cut, measure the negative-weight fraction, estimate
+    the simulation CPU it wastes per unit of statistical precision, and ask
+    which of the remedies is usable in a CMS production.
+  \item \textbf{Slicing the spectrum.} \Cref{tab:ancestral_home:ptscan}
+    falls by four orders of magnitude between $30$ and $300\GeV$, with the
+    local power $n$ rising from $3$ to $5$
+    (\cref{fig:ancestral_home:flavours_plot}). A single sample cannot serve
+    both ends, so HL-LHC productions are sliced in $\pthat$ or biased in
+    \pt. Using \code{--ptmin} and \code{--ptmax}, design a set of $\pthat$
+    slices for $\bbbar$ at $14\TeV$ whose events, after weighting, populate
+    a jet \pt spectrum up to $2\TeV$ with a roughly constant statistical
+    error, and estimate the total number of events to simulate. Compare with
+    the biasing option \code{PhaseSpace:bias2SelectionPow} of
+    \PYTHIA~\cite{Bierlich:2022pfr}, and with the generator-level
+    efficiency considerations of \cite{HSFPhysicsEventGeneratorWG:2020gxw}.
+  \item \textbf{The $b$ mass and the flavour scheme.} $\mb=4.8\GeV$ is a
+    generator convention, and 4FS versus 5FS is a scheme choice that
+    changes the answer at leading order by a few per cent
+    (\cref{tab:ancestral_home:variations}). The two schemes are compared for
+    $b$-initiated processes in \cite{Maltoni:2012pa} and matched into one in
+    \cite{Forte:2015hba}; for $\bbbar$ production itself the FONLL
+    predictions of \cite{Cacciari:2012ny} and the NNLO results of
+    \cite{Catani:2020kkl} are the state of the art. Precision measurements
+    with $b$ jets, such as $Z+b$ or $H\to\bbbar$, will need a consistent
+    scheme across matrix element, PDF and shower. Compare 4FS and 5FS
+    $\bbbar$ production in \MG at LO and NLO at $14\TeV$ and identify where
+    in $\pthat$ they differ most.
+  \item \textbf{The coupling.} The world average of $\alphas(m_Z)$ has
+    moved and its uncertainty has shrunk since the tune was made; the 2024
+    value is $0.1180\pm0.0009$~\cite{ParticleDataGroup:2024cfk}, and
+    \cite{dEnterria:2022hzv} reviews how the next decade of measurements may
+    halve the error. Propagate $\alphas(m_Z)=0.1180\pm0.0009$ through the
+    full script with \code{--alphas-mz} and compare the shift with the PDF
+    uncertainty and with \cref{eq:ancestral_home:scale_estimate}; then ask
+    whether the four couplings of the CP5 tune (matrix element, two
+    showers, MPI) should all move together, as the tune assumes.
+\end{enumerate}
+Later stops will add their own lists; the ones about the detector will be
+longer.

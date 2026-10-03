@@ -65,7 +65,8 @@ FIGURES := example/ME/journey_ME.pdf \
            example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec_stills.pdf \
            example/PS/journey_PS.pdf \
            example/PS/Standalone/animate_standalone_parton_showering_stills.pdf \
-           example/PS/Standalone/veto_algorithm.pdf
+           example/PS/Standalone/veto_algorithm.pdf \
+           example/ME/Standalone/theory_qqbar_bbbar.pdf
 
 figures: $(FIGURES)
 
@@ -87,6 +88,17 @@ example/PS/Standalone/animate_standalone_parton_showering_stills.pdf: \
 		example/PS/Standalone/animate_standalone_parton_showering.py \
 		example/PS/Standalone/standalone_parton_showering.py example/PS/plot_journey_PS.py example/ME/event_ME.lhe
 	$(PYTHON) example/PS/Standalone/animate_standalone_parton_showering.py --stills $@ --no-video
+
+# The plots behind the theory sections of chapter 1 (one page per section),
+# all computed with the tables and born_weights() of the standalone script;
+# page 8 reads scale_scan.json, written by scan_scales.py in the .venv.
+example/ME/Standalone/theory_qqbar_bbbar.pdf: example/ME/Standalone/plot_theory_ME.py \
+		example/ME/Standalone/standalone_qqbar_bbbar_xsec.py example/ME/Standalone/scale_scan.json example/ME/event_ME.lhe
+	$(PYTHON) example/ME/Standalone/plot_theory_ME.py -o $@
+
+# The seven-point scale scan with the full integrator (LHAPDF + PYTHIA alpha_s, about 2 min).
+example/ME/Standalone/scale_scan.json: example/ME/Standalone/scan_scales.py example/ME/Standalone/qqbar_bbbar_xsec.py
+	example/ME/Standalone/.venv/bin/python example/ME/Standalone/scan_scales.py -o $@
 
 # The four steps of the Sudakov veto algorithm with the numbers of the seed-1
 # shower (imports AlphaStrong from the shower script; needs matplotlib).

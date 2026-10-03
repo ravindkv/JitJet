@@ -1,0 +1,37 @@
+% ---------------------------------------------------------------------------
+% The seven-point scale variation as a grid in (mu_R, mu_F), with the cross
+% sections of table tab:ancestral_home:variations (qqbar_bbbar_xsec.py through
+% scan_scales.py). The two opposite-extreme corners are not part of the
+% prescription.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  cell/.style={draw,thick,minimum size=24mm,align=center,font=\footnotesize},
+  up/.style={cell,fill=red!18},
+  down/.style={cell,fill=blue!18},
+  mid/.style={cell,fill=gray!10},
+  skip/.style={cell,fill=gray!4,pattern=north east lines,pattern color=gray!40,text=black!60,font=\scriptsize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  axis/.style={-{Stealth},thick}]
+\node[head,anchor=west] at (-1.9,4.6) {the seven-point variation: $\muR,\muF\in\{\tfrac12,1,2\}\times\mu_0$ without the two opposite extremes};
+% grid: columns mu_R/2, mu_R, 2mu_R ; rows 2mu_F (top), mu_F, mu_F/2 (bottom)
+\node[up]   (c00) at (0,2.5)  {$406.6\pb$\\$+17.7\%$};
+\node[up]   (c10) at (2.5,2.5){$357.2\pb$\\$+3.4\%$};
+\node[skip] (c20) at (5,2.5)  {not used\\($\muR\times2$, $\muF\times\tfrac12$\\opposite extremes)};
+\node[up]   (c01) at (0,0)    {$425.3\pb$\\$+23.2\%$};
+\node[mid]  (c11) at (2.5,0)  {\textbf{345.3 pb}\\central};
+\node[down] (c21) at (5,0)    {$288.8\pb$\\$-16.4\%$};
+\node[skip] (c02) at (0,-2.5) {not used\\($\muR\times\tfrac12$, $\muF\times2$\\opposite extremes)};
+\node[down] (c12) at (2.5,-2.5){$330.2\pb$\\$-4.4\%$};
+\node[down] (c22) at (5,-2.5) {$298.7\pb$\\$-13.5\%$};
+\draw[axis] (-1.5,-3.9) -- (6.3,-3.9) node[below left,lab] {$\muR$};
+\foreach \x/\t in {0/{$\muR/2$},2.5/{$\muR$},5/{$2\muR$}} {\node[lab,below] at (\x,-3.95) {\t};}
+\draw[axis] (-1.5,-3.9) -- (-1.5,3.9) node[below left,lab] {$\muF$};
+\foreach \y/\t in {2.5/{$2\muF$},0/{$\muF$},-2.5/{$\muF/2$}} {\node[lab,left] at (-1.55,\y) {\t};}
+% the envelope
+\node[lab,text=black!65,text width=7.2cm,anchor=north west] at (7.0,3.6) {\textbf{Reading the grid.} Red cells raise the cross section, blue cells lower it. Moving along a row ($\muR$) changes $\alphas^2$ and is the large effect; moving along a column ($\muF$) changes the PDFs and is the small one, because the rising sea at $x_1$ and the falling valence at $x_2$ nearly cancel at our event.\\[4pt]
+  \textbf{The envelope} is the smallest and largest of the seven values: $288.8$ to $425.3\pb$, that is\\[2pt]
+  \mbox{}\hfill $\sigma_{\mathrm{LO}}=345.3\,^{+80.0}_{-56.5}\pb=345.3\,^{+23\%}_{-16\%}\pb$.\hfill\mbox{}\\[4pt]
+  The \CMSSW statistical error ($\pm6.1\pb$) and the integration error ($\pm0.001\pb$) would be invisible on this scale.};
+\end{tikzpicture}

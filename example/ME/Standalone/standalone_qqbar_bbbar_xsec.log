@@ -1,0 +1,110 @@
+Standalone tables: NNPDF31_nnlo_as_0118/0 (LHAPDF 6.5.4), PYTHIA alpha_s order 2, alphaS(MZ)=0.118
+eCM=13600; mb=4.8; pTHat >= 100 GeV; pTHat upper limit=None
+Sobol 2^16 points x 1 repeat(s)
+
+==============================================================================
+LEARNING MODE (-v): the integral narrated
+==============================================================================
+
+[1] The constants of the integral (born_weights, first lines)
+    s = 13600^2 = 1.8496e+08 GeV^2      mb = 4.8 GeV      pTHat_min = 100 GeV
+    sHat_min = 4 (mb^2 + pTHat_min^2) = 40092.16 GeV^2,  sqrt(sHat_min) = 200.23 GeV
+    tau_min  = sHat_min / s = 2.1676e-04
+    ln(1/tau_min) = 8.4367   (the length of the ln tau interval, the first Jacobian factor)
+    Y_max(tau_min) = -ln(tau_min)/2 = 4.2184   (the widest rapidity range, at threshold)
+    conversion 1 GeV^-2 = 3.89379372e+08 pb
+    embedded tables: x in [1.016e-06, 1],  Q^2 in [627, 2.283e+08] GeV^2 for the PDF,
+                     Q^2 in [831, 5.086e+07] GeV^2 for alpha_s
+
+[2] Our event (/Users/ravindrakumar/rverma/JME/JitJet/example/ME/event_ME.lhe) through born_weights, factor by factor
+    incoming from beam +z: ubar  E = 14.785 GeV  ->  x1 = 2.1743e-03
+    incoming from beam -z:    u  E = 2652.934 GeV  ->  x2 = 3.9014e-01
+    outgoing: bbar and b, pT = 113.22 GeV each, m = 4.8 GeV
+  step 1  the integration variables (eq. tauY, maps)
+    tau = x1 x2 = 8.4826e-04        ln tau = -7.0723        Y = ln(x1/x2)/2 = -2.5949
+    Y_max(tau) = -ln(tau)/2 = 3.5362   (|Y| = 2.595 uses 73.4% of the allowed range)
+    cos theta* of the bbar in the partonic frame = -0.8203  (theta* = 2.533 rad)
+    c_max = sqrt(1 - pTHat_min^2/p*^2) = 0.8631
+    unit-cube coordinates of this point: u1 = 0.1617, u2 = 0.1331, u3 = |cos theta*|/c_max = 0.9505
+  step 2  the kinematics
+    sHat = tau s = 156894.5 GeV^2,  sqrt(sHat) = 396.10 GeV   (the record's momentum-sum mass)
+    p* = sqrt(sHat/4 - mb^2) = 197.991 GeV  (from the boosted record: 197.995 GeV)
+    pTHat = p* sin theta* = 113.229 GeV  (record: 113.221 GeV)
+    Q^2 = pTHat^2 + mb^2 = 12842.0 GeV^2,  Q = 113.32 GeV
+    rho = 4 mb^2/sHat = 5.8740e-04,  beta = sqrt(1-rho) = 0.999706
+    y* = artanh(beta cos theta*) = -1.1571;  y_bbar = Y + y* = -3.7520,  y_other = Y - y* = -1.4378
+  step 3  the ingredients at this point
+    alpha_s(Q^2) [TableAlphaS, PYTHIA 2nd order] = 0.11425
+    alpha_s(Q^2/4) = 0.12715   -> alpha_s^2 ratio to the central value 1.2386
+    alpha_s(4 Q^2) = 0.10416   -> alpha_s^2 ratio to the central value 0.8311
+    x f(x, Q^2) [TablePDF.xf]           at x1 = 2.1743e-03        at x2 = 0.3901
+       d: 1.21237    dbar: 1.14825       d: 0.06629    dbar: 0.00295
+       u: 1.25664    ubar: 1.14546       u: 0.21068    ubar: 0.00122
+       s: 1.06545    sbar: 1.06637       s: 0.00532    sbar: 0.00060
+       c: 0.84207    cbar: 0.84207       c: 0.00278    cbar: 0.00278
+       b: 0.60747    bbar: 0.60747       b: 0.00038    bbar: 0.00038
+    at Q^2/4: x1 f_ubar = 1.04495 (-8.8%),  x2 f_u = 0.23222 (+10.2%),  product +0.6%   (the mu_F dependence at this point)
+    at 4 Q^2: x1 f_ubar = 1.23721 (+8.0%),  x2 f_u = 0.19282 (-8.5%),  product -1.1%   (the mu_F dependence at this point)
+    the Jacobian cancellation (eq. xf): f_ubar(x1) = xf/x1 = 526.83, f_u(x2) = 0.5400;
+      f f tau = 0.24133 = [x1 f][x2 f] = 0.24133
+    d sigma_hat / d cos theta [dsigma_dcostheta] = 18.916 pb at cos theta* = -0.8203
+    sigma_hat (integrated over cos theta) = 4 pi alpha_s^2 beta (2+rho)/(27 sHat) = 30.157 pb
+    fraction of sigma_hat inside |cos theta| <= c_max: 0.8081  (the cut keeps 80.8% at this sHat)
+    solid-angle fraction removed by the cut: 0.1369
+  step 4  the weight (eq. weight)
+    Jacobian: ln(1/tau_min) x 2 Y_max x 2 c_max = 8.4367 x 7.0723 x 1.7262 = 102.995
+      w_d = 102.995 x 18.916 pb x (1.21237 x 0.00295 + 1.14825 x 0.06629) = 155.268 pb
+      w_u = 102.995 x 18.916 pb x (1.25664 x 0.00122 + 1.14546 x 0.21068) = 473.161 pb
+      w_s = 102.995 x 18.916 pb x (1.06545 x 0.00060 + 1.06637 x 0.00532) = 12.298 pb
+      w_c = 102.995 x 18.916 pb x (0.84207 x 0.00278 + 0.84207 x 0.00278) = 9.114 pb
+      w_b = 102.995 x 18.916 pb x (0.60747 x 0.00038 + 0.60747 x 0.00038) = 0.902 pb
+    sum_q w_q = 650.742 pb at this point  (the cross section is the average of such weights over the cube)
+    the ubar(x1) u(x2) orientation alone: 470.164 pb, 99.4% of w_u
+
+[3] One Sobol pass: the running average (integrate, repeat 1)
+    N = 2^16 = 65536 points, seed 24680;  weights > 0: 65505 (99.95%)
+    weight statistics [pb]: min 0, median 1.027, mean 345.3202, max 4576
+      the largest 1% of the weights carry 11.3% of the integral
+      the largest 10% of the weights carry 74.6% of the integral
+      the largest 50% of the weights carry 100.0% of the integral
+    variance of the weights: std/mean = 2.365;  a pseudo-random estimate would have error std/sqrt(N) = 3.1903 pb
+    running average after N points:
+      N = 2^2  =      4:     26.4846 pb
+      N = 2^3  =      8:    401.4254 pb
+      N = 2^4  =     16:    394.5023 pb
+      N = 2^5  =     32:    369.1211 pb
+      N = 2^6  =     64:    325.8630 pb
+      N = 2^7  =    128:    338.8604 pb
+      N = 2^8  =    256:    338.7253 pb
+      N = 2^9  =    512:    343.2266 pb
+      N = 2^10 =   1024:    345.2173 pb
+      N = 2^11 =   2048:    345.4254 pb
+      N = 2^12 =   4096:    345.4857 pb
+      N = 2^13 =   8192:    345.2948 pb
+      N = 2^14 =  16384:    345.2796 pb
+      N = 2^15 =  32768:    345.3190 pb
+      N = 2^16 =  65536:    345.3202 pb
+    per incoming flavour, this pass:
+      d dbar:  118.5680 pb  (34.3%)
+      u ubar:  178.3155 pb  (51.6%)
+      s sbar:   30.2669 pb  (8.8%)
+      c cbar:   12.6964 pb  (3.7%)
+      b bbar:    5.4734 pb  (1.6%)
+    TOTAL this pass: 345.3202 pb
+      u1 in [0, 0.1] (just above threshold)   : sqrt(sHat) from   200.2 to   305.3 GeV,  62.9% of the integral
+      u1 in [0.1, 0.3]                        : sqrt(sHat) from   305.3 to   709.8 GeV,  35.3% of the integral
+      u1 in [0.3, 1]                          : sqrt(sHat) from   709.8 to 13599.6 GeV,  1.8% of the integral
+==============================================================================
+
+
+TOTAL = 0.345320 +/- nan nb
+      = 345.320 +/- nan pb
+  d dbar: 0.118568 +/- nan nb
+  u ubar: 0.178315 +/- nan nb
+  s sbar: 0.030267 +/- nan nb
+  c cbar: 0.012696 +/- nan nb
+  b bbar: 0.005473 +/- nan nb
+Ratio to reference 0.3451 nb: 1.000638
+alpha_s(Q^2=1178 GeV^2) = 0.13853399
+Single repeat: no integration error estimate; use --repeats 8 for one.
+Errors are integration errors, not QCD scale/PDF uncertainties.

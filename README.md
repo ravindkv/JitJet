@@ -86,10 +86,12 @@ the bottom quark to the top quark):
 1. **The stage in the journey** (metaphor + what physically happens + the one number to take away)
 2. **Watch it** (the animated journey: a short film rendered from the chapter's own code, key frames in the book)
 3. **Run it** (the standalone script: command to run, output to expect; code lives on GitHub, not in the book)
-4. **Derive it** (the minimal, correct formulae, ending with the step-by-step recipe the script executes)
+4. **Derive it** (the minimal, correct formulae, ending with the step-by-step recipe the script executes; every theory section opens with a question, then a TikZ sketch or Feynman diagram, the equation, the numbers of our event from the standalone script's `-v` log, and a plot of the equation over the phase space)
 5. **Validation from official packages** (the same number from CMSSW, Pythia, MadGraph or JME tools, read from their configs and logs)
 6. **Our jet at this stage** (numbers from the ledger, event displays, plots)
-7. **Further reading** (+ open problems for Phase-2), **Pitfalls and FAQs for newcomers**, **Exercises**
+7. **Further reading**: the papers, then **Pitfalls and FAQs for newcomers**, **Exercises**, and **Open problems for the Phase-2 LHC** with a literature survey
+
+The rules are written down in `Constitution.md`; chapter 1 follows them fully, the later chapters are being brought in line.
 
 ## 4. The metaphor: The Family Pilgrimage
 

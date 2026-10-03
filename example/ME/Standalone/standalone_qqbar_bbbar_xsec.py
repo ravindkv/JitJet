@@ -19,6 +19,7 @@ Examples:
   python standalone_qqbar_bbbar_xsec.py
   python standalone_qqbar_bbbar_xsec.py --ptmin 50 --ptmax 100
   python standalone_qqbar_bbbar_xsec.py --repeats 8 --power 16
+  python standalone_qqbar_bbbar_xsec.py -v              # learning mode: every factor, for our event
 
 All energies in GeV, cross sections in pb/nb. Born rate only.
 """
@@ -143,6 +144,198 @@ def integrate(ecm, mb, ptmin, ptmax, power, repeats, seed, pdf, alpha, progress=
     return mean, err, float(tot.mean()), (float(tot.std(ddof=1) / math.sqrt(repeats)) if repeats > 1 else float("nan"))
 
 
+# --- the learning mode (-v): the integral narrated for one event and one Sobol pass --------------
+def read_event(path):
+    """Incoming x values and outgoing partons of a hard-process record.
+
+    Accepts PYTHIA's "Event Listing (hard process)" table as saved in event_ME.lhe
+    (status -21 incoming, 23 outgoing) or a Les Houches <event> block (-1 / 1).
+    Returns None when the file cannot be read.
+    """
+    try:
+        lines = open(path).read().splitlines()
+    except OSError:
+        return None
+    text = "\n".join(lines)
+    ecm, incoming, outgoing = None, [], []
+    if "<event>" in text:
+        if "<init>" in text:
+            f = text.split("<init>")[1].split("</init>")[0].strip().splitlines()[0].split()
+            ecm = float(f[2]) + float(f[3])
+        body = text.split("<event>")[1].split("</event>")[0].strip().splitlines()
+        for line in body[1:1 + int(body[0].split()[0])]:
+            f = line.split()
+            rec = dict(id=int(f[0]), status=int(f[1]), px=float(f[6]), py=float(f[7]),
+                       pz=float(f[8]), e=float(f[9]), m=float(f[10]))
+            (incoming if rec["status"] == -1 else outgoing if rec["status"] == 1 else []).append(rec)
+    else:
+        for line in lines:
+            f = line.split()
+            if len(f) < 14 or not f[0].isdigit():
+                continue
+            try:
+                rec = dict(id=int(f[1]), status=int(f[3]), px=float(f[-5]), py=float(f[-4]),
+                           pz=float(f[-3]), e=float(f[-2]), m=float(f[-1]))
+            except ValueError:
+                continue
+            if rec["status"] == -12:
+                ecm = (ecm or 0.0) + rec["e"]
+            elif rec["status"] == -21:
+                incoming.append(rec)
+            elif rec["status"] > 0:
+                outgoing.append(rec)
+    if len(incoming) != 2 or len(outgoing) != 2:
+        return None
+    incoming.sort(key=lambda r: -r["pz"])            # beam +z first
+    return dict(ecm=ecm, incoming=incoming, outgoing=outgoing)
+
+
+def event_kinematics(ev, ecm, mb, ptmin):
+    """The event's point in the integration variables: x1, x2, tau, Y, sHat, p*, cos theta*, pT, Q^2, c_max.
+
+    cos theta* is the angle of the first outgoing parton to the +z axis in the partonic frame,
+    obtained by boosting the record by -Y along the beam."""
+    s, mb2 = ecm**2, mb**2
+    a, b = ev["incoming"]
+    ecm_ev = ev["ecm"] or ecm
+    x1, x2 = a["e"] / (ecm_ev / 2), b["e"] / (ecm_ev / 2)
+    tau = x1 * x2
+    y = 0.5 * math.log(x1 / x2)
+    shat = tau * s
+    o = ev["outgoing"][0]
+    ch, sh = math.cosh(y), math.sinh(y)
+    pzs = ch * o["pz"] - sh * o["e"]
+    es = ch * o["e"] - sh * o["pz"]
+    pstar_rec = math.sqrt(max(es**2 - o["m"]**2, 0.0))
+    pt = math.hypot(o["px"], o["py"])
+    return dict(x1=x1, x2=x2, tau=tau, logtau=math.log(tau), y=y, ymax=-0.5 * math.log(tau), shat=shat,
+                pstar=math.sqrt(shat / 4 - mb2), pstar_rec=pstar_rec, cos=pzs / pstar_rec, pt=pt,
+                q2=pt**2 + mb2, cmax=math.sqrt(1 - ptmin**2 / (shat / 4 - mb2)),
+                rho=4 * mb2 / shat, beta=math.sqrt(1 - 4 * mb2 / shat))
+
+
+def learn(args, pdf, alpha, event_path):
+    """Print every intermediate quantity of the calculation: the constants, the event's own
+    point in the unit cube with all its factors, and the running average of one Sobol pass."""
+    names = FLAVOUR_NAMES
+    s, mb2 = args.ecm**2, args.mb**2
+    lo = 4.0 * (mb2 + args.ptmin**2)
+    taumin, logwidth = lo / s, math.log(s / lo)
+    bar = "=" * 78
+    print(f"\n{bar}\nLEARNING MODE (-v): the integral narrated\n{bar}")
+    print("\n[1] The constants of the integral (born_weights, first lines)")
+    print(f"    s = {args.ecm:g}^2 = {s:.4e} GeV^2      mb = {args.mb:g} GeV      pTHat_min = {args.ptmin:g} GeV")
+    print(f"    sHat_min = 4 (mb^2 + pTHat_min^2) = {lo:.2f} GeV^2,  sqrt(sHat_min) = {math.sqrt(lo):.2f} GeV")
+    print(f"    tau_min  = sHat_min / s = {taumin:.4e}")
+    print(f"    ln(1/tau_min) = {logwidth:.4f}   (the length of the ln tau interval, the first Jacobian factor)")
+    print(f"    Y_max(tau_min) = -ln(tau_min)/2 = {-0.5*math.log(taumin):.4f}   (the widest rapidity range, at threshold)")
+    print(f"    conversion 1 GeV^-2 = {GEV2_TO_PB:.8e} pb")
+    print(f"    embedded tables: x in [{math.exp(pdf.lx[0]):.3e}, 1],  Q^2 in [{math.exp(pdf.lq[0]):.0f}, {math.exp(pdf.lq[-1]):.3e}] GeV^2 for the PDF,"
+          f"\n                     Q^2 in [{alpha.q2[0]:.0f}, {alpha.q2[-1]:.3e}] GeV^2 for alpha_s")
+
+    ev = read_event(event_path)
+    if ev is None:
+        print(f"\n[2] No readable hard-process record at {event_path}; skipping the event point.")
+    else:
+        k = event_kinematics(ev, args.ecm, args.mb, args.ptmin)
+        a, b = ev["incoming"]
+        o = ev["outgoing"][0]
+        x1, x2, tau, y, shat, ymax = k["x1"], k["x2"], k["tau"], k["y"], k["shat"], k["ymax"]
+        pstar, pstar_rec, cos, pt, q2, cmax = k["pstar"], k["pstar_rec"], k["cos"], k["pt"], k["q2"], k["cmax"]
+        u1 = (math.log(tau) - math.log(taumin)) / logwidth
+        u2 = (y / ymax + 1) / 2
+        u3 = abs(cos) / cmax
+        pname = {1: "d", 2: "u", 3: "s", 4: "c", 5: "b", 21: "g"}
+        def nm(pid):
+            n = pname.get(abs(pid), str(pid))
+            return n + "bar" if pid < 0 else n
+        print(f"\n[2] Our event ({event_path}) through born_weights, factor by factor")
+        print(f"    incoming from beam +z: {nm(a['id']):>4s}  E = {a['e']:.3f} GeV  ->  x1 = {x1:.4e}")
+        print(f"    incoming from beam -z: {nm(b['id']):>4s}  E = {b['e']:.3f} GeV  ->  x2 = {x2:.4e}")
+        print(f"    outgoing: {nm(ev['outgoing'][0]['id'])} and {nm(ev['outgoing'][1]['id'])}, pT = {pt:.2f} GeV each, m = {o['m']:g} GeV")
+        print("  step 1  the integration variables (eq. tauY, maps)")
+        print(f"    tau = x1 x2 = {tau:.4e}        ln tau = {math.log(tau):.4f}        Y = ln(x1/x2)/2 = {y:.4f}")
+        print(f"    Y_max(tau) = -ln(tau)/2 = {ymax:.4f}   (|Y| = {abs(y):.3f} uses {abs(y)/ymax:.1%} of the allowed range)")
+        print(f"    cos theta* of the {nm(o['id'])} in the partonic frame = {cos:.4f}  (theta* = {math.acos(cos):.3f} rad)")
+        print(f"    c_max = sqrt(1 - pTHat_min^2/p*^2) = {cmax:.4f}")
+        print(f"    unit-cube coordinates of this point: u1 = {u1:.4f}, u2 = {u2:.4f}, u3 = |cos theta*|/c_max = {u3:.4f}")
+        print("  step 2  the kinematics")
+        print(f"    sHat = tau s = {shat:.1f} GeV^2,  sqrt(sHat) = {math.sqrt(shat):.2f} GeV   (the record's momentum-sum mass)")
+        print(f"    p* = sqrt(sHat/4 - mb^2) = {pstar:.3f} GeV  (from the boosted record: {pstar_rec:.3f} GeV)")
+        print(f"    pTHat = p* sin theta* = {pstar*math.sqrt(1-cos**2):.3f} GeV  (record: {pt:.3f} GeV)")
+        print(f"    Q^2 = pTHat^2 + mb^2 = {q2:.1f} GeV^2,  Q = {math.sqrt(q2):.2f} GeV")
+        rho = 4 * mb2 / shat
+        beta = math.sqrt(1 - rho)
+        print(f"    rho = 4 mb^2/sHat = {rho:.4e},  beta = sqrt(1-rho) = {beta:.6f}")
+        print(f"    y* = artanh(beta cos theta*) = {math.atanh(beta*cos):.4f};  y_{nm(o['id'])} = Y + y* = {y+math.atanh(beta*cos):.4f},"
+              f"  y_other = Y - y* = {y-math.atanh(beta*cos):.4f}")
+        print("  step 3  the ingredients at this point")
+        als = float(alpha(q2))
+        print(f"    alpha_s(Q^2) [TableAlphaS, PYTHIA 2nd order] = {als:.5f}")
+        for fac, lab in ((0.25, "Q^2/4"), (4.0, "4 Q^2")):
+            try:
+                print(f"    alpha_s({lab}) = {float(alpha(q2*fac)):.5f}   -> alpha_s^2 ratio to the central value {float(alpha(q2*fac))**2/als**2:.4f}")
+            except ValueError:
+                print(f"    alpha_s({lab}): outside the embedded table")
+        q1, qb1 = pdf.xf(np.array([x1]), np.array([q2]))
+        q2v, qb2 = pdf.xf(np.array([x2]), np.array([q2]))
+        print(f"    x f(x, Q^2) [TablePDF.xf]           at x1 = {x1:.4e}        at x2 = {x2:.4f}")
+        for i, n in enumerate(names):
+            print(f"      {n:>2s}: {q1[i,0]:.5f}    {n}bar: {qb1[i,0]:.5f}      {n:>2s}: {q2v[i,0]:.5f}    {n}bar: {qb2[i,0]:.5f}")
+        for fac, lab in ((0.25, "Q^2/4"), (4.0, "4 Q^2")):
+            qv1, qbv1 = pdf.xf(np.array([x1]), np.array([q2 * fac]))
+            qv2, qbv2 = pdf.xf(np.array([x2]), np.array([q2 * fac]))
+            print(f"    at {lab:5s}: x1 f_{nm(a['id'])} = {qbv1[1,0]:.5f} ({qbv1[1,0]/qb1[1,0]-1:+.1%}),  x2 f_{nm(b['id'])} = {qv2[1,0]:.5f} ({qv2[1,0]/q2v[1,0]-1:+.1%}),"
+                  f"  product {qbv1[1,0]*qv2[1,0]/(qb1[1,0]*q2v[1,0])-1:+.1%}   (the mu_F dependence at this point)")
+        print(f"    the Jacobian cancellation (eq. xf): f_{nm(a['id'])}(x1) = xf/x1 = {qb1[1,0]/x1:.2f}, f_{nm(b['id'])}(x2) = {q2v[1,0]/x2:.4f};"
+              f"\n      f f tau = {qb1[1,0]/x1*q2v[1,0]/x2*tau:.5f} = [x1 f][x2 f] = {qb1[1,0]*q2v[1,0]:.5f}")
+        dsig = float(dsigma_dcostheta(np.array([shat]), np.array([cos]), args.mb, als)[0])
+        sig_hat = 4 * math.pi * als**2 * beta * (2 + rho) / (27 * shat) * GEV2_TO_PB
+        prim = lambda z: (1 + rho) * z + (1 - rho) * z**3 / 3
+        frac = prim(cmax) / prim(1.0)
+        print(f"    d sigma_hat / d cos theta [dsigma_dcostheta] = {dsig:.3f} pb at cos theta* = {cos:.4f}")
+        print(f"    sigma_hat (integrated over cos theta) = 4 pi alpha_s^2 beta (2+rho)/(27 sHat) = {sig_hat:.3f} pb")
+        print(f"    fraction of sigma_hat inside |cos theta| <= c_max: {frac:.4f}  (the cut keeps {frac:.1%} at this sHat)")
+        print(f"    solid-angle fraction removed by the cut: {1-cmax:.4f}")
+        print("  step 4  the weight (eq. weight)")
+        j1, j2, j3 = logwidth, 2 * ymax, 2 * cmax
+        print(f"    Jacobian: ln(1/tau_min) x 2 Y_max x 2 c_max = {j1:.4f} x {j2:.4f} x {j3:.4f} = {j1*j2*j3:.3f}")
+        w = j1 * j2 * j3 * dsig * (q1[:, 0] * qb2[:, 0] + qb1[:, 0] * q2v[:, 0])
+        for i, n in enumerate(names):
+            print(f"      w_{n} = {j1*j2*j3:.3f} x {dsig:.3f} pb x ({q1[i,0]:.5f} x {qb2[i,0]:.5f} + {qb1[i,0]:.5f} x {q2v[i,0]:.5f}) = {w[i]:.3f} pb")
+        print(f"    sum_q w_q = {w.sum():.3f} pb at this point  (the cross section is the average of such weights over the cube)")
+        print(f"    the {nm(a['id'])}(x1) {nm(b['id'])}(x2) orientation alone: {j1*j2*j3*dsig*qb1[1,0]*q2v[1,0]:.3f} pb, {qb1[1,0]*q2v[1,0]/(q1[1,0]*qb2[1,0]+qb1[1,0]*q2v[1,0]):.1%} of w_u")
+
+    print("\n[3] One Sobol pass: the running average (integrate, repeat 1)")
+    pts = qmc.Sobol(d=3, scramble=True, seed=args.seed).random_base2(args.power)
+    w = born_weights(pts, args.ecm, args.mb, args.ptmin, args.ptmax, pdf, alpha)
+    tot = w.sum(axis=0)
+    n = len(tot)
+    print(f"    N = 2^{args.power} = {n} points, seed {args.seed};  weights > 0: {np.count_nonzero(tot > 0)} ({np.count_nonzero(tot > 0)/n:.2%})")
+    print(f"    weight statistics [pb]: min {tot.min():.4g}, median {np.median(tot):.4g}, mean {tot.mean():.4f}, max {tot.max():.4g}")
+    srt = np.sort(tot)[::-1]
+    for q in (0.01, 0.10, 0.50):
+        k = int(q * n)
+        print(f"      the largest {q:.0%} of the weights carry {srt[:k].sum()/tot.sum():.1%} of the integral")
+    print(f"    variance of the weights: std/mean = {tot.std()/tot.mean():.3f};  a pseudo-random estimate would have"
+          f" error std/sqrt(N) = {tot.std()/math.sqrt(n):.4f} pb")
+    print("    running average after N points:")
+    for k in range(2, args.power + 1):
+        m = 2**k
+        print(f"      N = 2^{k:<2d} = {m:>6d}:  {tot[:m].mean():10.4f} pb")
+    print("    per incoming flavour, this pass:")
+    for i, nme in enumerate(names):
+        print(f"      {nme} {nme}bar: {w[i].mean():9.4f} pb  ({w[i].mean()/tot.mean():.1%})")
+    print(f"    TOTAL this pass: {tot.mean():.4f} pb")
+    lt = pts[:, 0]
+    tau_pts = taumin * np.exp(logwidth * lt)
+    for lo_, hi_, lab in ((0.0, 0.1, "u1 in [0, 0.1] (just above threshold)"), (0.1, 0.3, "u1 in [0.1, 0.3]"), (0.3, 1.0, "u1 in [0.3, 1]")):
+        sel = (lt >= lo_) & (lt < hi_)
+        print(f"      {lab:40s}: sqrt(sHat) from {math.sqrt(tau_pts[sel].min()*s):7.1f} to {math.sqrt(tau_pts[sel].max()*s):7.1f} GeV,"
+              f"  {tot[sel].sum()/tot.sum():.1%} of the integral")
+    print(f"{bar}\n")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--ecm", type=float, default=13600.0)
@@ -153,6 +346,11 @@ def main():
     p.add_argument("--repeats", type=int, default=1, help=">1 gives an integration error estimate")
     p.add_argument("--seed", type=int, default=24680)
     p.add_argument("--reference-nb", type=float, default=0.3451)
+    p.add_argument("-v", "--verbose", action="store_true",
+                   help="learning mode: narrate the constants, the event's point in the cube with every factor "
+                        "of its weight, and the running average of the first Sobol pass")
+    p.add_argument("--event", default=None,
+                   help="hard-process record for -v (PYTHIA listing or LHE block); default ../event_ME.lhe")
     args = p.parse_args()
     if TABLES is None:
         sys.exit("Tables missing: run dump_standalone_tables.py in the full environment first.")
@@ -167,6 +365,11 @@ def main():
           f"PYTHIA alpha_s order {TABLES['pythia_alpha_s']['order']}, alphaS(MZ)={TABLES['pythia_alpha_s']['alphas_mz']}")
     print(f"eCM={args.ecm:g}; mb={args.mb:g}; pTHat >= {args.ptmin:g} GeV; pTHat upper limit={args.ptmax}")
     print(f"Sobol 2^{args.power} points x {args.repeats} repeat(s)", flush=True)
+    if args.verbose:
+        import os
+        event_path = args.event or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "event_ME.lhe")
+        learn(args, pdf, alpha, os.path.normpath(event_path))
+        pdf.frozen = 0
     mean, err, total, error = integrate(args.ecm, args.mb, args.ptmin, args.ptmax,
                                         args.power, args.repeats, args.seed, pdf, alpha)
     print(f"\nTOTAL = {total/1000:.6f} +/- {error/1000:.6f} nb")

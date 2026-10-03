@@ -1,0 +1,55 @@
+% ---------------------------------------------------------------------------
+% What a PDF describes: the proton seen at a resolution mu_F, with the valence
+% quarks, the gluons and the sea; our two incoming partons marked with their
+% x and xf values (section [2] of the -v log). Panel (b): raising mu_F resolves
+% more of the sea and softens the valence, the mechanism behind the mu_F rows.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  proton/.style={draw,circle,very thick,fill=gray!8},
+  val/.style={circle,fill=blue!70!black,inner sep=0pt,minimum size=3.2mm,text=white,font=\tiny},
+  sea/.style={circle,fill=violet!70,inner sep=0pt,minimum size=1.8mm},
+  seabar/.style={circle,draw=violet!70,thick,fill=white,inner sep=0pt,minimum size=1.8mm},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=3pt,amplitude=1.3pt},gray!70},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  bigarrow/.style={-{Stealth[length=3mm,width=3mm]},gray!60,line width=2.4pt}]
+% ---------------- (a) the proton at the scale mu_F = 113 GeV -------------------------------------
+\node[head,anchor=west] at (-2.9,3.4) {(a) a proton resolved at $\muF=113\GeV$};
+\node[proton,minimum size=52mm] (P) at (0,0) {};
+\node[val] (u1) at (-0.9,0.7) {$u$};
+\node[val] (u2) at (1.0,0.4) {$u$};
+\node[val] (d1) at (0.1,-1.0) {$d$};
+\draw[gluon] (u1) -- (u2);
+\draw[gluon] (u2) -- (d1);
+\draw[gluon] (d1) -- (u1);
+\draw[gluon] (u1) -- (-1.9,1.3);
+\draw[gluon] (u2) -- (1.9,-0.4);
+\draw[gluon] (d1) -- (-0.5,-2.0);
+\foreach \px/\py/\qx/\qy in {-1.7/-0.2/-1.45/-0.45,1.5/1.4/1.75/1.15,-0.3/1.9/0.0/1.75,1.2/-1.6/1.45/-1.4,-1.9/1.3/-2.1/1.0,0.7/-2.1/0.45/-2.25}
+  {\node[sea] at (\px,\py) {}; \node[seabar] at (\qx,\qy) {};}
+\node[lab,anchor=west] at (3.0,2.0) {\tikz\node[val,minimum size=2.6mm]{};\; valence quark: $x\sim0.1$--$0.5$, the proton's identity};
+\node[lab,anchor=west] at (3.0,1.3) {\tikz\draw[gluon] (0,0)--(0.6,0);\; gluon: half the momentum, dominant at small $x$};
+\node[lab,anchor=west] at (3.0,0.6) {\tikz{\node[sea]{};\node[seabar] at (0.25,0){};}\; sea pair from $g\to q\bar q$: $x\lesssim10^{-2}$, $xf\sim1$};
+% our two partons
+\draw[-{Stealth},thick,red!70!black] (3.0,-0.5) -- (1.25,0.3);
+\node[lab,anchor=west,text=red!70!black] at (3.0,-0.5) {our $u$ (beam B): valence, $x_2=0.390$,\\$x_2f_u=0.2107$, on the broad bump};
+\draw[-{Stealth},thick,violet] (3.0,-1.6) -- (-1.3,-0.45);
+\node[lab,anchor=west,text=violet] at (3.0,-1.6) {our $\bar u$ (beam A): sea, $x_1=2.17\times10^{-3}$,\\$x_1f_{\bar u}=1.1455$, where $xf$ is of order one};
+\node[lab,text=black!65,text width=6.8cm,anchor=north west] at (3.0,-2.3) {$f_i(x,\muF^2)\,\mathrm{d}x$ counts the partons of flavour $i$ with momentum fraction in $[x,x+\mathrm{d}x]$ when the proton is probed at the scale $\muF$. The picture is a snapshot; the numbers are a fit to data.};
+% ---------------- (b) the same proton at two resolutions ------------------------------------------
+\begin{scope}[xshift=13.4cm]
+\node[head,anchor=west] at (-1.4,3.4) {(b) resolution: raising $\muF$ resolves more sea};
+\node[proton,minimum size=22mm] (Q1) at (0,1.2) {};
+\node[val,minimum size=2.6mm] at (-0.35,1.45) {}; \node[val,minimum size=2.6mm] at (0.4,1.35) {}; \node[val,minimum size=2.6mm] at (0.0,0.75) {};
+\node[sea,minimum size=1.5mm] at (-0.6,0.8) {}; \node[seabar,minimum size=1.5mm] at (-0.45,0.65) {};
+\node[lab,anchor=west] at (1.3,1.2) {$\muF=57\GeV$ ($Q^2/4$):\\fewer sea quarks, harder valence\\$x_1f_{\bar u}$ lower by $9\%$, $x_2f_u$ higher by $10\%$};
+\node[proton,minimum size=22mm] (Q2) at (0,-1.5) {};
+\node[val,minimum size=2.6mm] at (-0.35,-1.25) {}; \node[val,minimum size=2.6mm] at (0.4,-1.35) {}; \node[val,minimum size=2.6mm] at (0.0,-1.95) {};
+\foreach \px/\py/\qx/\qy in {-0.6/-1.9/-0.45/-2.05,0.6/-0.9/0.75/-1.05,-0.7/-1.1/-0.85/-1.25,0.3/-2.2/0.45/-2.05}
+  {\node[sea,minimum size=1.5mm] at (\px,\py) {}; \node[seabar,minimum size=1.5mm] at (\qx,\qy) {};}
+\node[lab,anchor=west] at (1.3,-1.5) {$\muF=227\GeV$ ($4Q^2$):\\more sea quarks, softer valence\\$x_1f_{\bar u}$ higher by $8\%$, $x_2f_u$ lower by $9\%$};
+\draw[bigarrow] (0,0.0) -- (0,-0.3);
+\node[lab,text=black!65,text width=6.6cm,anchor=north west] at (-1.4,-2.9) {DGLAP evolution: the gluon feeds the sea as $Q^2$ grows and the valence quarks lose momentum to radiation. This is why $\muF$ pulls the two PDF factors of our event in opposite directions (\cref{tab:ancestral_home:variations}).};
+\end{scope}
+\end{tikzpicture}

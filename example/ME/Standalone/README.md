@@ -22,7 +22,12 @@ required.
 - `example_pt_scan.json`: example lower-cut scan with numerical errors.
 - `test_integrator.py`: independent normalization and phase-space checks.
 - `standalone_qqbar_bbbar_xsec.py`: the same calculation with NumPy and SciPy
-  only (embedded tables), see below.
+  only (embedded tables), see below; `-v` is the learning mode whose log,
+  `standalone_qqbar_bbbar_xsec.log`, chapter 1 quotes.
+- `plot_theory_ME.py`: the plots of the theory sections of chapter 1
+  (`theory_qqbar_bbbar.pdf`, one page per section).
+- `scan_scales.py`: the mu_R / mu_F scan with the full integrator
+  (`scale_scan.json`, read by the plot script).
 - `animate_standalone_qqbar_bbbar_xsec.py`: 3D animation of what the
   standalone script integrates, see below.
 
@@ -96,6 +101,31 @@ python -m pip install pythia8mc==8.315.0
 That extra installation is unnecessary with the exported table described below.
 The tested environment used PYTHIA 8.315, LHAPDF 6.5.4, and member 0 of
 `NNPDF31_nnlo_as_0118` (data version 1, LHAPDF ID 303600).
+
+## Learning mode, theory plots and the scale scan
+
+`standalone_qqbar_bbbar_xsec.py -v` narrates the calculation before it runs
+it: section [1] the constants of the integral (tau_min, ln(1/tau_min), the
+table ranges), section [2] the event of `../event_ME.lhe` pushed through
+`born_weights()` one factor at a time (x1, x2, tau, Y, cos theta*, the three
+Jacobian factors, alpha_s, the ten PDF values, d sigma/d cos theta, the five
+weights w_q and their sum), and section [3] the first Sobol pass with its
+running average after 4, 8, ..., 65536 points, the weight statistics and the
+per-flavour shares. `--event` points it at another record. The output for the
+default run is committed as `standalone_qqbar_bbbar_xsec.log`; the theory
+sections of chapter 1 quote their numbers from it.
+
+`plot_theory_ME.py` (matplotlib; `/usr/bin/python3` on this Mac) draws
+`theory_qqbar_bbbar.pdf`, one page per theory section of chapter 1, from the
+same tables and `born_weights()`: the integrand in sqrt(sHat) and Y, the
+allowed triangle and the ln tau sampling, the PDFs and their Q^2 dependence,
+the matrix element and the pTHat cut, the flavour shares against the cut,
+alpha_s and the sampled scales, the weights and the convergence against
+pseudo-random points, and the scale variation. The last page reads
+`scale_scan.json`, written by `scan_scales.py` with the full integrator
+(`.venv/bin/python scan_scales.py`, about 2 min): mu_R, mu_F and both
+together for factors 2^(k/4), k = -4..4. `make figures` in the book
+directory regenerates the PDF.
 
 ## Standalone reproduction without LHAPDF or PYTHIA
 

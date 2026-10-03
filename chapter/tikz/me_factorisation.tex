@@ -1,0 +1,55 @@
+% ---------------------------------------------------------------------------
+% The factorisation theorem as a picture: two protons, two parton densities,
+% one short-distance blob. The x values, energies and the pair mass are those
+% of our event (example/ME/event_ME.lhe) as listed in section [2] of the -v log
+% of standalone_qqbar_bbbar_xsec.py. Input from chapter_01_ancestral_home.tex
+% inside a figure environment.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  proton/.style={draw,ellipse,minimum width=22mm,minimum height=11mm,thick,fill=gray!10},
+  valence/.style={thick,gray!70},
+  fermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.55 with {\arrow[scale=1.1]{Stealth}}}},
+  antifermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.45 with {\arrowreversed[scale=1.1]{Stealth}}}},
+  remnant/.style={thick,gray!60,postaction={decorate},decoration={markings,mark=at position 0.6 with {\arrow[scale=0.9]{Stealth}}}},
+  pdfblob/.style={draw,circle,minimum size=9mm,thick,fill=blue!12},
+  hard/.style={draw,circle,minimum size=14mm,very thick,fill=orange!25},
+  lab/.style={font=\scriptsize,align=center},
+  num/.style={font=\scriptsize,align=center,text=blue!60!black},
+  brace/.style={decorate,decoration={brace,amplitude=5pt},thick}]
+% the two protons
+\node[proton] (PA) at (-5.2,0) {};
+\node[lab,above=1pt of PA] {proton A, $+z$, $P=6800\GeV$};
+\node[proton] (PB) at (5.2,0) {};
+\node[lab,above=1pt of PB] {proton B, $-z$, $P=6800\GeV$};
+\foreach \dy in {-0.25,0,0.25} {\draw[valence] ($(PA.west)+(0.15,\dy)$) -- ($(PA.east)+(-0.15,\dy)$);
+                                 \draw[valence] ($(PB.west)+(0.15,\dy)$) -- ($(PB.east)+(-0.15,\dy)$);}
+% the PDF blobs
+\node[pdfblob] (FA) at (-2.6,0) {$f_{\bar u}$};
+\node[pdfblob] (FB) at (2.6,0) {$f_{u}$};
+\draw[thick,gray!70] (PA.east) -- (FA.west);
+\draw[thick,gray!70] (PB.west) -- (FB.east);
+\node[lab,below=2pt of FA] {resolved at $\muF$};
+\node[lab,below=2pt of FB] {resolved at $\muF$};
+% remnants
+\draw[remnant] (PA.east) -- (-3.4,-1.5) node[lab,below left=-2pt,text=gray!80!black] {remnant $(1-x_1)P$};
+\draw[remnant] (PB.west) -- (3.4,-1.5) node[lab,below right=-2pt,text=gray!80!black] {remnant $(1-x_2)P$};
+% the hard blob
+\node[hard] (H) at (0,0) {$\hat\sigma$};
+\draw[antifermion] (FA.east) -- (H.west);
+\draw[fermion] (FB.west) -- (H.east);
+\node[num,anchor=south] at (-1.7,0.42) {$\bar u$, $x_1P=14.8\GeV$\\$x_1=2.17\times10^{-3}$};
+\node[num,anchor=south] at (1.85,0.42) {$u$, $x_2P=2653\GeV$\\$x_2=0.390$};
+% outgoing b and bbar
+\draw[fermion] (H.north east) -- (1.5,2.3) node[lab,right,text=red!80!black] {$b$: the mother, $\pt=113\GeV$};
+\draw[antifermion] (H.south east) -- (1.5,-2.3) node[lab,right,text=blue!80!black] {$\bar b$, $\pt=113\GeV$};
+\node[num,anchor=north east] at (-0.1,-0.9) {$\shat=x_1x_2s$\\$\sqrt{\shat}=396\GeV$};
+% what is measured and what is calculated
+\draw[brace] (-6.4,1.1) -- (-1.9,1.1) node[midway,above=6pt,lab] {long distance: \emph{measured once},\\the PDF $f_i(x_1,\muF^2)$};
+\draw[brace] (1.9,1.1) -- (6.4,1.1) node[midway,above=6pt,lab] {long distance: \emph{measured once},\\the PDF $f_j(x_2,\muF^2)$};
+\draw[brace] (0.8,2.75) -- (-0.8,2.75) node[midway,above=6pt,lab] {short distance: \emph{calculated},\\$\hat\sigma_{ij}(\shat;\muR^2,\muF^2)$};
+% the sum over flavours and orientations
+\node[lab,text=black!65,text width=12.5cm] at (0,-3.3) {$\sigma=\sum_{i,j}\int\!\mathrm{d}x_1\mathrm{d}x_2\,f_i(x_1)f_j(x_2)\,\hat\sigma_{ij}$:
+  the sum runs over $d,u,s,c,b$ and both orientations ($q$ from A and $\bar q$ from B, and the reverse);
+  our event is the $\bar u$-from-A, $u$-from-B term of the $u$ flavour.};
+\end{tikzpicture}

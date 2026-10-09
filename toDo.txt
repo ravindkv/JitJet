@@ -1,0 +1,10 @@
+
+In future if the number of pages grow too much, we can divide chapters in:
++ chapter/chapter_XY.tex
++ chapter/chapter_XY.md
+
+where in the *.tex files we can keep the physics part and in the *.md files all the details/instructions related to scripts. This way we can keep the book more formal and codes separate.
+
+
+In future we can have JitJetNano.root where each chapter can be a separate collection holding relevant information end to end. 
+

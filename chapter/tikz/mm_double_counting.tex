@@ -1,0 +1,77 @@
+% ---------------------------------------------------------------------------
+% Matching and merging in one picture. (a) The same final state, b bbar + one
+% gluon, reached twice: by the 2->2 matrix element followed by one shower
+% emission, and by the 2->3 matrix element. (b) The transverse-momentum axis
+% of the extra parton with the two descriptions, the merging scale, and the
+% branchings of OUR event (winners of the -v log of
+% standalone_parton_showering.py, seed 1), none of which was ever at risk of
+% being counted twice because the record has no 2->3 matrix element.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  fermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.55 with {\arrow[scale=1.1]{Stealth}}}},
+  antifermion/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.45 with {\arrowreversed[scale=1.1]{Stealth}}}},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=4pt,amplitude=1.8pt}},
+  vertex/.style={fill=black,circle,inner sep=1.5pt},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  blob/.style={draw,fill=gray!25,circle,minimum size=7mm,inner sep=0pt},
+  me/.style={fill=blue!10,draw=blue!60!black,rounded corners=2pt,inner sep=3pt,font=\scriptsize,align=center},
+  ps/.style={fill=orange!15,draw=orange!70!black,rounded corners=2pt,inner sep=3pt,font=\scriptsize,align=center},
+  tick/.style={very thick}]
+% ---------------- (a) the same child, claimed twice ------------------------------------------------
+\node[head,anchor=west] at (-0.3,3.3) {(a) one child, two parents};
+% left: 2->2 ME + shower emission
+\begin{scope}
+\coordinate (V1) at (1.2,0.9); \coordinate (V2) at (2.9,0.9);
+\draw[fermion] (0,2.0) -- (V1) node[pos=0,above left,lab] {$u$};
+\draw[antifermion] (0,-0.2) -- (V1) node[pos=0,below left,lab] {$\bar u$};
+\draw[gluon] (V1) -- (V2);
+\coordinate (E) at (3.9,1.7);
+\draw[fermion] (V2) -- (E); \draw[fermion] (E) -- (4.9,2.3) node[right,lab] {$b$};
+\draw[gluon,orange!80!black] (E) -- (5.0,1.2) node[right,lab,text=orange!80!black] {$g$ (shower)};
+\draw[antifermion] (V2) -- (4.9,-0.2) node[right,lab] {$\bar b$};
+\node[vertex] at (V1) {}; \node[vertex] at (V2) {}; \node[vertex,fill=orange!80!black] at (E) {};
+\node[me,anchor=north west] at (-0.2,-0.9) {$|\mathcal M_{2\to2}|^2$ \textbf{+} shower kernel\\$\dfrac{\alphas}{2\pi}\dfrac{\mathrm d\pt^2}{\pt^2}\,P_{qq}(z)$};
+\node[lab,text=black!60] at (2.4,-2.6) {chapter 2: $113.32\GeV$ bounds the gluon};
+\end{scope}
+\node[font=\large] at (6.9,0.9) {$\neq$};
+% right: 2->3 ME
+\begin{scope}[xshift=8.2cm]
+\coordinate (V1) at (1.2,0.9); \coordinate (V2) at (2.9,0.9);
+\draw[fermion] (0,2.0) -- (V1) node[pos=0,above left,lab] {$u$};
+\draw[antifermion] (0,-0.2) -- (V1) node[pos=0,below left,lab] {$\bar u$};
+\draw[gluon] (V1) -- (V2);
+\coordinate (E) at (3.9,1.7);
+\draw[fermion] (V2) -- (E); \draw[fermion] (E) -- (4.9,2.3) node[right,lab] {$b$};
+\draw[gluon,blue!60!black] (E) -- (5.0,1.2) node[right,lab,text=blue!60!black] {$g$ (matrix element)};
+\draw[antifermion] (V2) -- (4.9,-0.2) node[right,lab] {$\bar b$};
+\node[vertex] at (V1) {}; \node[vertex] at (V2) {}; \node[vertex,fill=blue!60!black] at (E) {};
+\node[lab,text=black!60,anchor=north west] at (-0.2,-1.0) {+ the gluon from the $\bar b$, from the\\initial state, and all interferences};
+\node[me,anchor=north west] at (-0.2,-1.9) {$|\mathcal M_{2\to3}|^2$: exact at tree level,\\ singular as $\pt\to0$, no Sudakov};
+\end{scope}
+% ---------------- (b) the pT axis of the extra parton ---------------------------------------------
+\begin{scope}[yshift=-7.2cm]
+\node[head,anchor=west] at (-0.3,3.5) {(b) the merging scale divides the \pt of the extra parton, and where our event's branchings fall};
+% axis: log-ish, 0.5 .. 130 GeV mapped to 0..14 cm by hand
+\draw[-{Stealth},thick] (0,0) -- (14.6,0) node[right,lab] {$\pt$ of the extra parton};
+\foreach \x/\l in {0.4/1,3.3/3,5.4/10,8.1/30,10.9/100} {\draw (\x,0.1) -- (\x,-0.1); \node[lab,below] at (\x,-0.1) {$\l\GeV$};}
+% regions
+\fill[orange!15] (0,1.5) rectangle (8.1,2.5);
+\fill[blue!10] (8.1,1.5) rectangle (11.5,2.5);
+\node[ps,draw=none,fill=none] at (4.0,2.0) {\textbf{shower territory}: $\pt<Q_{\mathrm{cut}}$\\Sudakov-resummed, many soft and collinear partons};
+\node[me,draw=none,fill=none] at (9.8,2.0) {\textbf{matrix-element territory}\\$\pt>Q_{\mathrm{cut}}$: exact, wide angle};
+\draw[dashed,thick,red!70!black] (8.1,-0.3) -- (8.1,2.7);
+\node[lab,text=red!70!black,anchor=east] at (8.0,2.9) {merging scale $Q_{\mathrm{cut}}\simeq30\GeV$ (CMS FxFx)};
+\draw[dashed,thick,black!60] (11.5,-0.3) -- (11.5,2.7);
+\node[lab,text=black!60,anchor=west] at (11.6,2.9) {$\pt^{\max}=113.3\GeV$: chapter 2's wall};
+% our event's branchings: ISR 53.9 51.4 42.2 (orange, above axis), FSR 34.2 32.1 25.6 22.1 13.4 10.6 (red), then many below 6
+\foreach \x in {9.5,9.4,8.9} {\draw[tick,green!50!black] (\x,0.0) -- (\x,0.6);}
+\foreach \x in {8.4,8.2,7.7,7.3,6.1,5.6} {\draw[tick,red!70!black] (\x,0.0) -- (\x,0.6);}
+\foreach \x in {4.1,4.0,3.9,3.4,2.5,2.4,2.2,1.9,1.8,1.5,1.2,1.0,0.9,0.7,0.6,0.5,0.4} {\draw[tick,gray] (\x,0.0) -- (\x,0.4);}
+\node[lab,text=green!50!black,anchor=south west] at (8.8,0.65) {ISR 53.9, 51.4, 42.2};
+\node[lab,text=red!70!black,anchor=south] at (6.5,0.65) {FSR 34.2 ($\bar b$), 32.1 ($b$),\\25.6, 22.1, 13.4, 10.6};
+\node[lab,text=gray,anchor=south] at (2.3,0.45) {32 more, all below $6\GeV$};
+\node[lab,text=black!65,text width=14.4cm,anchor=north west] at (-0.3,-0.7) {Ticks: the 38 winning branchings of our event, from the \code{-v} log of chapter 2. In a merged sample the five hardest would have been produced by a $2\to3$ or $2\to4$ matrix element and the shower would have been \emph{forbidden} to emit above $Q_{\mathrm{cut}}$; here the shower produced all of them, which is exact only in the collinear and soft limits. For a single $b$ jet of $\pt\approx100\GeV$ the difference is a few percent of the family's momentum, well inside the seed-to-seed spread of $29\GeV$.};
+\end{scope}
+\end{tikzpicture}

@@ -30,7 +30,7 @@ This is the "spine" every Book*.md must map onto, stage by stage:
 | # | Stage | Tool / CMS object | Energy effect on the jet |
 |---|-------|-------------------|--------------------------|
 | 0 | Proton, PDFs, hard scattering `p p > b b~` | MadGraph5_aMC@NLO (LO / NLO) | defines the "true" parton energy |
-| 1 | Matrix-element / parton-shower matching (MLM, FxFx) | MG + Pythia 8 | redistributes energy between jets |
+| 1 | Matrix-element / parton-shower matching and merging (MLM, CKKW-L, FxFx) | MG + Pythia 8 | redistributes energy between jets; not applied to our LO 2->2 event, chapter 3 is a two-page map |
 | 2 | Parton shower (ISR, FSR), dead cone for heavy quarks | Pythia 8 | out-of-cone radiation removes energy |
 | 3 | Multi-parton interactions, underlying event, colour reconnection | Pythia 8 | adds diffuse energy |
 | 4 | Hadronisation (Lund string), b-fragmentation, B-hadron decays, neutrinos | Pythia 8, EvtGen | removes energy (neutrinos, muons) |

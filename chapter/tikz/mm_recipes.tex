@@ -1,0 +1,46 @@
+% ---------------------------------------------------------------------------
+% The three families of recipes as flow charts: (a) tree-level merging of jet
+% multiplicities (MLM and CKKW-L), (b) NLO matching of one multiplicity
+% (MC@NLO and POWHEG), (c) FxFx = (a) applied to (b). Nothing in this figure
+% is used for our event; it is the map of what the official samples do.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=2pt,inner sep=4pt,align=center,font=\scriptsize,minimum width=2.6cm},
+  me/.style={box,fill=blue!10,draw=blue!60!black},
+  ps/.style={box,fill=orange!15,draw=orange!70!black},
+  dec/.style={box,fill=red!8,draw=red!60!black},
+  result/.style={box,fill=green!10,draw=green!50!black},
+  flow/.style={-{Stealth[length=2mm]},thick},
+  head/.style={font=\small\bfseries},
+  lab/.style={font=\scriptsize,align=center}]
+% ---------------- (a) tree-level merging ---------------------------------------------------------
+\node[head,anchor=west] at (0,5.4) {(a) tree-level merging (MLM, CKKW-L): several multiplicities, one sample};
+\node[me] (me0) at (1.4,4.2) {$u\bar u\to\bbbar$\\$+0$ partons};
+\node[me] (me1) at (4.7,4.2) {$u\bar u\to\bbbar g$\\$+1$ parton, $\kt>\code{xqcut}$};
+\node[me] (me2) at (8.4,4.2) {$u\bar u\to\bbbar gg,\ \bbbar q\bar q$\\$+2$ partons};
+\node[ps] (sh) at (4.6,2.7) {shower each event with the emission\\ scale bounded by the parton it already has};
+\node[dec] (mlm) at (3.5,1.3) {MLM: cluster the showered partons into \kt jets at \code{qcut};\\ keep the event only if every ME parton has its own jet\\ (and the highest multiplicity may have extra jets)};
+\node[dec] (ckkw) at (11.2,1.3) {CKKW-L: reweight by the Sudakov factors\\ of the shower history the ME would have had,\\ veto shower emissions above $Q_{\mathrm{cut}}$};
+\node[result] (out) at (7.6,-0.3) {one sample, exact wide-angle jets above $Q_{\mathrm{cut}}$,\\ resummed below, smooth across the scale};
+\draw[flow] (me0) -- (sh); \draw[flow] (me1) -- (sh); \draw[flow] (me2) -- (sh);
+\draw[flow] (sh) -- (mlm); \draw[flow] (sh) -- (ckkw);
+\draw[flow] (mlm) -- (out); \draw[flow] (ckkw) -- (out);
+\node[lab,anchor=west,text=black!60] at (10.5,4.2) {$\sigma_n\propto\alphas^{\,n}$: each extra\\ leg costs a power of $\alphas$,\\ cut off by \code{xqcut} to stay finite};
+% ---------------- (b) NLO matching ---------------------------------------------------------------
+\begin{scope}[yshift=-7.2cm]
+\node[head,anchor=west] at (0,5.4) {(b) NLO matching (MC@NLO, POWHEG)};
+\node[me] (born) at (1.6,4.2) {Born $u\bar u\to\bbbar$\\ $+$ one-loop virtual};
+\node[me] (real) at (5.1,4.2) {real emission\\ $u\bar u\to\bbbar g$, $ug\to\bbbar u$, \dots};
+\node[dec] (sub) at (3.1,2.7) {subtract from the real emission what the shower's\\ first emission would generate anyway (MC@NLO),\\ or generate the hardest emission with the exact\\ real matrix element and let the shower fill in below (POWHEG)};
+\node[result] (outb) at (3.1,1.0) {NLO cross section and NLO shape of the first emission;\\ MC@NLO events may carry negative weights, POWHEG's do not};
+\draw[flow] (born) -- (sub); \draw[flow] (real) -- (sub); \draw[flow] (sub) -- (outb);
+% ---------------- (c) FxFx ---------------------------------------------------------------
+\node[head,anchor=west] at (8.6,5.4) {(c) FxFx = (a) on top of (b)};
+\node[me] (f0) at (9.6,4.2) {$\bbbar+0$ at NLO};
+\node[me] (f1) at (12.6,4.2) {$\bbbar+1$ at NLO};
+\node[dec] (fx) at (11.1,2.7) {MC@NLO each, then MLM-style\\ jet matching at $Q_{\mathrm{cut}}$ with\\ Sudakov reweighting between them};
+\node[result] (outc) at (11.1,1.0) {NLO accuracy for the 0- and 1-jet rates\\ in one sample (CMS: $\ttbar$, $W/Z$+jets)};
+\draw[flow] (f0) -- (fx); \draw[flow] (f1) -- (fx); \draw[flow] (fx) -- (outc);
+\end{scope}
+\end{tikzpicture}

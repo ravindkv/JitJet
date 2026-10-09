@@ -1,0 +1,63 @@
+% ---------------------------------------------------------------------------
+% Why there is more than one scattering per collision. Left: the two protons
+% of our event pass through each other; the hard u ubar -> b bbar scattering
+% is one of many parton-parton scatterings, the others soft. Right: the
+% parton-parton cross section dsigma/dpT^2 against pT, bare (1/pT^4, divergent)
+% and regularised (1/(pT^2+pT0^2)^2); its integral above pTmin, sigma_int,
+% exceeds the non-diffractive cross section, so <n> = sigma_int/sigma_ND
+% scatterings happen per collision. Numbers from the -v log of
+% standalone_multiparton_interactions.py (section "setting the scene").
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  proton/.style={draw,very thick,fill=gray!10},
+  parton/.style={circle,inner sep=0pt,minimum size=2mm},
+  hard/.style={line width=1.8pt,red!80!black},
+  soft/.style={line width=0.9pt,teal!80!black},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=3pt,amplitude=1.2pt},gray!70}]
+% ---------------- (a) one collision, many scatterings ------------------------------------------
+\node[head,anchor=west] at (-3.4,3.2) {(a) one collision, 25 parton--parton scatterings};
+\node[proton,ellipse,minimum width=46mm,minimum height=30mm] (A) at (-1.4,0) {};
+\node[proton,ellipse,minimum width=46mm,minimum height=30mm,fill=gray!14] (B) at (1.4,0.6) {};
+\node[lab,anchor=east] at (-3.9,0) {proton A\\$+z$};
+\node[lab,anchor=west] at (3.9,0.6) {proton B\\$-z$};
+\draw[-{Stealth[length=2mm]},gray!70,thick] (-4.6,-1.6) -- (-3.4,-1.6) node[midway,below,font=\scriptsize] {$6800\GeV$};
+\draw[-{Stealth[length=2mm]},gray!70,thick] (4.6,2.2) -- (3.4,2.2) node[midway,above,font=\scriptsize] {$6800\GeV$};
+% the hard scattering: u ubar -> b bbar
+\coordinate (H) at (0.0,0.3);
+\draw[hard] (-2.4,-0.3) -- (H) node[pos=0.35,below,font=\scriptsize,text=red!80!black] {$\bar u$, $x=0.0022$};
+\draw[hard] (2.4,0.9) -- (H) node[pos=0.35,above,font=\scriptsize,text=red!80!black] {$u$, $x=0.39$};
+\draw[hard,-{Stealth[length=2.2mm]}] (H) -- (1.6,-1.7) node[right,font=\scriptsize,text=red!80!black] {$b$, $113\GeV$};
+\draw[hard,-{Stealth[length=2.2mm]}] (H) -- (-1.6,2.3) node[left,font=\scriptsize,text=red!80!black] {$\bar b$};
+\node[circle,fill=red!80!black,inner sep=1.6pt] at (H) {};
+% the soft scatterings (24 of them): drawn as small crosses with short outgoing legs
+\foreach \px/\py/\ang in {-1.1/0.9/20, -0.6/-0.7/-35, 0.7/1.3/60, 0.9/-0.4/-70, -0.2/1.6/15, 0.3/-1.1/40, 1.5/0.2/-20, -1.6/0.1/70, -0.5/0.5/-55, 1.1/0.9/35, 0.0/-0.3/80, -1.0/-1.1/10}
+  {\node[circle,fill=teal!80!black,inner sep=1.1pt] at (\px,\py) {};
+   \draw[soft,-{Stealth[length=1.4mm]}] (\px,\py) -- ++(\ang:0.55);
+   \draw[soft,-{Stealth[length=1.4mm]}] (\px,\py) -- ++(\ang+180:0.55);}
+\node[lab,text=teal!80!black,anchor=north] at (0.0,-2.0) {24 secondary scatterings, $\pt$ from $11.5$ down to $0.43\GeV$,\\each with its own shower, drawn from the depleted protons};
+\node[lab,text=black!65,anchor=north] at (0.0,-2.8) {what is left of each proton becomes the beam remnants};
+% ---------------- (b) the cross section and its regulator --------------------------------------
+\begin{scope}[xshift=9.0cm,yshift=-2.6cm]
+\node[head,anchor=west] at (-0.3,5.8) {(b) the cross section must be tamed};
+\draw[-{Stealth}] (0,0) -- (6.4,0) node[below left=2pt and -2pt] {$\pt$};
+\draw[-{Stealth}] (0,0) -- (0,5.2) node[above,align=center,font=\scriptsize] {$\mathrm{d}\sigma/\mathrm{d}\pt^2$};
+\foreach \x/\l in {1.5/$p_{\mathrm{T}0}$,3.0/$2p_{\mathrm{T}0}$,4.5/$3p_{\mathrm{T}0}$} {\draw (\x,0) -- (\x,-0.1) node[below] {\l};}
+\draw[dashed,red!70!black] (1.5,0) -- (1.5,4.6);
+\node[font=\scriptsize,text=red!70!black,anchor=west] at (1.55,4.75) {$p_{\mathrm{T}0}=1.44\GeV$ (CP5 at $13.6\TeV$)};
+% bare: 4.5/x^4 in units of pT0 -> x = pT/pT0, plotted from where it enters the frame
+\begin{scope}
+\clip (0.05,0) rectangle (6.3,4.6);
+\draw[very thick,dashed,gray!70!black] plot[domain=0.95:4.2,samples=120,variable=\t] ({1.5*\t},{4.5/(\t*\t*\t*\t)});
+\draw[very thick,teal!80!black] plot[domain=0.05:4.2,samples=160,variable=\t] ({1.5*\t},{4.5/((\t*\t+1)*(\t*\t+1))});
+\fill[teal!80!black,opacity=0.12] plot[domain=0.13:4.2,samples=120,variable=\t] ({1.5*\t},{4.5/((\t*\t+1)*(\t*\t+1))}) -- (6.3,0) -- (0.2,0) -- cycle;
+\end{scope}
+\node[font=\scriptsize,text=gray!70!black,anchor=west,align=left] at (2.3,3.9) {bare: $\alphas^2(\pt^2)/\pt^4$\\diverges, $\sigma_{\mathrm{int}}\to\infty$};
+\node[font=\scriptsize,text=teal!80!black,anchor=west,align=left] at (2.3,2.6) {regularised: $\dfrac{\alphas^2(\pt^2+p_{\mathrm{T}0}^2)}{(\pt^2+p_{\mathrm{T}0}^2)^2}$\\colour screening below $p_{\mathrm{T}0}$};
+\draw[dotted,black!60] (0.2,0) -- (0.2,4.4);
+\node[font=\scriptsize,anchor=south,rotate=90] at (0.08,2.0) {$\pt^{\min}=0.2\GeV$};
+\node[font=\scriptsize,text=teal!80!black,anchor=north west,align=left] at (0.35,1.5) {shaded: $\sigma_{\mathrm{int}}=497\,\mathrm{mb}$\\$\sigma_{\mathrm{ND}}=55.4\,\mathrm{mb}$\\$\langle n\rangle=\sigma_{\mathrm{int}}/\sigma_{\mathrm{ND}}=9.0$};
+\end{scope}
+\end{tikzpicture}

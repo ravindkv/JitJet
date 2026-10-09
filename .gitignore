@@ -38,3 +38,5 @@ __pycache__/
 *.mp4
 *.wav
 cover/animate_cover_timeline.srt
+# the Les Houches input written for the MPI validation (copies of the hard event)
+example/MPI/Standalone/validate_mpi_with_pythia.lhe

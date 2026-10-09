@@ -145,19 +145,21 @@ off and the CP5 shower settings, then averages the same quantities as
 ```
 
 Averages over 2000 showers of the same hard event (seed 1..2000 for the
-standalone script; the standard deviation of a single shower is quoted, the
+standalone script; PYTHIA column re-run on 2026-10-09 after fixing the
+order of the settings: `Tune:pp = 14` resets `PDF:pSet`, so the PDF must be
+given after the tune, as CMSSW does; the standard deviation of a single shower is quoted, the
 error of a mean is 45 times smaller). "Family" means the final partons within
 dR < 0.4 of the b quark after the shower.
 
 | quantity | PYTHIA 8.315 | standalone |
 |---|---|---|
-| ISR branchings | 5.05 +- 2.92 | 4.88 +- 2.91 |
-| FSR branchings | 19.5 +- 11.2 | 20.9 +- 11.5 |
-| final-state partons (gluons) | 26.5 (21.3) | 27.7 (22.0) |
-| final partons with pT > 20 / 5 / 1 GeV | 2.86 / 7.12 / 18.8 | 2.79 / 7.25 / 19.5 |
-| x of incoming ubar (+z) / u (-z) after ISR | 0.051 / 0.450 | 0.042 / 0.446 |
-| bbar: pT after / family pT / family n / family mass [GeV] | 91.6 / 104.8 / 2.40 / 8.04 | 90.1 / 103.4 / 2.65 / 7.97 |
-| b: pT after / family pT / family n / family mass [GeV] | 94.8 / 108.4 / 2.46 / 8.10 | 93.9 / 108.4 / 2.72 / 8.15 |
+| ISR branchings | 4.93 +- 2.93 | 4.88 +- 2.91 |
+| FSR branchings | 19.1 +- 10.9 | 20.9 +- 11.5 |
+| final-state partons (gluons) | 26.0 (20.9) | 27.7 (22.0) |
+| final partons with pT > 20 / 5 / 1 GeV | 2.80 / 7.10 / 18.6 | 2.79 / 7.25 / 19.5 |
+| x of incoming ubar (+z) / u (-z) after ISR | 0.042 / 0.446 | 0.042 / 0.446 |
+| bbar: pT after / family pT / family n / family mass [GeV] | 92.2 / 104.8 / 2.40 / 8.00 | 90.1 / 103.4 / 2.65 / 7.97 |
+| b: pT after / family pT / family n / family mass [GeV] | 94.6 / 107.8 / 2.46 / 8.09 | 93.9 / 108.4 / 2.72 / 8.15 |
 
 The hard structure of the event is reproduced: partons above 20 GeV, the pT
 and mass of each b family, the number of ISR branchings and the x of the

@@ -1,0 +1,76 @@
+% ---------------------------------------------------------------------------
+% Colour reconnection in the MPI-based model. (a) Before: every system has
+% its own colour strings, the hard system's chain and, separately, a soft
+% gg -> gg system whose strings run far across rapidity. (b) After: the soft
+% system's gluons are inserted into the dipole of the harder system that
+% minimises (p_g.p_i)(p_g.p_j)/(p_i.p_j); the strings get shorter. (c) The
+% reconnection probability with the systems of our event (the -v log,
+% "colour reconnection" section): rung 1 at 11.45 GeV survives, rung 2 at
+% 7.68 GeV is merged with P = 0.49, every softer rung with P > 0.74.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.4mm,fill=red!80!black},
+  g/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=green!50!black},
+  gs/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=teal!80!black},
+  rem/.style={diamond,inner sep=0pt,minimum size=2.6mm,fill=gray!60},
+  str/.style={line width=1.3pt,black!75},
+  strs/.style={line width=1.3pt,teal!80!black},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) before ----------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.5,3.2) {(a) before: one string per system};
+\draw[-{Stealth}] (-0.3,-2.3) -- (5.4,-2.3) node[below left=2pt and -2pt] {$y$};
+\draw[-{Stealth}] (-0.3,-2.3) -- (-0.3,2.8) node[above,font=\scriptsize] {$\phi$};
+% hard system chain: remnant A ... g ... b ... g ... bbar ... remnant B (schematic)
+\node[rem] (rA) at (5.2,0.6) {}; \node[g] (g1) at (3.9,1.9) {}; \node[q] (b) at (0.9,-1.5) {}; \node[g] (g2) at (2.0,0.2) {};
+\node[g] (g3) at (-0.1,2.3) {}; \node[q] (bb) at (-0.1,1.0) {}; \node[rem] (rB) at (-0.2,-1.9) {};
+\draw[str] (rA) -- (g1) -- (b) -- (g2) -- (bb) -- (g3) -- (rB);
+\node[font=\scriptsize,text=red!80!black,anchor=north] at (b.south) {$b$};
+\node[font=\scriptsize,text=red!80!black,anchor=south] at (bb.north) {$\bar b$};
+% a soft gg -> gg system: its own two strings between the two outgoing gluons and the remnants
+\node[gs] (s1) at (2.7,-1.6) {}; \node[gs] (s2) at (3.4,1.1) {};
+\draw[strs] (rA) .. controls (4.4,-0.4) .. (s1);
+\draw[strs] (s1) -- (s2);
+\draw[strs] (s2) .. controls (1.4,2.6) .. (rB);
+\node[lab,text=teal!80!black,anchor=west] at (3.55,-1.6) {soft $gg\to gg$\\$\pt=7.7\GeV$};
+\node[lab,anchor=north,text=black!65] at (2.4,-2.6) {$\lambda=\sum_{\mathrm{pairs}}\ln(1+m_{ij}^2/m_0^2)=806$ before};
+\end{scope}
+% ---------------- (b) after -----------------------------------------------------------------
+\begin{scope}[xshift=7.0cm]
+\node[head,anchor=west] at (-0.5,3.2) {(b) after: soft gluons join harder dipoles};
+\draw[-{Stealth}] (-0.3,-2.3) -- (5.4,-2.3) node[below left=2pt and -2pt] {$y$};
+\draw[-{Stealth}] (-0.3,-2.3) -- (-0.3,2.8) node[above,font=\scriptsize] {$\phi$};
+\node[rem] (rA) at (5.2,0.6) {}; \node[g] (g1) at (3.9,1.9) {}; \node[q] (b) at (0.9,-1.5) {}; \node[g] (g2) at (2.0,0.2) {};
+\node[g] (g3) at (-0.1,2.3) {}; \node[q] (bb) at (-0.1,1.0) {}; \node[rem] (rB) at (-0.2,-1.9) {};
+\node[gs] (s1) at (2.7,-1.6) {}; \node[gs] (s2) at (3.4,1.1) {};
+\draw[str] (rA) -- (g1) -- (s2) -- (b) -- (g2) -- (bb) -- (g3) -- (rB);
+\draw[strs,dashed] (g1) -- (b);
+\node[font=\scriptsize,text=red!80!black,anchor=north] at (b.south) {$b$};
+\node[font=\scriptsize,text=red!80!black,anchor=south] at (bb.north) {$\bar b$};
+\draw[strs] (s1) .. controls (1.8,-1.0) .. (b);
+\draw[strs] (s1) -- (g2);
+\node[lab,text=teal!80!black,anchor=west,text width=2.2cm] at (3.55,-1.5) {each gluon goes where $\frac{(p_g\!\cdot p_i)(p_g\!\cdot p_j)}{p_i\cdot p_j}$ is smallest};
+\node[lab,anchor=north,text=black!65] at (2.4,-2.6) {$\lambda=403$ after: $23$ of $24$ merged, $51$ strings};
+\end{scope}
+% ---------------- (c) the probability ------------------------------------------------------
+\begin{scope}[xshift=14.2cm,yshift=-2.3cm]
+\node[head,anchor=west] at (-0.3,5.5) {(c) who is merged};
+\node[font=\scriptsize,anchor=west] at (-0.3,4.95) {$P=(R\,p_{\mathrm{T}0})^2/\bigl((R\,p_{\mathrm{T}0})^2+\pt^2\bigr)$};
+\draw[-{Stealth}] (0,0) -- (5.0,0) node[right] {$\pt$ [GeV]};
+\draw[-{Stealth}] (0,0) -- (0,4.4) node[above,font=\scriptsize] {$P$};
+% x = 1.6*(log10(pT)+0.5): 0.316 -> 0, 1 -> 0.8, 10 -> 2.4, 100 -> 4.0 ; y = 4*P
+\foreach \p/\l in {1/1,10/10,100/100} {\draw ({1.6*(log10(\p)+0.5)},0) -- ({1.6*(log10(\p)+0.5)},-0.1) node[below] {\l};}
+\foreach \y/\l in {2/0.5,4/1} {\draw (0,\y) -- (-0.1,\y) node[left] {\l};}
+\draw[very thick,teal!80!black] plot[domain=-0.5:2.4,samples=80,variable=\L] ({1.6*(\L+0.5)},{4/(1+pow(10,2*\L-1.7457))});
+\draw[dashed,black!60] ({1.6*(log10(7.462)+0.5)},0) -- ({1.6*(log10(7.462)+0.5)},2.0);
+\node[font=\scriptsize,text=black!65,anchor=west] at ({1.6*(log10(7.462)+0.5)+0.05},0.5) {$R\,p_{\mathrm{T}0}=5.176\times1.44=7.46\GeV$};
+\node[circle,fill=red!80!black,inner sep=1.7pt] at ({1.6*(log10(11.453)+0.5)},{4*0.298}) {};
+\node[font=\scriptsize,text=red!80!black,anchor=south west] at ({1.6*(log10(11.453)+0.5)},{4*0.298+0.05}) {rung 1: $P=0.30$, kept};
+\node[circle,fill=teal!80!black,inner sep=1.7pt] at ({1.6*(log10(7.679)+0.5)},{4*0.4857}) {};
+\node[font=\scriptsize,text=teal!80!black,anchor=south west] at ({1.6*(log10(7.679)+0.5)+0.05},{4*0.4857+0.1}) {rung 2: $0.49$, merged};
+\node[circle,fill=teal!80!black,inner sep=1.7pt] at ({1.6*(log10(0.434)+0.5)},{4*0.9966}) {};
+\node[font=\scriptsize,text=teal!80!black,anchor=north west] at ({1.6*(log10(0.434)+0.5)+0.1},{4*0.9966-0.1}) {rung 24: $0.997$};
+\end{scope}
+\end{tikzpicture}

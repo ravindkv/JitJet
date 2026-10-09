@@ -1,0 +1,70 @@
+% ---------------------------------------------------------------------------
+% Beam remnants and primordial kT. Left: the light-cone momentum p+ of
+% proton A shared between the hard system, the 24 secondary systems and the
+% remnant partons (the -v log, "beam remnants" section: X = 0.110 left for A,
+% 0.266 for B; remnants of A: ud_0 and six companions). Middle: the
+% primordial-kT width against the scale of the system, with the hard system
+% and the hardest MPI marked. Right: the kicks of one system and the recoil.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  kick/.style={-{Stealth[length=1.8mm]},thick}]
+% ---------------- (a) light-cone bookkeeping ----------------------------------------------
+\node[head,anchor=west] at (-0.4,3.3) {(a) the momentum must close};
+\node[font=\scriptsize,anchor=west] at (-0.4,2.85) {$p^+_A=\sum_{\mathrm{systems}}p^+_i+\sum_{\mathrm{remnants}}p^+_r$, the same for $p^-_B$};
+\draw[thin] (0,0) rectangle (4.4,1.0);
+% hard system share of A: x = 0.0171 (tiny), MPI systems: 0.873, remnants 0.110
+\fill[red!80!black] (0,0) rectangle (0.075,1.0);
+\fill[teal!60] (0.075,0) rectangle (3.916,1.0);
+\foreach \x in {0.3,0.55,1.9,2.25,2.9,3.2,3.45,3.6,3.72,3.8,3.86} {\draw[white,thin] (\x,0) -- (\x,1.0);}
+\fill[gray!55] (3.916,0) rectangle (4.4,1.0);
+\node[font=\scriptsize,text=red!80!black,anchor=south] at (0.1,1.05) {hard $x=0.017$};
+\node[font=\scriptsize,text=teal!80!black] at (2.0,0.5) {24 secondary systems: $\sum x=0.873$};
+\node[font=\scriptsize,text=white] at (4.16,0.5) {$0.11$};
+\node[lab,anchor=north] at (2.2,-0.1) {proton A: $X=0.110$ is left for the remnants};
+\draw[thin] (0,-2.4) rectangle (4.4,-1.4);
+\fill[red!80!black] (0,-2.4) rectangle (2.068,-1.4);
+\fill[teal!60] (2.068,-2.4) rectangle (3.231,-1.4);
+\foreach \x in {2.3,2.5,2.75,2.95,3.1} {\draw[white,thin] (\x,-2.4) -- (\x,-1.4);}
+\fill[gray!55] (3.231,-2.4) rectangle (4.4,-1.4);
+\node[font=\scriptsize,text=white] at (1.03,-1.9) {hard: valence $u$, $x=0.47$};
+\node[font=\scriptsize,text=white] at (3.8,-1.9) {$0.27$};
+\node[lab,anchor=north] at (2.2,-2.5) {proton B: $X=0.266$ is left};
+\node[lab,anchor=north west,text=black!65,align=left,text width=4.6cm] at (-0.3,-3.2) {remnants of A: $ud_0$ ($x=0.18$), $u$, $u$, $\bar u$, $\bar s$, $s$, $\bar u$ (companions);\\ of B: $ud_1$, $u$, $u$, $\bar s$, $u$, $\bar s$, $\bar u$, $\bar s$, $d$. Each system keeps its mass and rapidity; the remnants take $p^+=1420$, $p^-=3593\GeV$.};
+% ---------------- (b) the primordial-kT width ---------------------------------------------
+\begin{scope}[xshift=6.2cm,yshift=-2.0cm]
+\node[head,anchor=west] at (-0.3,5.3) {(b) how hard the kick};
+\draw[-{Stealth}] (0,0) -- (5.2,0) node[right] {$Q$ [GeV]};
+\draw[-{Stealth}] (0,0) -- (0,4.6) node[above,font=\scriptsize] {$\sigma_{k_{\mathrm{T}}}$ [GeV]};
+% x = 1.5*(log10(Q)+1): Q=0.1 -> 0, 1 -> 1.5, 10 -> 3, 100 -> 4.5 ; y = 2.2*sigma
+\foreach \q/\l in {0.1/0.1,1/1,10/10,100/100} {\draw ({1.5*(log10(\q)+1)},0) -- ({1.5*(log10(\q)+1)},-0.1) node[below] {\l};}
+\foreach \s/\l in {0.9/0.9,1.8/1.8} {\draw (0,{2.2*\s}) -- (-0.1,{2.2*\s}) node[left] {\l};}
+\draw[very thick,teal!80!black] plot[domain=-1:2.1,samples=80,variable=\L] ({1.5*(\L+1)},{2.2*((1.5*0.9+pow(10,\L)*1.8)/(1.5+pow(10,\L)))});
+\draw[dotted,black!60] (0,{2.2*0.9}) -- (5,{2.2*0.9}); \draw[dotted,black!60] (0,{2.2*1.8}) -- (5,{2.2*1.8});
+\node[font=\scriptsize,text=teal!80!black,anchor=north west,text width=4.6cm] at (0.15,1.75) {$\sigma=\dfrac{Q_{1/2}\,\sigma_{\mathrm{soft}}+Q\,\sigma_{\mathrm{hard}}}{Q_{1/2}+Q}$, $Q_{1/2}=1.5$, $\sigma_{\mathrm{soft}}=0.9$, $\sigma_{\mathrm{hard}}=1.8\GeV$; remnants: $0.4\GeV$ flat};
+\node[circle,fill=red!80!black,inner sep=1.8pt] at ({1.5*(log10(113.3)+1)},{2.2*1.786}) {};
+\node[font=\scriptsize,text=red!80!black,anchor=north] at ({1.5*(log10(113.3)+1)},{2.2*1.786-0.15}) {hard: $Q=113$, $1.79\GeV$};
+\node[circle,fill=teal!80!black,inner sep=1.8pt] at ({1.5*(log10(11.45)+1)},{2.2*1.676}) {};
+\node[font=\scriptsize,text=teal!80!black,anchor=north east] at ({1.5*(log10(11.45)+1)-0.1},{2.2*1.676-0.1}) {rung 1: $1.68$};
+\node[circle,fill=teal!80!black,inner sep=1.8pt] at ({1.5*(log10(0.434)+1)},{2.2*1.10}) {};
+\node[font=\scriptsize,text=teal!80!black,anchor=north west] at ({1.5*(log10(0.434)+1)+0.05},{2.2*1.10-0.12}) {rung 24: $1.10$};
+\end{scope}
+% ---------------- (c) the kicks of the hard system --------------------------------------
+\begin{scope}[xshift=14.2cm,yshift=0.2cm]
+\node[head,anchor=west] at (-1.9,3.1) {(c) the kicks sum to zero per proton};
+\draw[gray!50,thin] (-1.8,0) -- (1.8,0); \draw[gray!50,thin] (0,-1.8) -- (0,1.8);
+\node[font=\scriptsize,text=black!65] at (1.75,-0.2) {$k_x$}; \node[font=\scriptsize,text=black!65] at (0.2,1.75) {$k_y$};
+% hard system initiators: A (-1.767,+1.652), B (-1.113,-1.838); scale 0.5 cm/GeV
+\draw[kick,red!80!black] (0,0) -- (-0.884,0.826) node[above,font=\scriptsize] {A, hard: $(-1.77,+1.65)$};
+\draw[kick,red!80!black,dashed] (0,0) -- (-0.557,-0.919) node[below,font=\scriptsize] {B, hard: $(-1.11,-1.84)$};
+\draw[kick,teal!80!black] (0,0) -- (-0.449,0.506);
+\draw[kick,teal!80!black] (0,0) -- (0.533,-0.555);
+\draw[kick,teal!80!black] (0,0) -- (0.051,-0.327);
+\node[font=\scriptsize,text=teal!80!black,anchor=west] at (0.6,-0.5) {rungs 1--3 (A side)};
+\draw[kick,gray!70!black] (0,0) -- (0.55,0.3);
+\node[font=\scriptsize,text=black!65,anchor=west] at (0.25,0.55) {remnants: what balances};
+\node[lab,anchor=north,text=black!65] at (0,-2.9) {every initiator and remnant of a proton gets a Gaussian $\vec k_{\mathrm{T}}$;\\the imbalance is shared out so that $\sum\vec k_{\mathrm{T}}=0$ per proton};
+\end{scope}
+\end{tikzpicture}

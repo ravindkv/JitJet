@@ -1,0 +1,888 @@
+{
+ "seed": 1,
+ "pt0": 1.4416657312548555,
+ "sigma_int": 497.33310546858075,
+ "sigma_nd": 55.419,
+ "b": 0.3136,
+ "f": 3.6267678648518396,
+ "summary": {
+  "n_mpi": 25,
+  "b": 0.3136,
+  "f": 3.6267678648518396,
+  "n_mean": 32.54681111244194,
+  "n_final": 211,
+  "n_mpi_partons": 155,
+  "n_remnants": 16,
+  "n_trials": 303,
+  "mpi_pt": [
+   11.453079311173559,
+   7.679149786565698,
+   4.474105053849154,
+   3.651043243608048,
+   3.4178604945663666,
+   3.140611689672547,
+   2.800254524911533,
+   2.191148790992892,
+   2.1829503677834055,
+   1.7884330652831166,
+   1.7566031208306272,
+   1.6289164227227708,
+   1.4991885244107306,
+   1.429874404987793,
+   1.3152259794771672,
+   1.1420758692122048,
+   1.095032994229867,
+   0.895795765166295,
+   0.8163398516813882,
+   0.7061953225945734,
+   0.6026323587698271,
+   0.5513079360876065,
+   0.48673191520985687,
+   0.4336177819556518
+  ],
+  "sum_pt_mpi": 230.4925799837604,
+  "n_isr_mpi": 31,
+  "n_fsr_mpi": 76,
+  "ue": {
+   "toward": 49.47218488386024,
+   "transverse": 21.992842557614225,
+   "away": 47.67023651024463,
+   "density_transverse": 2.1001617634116636,
+   "n_transverse": 21,
+   "density_all": 3.7921932308947564
+  },
+  "partons": [
+   {
+    "name": "bbar",
+    "row": 708,
+    "pt_after": 72.50063429605905,
+    "eta": -3.417636364213487,
+    "phi": 0.5731770113530111,
+    "cones": {
+     "0.4": {
+      "n": 4,
+      "n_ue": 1,
+      "pt_all": 93.87524615762709,
+      "m_all": 7.74993683257865,
+      "pt_hard": 91.26708439211001,
+      "m_hard": 7.023807260990448,
+      "pt_ue_scalar": 2.6576050131632334,
+      "pt_ue_vector": 2.6576050131632334
+     },
+     "0.8": {
+      "n": 8,
+      "n_ue": 3,
+      "pt_all": 116.0676315938744,
+      "m_all": 41.61292907501723,
+      "pt_hard": 112.28365167656425,
+      "m_hard": 39.886456483855795,
+      "pt_ue_scalar": 3.995731229275204,
+      "pt_ue_vector": 3.837322109153901
+     }
+    }
+   },
+   {
+    "name": "b",
+    "row": 719,
+    "pt_after": 78.28739957423454,
+    "eta": -1.3793672575368379,
+    "phi": -2.7295381315626814,
+    "cones": {
+     "0.4": {
+      "n": 3,
+      "n_ue": 0,
+      "pt_all": 100.66776976563894,
+      "m_all": 13.517574896527185,
+      "pt_hard": 100.66776976563894,
+      "m_hard": 13.517574896527185,
+      "pt_ue_scalar": 0,
+      "pt_ue_vector": 0.0
+     },
+     "0.8": {
+      "n": 6,
+      "n_ue": 3,
+      "pt_all": 104.0923199987887,
+      "m_all": 20.171768251890697,
+      "pt_hard": 100.66776976563894,
+      "m_hard": 13.517574896527185,
+      "pt_ue_scalar": 3.60560042063939,
+      "pt_ue_vector": 3.433081542100738
+     }
+    }
+   }
+  ],
+  "lambda_cr": 403.485386655086,
+  "lambda_nocr": 805.6724943911069,
+  "n_reconnected": 23,
+  "n_strings": 51
+ },
+ "chain": [
+  {
+   "step": 1,
+   "pT": 11.453079311173559,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.0004878461780532757,
+   "x2": 0.015291003515232984,
+   "y3": -2.7865902853305955,
+   "y4": -0.6584294963093925,
+   "shat": 1379.7382740435985,
+   "in_a": 158,
+   "in_b": 159,
+   "out": [
+    160,
+    161
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 2,
+   "pT": 7.679149786565698,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.28113699570649114,
+   "x2": 0.0008818896887358654,
+   "y3": -0.4445842421548517,
+   "y4": 6.209114622147094,
+   "shat": 45857.46898990533,
+   "in_a": 217,
+   "in_b": 218,
+   "out": [
+    219,
+    220
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 3,
+   "pT": 4.474105053849154,
+   "process": "qg->qg",
+   "partons": "u g -> u g",
+   "x1": 0.006344729262011013,
+   "x2": 0.000158062221345077,
+   "y3": 2.8280687058791107,
+   "y4": 0.8643222423699549,
+   "shat": 185.48935570247633,
+   "in_a": 325,
+   "in_b": 326,
+   "out": [
+    327,
+    328
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 4,
+   "pT": 3.651043243608048,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.034280650477574885,
+   "x2": 1.4239117074100376e-05,
+   "y3": 4.651097795926799,
+   "y4": 3.1352456511917954,
+   "shat": 90.28382112458213,
+   "in_a": 369,
+   "in_b": 370,
+   "out": [
+    371,
+    372
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 5,
+   "pT": 3.4178604945663666,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.000575702071624045,
+   "x2": 0.002954405984679845,
+   "y3": 0.7894991565539852,
+   "y4": -2.4249617556549588,
+   "shat": 314.59063016692073,
+   "in_a": 403,
+   "in_b": 404,
+   "out": [
+    405,
+    406
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 6,
+   "pT": 3.140611689672547,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.0017422047537783418,
+   "x2": 0.0003388936611612054,
+   "y3": -0.2777768340439976,
+   "y4": 1.9149971497505045,
+   "shat": 109.20448040167372,
+   "in_a": 472,
+   "in_b": 473,
+   "out": [
+    474,
+    475
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 7,
+   "pT": 2.800254524911533,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.0018249694049915035,
+   "x2": 0.00029094623832824027,
+   "y3": -0.2541735689581765,
+   "y4": 2.090353568355471,
+   "shat": 98.20783821824703,
+   "in_a": 510,
+   "in_b": 511,
+   "out": [
+    512,
+    513
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 8,
+   "pT": 2.191148790992892,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.034268131287081276,
+   "x2": 6.332701087774905e-06,
+   "y3": 5.210301406548333,
+   "y4": 3.3859428204451536,
+   "shat": 40.13813857808577,
+   "in_a": 535,
+   "in_b": 536,
+   "out": [
+    537,
+    538
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 9,
+   "pT": 2.1829503677834055,
+   "process": "qg->qg",
+   "partons": "g s -> s g",
+   "x1": 0.003785388503054758,
+   "x2": 0.00046709850832628487,
+   "y3": -1.0532770948872048,
+   "y4": 3.1456407242816757,
+   "shat": 327.0368988213555,
+   "in_a": 539,
+   "in_b": 540,
+   "out": [
+    541,
+    542
+   ],
+   "valence_sea": [
+    "gluon",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 10,
+   "pT": 1.7884330652831166,
+   "process": "qq->qq",
+   "partons": "ubar ubar -> ubar ubar",
+   "x1": 0.01227327931177017,
+   "x2": 0.028915320816780523,
+   "y3": 4.536105692770531,
+   "y4": -5.393052793899589,
+   "shat": 65639.67919080015,
+   "in_a": 546,
+   "in_b": 547,
+   "out": [
+    548,
+    549
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 11,
+   "pT": 1.7566031208306272,
+   "process": "qg->qg",
+   "partons": "ubar g -> ubar g",
+   "x1": 0.0003461587124978855,
+   "x2": 0.014337195362420164,
+   "y3": 0.9824514381471552,
+   "y4": -4.706166575225756,
+   "shat": 917.9463233814141,
+   "in_a": 580,
+   "in_b": 581,
+   "out": [
+    582,
+    583
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 12,
+   "pT": 1.6289164227227708,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.0003174635556239226,
+   "x2": 0.0006590230130166974,
+   "y3": -1.6282203566008575,
+   "y4": 0.8978249278981062,
+   "shat": 38.6965523242422,
+   "in_a": 597,
+   "in_b": 598,
+   "out": [
+    599,
+    600
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 13,
+   "pT": 1.4991885244107306,
+   "process": "qg->qg",
+   "partons": "u g -> g u",
+   "x1": 0.0008931713014671937,
+   "x2": 0.00930178235058801,
+   "y3": -4.433886000207741,
+   "y4": 2.0907030782591693,
+   "shat": 1536.6634104853424,
+   "in_a": 624,
+   "in_b": 625,
+   "out": [
+    626,
+    627
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 14,
+   "pT": 1.429874404987793,
+   "process": "qq'->qq'",
+   "partons": "u s -> u s",
+   "x1": 0.021956664042392562,
+   "x2": 2.3361606277283316e-06,
+   "y3": 4.9642965175277585,
+   "y4": 4.184020631446261,
+   "shat": 9.487392627875657,
+   "in_a": 631,
+   "in_b": 632,
+   "out": [
+    633,
+    634
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 15,
+   "pT": 1.3152259794771672,
+   "process": "qg->qg",
+   "partons": "u g -> g u",
+   "x1": 0.0003110462844515596,
+   "x2": 0.004672484392595413,
+   "y3": -3.8712541742344495,
+   "y4": 1.161749700887852,
+   "shat": 268.8132638964416,
+   "in_a": 638,
+   "in_b": 639,
+   "out": [
+    640,
+    641
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 16,
+   "pT": 1.1420758692122048,
+   "process": "qqbar->qqbar",
+   "partons": "ubar u -> ubar u",
+   "x1": 0.13050395777350712,
+   "x2": 5.712591891108006e-07,
+   "y3": 7.236820107183318,
+   "y4": 5.102250976800361,
+   "shat": 13.789061178883372,
+   "in_a": 642,
+   "in_b": 643,
+   "out": [
+    644,
+    645
+   ],
+   "valence_sea": [
+    "companion of initiator 14",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 17,
+   "pT": 1.095032994229867,
+   "process": "qg->qg",
+   "partons": "s g -> s g",
+   "x1": 0.00035608521100865246,
+   "x2": 0.00014815439385194547,
+   "y3": 1.3318320840568723,
+   "y4": -0.4549169567899105,
+   "shat": 9.7576736668325,
+   "in_a": 655,
+   "in_b": 656,
+   "out": [
+    657,
+    658
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 18,
+   "pT": 0.895795765166295,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.0016252661442159035,
+   "x2": 0.003409200133101753,
+   "y3": 3.205000284971492,
+   "y4": -3.9458064002524393,
+   "shat": 1024.8370134073193,
+   "in_a": 659,
+   "in_b": 660,
+   "out": [
+    661,
+    662
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 19,
+   "pT": 0.8163398516813882,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 5.487346886461813e-06,
+   "x2": 0.03161719059696526,
+   "y3": -2.413761813317132,
+   "y4": -6.245249568800491,
+   "shat": 32.08954131077627,
+   "in_a": 663,
+   "in_b": 664,
+   "out": [
+    665,
+    666
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 20,
+   "pT": 0.7061953225945734,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 1.9255136374288416e-05,
+   "x2": 0.011980732857274993,
+   "y3": -5.429334523900649,
+   "y4": -1.0039426695122273,
+   "shat": 42.66854170488717,
+   "in_a": 679,
+   "in_b": 680,
+   "out": [
+    681,
+    682
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  },
+  {
+   "step": 21,
+   "pT": 0.6026323587698271,
+   "process": "qg->qg",
+   "partons": "g s -> g s",
+   "x1": 0.0019562274643190923,
+   "x2": 2.2731164751237697e-05,
+   "y3": 3.740130272344471,
+   "y4": 0.7149059825838635,
+   "shat": 8.224677131580357,
+   "in_a": 686,
+   "in_b": 687,
+   "out": [
+    688,
+    689
+   ],
+   "valence_sea": [
+    "gluon",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 22,
+   "pT": 0.5513079360876065,
+   "process": "qg->qg",
+   "partons": "g dbar -> dbar g",
+   "x1": 1.1780258122344666e-06,
+   "x2": 0.028771821568025446,
+   "y3": -6.512483105908902,
+   "y4": -3.5908286665719844,
+   "shat": 6.269024709406703,
+   "in_a": 690,
+   "in_b": 691,
+   "out": [
+    692,
+    693
+   ],
+   "valence_sea": [
+    "gluon",
+    "sea (companion still inside)"
+   ]
+  },
+  {
+   "step": 23,
+   "pT": 0.48673191520985687,
+   "process": "qg->qg",
+   "partons": "sbar g -> sbar g",
+   "x1": 5.420300911131066e-07,
+   "x2": 0.010389741834370846,
+   "y3": -4.620571249752534,
+   "y4": -5.240436746946736,
+   "shat": 1.0416119898197267,
+   "in_a": 694,
+   "in_b": 695,
+   "out": [
+    696,
+    697
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  },
+  {
+   "step": 24,
+   "pT": 0.4336177819556518,
+   "process": "qg->qg",
+   "partons": "u g -> u g",
+   "x1": 0.007444480320470712,
+   "x2": 5.800911658622197e-06,
+   "y3": 5.428716955768539,
+   "y4": 1.7284960967028766,
+   "shat": 7.987455555522046,
+   "in_a": 698,
+   "in_b": 699,
+   "out": [
+    700,
+    701
+   ],
+   "valence_sea": [
+    "sea (companion still inside)",
+    "gluon"
+   ]
+  }
+ ],
+ "cr_decisions": [
+  [
+   24,
+   0.4336177819556518,
+   0.9966346328124988,
+   23
+  ],
+  [
+   23,
+   0.48673191520985687,
+   0.9957633935915372,
+   22
+  ],
+  [
+   22,
+   0.5513079360876065,
+   0.994571164700309,
+   21
+  ],
+  [
+   21,
+   0.6026323587698271,
+   0.9935201657647209,
+   20
+  ],
+  [
+   20,
+   0.7061953225945734,
+   0.9911231352823628,
+   19
+  ],
+  [
+   19,
+   0.8163398516813882,
+   0.9881734656225103,
+   18
+  ],
+  [
+   18,
+   0.895795765166295,
+   0.98579352648539,
+   17
+  ],
+  [
+   17,
+   1.095032994229867,
+   0.978919367128899,
+   16
+  ],
+  [
+   16,
+   1.1420758692122048,
+   0.9771115505872136,
+   15
+  ],
+  [
+   15,
+   1.3152259794771672,
+   0.9698701705004055,
+   14
+  ],
+  [
+   14,
+   1.429874404987793,
+   0.9645825334700439,
+   13
+  ],
+  [
+   13,
+   1.4991885244107306,
+   0.9612019880092149,
+   12
+  ],
+  [
+   12,
+   1.6289164227227708,
+   0.9545155521844794,
+   11
+  ],
+  [
+   11,
+   1.7566031208306272,
+   0.9474943266609585,
+   10
+  ],
+  [
+   10,
+   1.7884330652831166,
+   0.9456785642111305,
+   9
+  ],
+  [
+   9,
+   2.1829503677834055,
+   0.9211669407111981,
+   8
+  ],
+  [
+   8,
+   2.191148790992892,
+   0.9206207800844163,
+   7
+  ],
+  [
+   7,
+   2.800254524911533,
+   0.8765592363580292,
+   6
+  ],
+  [
+   6,
+   3.140611689672547,
+   0.8495183442497956,
+   5
+  ],
+  [
+   5,
+   3.4178604945663666,
+   0.8265876937847649,
+   4
+  ],
+  [
+   4,
+   3.651043243608048,
+   0.8068448474682123,
+   3
+  ],
+  [
+   3,
+   4.474105053849154,
+   0.7355664385173126,
+   2
+  ],
+  [
+   2,
+   7.679149786565698,
+   0.4856653912159849,
+   0
+  ],
+  [
+   1,
+   11.453079311173559,
+   0.2979971087170607,
+   null
+  ]
+ ],
+ "cr_moves": [
+  "gluon #778 (pT 7.34 GeV) of system 2 inserted into the dipole #702-#738 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 441.752 GeV^2)",
+  "gluon #766 (pT 1.92 GeV) of system 2 inserted into the dipole #778-#738 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 1.507 GeV^2)",
+  "gluon #779 (pT 1.81 GeV) of system 2 inserted into the dipole #778-#766 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.997 GeV^2)",
+  "gluon #775 (pT 1.32 GeV) of system 2 inserted into the dipole #743-#742 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.095 GeV^2)",
+  "gluon #765 (pT 1.28 GeV) of system 2 inserted into the dipole #711-#712 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.728 GeV^2)",
+  "gluon #770 (pT 1.15 GeV) of system 2 inserted into the dipole #742-#741 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.725 GeV^2)",
+  "gluon #764 (pT 0.89 GeV) of system 2 inserted into the dipole #702-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.189 GeV^2)",
+  "gluon #777 (pT 0.86 GeV) of system 2 inserted into the dipole #721-#709 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.109 GeV^2)",
+  "gluon #763 (pT 0.64 GeV) of system 2 inserted into the dipole #728-#727 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.080 GeV^2)",
+  "gluon #783 (pT 0.59 GeV) of system 2 inserted into the dipole #779-#766 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.045 GeV^2)",
+  "gluon #772 (pT 0.50 GeV) of system 2 inserted into the dipole #764-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.054 GeV^2)",
+  "gluon #774 (pT 0.45 GeV) of system 2 inserted into the dipole #775-#742 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.013 GeV^2)",
+  "gluon #780 (pT 0.30 GeV) of system 2 inserted into the dipole #772-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.186 GeV^2)",
+  "pair #767 #768 (u ubar) of system 2 inserted into the dipole #715-#714 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 29.775 GeV^2)",
+  "pair #784 #769 (d dbar) of system 2 inserted into the dipole #709-#702 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 4.010 GeV^2)",
+  "gluon #796 (pT 4.72 GeV) of system 3 inserted into the dipole #704-#705 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 7.685 GeV^2)",
+  "gluon #797 (pT 1.62 GeV) of system 3 inserted into the dipole #710-#711 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.021 GeV^2)",
+  "gluon #790 (pT 1.42 GeV) of system 3 inserted into the dipole #715-#768 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.494 GeV^2)",
+  "gluon #798 (pT 1.24 GeV) of system 3 inserted into the dipole #770-#741 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.192 GeV^2)",
+  "gluon #791 (pT 1.24 GeV) of system 3 inserted into the dipole #767-#714 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.136 GeV^2)",
+  "gluon #794 (pT 1.01 GeV) of system 3 inserted into the dipole #790-#768 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.002 GeV^2)",
+  "gluon #792 (pT 0.64 GeV) of system 3 inserted into the dipole #740-#704 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.091 GeV^2)",
+  "gluon #793 (pT 0.59 GeV) of system 3 inserted into the dipole #705-#706 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.012 GeV^2)",
+  "gluon #795 (pT 0.33 GeV) of system 3 inserted into the dipole #766-#738 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.017 GeV^2)",
+  "gluon #805 (pT 3.16 GeV) of system 4 inserted into the dipole #772-#780 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.868 GeV^2)",
+  "gluon #808 (pT 2.89 GeV) of system 4 inserted into the dipole #796-#705 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.423 GeV^2)",
+  "gluon #807 (pT 2.16 GeV) of system 4 inserted into the dipole #712-#728 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 2.911 GeV^2)",
+  "gluon #803 (pT 2.02 GeV) of system 4 inserted into the dipole #790-#794 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.160 GeV^2)",
+  "gluon #802 (pT 1.07 GeV) of system 4 inserted into the dipole #716-#715 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.128 GeV^2)",
+  "gluon #801 (pT 0.75 GeV) of system 4 inserted into the dipole #772-#805 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.013 GeV^2)",
+  "gluon #804 (pT 0.67 GeV) of system 4 inserted into the dipole #721-#777 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.134 GeV^2)",
+  "gluon #825 (pT 2.98 GeV) of system 5 inserted into the dipole #803-#794 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.599 GeV^2)",
+  "gluon #823 (pT 2.19 GeV) of system 5 inserted into the dipole #732-#734 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.031 GeV^2)",
+  "gluon #814 (pT 2.18 GeV) of system 5 inserted into the dipole #715-#790 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.088 GeV^2)",
+  "gluon #824 (pT 1.93 GeV) of system 5 inserted into the dipole #803-#825 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.436 GeV^2)",
+  "gluon #817 (pT 1.39 GeV) of system 5 inserted into the dipole #766-#795 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.014 GeV^2)",
+  "gluon #811 (pT 1.29 GeV) of system 5 inserted into the dipole #737-#735 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.003 GeV^2)",
+  "gluon #819 (pT 1.25 GeV) of system 5 inserted into the dipole #711-#765 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.129 GeV^2)",
+  "gluon #826 (pT 1.04 GeV) of system 5 inserted into the dipole #795-#738 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.001 GeV^2)",
+  "gluon #821 (pT 0.92 GeV) of system 5 inserted into the dipole #798-#741 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.117 GeV^2)",
+  "gluon #818 (pT 0.66 GeV) of system 5 inserted into the dipole #796-#808 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.000 GeV^2)",
+  "gluon #822 (pT 0.50 GeV) of system 5 inserted into the dipole #797-#711 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.024 GeV^2)",
+  "pair #812 #813 (c cbar) of system 5 inserted into the dipole #780-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 16.717 GeV^2)",
+  "pair #816 #815 (d dbar) of system 5 inserted into the dipole #766-#817 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 2.050 GeV^2)",
+  "gluon #836 (pT 4.24 GeV) of system 6 inserted into the dipole #706-#737 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.632 GeV^2)",
+  "gluon #834 (pT 3.73 GeV) of system 6 inserted into the dipole #704-#796 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.574 GeV^2)",
+  "gluon #833 (pT 1.23 GeV) of system 6 inserted into the dipole #702-#764 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.205 GeV^2)",
+  "gluon #838 (pT 1.17 GeV) of system 6 inserted into the dipole #819-#765 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.183 GeV^2)",
+  "gluon #830 (pT 1.14 GeV) of system 6 inserted into the dipole #716-#802 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.127 GeV^2)",
+  "gluon #839 (pT 1.10 GeV) of system 6 inserted into the dipole #807-#728 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.458 GeV^2)",
+  "gluon #831 (pT 0.93 GeV) of system 6 inserted into the dipole #740-#792 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.030 GeV^2)",
+  "gluon #837 (pT 0.91 GeV) of system 6 inserted into the dipole #765-#712 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.139 GeV^2)",
+  "gluon #832 (pT 0.86 GeV) of system 6 inserted into the dipole #818-#808 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.037 GeV^2)",
+  "gluon #829 (pT 0.83 GeV) of system 6 inserted into the dipole #812-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.882 GeV^2)",
+  "gluon #835 (pT 0.50 GeV) of system 6 inserted into the dipole #721-#804 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.042 GeV^2)",
+  "the two initiator gluons of system 6 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #844 (pT 1.31 GeV) of system 7 inserted into the dipole #836-#737 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.147 GeV^2)",
+  "gluon #847 (pT 1.23 GeV) of system 7 inserted into the dipole #721-#835 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.428 GeV^2)",
+  "gluon #848 (pT 1.19 GeV) of system 7 inserted into the dipole #731-#703 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 1.016 GeV^2)",
+  "gluon #846 (pT 1.15 GeV) of system 7 inserted into the dipole #792-#704 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.062 GeV^2)",
+  "gluon #842 (pT 0.97 GeV) of system 7 inserted into the dipole #713-#733 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.075 GeV^2)",
+  "gluon #849 (pT 0.30 GeV) of system 7 inserted into the dipole #727-#726 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.023 GeV^2)",
+  "gluon #853 (pT 3.33 GeV) of system 8 inserted into the dipole #709-#769 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 2.830 GeV^2)",
+  "gluon #852 (pT 0.75 GeV) of system 8 inserted into the dipole #829-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.031 GeV^2)",
+  "the two initiator gluons of system 8 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #856 (pT 2.30 GeV) of system 9 inserted into the dipole #777-#709 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.057 GeV^2)",
+  "gluon #858 (pT 0.22 GeV) of system 9 inserted into the dipole #853-#769 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.053 GeV^2)",
+  "gluon #865 (pT 1.34 GeV) of system 10 inserted into the dipole #804-#777 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.103 GeV^2)",
+  "gluon #863 (pT 1.19 GeV) of system 10 inserted into the dipole #792-#846 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.048 GeV^2)",
+  "gluon #867 (pT 1.16 GeV) of system 10 inserted into the dipole #763-#727 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.044 GeV^2)",
+  "gluon #871 (pT 1.07 GeV) of system 10 inserted into the dipole #783-#766 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.183 GeV^2)",
+  "gluon #872 (pT 0.99 GeV) of system 10 inserted into the dipole #821-#741 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.013 GeV^2)",
+  "gluon #864 (pT 0.71 GeV) of system 10 inserted into the dipole #826-#738 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.021 GeV^2)",
+  "gluon #861 (pT 0.49 GeV) of system 10 inserted into the dipole #834-#796 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.056 GeV^2)",
+  "gluon #870 (pT 0.40 GeV) of system 10 inserted into the dipole #784-#702 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.002 GeV^2)",
+  "gluon #862 (pT 0.34 GeV) of system 10 inserted into the dipole #834-#861 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.024 GeV^2)",
+  "gluon #868 (pT 0.05 GeV) of system 10 inserted into the dipole #825-#794 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.000 GeV^2)",
+  "gluon #877 (pT 3.31 GeV) of system 11 inserted into the dipole #727-#849 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.985 GeV^2)",
+  "gluon #878 (pT 1.13 GeV) of system 11 inserted into the dipole #742-#770 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.094 GeV^2)",
+  "gluon #875 (pT 1.02 GeV) of system 11 inserted into the dipole #839-#728 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.002 GeV^2)",
+  "gluon #879 (pT 0.58 GeV) of system 11 inserted into the dipole #711-#819 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.008 GeV^2)",
+  "gluon #876 (pT 0.18 GeV) of system 11 inserted into the dipole #726-#707 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.006 GeV^2)",
+  "gluon #885 (pT 3.19 GeV) of system 12 inserted into the dipole #858-#769 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 1.966 GeV^2)",
+  "gluon #884 (pT 1.50 GeV) of system 12 inserted into the dipole #779-#783 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.028 GeV^2)",
+  "gluon #887 (pT 0.90 GeV) of system 12 inserted into the dipole #711-#879 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.012 GeV^2)",
+  "gluon #886 (pT 0.79 GeV) of system 12 inserted into the dipole #807-#839 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.005 GeV^2)",
+  "gluon #888 (pT 0.67 GeV) of system 12 inserted into the dipole #836-#844 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.023 GeV^2)",
+  "gluon #883 (pT 0.53 GeV) of system 12 inserted into the dipole #711-#887 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.005 GeV^2)",
+  "gluon #889 (pT 0.37 GeV) of system 12 inserted into the dipole #802-#715 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.001 GeV^2)",
+  "the two initiator gluons of system 12 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #893 (pT 2.51 GeV) of system 13 inserted into the dipole #728-#763 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.208 GeV^2)",
+  "gluon #894 (pT 1.21 GeV) of system 13 inserted into the dipole #842-#733 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.005 GeV^2)",
+  "gluon #899 (pT 0.34 GeV) of system 14 inserted into the dipole #764-#772 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.002 GeV^2)",
+  "gluon #902 (pT 2.49 GeV) of system 15 inserted into the dipole #894-#733 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 1.451 GeV^2)",
+  "gluon #909 (pT 0.95 GeV) of system 16 inserted into the dipole #852-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.011 GeV^2)",
+  "gluon #907 (pT 0.34 GeV) of system 16 inserted into the dipole #780-#813 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.016 GeV^2)",
+  "gluon #910 (pT 0.13 GeV) of system 16 inserted into the dipole #909-#778 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.001 GeV^2)",
+  "gluon #914 (pT 0.86 GeV) of system 17 inserted into the dipole #798-#821 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.073 GeV^2)",
+  "gluon #917 (pT 1.68 GeV) of system 18 inserted into the dipole #816-#817 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.991 GeV^2)",
+  "gluon #918 (pT 0.64 GeV) of system 18 inserted into the dipole #849-#726 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.005 GeV^2)",
+  "the two initiator gluons of system 18 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #924 (pT 1.26 GeV) of system 19 inserted into the dipole #725-#730 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.004 GeV^2)",
+  "gluon #922 (pT 1.21 GeV) of system 19 inserted into the dipole #731-#848 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.630 GeV^2)",
+  "gluon #921 (pT 1.10 GeV) of system 19 inserted into the dipole #830-#802 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.060 GeV^2)",
+  "gluon #923 (pT 0.40 GeV) of system 19 inserted into the dipole #726-#876 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.020 GeV^2)",
+  "gluon #925 (pT 0.07 GeV) of system 19 inserted into the dipole #876-#707 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.001 GeV^2)",
+  "the two initiator gluons of system 19 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #928 (pT 1.74 GeV) of system 20 inserted into the dipole #763-#867 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.215 GeV^2)",
+  "gluon #930 (pT 0.30 GeV) of system 20 inserted into the dipole #791-#714 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.004 GeV^2)",
+  "gluon #929 (pT 0.13 GeV) of system 20 inserted into the dipole #848-#703 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.019 GeV^2)",
+  "the two initiator gluons of system 20 now form a colour-singlet pass-through: the remnants see no string from this system",
+  "gluon #933 (pT 1.71 GeV) of system 21 inserted into the dipole #865-#777 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.011 GeV^2)",
+  "gluon #938 (pT 0.80 GeV) of system 22 inserted into the dipole #727-#877 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.032 GeV^2)",
+  "gluon #942 (pT 0.62 GeV) of system 23 inserted into the dipole #731-#922 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.131 GeV^2)",
+  "gluon #946 (pT 1.30 GeV) of system 24 inserted into the dipole #783-#871 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.160 GeV^2)"
+ ]
+}

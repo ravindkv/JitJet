@@ -1,0 +1,51 @@
+% ---------------------------------------------------------------------------
+% The impact parameter. Left: the two protons in the transverse plane, each a
+% double-Gaussian matter distribution (CP5: 63 % of the matter in a core of
+% 0.76 of the radius), displaced by b; the overlap O(b) is the hatched region.
+% Right: the enhancement factor f(b) = n(b)/<n> of the -v log ("the impact
+% parameter" section) with our event and the averages marked.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) two protons in the transverse plane ----------------------------------
+\node[head,anchor=west] at (-3.6,3.3) {(a) two protons meet at impact parameter $b$};
+\coordinate (CA) at (-1.0,0);
+\coordinate (CB) at (0.7,0.45);
+% halo + core of each proton (double Gaussian): drawn as concentric discs
+\foreach \c/\col in {CA/blue,CB/orange} {
+  \fill[\col!15] (\c) circle (2.2);
+  \fill[\col!30] (\c) circle (1.45);
+  \fill[\col!45] (\c) circle (0.85);}
+\begin{scope}
+\clip (CA) circle (1.45);
+\fill[pattern=north east lines,pattern color=black!70] (CB) circle (1.45);
+\end{scope}
+\draw[very thick,blue!70!black] (CA) circle (2.2);
+\draw[very thick,orange!80!black] (CB) circle (2.2);
+\node[circle,fill=blue!70!black,inner sep=1.5pt] at (CA) {};
+\node[circle,fill=orange!80!black,inner sep=1.5pt] at (CB) {};
+\draw[{Stealth}-{Stealth},thick] (CA) -- (CB) node[midway,below right=-1pt,font=\scriptsize] {$b$};
+\node[lab,text=blue!70!black] at (-2.6,-2.0) {proton A\\core $63\%$, radius $0.76\,a$};
+\node[lab,text=orange!80!black] at (2.4,2.3) {proton B\\(the same)};
+\node[lab] at (-0.15,0.2) {};
+\node[lab,anchor=north] at (-0.2,-2.6) {hatched: the overlap $O(b)=\int\rho_A(\vec r)\,\rho_B(\vec r-\vec b)\,\mathrm{d}^2r$\\the number of scatterings is Poisson with mean $n(b)=k\,O(b)$};
+% ---------------- (b) f(b) --------------------------------------------------------------------
+\begin{scope}[xshift=7.4cm,yshift=-2.7cm]
+\node[head,anchor=west] at (-0.3,6.0) {(b) the enhancement $f(b)=n(b)/\langle n\rangle$};
+\draw[-{Stealth}] (0,0) -- (6.6,0) node[right] {$b/\langle b\rangle$};
+\draw[-{Stealth}] (0,0) -- (0,5.4) node[above,font=\scriptsize] {$f(b)$};
+\foreach \x/\l in {0/0,1.5/0.5,3/1,4.5/1.5,6/2} {\draw (\x,0) -- (\x,-0.1) node[below] {\l};}
+\foreach \y/\l in {1.1/1,2.2/2,3.3/3,4.4/4} {\draw (0,\y) -- (-0.1,\y) node[left] {\l};}
+% f(b) from the log: b/<b> 0 .25 .5 .75 1 1.25 1.5 2 -> 4.517 3.928 2.594 1.315 0.522 0.166 0.044 0.002
+\draw[very thick,teal!80!black] plot[smooth] coordinates {(0,4.969) (0.75,4.321) (1.5,2.853) (2.25,1.447) (3.0,0.574) (3.75,0.183) (4.5,0.048) (6.0,0.002)};
+\draw[dashed,red!80!black] (0.941,0) -- (0.941,3.99);
+\node[circle,fill=red!80!black,inner sep=2pt] at (0.941,3.99) {};
+\node[font=\scriptsize,text=red!80!black,anchor=west,align=left] at (1.05,4.3) {our event: $b=0.3136\,\langle b\rangle$\\$f=3.63$ (\CMSSW: $3.71$), $n(b)=32.5$};
+\draw[dotted,black!60] (0,2.44) -- (6.4,2.44) node[pos=0.98,above left,font=\scriptsize,text=black!65] {$\langle f\rangle_{\mathrm{hard}}=2.22$};
+\draw[dotted,black!60] (0,1.07) -- (6.4,1.07) node[pos=0.45,above left,font=\scriptsize,text=black!65] {$\langle f\rangle_{\mathrm{ND}}=0.97$};
+\node[font=\scriptsize,text=teal!80!black,anchor=south west] at (0.1,4.97) {$f(0)=4.52$};
+\node[font=\scriptsize,anchor=north west,align=left,text=black!65,text width=3.0cm] at (3.3,2.05) {minimum bias weights $b$ by $P_{\mathrm{int}}(b)$; a hard process by $O(b)$: central collisions favoured};
+\end{scope}
+\end{tikzpicture}

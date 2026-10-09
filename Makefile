@@ -67,7 +67,10 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PS/Standalone/animate_standalone_parton_showering_stills.pdf \
            example/PS/Standalone/veto_algorithm.pdf \
            example/ME/Standalone/theory_qqbar_bbbar.pdf \
-           example/PS/Standalone/theory_parton_showering.pdf
+           example/PS/Standalone/theory_parton_showering.pdf \
+           example/MPI/journey_MPI.pdf \
+           example/MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf \
+           example/MPI/Standalone/theory_multiparton_interactions.pdf
 
 figures: $(FIGURES)
 
@@ -76,6 +79,10 @@ example/ME/journey_ME.pdf: example/ME/plot_journey_ME.py example/ME/event_ME.lhe
 
 example/PS/journey_PS.pdf: example/PS/plot_journey_PS.py example/PS/event_PS.lhe
 	$(PYTHON) example/PS/plot_journey_PS.py -i example/PS/event_PS.lhe -o $@
+
+# Stage 3: the event after multiparton interactions, beam remnants and colour reconnection.
+example/MPI/journey_MPI.pdf: example/MPI/plot_journey_MPI.py example/PS/plot_journey_PS.py example/MPI/event_MPI.lhe
+	$(PYTHON) example/MPI/plot_journey_MPI.py -i example/MPI/event_MPI.lhe -o $@
 
 # Key frames of the 3D animation (one page per scene). The film itself takes
 # minutes to render and is not a build product: run the script without
@@ -109,6 +116,20 @@ example/PS/Standalone/theory_parton_showering.pdf: example/PS/Standalone/plot_th
 		example/PS/event_PS.lhe example/PS/Standalone/standalone_parton_showering.log
 	$(PYTHON) example/PS/Standalone/plot_theory_PS.py -o $@
 
+# The plots behind the theory sections of chapter 4 (one page per section): the
+# seed-1 MPI event at the CMSSW impact parameter replayed with the script's classes,
+# plus the --repeat statistics and the PYTHIA validation files when present (about 30 s).
+example/MPI/Standalone/theory_multiparton_interactions.pdf: example/MPI/Standalone/plot_theory_MPI.py \
+		example/MPI/Standalone/standalone_multiparton_interactions.py example/MPI/plot_journey_MPI.py \
+		example/PS/event_PS.lhe
+	$(PYTHON) example/MPI/Standalone/plot_theory_MPI.py -o $@
+
+# Key frames of the MPI animation (one page per scene; the film is not a build product).
+example/MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf: \
+		example/MPI/Standalone/animate_standalone_multiparton_interactions.py \
+		example/MPI/Standalone/standalone_multiparton_interactions.py example/MPI/plot_journey_MPI.py example/PS/event_PS.lhe
+	$(PYTHON) example/MPI/Standalone/animate_standalone_multiparton_interactions.py --stills $@ --no-video
+
 # The four steps of the Sudakov veto algorithm with the numbers of the seed-1
 # shower (imports AlphaStrong from the shower script; needs matplotlib).
 example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algorithm.py \
@@ -117,12 +138,18 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
-RECORDS := example/PS/event_PS.lhe
+RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe
 
 records: $(RECORDS)
 
 example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py example/ME/event_ME.lhe
 	$(PYTHON) example/PS/Standalone/standalone_parton_showering.py -i example/ME/event_ME.lhe -o $@
+
+# Chapter 4 adds the rest of the two protons to the showered record. The impact parameter is
+# fixed to the one of the CMSSW event (b = 0.3136 <b>), so that the two can be compared;
+# without --impact the script draws b itself (seed 1 then gives a peripheral collision).
+example/MPI/event_MPI.lhe: example/MPI/Standalone/standalone_multiparton_interactions.py example/PS/event_PS.lhe
+	$(PYTHON) example/MPI/Standalone/standalone_multiparton_interactions.py -i example/PS/event_PS.lhe -o $@ --impact 0.3136
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

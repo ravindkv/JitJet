@@ -120,8 +120,9 @@ def main():
         pass
     print(f"PDF:pSet = {pset}")
     py = pythia8.Pythia("", False)
-    for s in ["Beams:frameType = 4", f"Beams:LHEF = {args.lhef}", f"PDF:pSet = {pset}",
-              "Tune:pp = 14", "Tune:ee = 7",
+    # Tune:pp resets PDF:pSet to the tune's own PDF, so the PDF must be given after the tune (as CMSSW does)
+    for s in ["Beams:frameType = 4", f"Beams:LHEF = {args.lhef}",
+              "Tune:pp = 14", "Tune:ee = 7", f"PDF:pSet = {pset}",
               "SpaceShower:alphaSorder = 2", "SpaceShower:alphaSvalue = 0.118",
               "TimeShower:alphaSorder = 2", "TimeShower:alphaSvalue = 0.118",
               f"SpaceShower:rapidityOrder = {'on' if args.rapidity_order else 'off'}",
@@ -142,7 +143,7 @@ def main():
     ebeam = ev.ebeam
     for n in range(args.nevents):
         if not py.next():
-            if py.info.atEndOfFile():
+            if py.infoPython().atEndOfFile():
                 break
             continue
         e = py.event

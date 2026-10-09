@@ -1,0 +1,41 @@
+% ---------------------------------------------------------------------------
+% The chain of interactions of our event: a ladder in pT from the hard
+% scale 113.3 GeV down to pTmin = 0.2 GeV, with the 24 secondary interactions
+% of the -v log ("the chain of interactions" section) as rungs, and the
+% no-interaction probability between rungs written as a Sudakov-like factor.
+% The vertical position is log10(pT). Right: the first rung worked out.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  rung/.style={line width=1.4pt,teal!80!black},
+  hardrung/.style={line width=2.2pt,red!80!black},
+  lab/.style={font=\scriptsize,align=left},
+  head/.style={font=\small\bfseries},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.8cm,font=\scriptsize}]
+% y(pT) = 2.3*(log10(pT) + 0.7): pTmin 0.2 -> 0, 1 GeV -> 1.61, 10 -> 3.91, 113 -> 6.33
+\node[head,anchor=west] at (-1.6,7.6) {(a) the ladder of our event};
+\draw[-{Stealth}] (0,-0.3) -- (0,6.9) node[right,font=\scriptsize] {$\pt$ of the scattering [GeV]};
+\foreach \p/\l in {0.2/0.2,0.5/0.5,1/1,2/2,5/5,10/10,20/20,50/50,100/100}
+  {\draw (-0.08,{2.3*(log10(\p)+0.7)}) -- (0.08,{2.3*(log10(\p)+0.7)}) node[left=3pt,font=\scriptsize] {\l};}
+\draw[hardrung] (0.3,{2.3*(log10(113.32)+0.7)}) -- (2.6,{2.3*(log10(113.32)+0.7)}) node[right,font=\scriptsize,text=red!80!black] {the hard process, $113.3\GeV$ (sets $\pt^{\max}$)};
+\foreach \p in {11.453,7.679,4.474,3.651,3.418,3.141,2.800,2.191,2.183,1.788,1.757,1.629,1.499,1.430,1.315,1.142,1.095,0.896,0.816,0.706,0.603,0.551,0.487,0.434}
+  {\draw[rung] (0.3,{2.3*(log10(\p)+0.7)}) -- (2.6,{2.3*(log10(\p)+0.7)});}
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(11.453)+0.7)}) {1: $11.45\GeV$, $gg\to gg$};
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(7.679)+0.7)}) {2: $7.68\GeV$, $gg\to gg$};
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(4.474)+0.7)}) {3: $4.47\GeV$, $ug\to ug$};
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(2.191)+0.7)+0.12}) {8, 9: $2.19$, $2.18\GeV$};
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(1.095)+0.7)-0.05}) {17 rungs between $1.8$ and $0.43\GeV$};
+\node[lab,anchor=west,text=teal!80!black] at (2.8,{2.3*(log10(0.434)+0.7)-0.25}) {24: $0.43\GeV$; then nothing above $\pt^{\min}$};
+\draw[dotted,black!60] (-0.1,0) -- (2.6,0) node[right,font=\scriptsize,text=black!65] {$\pt^{\min}=0.2\GeV$: the chain stops};
+% the gap between the hard scale and rung 1
+\draw[{Stealth}-{Stealth},gray!70] (1.45,{2.3*(log10(113.32)+0.7)-0.1}) -- (1.45,{2.3*(log10(11.453)+0.7)+0.1});
+\node[lab,anchor=west,text=black!65,text width=4.3cm] at (0.35,{0.5*(2.3*(log10(113.32)+0.7)+2.3*(log10(11.453)+0.7))+0.15}) {no scattering between $113$ and $11.5\GeV$:\\$\exp[-f\,\sigma(>11.45)/\sigma_{\mathrm{ND}}]$};
+% ---------------- (b) the numbers of rung 1 -------------------------------------------------
+\node[head,anchor=west] at (8.6,7.6) {(b) the first rung, from the \code{-v} log};
+\node[numbox,anchor=north west] at (8.6,6.9) {\textbf{evolve down from $113.32\GeV$}: trial scales from the overestimate $C/(\pt^2+p_{\mathrm{T}0}^2)^2$, accepted at $\pt=11.453\GeV$ with veto weight $0.174$};
+\node[numbox,anchor=north west] at (8.6,5.8) {\textbf{kinematics}: $y_3=-2.787$, $y_4=-0.658$, so $x_1=(\pt/E_{\mathrm{cm}})(e^{y_3}+e^{y_4})=4.88\times10^{-4}$, $x_2=1.53\times10^{-2}$; $\sqrt{\shat}=37.1\GeV$, $\hat t=-1233$, $\hat u=-147\GeV^2$};
+\node[numbox,anchor=north west] at (8.6,4.5) {\textbf{coupling and regulator}: $\alphas(\pt^2+p_{\mathrm{T}0}^2=133.3)=0.1725$; $\bigl(\pt^2/(\pt^2+p_{\mathrm{T}0}^2)\bigr)^2=0.969$};
+\node[numbox,anchor=north west] at (8.6,3.45) {\textbf{depleted protons}: A has $X=0.983$ left, $x/X=4.96\times10^{-4}$, $xg=21.4$; B has $X=0.530$ left (its valence $u$ is gone), $x/X=0.0289$, $xg=4.26$};
+\node[numbox,anchor=north west] at (8.6,2.2) {\textbf{channel}: $gg\to gg$ $65.1\%$, $gd\to dg$ $3.6\%$, $gu\to ug$ $3.2\%$, \ldots\ $\to$ $gg\to gg$ chosen; colour flow in A $(136,137)$, in B $(137,138)$, out $(139,138)$, $(136,139)$};
+\node[numbox,anchor=north west] at (8.6,0.95) {\textbf{then}: showered from its own $\pt=11.45\GeV$: 3 ISR + 10 FSR, 15 final partons; the protons are depleted again and the next rung is drawn below $11.45\GeV$};
+\end{tikzpicture}

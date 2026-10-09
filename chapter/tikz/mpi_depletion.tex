@@ -1,0 +1,60 @@
+% ---------------------------------------------------------------------------
+% The protons are used up. Three snapshots of proton A of our event (from the
+% -v log): before the collision, after the hard process took a gluon
+% (x = 0.0171), and after the 24 secondary scatterings (X = 0.110 left, one
+% valence u gone, companions of the sea quarks taken). Bottom: the three
+% things that happen to a density when a parton leaves: rescaling, valence
+% counting, and a companion for every sea quark.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  proton/.style={draw,circle,very thick,fill=gray!8,minimum size=30mm},
+  val/.style={circle,fill=blue!70!black,inner sep=0pt,minimum size=3.2mm,text=white,font=\tiny},
+  gone/.style={circle,draw=blue!70!black,dashed,thick,fill=white,inner sep=0pt,minimum size=3.2mm,text=blue!70!black,font=\tiny},
+  sea/.style={circle,fill=violet!70,inner sep=0pt,minimum size=1.8mm},
+  seabar/.style={circle,draw=violet!70,thick,fill=white,inner sep=0pt,minimum size=1.8mm},
+  gluon/.style={thick,decorate,decoration={coil,aspect=0,segment length=3pt,amplitude=1.2pt},gray!70},
+  bar/.style={draw,thin},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  bigarrow/.style={-{Stealth[length=3mm,width=3mm]},gray!60,line width=2.4pt}]
+% ---------------- three snapshots of proton A --------------------------------------------------
+\node[head,anchor=west] at (-2.2,2.6) {(a) proton A of our event, used up scattering by scattering};
+\foreach \cx/\X/\title in {0/1.000/{before: $X=1$}, 5.0/0.983/{after the hard process: $X=0.983$}, 10.0/0.110/{after 24 more: $X=0.110$}} {
+  \node[proton] at (\cx,0) {};
+  \node[lab,anchor=south] at (\cx,1.65) {\title};
+  % momentum bar below
+  \draw[bar] (\cx-1.4,-2.05) rectangle (\cx+1.4,-1.75);
+  \fill[teal!60] (\cx-1.4,-2.05) rectangle (\cx-1.4+2.8*\X,-1.75);
+  \node[font=\scriptsize,anchor=north] at (\cx,-2.1) {momentum fraction left $X=1-\sum x_i$};}
+% snapshot 1: 2 u + 1 d valence, gluons, sea pairs
+\node[val] at (-0.5,0.4) {$u$}; \node[val] at (0.55,0.25) {$u$}; \node[val] at (0.05,-0.6) {$d$};
+\draw[gluon] (-0.5,0.4) -- (0.55,0.25); \draw[gluon] (0.55,0.25) -- (0.05,-0.6); \draw[gluon] (0.05,-0.6) -- (-0.5,0.4);
+\draw[gluon] (-0.5,0.4) -- (-1.1,0.9); \draw[gluon] (0.55,0.25) -- (1.15,-0.15);
+\node[sea] at (-0.9,-0.4) {}; \node[seabar] at (-0.7,-0.75) {};
+\node[sea] at (0.8,0.95) {}; \node[seabar] at (1.0,0.7) {};
+% snapshot 2: a gluon gone (dashed), the rest rescaled
+\node[val] at (4.5,0.4) {$u$}; \node[val] at (5.55,0.25) {$u$}; \node[val] at (5.05,-0.6) {$d$};
+\draw[gluon] (4.5,0.4) -- (5.55,0.25); \draw[gluon] (5.55,0.25) -- (5.05,-0.6); \draw[gluon] (5.05,-0.6) -- (4.5,0.4);
+\draw[gluon,red!70!black,dashed] (5.55,0.25) -- (6.15,-0.15);
+\node[font=\scriptsize,text=red!70!black,anchor=west] at (6.2,-0.2) {$g$, $x=0.017$};
+\node[sea] at (4.1,-0.4) {}; \node[seabar] at (4.3,-0.75) {};
+\node[sea] at (5.8,0.95) {}; \node[seabar] at (6.0,0.7) {};
+% snapshot 3: one valence u gone, sea quarks gone and their companions left, gluons gone
+\node[gone] at (9.5,0.4) {$u$}; \node[val] at (10.55,0.25) {$u$}; \node[val] at (10.05,-0.6) {$d$};
+\draw[gluon] (10.55,0.25) -- (10.05,-0.6);
+\node[seabar] at (9.1,-0.4) {}; \node[seabar] at (9.3,-0.75) {}; \node[sea] at (10.8,0.95) {}; \node[sea] at (9.6,-1.0) {}; \node[seabar] at (10.9,-0.5) {};
+\node[lab,anchor=west,text=black!65,text width=3.2cm] at (11.6,0.3) {25 partons given away: 15 gluons, 1 valence $u$, 9 sea quarks; left: $ud_0$ diquark and 6 companions};
+% ---------------- (b) the three rules --------------------------------------------------------
+\begin{scope}[yshift=-3.6cm]
+\node[head,anchor=west] at (-2.2,0.0) {(b) what one departure does to the density of what remains};
+\node[lab,anchor=north west,text width=4.0cm,align=left] at (-2.2,-0.4) {\textbf{rescale.} The others share the remaining $X$: a parton at $x$ is drawn from $f(x/X)/X$ (our rung 1: $x/X=4.96\times10^{-4}$ for A).};
+\node[lab,anchor=north west,text width=4.0cm,align=left] at (2.6,-0.4) {\textbf{count valence.} Each valence quark can leave once: the $u$ that B gave the hard process is gone for good, so B keeps one $u$ and the $d$, and its valence-$u$ density is halved.};
+\node[lab,anchor=north west,text width=4.3cm,align=left] at (7.4,-0.4) {\textbf{leave a companion.} A sea quark came from $g\to q\bar q$, so its partner stays behind, with $x_c$ drawn from the $g\to q\bar q$ kernel weighted by the gluon shape $(1-x_g)^4/x_g$, $x_g=x_c+x_s$.};
+\begin{scope}[xshift=12.3cm,yshift=-0.9cm]
+\draw[gluon] (0,0) -- (0.9,0);
+\draw[thick,violet!80!black,-{Stealth[length=1.6mm]}] (0.9,0) -- (1.9,0.45) node[right,font=\scriptsize] {$q$ leaves, $x_s$};
+\draw[thick,violet!80!black,-{Stealth[length=1.6mm]}] (0.9,0) -- (1.9,-0.45) node[right,font=\scriptsize] {$\bar q$ stays, $x_c$};
+\end{scope}
+\end{scope}
+\end{tikzpicture}

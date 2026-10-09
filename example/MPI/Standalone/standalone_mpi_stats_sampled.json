@@ -1,0 +1,132 @@
+{
+ "seed": 1,
+ "pt0": 1.4416657312548555,
+ "sigma_int": 497.33310546858075,
+ "sigma_nd": 55.419,
+ "b": 1.2107631648610762,
+ "f": 0.2015904527492971,
+ "summary": {
+  "n_mpi": 2,
+  "b": 1.2107631648610762,
+  "f": 0.2015904527492971,
+  "n_mean": 1.8090836337470022,
+  "n_final": 45,
+  "n_mpi_partons": 2,
+  "n_remnants": 3,
+  "n_trials": 19,
+  "mpi_pt": [
+   0.4626195587687489
+  ],
+  "sum_pt_mpi": 3.3416855438937656,
+  "n_isr_mpi": 0,
+  "n_fsr_mpi": 0,
+  "ue": {
+   "toward": 0.2566372851800237,
+   "transverse": 0.0,
+   "away": 0.0,
+   "density_transverse": 0.0,
+   "n_transverse": 0,
+   "density_all": 0.008169018503617037
+  },
+  "partons": [
+   {
+    "name": "bbar",
+    "row": 168,
+    "pt_after": 72.39280029579814,
+    "eta": -3.4197108146438033,
+    "phi": 0.5743291466559313,
+    "cones": {
+     "0.4": {
+      "n": 3,
+      "n_ue": 0,
+      "pt_all": 91.12975874475211,
+      "m_all": 7.023807260957298,
+      "pt_hard": 91.12975874475211,
+      "m_hard": 7.023807260957298,
+      "pt_ue_scalar": 0,
+      "pt_ue_vector": 0.0
+     },
+     "0.8": {
+      "n": 6,
+      "n_ue": 1,
+      "pt_all": 114.25117796868435,
+      "m_all": 40.93045938312792,
+      "pt_hard": 112.13739096498495,
+      "m_hard": 39.88645648384412,
+      "pt_ue_scalar": 2.134009673164862,
+      "pt_ue_vector": 2.134009673164862
+     }
+    }
+   },
+   {
+    "name": "b",
+    "row": 179,
+    "pt_after": 78.10268628108618,
+    "eta": -1.3765071634001484,
+    "phi": -2.7275857914546027,
+    "cones": {
+     "0.4": {
+      "n": 3,
+      "n_ue": 0,
+      "pt_all": 100.44854873534595,
+      "m_all": 13.517574896526916,
+      "pt_hard": 100.44854873534595,
+      "m_hard": 13.517574896526916,
+      "pt_ue_scalar": 0,
+      "pt_ue_vector": 0.0
+     },
+     "0.8": {
+      "n": 3,
+      "n_ue": 0,
+      "pt_all": 100.44854873534595,
+      "m_all": 13.517574896526916,
+      "pt_hard": 100.44854873534595,
+      "m_hard": 13.517574896526916,
+      "pt_ue_scalar": 0,
+      "pt_ue_vector": 0.0
+     }
+    }
+   }
+  ],
+  "lambda_cr": 162.20485557142914,
+  "lambda_nocr": 166.09756371829116,
+  "n_reconnected": 1,
+  "n_strings": 12
+ },
+ "chain": [
+  {
+   "step": 1,
+   "pT": 0.4626195587687489,
+   "process": "gg->gg",
+   "partons": "g g -> g g",
+   "x1": 0.03392718661287762,
+   "x2": 0.003026684072023775,
+   "y3": 6.905125432290399,
+   "y4": -4.488376428921651,
+   "shat": 18992.964460995172,
+   "in_a": 158,
+   "in_b": 159,
+   "out": [
+    160,
+    161
+   ],
+   "valence_sea": [
+    "gluon",
+    "gluon"
+   ]
+  }
+ ],
+ "cr_decisions": [
+  [
+   1,
+   0.4626195587687489,
+   0.9961711859942082,
+   0
+  ]
+ ],
+ "cr_moves": [
+  "gluon #207 (pT 2.13 GeV) of system 1 inserted into the dipole #183-#182 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 1.213 GeV^2)",
+  "gluon #206 (pT 1.21 GeV) of system 1 inserted into the dipole #162-#198 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 8.788 GeV^2)",
+  "the two initiator gluons of system 1 now form a colour-singlet pass-through: the remnants see no string from this system"
+ ]
+}

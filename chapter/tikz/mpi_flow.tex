@@ -1,0 +1,43 @@
+% ---------------------------------------------------------------------------
+% The stage as a flow chart: the steps of standalone_multiparton_interactions.py
+% on the left, the numbers of our event (the -v log, seed 1, b = 0.3136 <b>)
+% on the right. Function names in brackets.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=10mm,text width=5.6cm},
+  stepbox/.style={box,fill=teal!10},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.6cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=teal!35,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.4) {the recipe};
+\node[head,anchor=west] at (6.7,1.4) {our event (seed 1, $b=0.3136\,\langle b\rangle$)};
+\node[stepbox] (S1) at (2.5,0) {\textbf{1\; set the scene}\\ $p_{\mathrm{T}0}(E_{\mathrm{cm}})$, the regularised $\mathrm{d}\sigma/\mathrm{d}\pt^2$ integrated above $\pt^{\min}$, $\sigma_{\mathrm{ND}}$, the overlap $O(b)$ and $k$};
+\node[stepbox,below=7mm of S1] (S2) {\textbf{2\; draw the impact parameter}\\ with weight $O(b)$ for a hard event, then $f(b)=n(b)/\langle n\rangle$};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; next interaction}\\ veto algorithm downwards in $\pt$ with rate $f(b)\,\mathrm{d}\sigma/\sigma_{\mathrm{ND}}$; stop below $\pt^{\min}$};
+\node[stepbox,below=7mm of S3] (S4) {\textbf{4\; dress the scattering}\\ $y_3,y_4\to x_1,x_2$; flavours from the depleted densities; process, colour flow, kinematics; shower it (chapter 2)};
+\node[stepbox,below=7mm of S4] (S5) {\textbf{5\; deplete both protons}\\ rescale $x$, count valence, add a companion for each sea quark; back to~3};
+\node[stepbox,below=7mm of S5] (S6) {\textbf{6\; beam remnants}\\ flavours and diquark, $x$ shapes, primordial $k_{\mathrm{T}}$, light-cone solution for every system};
+\node[stepbox,below=7mm of S6] (S7) {\textbf{7\; colour reconnection}\\ merge soft systems into harder ones, string the remnants, measure $\lambda$};
+\node[stepbox,below=7mm of S7] (S8) {\textbf{8\; write the record}\\ status $-31$, $-33$, $-61$, $62$, $63$; check $\sum p$ and the colour lines};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7,S7/S8} {\draw[flow] (\a) -- (\b);}
+\draw[flow] (S5.west) -- ++(-0.9,0) |- (S3.west);
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7,8/S8} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {SigmaInt, Overlap};
+\node[fn,anchor=south east] at (S3.north east) {Generator.next\_pt};
+\node[fn,anchor=south east] at (S4.north east) {Generator.scatter, Shower};
+\node[fn,anchor=south east] at (S5.north east) {Beam};
+\node[fn,anchor=south east] at (S6.north east) {remnants, set\_kinematics};
+\node[fn,anchor=south east] at (S7.north east) {reconnect\_mpi, remnant\_colours};
+\node[numbox,anchor=west] (N1) at (6.7,0) {$p_{\mathrm{T}0}=1.41\,(13600/7000)^{0.03344}=1.4417\GeV$; $\sigma_{\mathrm{int}}=497.3\,\mathrm{mb}$ (\CMSSW log: $500.67$);\\ $\sigma_{\mathrm{ND}}=100.309-21.89-23.0=55.42\,\mathrm{mb}$; $\langle n\rangle=8.97$; $k=93.0$, $f(0)=4.52$};
+\node[numbox,anchor=west] (N2) at (6.7,0 |- S2) {fixed to the \CMSSW event: $b=0.3136\,\langle b\rangle$, $f(b)=3.627$ ($3.709$ in \CMSSW);\\ expected $32.5$ interactions below $\pt^{\max}=113.3\GeV$; seed 1 with $b$ drawn would give $b=1.21\,\langle b\rangle$, $f=0.20$};
+\node[numbox,anchor=west] (N3) at (6.7,0 |- S3) {rung 1 at $11.453\GeV$ (weight $0.174$), 2 at $7.679$, 3 at $4.474$, \ldots, 24 at $0.434\GeV$;\\ 303 trial scales in all; after rung 24 nothing above $0.2\GeV$};
+\node[numbox,anchor=west] (N4) at (6.7,0 |- S4) {rung 1: $y_3=-2.79$, $y_4=-0.66$, $x_1=4.9\times10^{-4}$, $x_2=0.015$, $gg\to gg$ ($65\%$ of the weight);\\ showered: 3 ISR + 10 FSR, 15 partons. All 24: 31 ISR + 76 FSR, 155 final partons};
+\node[numbox,anchor=west] (N5) at (6.7,0 |- S5) {A: $X$ $0.983\to0.980\to0.672\to\cdots\to0.110$, one valence $u$ gone, 6 companions owed;\\ B: $0.530\to0.506\to\cdots\to0.266$ (the hard $u$ was valence), 8 companions owed};
+\node[numbox,anchor=west] (N6) at (6.7,0 |- S6) {A: $ud_0+u,u,\bar u,\bar s,s,\bar u$; B: $ud_1+u,u,\bar s,u,\bar s,\bar u,\bar s,d$ (16 remnants);\\ $\sigma_{k_{\mathrm{T}}}=1.79\GeV$ for the hard system; remnant systems of mass $7.2$ and $61.8\GeV$; solved in 1 attempt};
+\node[numbox,anchor=west] (N7) at (6.7,0 |- S7) {23 of 24 systems merged (rung 1 at $11.45\GeV$ survives, $P=0.30$); $\lambda$: $805.7\to403.5$; 51 strings;\\ 6 systems become colour-singlet gluon pairs};
+\node[numbox,anchor=west] (N8) at (6.7,0 |- S8) {963 rows, 211 final partons (40 hard system + 155 secondary + 16 remnants);\\ $\sum p$ off $(13600,0,0,0)$ by $2\times10^{-3}\GeV$; written to \file{example/MPI/event_MPI.lhe}};
+\foreach \s/\n in {S1/N1,S2/N2,S3/N3,S4/N4,S5/N5,S6/N6,S7/N7,S8/N8} {\draw[flow,gray!60] (\s.east) -- (\n.west);}
+\end{tikzpicture}

@@ -81,7 +81,7 @@ TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 ETA_MAX = journey.ETA_MAX
 FIGSIZE = (12.8, 7.2)                        # 16:9; dpi 100 -> 1280x720
 # PYTHIA 8.315 averages for this hard event, 2000 showers (README.md, validate_shower_with_pythia.py)
-PYTHIA_REF = dict(n_isr=5.05, n_fsr=19.5, n_final=26.5, fam_pt={"b": 108.4, "bbar": 104.8})
+PYTHIA_REF = dict(n_isr=4.93, n_fsr=19.1, n_final=26.0, fam_pt={"b": 107.8, "bbar": 104.8})
 STANDALONE_REF = dict(n_isr=4.88, n_fsr=20.9, n_final=27.7, fam_pt={"b": 108.4, "bbar": 103.4})
 
 

@@ -33,7 +33,8 @@ This is the "spine" every Book*.md must map onto, stage by stage:
 | 1 | Matrix-element / parton-shower matching and merging (MLM, CKKW-L, FxFx) | MG + Pythia 8 | redistributes energy between jets; not applied to our LO 2->2 event, chapter 3 is a two-page map |
 | 2 | Parton shower (ISR, FSR), dead cone for heavy quarks | Pythia 8 | out-of-cone radiation removes energy |
 | 3 | Multi-parton interactions, underlying event, colour reconnection | Pythia 8 | adds diffuse energy |
-| 4 | Hadronisation (Lund string), b-fragmentation, B-hadron decays, neutrinos | Pythia 8, EvtGen | removes energy (neutrinos, muons) |
+| 4 | Hadronisation (Lund string), b-fragmentation | Pythia 8 | conserves energy, redistributes it among hadrons |
+| 4b | B-hadron lifetimes and decays, neutrinos and soft muons | Pythia 8, EvtGen | removes energy (neutrinos, muons) |
 | 5 | Generator-level jets (GenJets, with/without neutrinos) | FastJet | the reference "truth" |
 | 6 | Pileup mixing (in-time, out-of-time), premixing | CMSSW, MinBias library | adds energy |
 | 7 | Detector simulation, digitisation | Geant4, CMSSW | response < 1, non-linearity, noise |
@@ -105,10 +106,10 @@ The other images (barber shop for grooming, shop where we pay more and gain
 less) survive at chapter level inside the top-jet part.
 
 **Ordering decision.** The b-jet journey is told first and completely
-(chapters 1 to 22, from the hard scattering to b-tagging and MET). Only then do
-"three families travel as one": the top-jet gets two chapters (23: the boosted
-AK8 jet with grooming, substructure and jet mass scale/resolution; 24: top
-tagging). Wrap-up chapters 25 to 27 close the ledger, describe daily life in
+(chapters 1 to 23, from the hard scattering to b-tagging and MET). Only then do
+"three families travel as one": the top-jet gets two chapters (24: the boosted
+AK8 jet with grooming, substructure and jet mass scale/resolution; 25: top
+tagging). Wrap-up chapters 26 to 28 close the ledger, describe daily life in
 JME and look at Run 3 / Phase-2.
 
 ## 5. Repository layout
@@ -121,7 +122,7 @@ JitJet/
   Makefile                  make -> pdflatex, bibtex, pdflatex x2 -> JitJet.pdf
   chapter/
     chapter_00_frontmatter.tex   preface, how to read, the two pilgrims, the ledger
-    chapter_01_ancestral_home.tex ... chapter_27_next_pilgrimage.tex
+    chapter_01_ancestral_home.tex ... chapter_28_next_pilgrimage.tex
     appendix_A_kinematics.tex ... appendix_E_exercises.tex
   ref/JitJet.bib            bibliography (INSPIRE-style keys)
   example/                  the worked example, stage by stage

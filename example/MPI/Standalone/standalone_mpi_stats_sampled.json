@@ -88,10 +88,10 @@
     }
    }
   ],
-  "lambda_cr": 162.20485557142914,
-  "lambda_nocr": 166.09756371829116,
+  "lambda_cr": 183.59164254238254,
+  "lambda_nocr": 187.48435068924462,
   "n_reconnected": 1,
-  "n_strings": 12
+  "n_strings": 8
  },
  "chain": [
   {

@@ -453,7 +453,10 @@ class StringScene(Scene):
                f"Before hadronisation PYTHIA may rearrange the colour lines. In the MPI-based model a system of scale pT is merged into a harder one with probability "
                f"P = (R pT0)^2/((R pT0)^2 + pT^2), R = {core.CR_RANGE}: soft systems almost always.\nIts gluons are inserted into the dipoles of the harder system where "
                f"they disturb it least, so the total string length lambda = sum ln(1 + m_ij^2/m0^2) drops: {self.lam0:.0f} -> {self.lam1:.0f} here, "
-               f"{n_merged} of {n_dec} systems merged, {len(self.chains0)} -> {len(self.chains1)} strings.")
+               f"{n_merged} of {n_dec} systems merged; the strings get shorter, not fewer: "
+               + (f"still {len(self.chains1)} colour-singlet strings" if len(self.chains0) == len(self.chains1)
+                  else f"{len(self.chains0)} -> {len(self.chains1)} colour-singlet strings")
+               + " (one per quark end; the merged gluons only move between them).")
         ax = fig.add_axes([0.05, 0.14, 0.62, 0.76])
         ax.set_xlim(-10, 10)
         ax.set_ylim(-math.pi - 0.2, math.pi + 0.2)

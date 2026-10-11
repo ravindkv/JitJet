@@ -1,0 +1,17 @@
+wrote /dev/null (1491 rows, 365 primary hadrons)
+wrote standalone_had_stats.json
+averages over 400 hadronisations of the same parton configuration (seeds 1..400):
+  n_hadrons          mean =   402.433  std =   14.489
+  n_charged          mean =   217.208  std =   12.542
+  n_baryons          mean =    38.845  std =    7.600
+  n_strange          mean =    92.095  std =   10.548
+  n_hadrons_central  mean =   206.252  std =   11.678
+  n_charged_central  mean =   112.325  std =    9.336
+  n_failed           mean =     0.005  std =    0.071
+  bbar: x_E = 1.025 +- 0.072, x_pT = 1.018, x_+ = 1.025, <z drawn> = 0.887, rank 1 in 100%; hadrons: B*0 31%, B*+ 29%, B+ 15%, B0 12%, B*_s0 6%, B_s0 4%, Lambda_bbar0 2%, Xi_bbar0 0%, Xi_bbar+ 0%, Sigma*_bbar0 0%
+     cone R = 0.4: partons pT 93.87 -> hadrons pT 91.96 +- 1.75, m 16.36, 6.2 hadrons (3.4 charged); B share 0.803
+     cone R = 0.8: partons pT 116.07 -> hadrons pT 118.00 +- 2.10, m 54.49, 15.6 hadrons (8.3 charged); B share 0.626
+  b: x_E = 0.882 +- 0.078, x_pT = 0.877, x_+ = 0.882, <z drawn> = 0.891, rank 1 in 100%; hadrons: B*- 32%, B*bar0 31%, Bbar0 13%, B- 12%, B*_sbar0 6%, Lambda_b0 2%, B_sbar0 2%, Xi_b0 1%, Sigma*_b+ 0%, Sigma*_b- 0%
+     cone R = 0.4: partons pT 100.67 -> hadrons pT 96.80 +- 3.08, m 16.82, 8.0 hadrons (4.2 charged); B share 0.710
+     cone R = 0.8: partons pT 104.09 -> hadrons pT 104.61 +- 2.52, m 32.52, 16.6 hadrons (8.9 charged); B share 0.657
+wrote standalone_had_stats.stats.json

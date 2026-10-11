@@ -70,7 +70,10 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PS/Standalone/theory_parton_showering.pdf \
            example/MPI/journey_MPI.pdf \
            example/MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf \
-           example/MPI/Standalone/theory_multiparton_interactions.pdf
+           example/MPI/Standalone/theory_multiparton_interactions.pdf \
+           example/Had/journey_Had.pdf \
+           example/Had/Standalone/animate_standalone_hadronisation_stills.pdf \
+           example/Had/Standalone/theory_hadronisation.pdf
 
 figures: $(FIGURES)
 
@@ -83,6 +86,10 @@ example/PS/journey_PS.pdf: example/PS/plot_journey_PS.py example/PS/event_PS.lhe
 # Stage 3: the event after multiparton interactions, beam remnants and colour reconnection.
 example/MPI/journey_MPI.pdf: example/MPI/plot_journey_MPI.py example/PS/plot_journey_PS.py example/MPI/event_MPI.lhe
 	$(PYTHON) example/MPI/plot_journey_MPI.py -i example/MPI/event_MPI.lhe -o $@
+
+# Stage 4: the primary hadrons after the Lund string fragmentation.
+example/Had/journey_Had.pdf: example/Had/plot_journey_Had.py example/PS/plot_journey_PS.py example/Had/event_Had.lhe
+	$(PYTHON) example/Had/plot_journey_Had.py -i example/Had/event_Had.lhe -o $@
 
 # Key frames of the 3D animation (one page per scene). The film itself takes
 # minutes to render and is not a build product: run the script without
@@ -130,6 +137,19 @@ example/MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf: \
 		example/MPI/Standalone/standalone_multiparton_interactions.py example/MPI/plot_journey_MPI.py example/PS/event_PS.lhe
 	$(PYTHON) example/MPI/Standalone/animate_standalone_multiparton_interactions.py --stills $@ --no-video
 
+# The plots behind the theory sections of chapter 5 (one page per section): the seed-1
+# hadronisation replayed with the script's classes, the --repeat statistics and the PYTHIA
+# validation files when present (about 20 s).
+example/Had/Standalone/theory_hadronisation.pdf: example/Had/Standalone/plot_theory_Had.py \
+		example/Had/Standalone/standalone_hadronisation.py example/Had/plot_journey_Had.py example/MPI/event_MPI.lhe
+	$(PYTHON) example/Had/Standalone/plot_theory_Had.py -o $@
+
+# Key frames of the hadronisation animation (one page per scene; the film is not a build product).
+example/Had/Standalone/animate_standalone_hadronisation_stills.pdf: \
+		example/Had/Standalone/animate_standalone_hadronisation.py \
+		example/Had/Standalone/standalone_hadronisation.py example/Had/plot_journey_Had.py example/MPI/event_MPI.lhe
+	$(PYTHON) example/Had/Standalone/animate_standalone_hadronisation.py --stills $@ --no-video
+
 # The four steps of the Sudakov veto algorithm with the numbers of the seed-1
 # shower (imports AlphaStrong from the shower script; needs matplotlib).
 example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algorithm.py \
@@ -138,7 +158,7 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
-RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe
+RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe
 
 records: $(RECORDS)
 
@@ -150,6 +170,10 @@ example/PS/event_PS.lhe: example/PS/Standalone/standalone_parton_showering.py ex
 # without --impact the script draws b itself (seed 1 then gives a peripheral collision).
 example/MPI/event_MPI.lhe: example/MPI/Standalone/standalone_multiparton_interactions.py example/PS/event_PS.lhe
 	$(PYTHON) example/MPI/Standalone/standalone_multiparton_interactions.py -i example/PS/event_PS.lhe -o $@ --impact 0.3136
+
+# Chapter 5 hadronises the record of chapter 4 (seed 1; the hadron table is embedded, no PYTHIA needed).
+example/Had/event_Had.lhe: example/Had/Standalone/standalone_hadronisation.py example/MPI/event_MPI.lhe
+	$(PYTHON) example/Had/Standalone/standalone_hadronisation.py -i example/MPI/event_MPI.lhe -o $@
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

@@ -506,7 +506,7 @@ pT0 = 1.4417 GeV, sigma_int = 497.33 mb, sigma_ND = 55.42 mb, <n> = 8.974; f(b) 
     gluon #938 (pT 0.80 GeV) of system 22 inserted into the dipole #727-#877 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.032 GeV^2)
     gluon #942 (pT 0.62 GeV) of system 23 inserted into the dipole #731-#922 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.131 GeV^2)
     gluon #946 (pT 1.30 GeV) of system 24 inserted into the dipole #783-#871 of system 0 ((p_g.p_i)(p_g.p_j)/(p_i.p_j) = 0.160 GeV^2)
-  string length lambda = sum ln(1 + m_ij^2/m0^2), m0 = 0.3 GeV: 805.67 without -> 403.49 with reconnection; 51 colour-singlet strings
+  string length lambda = sum ln(1 + m_ij^2/m0^2), m0 = 0.3 GeV: 879.65 without -> 520.81 with reconnection; 33 colour-singlet strings
 
 ==== checks ==========================================================================================
   final state: sum of all momenta deviates from (E_cm, 0, 0, 0) by 2.01e-03 GeV; every colour tag appears once as colour and once as anticolour; 1 attempt(s) for the remnant colour chain
@@ -1489,5 +1489,5 @@ impact parameter b = 0.3136 <b> with enhancement f(b) = 3.627; expected 32.5 int
   underlying event (|eta| < 2.5, w.r.t. the leading b): toward 49.47, transverse 21.99, away 47.67 GeV; transverse density 2.100 GeV per unit eta-phi (21 partons); all-azimuth density 3.792
   bbar: pT = 72.50 GeV at eta = -3.42; cone R = 0.4: 4 partons, pT 91.27 (hard system) -> 93.88 GeV with 1 UE partons adding 2.66 GeV scalar / 2.66 vector, mass 7.02 -> 7.75; R = 0.8: pT 112.28 -> 116.07, 3 UE partons, mass 39.89 -> 41.61
   b: pT = 78.29 GeV at eta = -1.38; cone R = 0.4: 3 partons, pT 100.67 (hard system) -> 100.67 GeV with 0 UE partons adding 0.00 GeV scalar / 0.00 vector, mass 13.52 -> 13.52; R = 0.8: pT 100.67 -> 104.09, 3 UE partons, mass 13.52 -> 20.17
-  colour reconnection: 23 systems merged; string length lambda = 805.7 -> 403.5; 51 colour-singlet strings
-wrote /private/tmp/claude-501/-Users-ravindrakumar-rverma-JME-JitJet/1e9720a6-a3d1-44d1-8900-5c003621189b/scratchpad/log_check.lhe (963 rows, 211 final-state partons)
+  colour reconnection: 23 systems merged; string length lambda = 879.6 -> 520.8; 33 colour-singlet strings
+wrote example/MPI/event_MPI.lhe (963 rows, 211 final-state partons)

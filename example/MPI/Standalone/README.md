@@ -103,7 +103,7 @@ processes, junctions, the newer QCD-based CR model, hadronisation (chapter 5).
 24 secondary interactions (pT from 11.45 down to 0.43 GeV; CMSSW's event: 31,
 from 6.65 to 0.24 GeV), 211 final partons (155 from the secondary systems with
 their 31 ISR + 76 FSR branchings, 16 beam remnants), 23 systems merged by
-colour reconnection, lambda 806 -> 404, 51 colour-singlet strings. The b quark
+colour reconnection, lambda 880 -> 521, 33 colour-singlet strings. The b quark
 keeps its chapter-2 family (100.45 GeV, 13.52 GeV mass within R = 0.4: no
 underlying-event parton happened to land in that cone); within R = 0.8 the
 underlying event adds 3.4 GeV and lifts the mass from 13.5 to 20.2 GeV. The

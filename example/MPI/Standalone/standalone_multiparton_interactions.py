@@ -1666,36 +1666,47 @@ class Generator:
             raise RuntimeError(f"colour tags not matched once as colour and once as anticolour: {sorted(bad)[:8]}")
 
     def strings(self):
-        """Colour-singlet chains of the final state: lists of rows, quark ... antiquark or closed gluon loops."""
+        """Colour-singlet chains of the final state, as PYTHIA's ColourTracing finds them: lists of rows in colour
+        order, from a colour end (quark or antidiquark: col set, acol not) through the gluons to the anticolour
+        end (antiquark or diquark), then the closed gluon loops. Chains must start at colour ends only: starting
+        at an anticolour end that happens to come first in the record would make it a one-row chain and cut the
+        quark's chain short of it, which miscounts the strings and drops one dipole per cut from lambda."""
         ev = self.ev
         fin = ev.final_indices()
-        by_col = {ev.p[i].col: i for i in fin if ev.p[i].col}
         by_acol = {ev.p[i].acol: i for i in fin if ev.p[i].acol}
         used, chains = set(), []
         for i in fin:
             q = ev.p[i]
-            if i in used or not (q.col or q.acol) or (q.acol and q.col):
-                continue
-            chain = [i]
-            used.add(i)
-            cur = i
-            while ev.p[cur].col and ev.p[cur].col in by_acol:
-                nxt = by_acol[ev.p[cur].col]
-                if nxt in used:
-                    break
-                chain.append(nxt)
-                used.add(nxt)
-                cur = nxt
-            chains.append(chain)
-        for i in fin:
-            if i not in used and (ev.p[i].col or ev.p[i].acol):
-                chain, cur = [i], i
+            if q.col and not q.acol:                          # a colour end
+                chain, cur = [i], q
                 used.add(i)
-                while ev.p[cur].col in by_acol and by_acol[ev.p[cur].col] not in used:
-                    cur = by_acol[ev.p[cur].col]
-                    chain.append(cur)
-                    used.add(cur)
+                while cur.col:
+                    j = by_acol.get(cur.col)
+                    if j is None or j in used:
+                        raise RuntimeError(f"colour tag {cur.col} of row {i} has no free anticolour partner")
+                    chain.append(j)
+                    used.add(j)
+                    cur = ev.p[j]
                 chains.append(chain)
+        for i in fin:
+            q = ev.p[i]
+            if i in used or not (q.col and q.acol):
+                continue
+            loop, cur = [i], q                                # a gluon of a closed loop
+            used.add(i)
+            while True:
+                j = by_acol.get(cur.col)
+                if j is None or j == i:
+                    break
+                if j in used:
+                    raise RuntimeError(f"gluon loop through row {i} is not closed")
+                loop.append(j)
+                used.add(j)
+                cur = ev.p[j]
+            chains.append(loop)
+        left = [i for i in fin if i not in used and (ev.p[i].col or ev.p[i].acol)]
+        if left:
+            raise RuntimeError(f"coloured partons without a string: {left}")
         return chains
 
     def lambda_measure(self, m0: float = CR_M0) -> float:
@@ -1704,7 +1715,7 @@ class Generator:
         lam = 0.0
         for chain in self.strings():
             pairs = list(zip(chain, chain[1:]))
-            if ev.p[chain[0]].id == 21 and len(chain) > 1:
+            if ev.p[chain[0]].acol and len(chain) > 1:        # a closed gluon loop: close the ring
                 pairs.append((chain[-1], chain[0]))
             for i, j in pairs:
                 lam += math.log(1.0 + max(mass2(ev.p[i].p + ev.p[j].p), 0.0) / (m0 * m0))

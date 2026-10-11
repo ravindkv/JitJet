@@ -1,0 +1,55 @@
+% ---------------------------------------------------------------------------
+% Gluons as kinks. (a) A q g qbar string: the gluon is a kink that carries
+% energy and momentum, pulled by two string pieces; each gluon gives half
+% its momentum to the region on either side. (b) The regions of the world
+% sheet of the b quark's string (b g g g g ubar): region (i, k) is spanned
+% by the light-cone momentum p+ of piece i on the b side and p- of piece k
+% on the ubar side; the two ends walk through the regions as they produce
+% hadrons (the -v log, "region" lines of string 1).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.4mm,fill=red!80!black},
+  aq/.style={circle,inner sep=0pt,minimum size=2.4mm,fill=blue!80!black},
+  g/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=green!50!black},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the kink ------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.2) {(a) a gluon is a kink on the string};
+\node[q] (q) at (0.2,0.6) {}; \node[g] (g) at (2.6,3.0) {}; \node[aq] (aq) at (5.0,0.6) {};
+\draw[orange!80!black,line width=2.2pt] (q) -- (g) -- (aq);
+\node[lab,below=1pt of q] {$q$}; \node[lab,above=1pt of g,text=green!40!black] {$g$}; \node[lab,below=1pt of aq] {$\bar q$};
+\draw[-{Stealth}] (q) -- ++(-0.5,-0.5); \draw[-{Stealth}] (g) -- ++(0,0.6); \draw[-{Stealth}] (aq) -- ++(0.5,-0.5);
+\node[lab,text=black!65,anchor=west] at (1.0,2.5) {piece $q g$:\\ $p_g/2$ from the kink};
+\node[lab,text=black!65,anchor=east] at (4.2,2.5) {piece $g\bar q$:\\ the other $p_g/2$};
+\node[lab,anchor=north,text width=5.6cm] at (2.6,0.0) {the kink is pulled by two pieces, force $2\kappa$: it loses its energy twice as fast as a quark end and the string keeps a corner that moves along it. A $q\,g_1\cdots g_n\,\bar q$ string is $n+1$ pieces; a hadron can form across a kink and takes momentum from both pieces};
+\end{scope}
+% ---------------- (b) the regions ---------------------------------------------------------------
+\begin{scope}[xshift=7.6cm,yshift=-0.7cm]
+\node[head,anchor=west] at (-0.3,4.9) {(b) the regions of the $b$ quark's string and the two paths};
+% grid: i = 0..4 (b side: b, g1/2, g2/2, g3/2, g4/2) horizontal; k = 1..5 (ubar side: g1/2 ... g4/2, ubar) vertical; cells with i < k
+\foreach \i in {0,1,2,3,4} {\foreach \k in {1,2,3,4,5} {
+  \pgfmathparse{\k > \i ? 1 : 0}
+  \ifnum\pgfmathresult=1 \fill[orange!12] (\i*0.8,\k*0.7-0.7) rectangle (\i*0.8+0.8,\k*0.7); \draw[black!30,thin] (\i*0.8,\k*0.7-0.7) rectangle (\i*0.8+0.8,\k*0.7); \fi}}
+% visited cells
+\foreach \i/\k in {0/1,1/3,2/3} {\fill[red!35] (\i*0.8,\k*0.7-0.7) rectangle (\i*0.8+0.8,\k*0.7);}
+\foreach \i/\k in {4/5,3/5,2/4} {\fill[blue!35] (\i*0.8,\k*0.7-0.7) rectangle (\i*0.8+0.8,\k*0.7);}
+\foreach \i in {0,1,2,3,4} {\foreach \k in {1,2,3,4,5} {\pgfmathparse{\k > \i ? 1 : 0}\ifnum\pgfmathresult=1 \draw[black!30,thin] (\i*0.8,\k*0.7-0.7) rectangle (\i*0.8+0.8,\k*0.7);\fi}}
+% axes labels
+\foreach \i/\t in {0/$b$,1/$g_1$,2/$g_2$,3/$g_3$,4/$g_4$} {\node[lab,anchor=north] at (\i*0.8+0.4,-0.05) {\t};}
+\node[lab,anchor=north] at (2.0,-0.45) {$i$: the piece on the $b$ side ($p^+$ of parton $i$)};
+\foreach \k/\t in {1/$g_1$,2/$g_2$,3/$g_3$,4/$g_4$,5/$\bar u$} {\node[lab,anchor=east] at (-0.1,\k*0.7-0.35) {\t};}
+\node[lab,anchor=south,rotate=90] at (-0.75,1.75) {$k$: the piece on the $\bar u$ side ($p^-$ of parton $k$)};
+% paths: b end (0,1) -> (1,3) -> (2,3); other end (4,5) -> (3,5) -> (2,4)
+\draw[red!80!black,thick,-{Stealth}] (0.4,0.35) -- (1.2,1.75) -- (2.0,1.75);
+\draw[blue!80!black,thick,-{Stealth}] (3.6,3.15) -- (2.8,3.15) -- (2.0,2.45);
+\node[lab,text=red!80!black,anchor=west] at (0.55,0.2) {$\bar B^{*0}$};
+\node[lab,text=red!80!black,anchor=south] at (1.2,1.95) {$\eta'\,\rho^-\,\pi^0$};
+\node[lab,text=red!80!black,anchor=north] at (2.0,1.6) {$\rho^+\pi^0\pi^-$};
+\node[lab,text=blue!80!black,anchor=south] at (3.6,3.2) {$\pi^0\bar\Sigma^0\Sigma^0\pi^-$};
+\node[lab,text=blue!80!black,anchor=south] at (2.75,3.2) {$\pi^0\bar K^{*0}$};
+\node[lab,text=blue!80!black,anchor=north] at (2.05,2.3) {$K^+$};
+\node[lab,anchor=north west,text width=7.6cm] at (4.3,3.6) {region $(i,k)$ has mass $W_{ik}^2=p_i^+p_k^-$; the $\bar B^{*0}$ formed in $(0,1)$, the $b$ and the first gluon half. The $\eta'$ needed more than $(0,1)$ and $(1,2)$ held: its vertex is placed in $(1,3)$ by the proper-time rule, swallowing the gluon halves in between, which is how a hadron forms across a kink. The two paths meet in $(2,3)$ and $(2,4)$ and the final two share what is left.};
+\end{scope}
+\end{tikzpicture}

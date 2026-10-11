@@ -1,0 +1,51 @@
+% ---------------------------------------------------------------------------
+% x_B in different settings. (a) The quantities of our event: the b quark,
+% its B hadron, the hadrons within R = 0.4, and the four fractions the
+% chapter uses (the -v log, "summary"). (b) The mean values of the same
+% word in different settings, from ALEPH at the Z to the CMSSW event, and
+% why they differ.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.6mm,fill=red!80!black},
+  had/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=violet!70},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the quantities ------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.6) {(a) the quark, its hadron, its jet};
+% cone
+\fill[orange!12] (0,2.2) -- (6.2,4.0) -- (6.2,0.4) -- cycle;
+\draw[black!40,dashed] (0,2.2) -- (6.2,4.0); \draw[black!40,dashed] (0,2.2) -- (6.2,0.4);
+\node[lab,text=black!60,anchor=west] at (4.6,4.1) {$\dR<0.4$};
+\draw[red!80!black,line width=1.6pt,-{Stealth}] (0,2.2) -- (5.0,2.2);
+\node[lab,text=red!80!black,anchor=south west] at (0.1,2.3) {$b$ quark (row 719): $\pt=78.29$, $E=165.42\GeV$};
+\draw[red!50!black,line width=1.0pt,-{Stealth},dashed] (0,2.2) -- (5.2,2.05);
+\node[lab,text=red!50!black,anchor=north west] at (1.0,2.0) {$\bar B^{*0}$ (row 1012): $\pt=78.56$, $E=166.04\GeV$, $\dR=0.005$};
+\foreach \x/\y in {5.3/3.1,4.2/3.4,5.6/1.3,4.0/1.1,3.1/0.9} {\node[had] at (\x,\y) {};}
+\node[lab,text=violet!80!black,anchor=west] at (2.6,3.7) {5 more primary hadrons in the cone};
+\node[lab,anchor=north west,text width=6.3cm,align=left] at (-0.3,0.3) {
+$x_E=E_B/E_b=166.04/165.42=\mathbf{1.004}$\\
+$x_{p_{\mathrm{T}}}=\pt^B/\pt^b=78.56/78.29=1.004$\\
+$x_+=(E+p_\parallel)_B/(E+p_\parallel)_b=1.004$ (the $z$ that $f(z)$ draws)\\
+share of the jet: $\pt^B/\pt(\mathrm{cone})=78.56/99.23=\mathbf{0.79}$};
+\end{scope}
+% ---------------- (b) the ladder --------------------------------------------------------------------
+\begin{scope}[xshift=7.4cm]
+\node[head,anchor=west] at (-0.3,4.6) {(b) the same word, different numbers};
+\draw[-{Stealth}] (0.0,-0.9) -- (6.3,-0.9);
+\foreach \x/\t in {0.2/0.7,1.65/0.8,3.1/0.9,4.55/1.0,6.0/1.1} {\draw (\x,-0.95) -- (\x,-0.85); \node[lab,anchor=north] at (\x,-1.0) {\t};}
+\node[lab,anchor=north] at (3.1,-1.35) {$\langle x\rangle$};
+% x = 0.2 + (v-0.7)*14.5; a guide line from each dot to its label column at x = 6.5
+\foreach \v/\y/\c/\t in {0.716/4.0/blue!70!black/{ALEPH, $Z\to b\bar b$: $E_B/E_{\mathrm{beam}}$ of the weakly decaying $B$, after the shower's radiation},
+ 0.882/3.2/red!80!black/{this script, same partons, 400 times: $E_B/E_b$ of the primary $B$ after the shower},
+ 0.913/2.4/black/{\PYTHIA, same partons, 400 times},
+ 0.941/1.6/black/{\PYTHIA, full chain, $b$ drawn ($0.931$ at $b=0.3136\langle b\rangle$)},
+ 1.004/0.8/red!80!black/{our event (seed 1): one draw},
+ 1.025/0.0/black/{\CMSSW event: $B^-$ from a $91.7\GeV$ $b$, one draw}} {
+  \draw[black!25,thin] ({0.2+(\v-0.7)*14.5},\y) -- (6.4,\y);
+  \fill[\c] ({0.2+(\v-0.7)*14.5},\y) circle (1.2mm);
+  \node[lab,anchor=west,text=\c,align=left,text width=6.2cm] at (6.5,\y) {\t};}
+\node[lab,anchor=north west,text=black!65,text width=12.6cm,align=left] at (-0.3,-1.75) {LEP measures the hadron against the beam, so the gluons radiated before hadronisation count as lost; this chapter measures it against the quark after the shower, so only the string's share is lost. A single draw can exceed 1 when the hadron takes momentum from the gluon next to the quark.};
+\end{scope}
+\end{tikzpicture}

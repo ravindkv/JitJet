@@ -1,0 +1,40 @@
+% ---------------------------------------------------------------------------
+% The stage as a flow chart: the steps of standalone_hadronisation.py on the
+% left, the numbers of our event (the -v log, seed 1) on the right. Function
+% names in brackets.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=10mm,text width=5.6cm},
+  stepbox/.style={box,fill=orange!12},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.6cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!45,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.4) {the recipe};
+\node[head,anchor=west] at (6.7,1.4) {our event (seed 1)};
+\node[stepbox] (S1) at (2.5,0) {\textbf{1\; collect the colour singlets}\\ follow every colour tag from a quark or antidiquark through the gluons to an antiquark or diquark; close the rest into gluon loops};
+\node[stepbox,below=7mm of S1] (S2) {\textbf{2\; tidy the strings}\\ join neighbours whose pair mass is within $m_{\mathrm{join}}$ of their masses; a string below $m_{q_1}+m_{q_2}+1\GeV$ is a ministring};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; set up the world sheet}\\ boost to the string's frame; massless light-cone pieces, half a gluon to each side; regions $(i,k)$ with $W_{ik}^2=p_i^+p_k^-$};
+\node[stepbox,below=7mm of S3] (S4) {\textbf{4\; one hadron}\\ pick an end; flavour by tunnelling weights; hadron by spin counting; $\pm\vec p_{\mathrm{T}}$; $z$ from $f(z)$ (Bowler for $b$, $c$); the vertex by $\Gamma_{\mathrm{new}}=(1-z)(\Gamma_{\mathrm{old}}+m_{\mathrm{T}}^2/z)$ in the regions};
+\node[stepbox,below=7mm of S4] (S5) {\textbf{5\; is there room?}\\ remaining $W>W_{\min}$: back to~4; otherwise the final two hadrons share what is left, orientation by the area law; no room at all: restart the string};
+\node[stepbox,below=7mm of S5] (S6) {\textbf{6\; ministrings}\\ two hadrons along the first parton, or one hadron that borrows its mass difference from the nearest string};
+\node[stepbox,below=7mm of S6] (S7) {\textbf{7\; write the record}\\ status $-71$, $-73$, $-72$ for the partons, $81$--$84$ for the hadrons; check $\sum p$ and the charge};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7} {\draw[flow] (\a) -- (\b);}
+\draw[flow] (S5.west) -- ++(-0.9,0) |- (S4.west);
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {colour\_singlets};
+\node[fn,anchor=south east] at (S2.north east) {join\_partons, is\_ministring};
+\node[fn,anchor=south east] at (S3.north east) {StringSystem, regions};
+\node[fn,anchor=south east] at (S4.north east) {StringFlav, StringPT, StringZ, place\_vertex};
+\node[fn,anchor=south east] at (S5.north east) {final\_two};
+\node[fn,anchor=south east] at (S6.north east) {MiniString};
+\node[numbox,anchor=west] (N1) at (6.7,0) {211 final partons, 33 colour singlets, no closed loop; the $b$ (row 719) ends a $69.3\GeV$ string $b\,g\,g\,g\,g\,\bar u$, the $\bar b$ (row 708) a $39.9\GeV$ string $b\,g\,g\,\bar b$ with a $b$ from a secondary scattering};
+\node[numbox,anchor=west] (N2) at (6.7,0 |- S2) {48 partons joined ($m_{\mathrm{join}}=0.3\GeV$; \PYTHIA on the same partons: 48); 4 ministrings of $2.74$, $2.04$, $1.67$ and $1.51\GeV$; 29 strings of $2.05$ to $1036\GeV$, $3071\GeV$ in all};
+\node[numbox,anchor=west] (N3) at (6.7,0 |- S3) {the $b$ string: 5 pieces on each side; its heaviest region $(0,5)$, $b$ against $\bar u$; $W_{\min}=7.02\GeV$ at the start ($m_b+m_u+1.0+2.0\,m_u$, smeared)};
+\node[numbox,anchor=west] (N4) at (6.7,0 |- S4) {first from the $-$ end: $u$, $\pi^0$, kick $(-0.60,-0.14)$, $z=0.134$, $\Gamma=2.60\GeV^2$; then from the $+$ end: $\bar d$, vector with $P=0.69$: $\bar B^{*0}$, kick $(-0.18,+0.20)$, exponent $20.3$, $z=0.984$, $\Gamma=0.45\GeV^2$, region $(0,1)$};
+\node[numbox,anchor=west] (N5) at (6.7,0 |- S5) {14 hadrons until $W=1.21<3.00\GeV$; final two $\rho^+$ and $\pi^-$, reversed with $P=0.85$; 16 hadrons in all. Over 400 hadronisations $0.5\%$ have one restarted string};
+\node[numbox,anchor=west] (N6) at (6.7,0 |- S6) {$c\bar s$ $2.74\GeV\to D_s^{*+}\eta$; $u\,ud_1\to\rho^0\Delta^+$; $u\,ud_0\to\pi^+n$; $s\bar s\to K^-K^{*+}$: 8 hadrons with status 82};
+\node[numbox,anchor=west] (N7) at (6.7,0 |- S7) {1491 rows: 122 of status $-71$, 41 of $-73$, 170 hadrons of status 83 and 187 of 84, 8 of 82; 365 primary hadrons, charge $+2$, $\sum p$ conserved to $3\times10^{-12}\GeV$};
+\end{tikzpicture}

@@ -1,0 +1,56 @@
+% ---------------------------------------------------------------------------
+% The break-up. (a) A q' qbar' pair created in the field has to tunnel apart
+% to a distance 2 m_T/kappa before it is on shell: the probability is
+% exp(-pi m_T^2/kappa), which suppresses strange quarks, kills charm and
+% bottom, and gives every break a Gaussian transverse momentum. (b) The
+% relative rates of the tune (the -v log, "setting the scene") against the
+% tunnelling formula with constituent masses. (c) The pair becomes a hadron
+% with its neighbour: spin counting fixes vector against pseudoscalar, and
+% a diquark pair makes a baryon and an antibaryon next to each other.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=red!80!black},
+  aq/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=blue!80!black},
+  nq/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=green!50!black},
+  naq/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=green!50!black,draw=black},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) tunnelling ----------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,3.4) {(a) a pair tunnels out of the field};
+\fill[orange!35] (0.3,2.35) rectangle (5.2,2.65);
+\node[q] at (0.2,2.5) {}; \node[aq] at (5.3,2.5) {};
+\node[lab] at (0.2,2.9) {$q$}; \node[lab] at (5.3,2.9) {$\bar q$};
+\node[lab,text=black!65] at (2.75,2.05) {before: one string, energy $\kappa r$};
+\fill[orange!35] (0.3,0.95) rectangle (2.1,1.25);
+\fill[orange!35] (3.4,0.95) rectangle (5.2,1.25);
+\node[q] at (0.2,1.1) {}; \node[aq] at (5.3,1.1) {};
+\node[naq] at (2.2,1.1) {}; \node[nq] at (3.3,1.1) {};
+\node[lab,text=green!40!black] at (2.2,1.5) {$\bar q'$}; \node[lab,text=green!40!black] at (3.3,1.5) {$q'$};
+\draw[{Stealth}-{Stealth},thin] (2.3,0.75) -- (3.2,0.75) node[midway,below,lab] {$2m_{\mathrm{T}}/\kappa$: the field energy\\ that became the pair's mass};
+\node[lab,anchor=north,text width=5.4cm] at (2.75,-0.05) {the pair is born at a point with $m_{\mathrm{T}}^2=m^2+p_{\mathrm{T}}^2$ and must separate before it is on shell: a classically forbidden step,\\ $P\propto\exp(-\pi m_{\mathrm{T}}^2/\kappa)=\exp(-\pi m^2/\kappa)\,\exp(-\pi p_{\mathrm{T}}^2/\kappa)$};
+\end{scope}
+% ---------------- (b) the rates ----------------------------------------------------------------
+\begin{scope}[xshift=6.9cm]
+\node[head,anchor=west] at (-0.3,3.4) {(b) who comes out of the vacuum};
+\draw[-{Stealth}] (0,-0.2) -- (0,3.0) node[left,lab] {rate};
+\draw (0,-0.2) -- (5.6,-0.2);
+% bars: u 1, d 1, s 0.217, diquark 0.081, c ~0 (log scale would hide the point; linear here)
+\foreach \x/\h/\n/\t in {0.5/2.6/$u$/{1}, 1.5/2.6/$d$/{1}, 2.5/0.56/$s$/{0.217}, 3.5/0.21/$qq$/{0.081}, 4.5/0.02/$c$/{$<10^{-10}$}} {
+  \fill[teal!60] (\x-0.3,-0.2) rectangle (\x+0.3,-0.2+\h);
+  \node[lab,anchor=north] at (\x,-0.3) {\n};
+  \node[lab,anchor=south] at (\x,-0.2+\h) {\t};}
+\node[lab,anchor=north west,text width=5.3cm,text=black!65] at (-0.2,-0.85) {tunnelling with $m_u=0.33$, $m_s=0.5\GeV$: $s/u=\exp(-\pi(m_s^2-m_u^2)/\kappa)=0.106$; the tune needs $0.217$, because constituent masses are not the right masses to use. $c$ and $b$ never come from the vacuum: every heavy quark of the event is from the hard process, the showers or the secondary scatterings};
+\end{scope}
+% ---------------- (c) the hadron ---------------------------------------------------------------
+\begin{scope}[xshift=13.5cm]
+\node[head,anchor=west] at (-0.3,3.4) {(c) the pair becomes a hadron};
+\node[lab,anchor=north west,text width=4.9cm] at (-0.3,3.05) {
+\textbf{meson} $q\bar q'$: spin $0$ or $1$; the tune's vector weight $V/(1+V)$\\
+$u,d$: $0.5/1.5=0.33$ \quad $s$: $0.355$ \quad $b$: $2.2/3.2=0.69$\\
+$u\bar u$, $d\bar d$, $s\bar s$ mix into $\pi^0$, $\eta$, $\eta'$ ($\eta\times0.6$, $\eta'\times0.12$)\\[3pt]
+\textbf{baryon}: the vacuum pair is a diquark pair $(qq)(\overline{qq})$ with $P=0.081/1.081=0.075$; the diquark joins the next quark and SU(6) counts the octet and decuplet states:\\ $sd_0+u\to\Lambda^0$ $0.125$, $\Sigma^0$ $0.375$ (the rest is rejected and a new flavour drawn)\\[3pt]
+\textbf{transverse momentum}: the pair gets $\pm\vec p_{\mathrm{T}}$, each component Gaussian with $\sigma/\sqrt2=0.237\GeV$; a hadron's $\vec p_{\mathrm{T}}$ is the sum of its two quarks' kicks};
+\end{scope}
+\end{tikzpicture}

@@ -1,7 +1,16 @@
 % ---------------------------------------------------------------------------
 % Chapter 5: The Children Get Married: Hadronisation and b-Fragmentation
-% Generated from the outline; edit freely, this file is now the source.
+% The scripts, records and figures discussed here live in example/Had/ of
+% https://github.com/ravindkv/JitJet . The book gives the physics and the
+% instructions; the code itself is read on GitHub, not printed here.
 % ---------------------------------------------------------------------------
+%% chapter-local shorthands (\pt already carries a subscript, so it cannot take another)
+\providecommand{\mT}{\ensuremath{m_{\mathrm{T}}}\xspace}
+\providecommand{\xE}{\ensuremath{x_E}\xspace}
+\providecommand{\xpt}{\ensuremath{x_{p_{\mathrm{T}}}}\xspace}
+\providecommand{\Wmin}{\ensuremath{W_{\min}}\xspace}
+\providecommand{\Bstarbar}{\ensuremath{\bar B^{*0}}\xspace}
+\providecommand{\Bstar}{\ensuremath{B^{*0}}\xspace}
 \chapter{The Children Get Married: Hadronisation and $b$-Fragmentation}
 \chaptermark{The Children Get Married}
 \label{ch:children_getting_married}
@@ -15,34 +24,1468 @@ one third of a baryon. The mother marries too, and the B~hadron she becomes
 keeps most of her energy but not all of it.
 \end{journeybox}
 
-\physicsline{Lund string model, string breaking, $b$-fragmentation (Peterson, Lund--Bowler), $x_B$, hadron-level jet}
+\physicsline{the linear potential and the string tension, the world sheet of
+a string and the area law, pair creation by tunnelling and the flavour and
+transverse-momentum weights, the Lund symmetric fragmentation function and
+the iteration from both ends, the proper time of a break-up vertex, gluons as
+kinks and the regions of the world sheet, ministrings and the final two
+hadrons, the Lund--Bowler and Peterson functions for heavy quarks, $x_B$ in
+its several definitions, the hadron-level cone around the $b$}
+
+\section{Welcome back: what we will see at this fourth stop}
+\label{sec:children_getting_married:what_we_compute}
+
+At the end of \cref{ch:uninvited_cousins} the record held 211 partons and
+every colour tag appeared exactly twice, once as a colour and once as an
+anticolour. That is the last parton-level statement this book makes. No
+quark has ever been seen alone, and the detector of the later chapters will
+see pions, kaons, protons and the B~hadron that carries our mother's
+flavour, never the $b$ quark itself. This stop is the one at which the
+family changes its clothes: the colour lines of the record are pulled into
+strings, the strings break, and the partons are replaced by hadrons. The
+model that does it, the Lund string model of Andersson, Gustafson, Ingelman
+and Sj\"ostrand~\cite{Andersson:1983ia}, is not derived from QCD; it is a
+picture with a few parameters, fitted to forty years of data, and it is the
+hadronisation of every CMS sample. Its one derivable ingredient, the linear
+potential between a quark and an antiquark, is the lattice's; everything
+else is a construction, and this chapter builds the construction from
+scratch and checks it against \PYTHIA on the identical partons.
+
+The number to take away is the first ledger entry that moves the mother
+herself. Up to now the $b$ quark has been a row in the record with
+$\pt=78.29\GeV$; after this stop there is a \Bstarbar meson with
+$\pt=78.56\GeV$, and the quantity that will follow us to the end of the
+journey is the fraction of the quark's energy the hadron kept,
+$\xE=E_B/E_b=1.004$ in our event, $0.88$ on average for the same partons
+hadronised again and again, $0.94$ for \PYTHIA's full chain. It is the
+reason a $b$ jet responds differently from a light-quark jet in the
+calorimeter, the reason the top-quark mass depends on a hadronisation
+parameter, and the reason the B~hadron of \cref{ch:children_producing_grandchildren}
+decays with four fifths of the jet's momentum. The family within $\dR<0.4$
+is not conserved either: the cone held $100.67\GeV$ of partons and holds
+$99.23\GeV$ of hadrons, because a string that runs from the $b$ to a parton
+outside the cone puts hadrons on both sides of the border. As at the previous
+stops we meet the numbers four times, from the top down:
+\begin{enumerate}[nosep]
+  \item \textbf{Watch it.} A film shows a two-parton string breaking in its
+    rest frame, the $b$ quark's string producing its sixteen hadrons from
+    both ends, the two ends walking through the regions of the world sheet,
+    the whole event turning from 211 partons into 365 hadrons, and the same
+    partons hadronised four hundred times
+    (\cref{sec:children_getting_married:animation}).
+  \item \textbf{Run it.} A Python file, needing only NumPy, takes the record
+    of \cref{ch:uninvited_cousins} and hadronises it in half a second,
+    following \PYTHIA's string classes one by one
+    (\cref{sec:children_getting_married:standalone_code}).
+  \item \textbf{Derive it.} Why the potential is linear and what a string is,
+    how it breaks and why strange quarks and baryons are rare, who takes how
+    much of the momentum and why the iteration runs from both ends, what a
+    gluon does to a string, and why a heavy quark keeps almost everything
+    (\crefrange{sec:children_getting_married:from_partons_to_hadrons_the_lund_string}{sec:children_getting_married:b_fragmentation_how_much_of_the_mother_s}).
+  \item \textbf{Check it against the official packages.} A validation script
+    lets \PYTHIA hadronise exactly our 211 partons four hundred times and
+    runs its full chain two thousand times, and the CMS generator job of
+    \cref{ch:ancestral_home} drew its fourth figure at this stage
+    (\cref{sec:children_getting_married:validation}).
+\end{enumerate}
+\MG does not appear, for the same reason as at the previous stop:
+hadronisation is \PYTHIA's job in every CMS sample.
+
+\Cref{tab:children_getting_married:numbers} gives away the ending. Its
+sharpest column pair is new: for the first time the standalone script and
+\PYTHIA can be run on \emph{identical} input, the 211 partons of
+\file{event_MPI.lhe} with their colour tags, so that the comparison is
+between two implementations of the same model and nothing else. The two
+agree on the hadron multiplicity to $5\%$, on the B~hadron's energy fraction
+to $0.03$, and on what the detector will see, the hadron-level cone around
+the $b$, to $1.2\GeV$ at $R=0.4$. The other columns are \PYTHIA's full chain
+from the hard event, with the impact parameter drawn and fixed as in
+\cref{ch:uninvited_cousins}, and the single \CMSSW event.
+
+\begin{table}[htbp]\centering\small
+\caption[Hadronisation obtained three ways]{Hadronisation obtained three
+ways. ``Same partons'' means the 211 final partons of
+\file{example/MPI/event_MPI.lhe} with their colour tags, hadronised $400$
+times by \PYTHIA~8.315 with the Monash fragmentation parameters that CP5
+keeps, and $400$ times by the standalone script; ``full chain'' means
+\PYTHIA from the hard event of \cref{ch:ancestral_home} with the CP5
+settings, $2000$ events with $b$ drawn and $526$ with
+$|b/\langle b\rangle-0.3136|<0.03$; hadron decays are off everywhere, so
+every hadron is primary. The spread of a single event follows $\pm$. Cones
+are drawn around the final copy of the $b$ quark; the $B$ share is the
+hadron's \pt over the cone's. The \CMSSW column is the single event of
+\cref{ch:ancestral_home}, read from its log.}
+\label{tab:children_getting_married:numbers}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrr}\toprule
+ & \PYTHIA & standalone & \PYTHIA full & \PYTHIA full & standalone & \CMSSW \\
+ & same partons & same partons & $b$ drawn & $b=0.3136$ & seed 1 & 1 event \\ \midrule
+primary hadrons & $383\pm11$ & $402\pm14$ & $226\pm87$ & $306\pm52$ & $365$ & $320$ \\
+\quad charged & $207.5\pm11.9$ & $217.2\pm12.5$ & $122\pm48$ & $165\pm29$ & $184$ & $167$ \\
+\quad baryons & $44.0\pm7.6$ & $38.8\pm7.6$ & $26.8$ & $36.3$ & $52$ & $34$ \\
+\quad with strangeness & $87.8\pm10.3$ & $92.1\pm10.5$ & $49.6$ & $67.8$ & $94$ & $69$ \\
+\quad at $|\eta|<2.5$ & $193.8$ & $206.3$ & $91.9$ & $128.3$ & $179$ & $139$ \\
+colour singlets, partons joined & $33$, $48$ & $33$, $48$ & -- & -- & $33$, $48$ & $24$, -- \\ \midrule
+$b$: $\xE=E_B/E_b$ (Lund--Bowler) & $0.913\pm0.062$ & $0.882\pm0.078$ & $0.941\pm0.100$ & $0.931\pm0.089$ & $1.004$ & $1.025$ \\
+$b$: \xE, plain Lund ($r_b=0$) & $0.963\pm0.038$ & $0.952\pm0.048$ & -- & -- & -- & -- \\
+$b$: \xE, Peterson ($\epsilon_b=0.005$) & $0.870\pm0.120$ & $0.839\pm0.132$ & -- & -- & -- & -- \\
+$\bar b$: \xE & $1.033\pm0.049$ & $1.025\pm0.072$ & $0.941\pm0.095$ & $0.936\pm0.094$ & $1.154$ & $0.980$ \\
+$b$: \pt of its hadron [GeV] & $71.1\pm5.0$ & $69.4\pm5.2$ & $87.8\pm26.7$ & $87.7\pm27.3$ & $78.56$ & $94.28$ \\
+$b$: $\bar B^{*0}\!:\!B^{*-}\!:\!\bar B^0\!:\!B^-\!:\!\bar B_s^{*0}$ [\%] & $31:28:14:12:8$ & $31:32:13:12:6$ & $29:29:13:15:6$ & $30:29:14:14:4$ & \Bstarbar & $B^-$ \\ \midrule
+$b$, $\dR<0.4$: partons \pt [GeV] & $100.67$ & $100.67$ & $109.7$ & $109.7$ & $100.67$ & -- \\
+$b$, $\dR<0.4$: hadrons \pt [GeV] & $98.0\pm2.2$ & $96.8\pm3.1$ & $109.6$ & $109.8$ & $99.23$ & $114.45$ \\
+$b$, $\dR<0.4$: hadrons, mass [GeV] & $7.6$, $17.2$ & $8.0$, $16.8$ & $6.2$, $14.3$ & $6.7$, $15.4$ & $6$, $16.1$ & $9$, $20.4$ \\
+$b$, $\dR<0.4$: $B$ share of the cone \pt & $0.726$ & $0.710$ & $0.800$ & $0.799$ & $0.79$ & $0.82$ \\
+$b$, $\dR<0.8$: partons \pt [GeV] & $104.09$ & $104.09$ & $118.4$ & $120.0$ & $104.09$ & -- \\
+$b$, $\dR<0.8$: hadrons \pt [GeV] & $104.2\pm1.8$ & $104.6\pm2.5$ & $118.7$ & $120.6$ & $105.98$ & $141.1$ \\
+$b$, $\dR<0.8$: hadrons, mass [GeV] & $15.1$, $31.6$ & $16.6$, $32.5$ & $12.0$, $28.1$ & $14.2$, $32.9$ & $14$, $35.9$ & $28$, $49.8$ \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{A picture to carry: the wedding.} Every stop so far had a
+building: the contractors of \cref{ch:mother_gives_birth}, the other tenants
+of \cref{ch:uninvited_cousins}. This stop empties it. Every parton in the
+record holds one end of a rope, a colour line, and the rope's other end is
+held by another parton, sometimes next door, sometimes across the whole
+event. Nobody may leave the building alone. As the partons fly apart the
+ropes stretch, and a stretched rope stores energy in proportion to its
+length, one GeV per fermi; when a rope holds enough it snaps, and at the
+break a new pair appears, each holding one of the new ends, so that there
+are now two shorter ropes and still nobody is alone. This goes on until
+every rope is too short to snap again, and what is left is a procession of
+couples and triples, the hadrons, walking out in the directions their ropes
+pointed. The mother holds one end of a rope with four knots in it, the
+gluons of \cref{ch:mother_gives_birth}, and she is heavy: she moves slowly
+compared with the rope, the rope cannot pull much energy away from her, and
+she leaves in a couple that carries nearly everything she had. The picture
+captures the three things the chapter derives: a linear potential, pair
+creation at the breaks, and a heavy end that keeps its momentum. Its limit
+is that the rope is a classical object with quantum rules attached by hand,
+and the rules have knobs: the Monash tune~\cite{Skands:2014pea}, which CP5
+keeps unchanged for this stage.
+
+\section{Watch the strings break: the animated journey}
+\label{sec:children_getting_married:animation}
+
+The film first. \file{example/Had/Standalone/animate_standalone_hadronisation.py}
+imports the standalone script of \cref{sec:children_getting_married:standalone_code}
+and replays the seed-1 hadronisation in five scenes of about fifty seconds
+in all, so that every number on the screen is produced by the classes that
+wrote the record. It is on the JitJet playlist,
+\begin{center}
+  \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
+\end{center}
+and \cref{fig:children_getting_married:stills} shows one key frame per
+scene. Each scene names the section that explains it.
+\begin{enumerate}
+  \item \textbf{A string breaks} (\cref{sec:children_getting_married:string}).
+    A $28\GeV$ two-parton string of our event, a $u$ quark and an $\bar s$
+    antiquark from the rest of the event, in its own rest frame. The quark and the
+    antiquark fly apart at the speed of light and the string between them
+    fills with energy, one GeV per fermi; the vertices of the record's
+    break-ups appear one after the other at their proper times, between
+    one and three fermi, and every piece between two neighbouring vertices
+    becomes one of the seven hadrons. On the right the same vertices are
+    drawn in light-cone coordinates, where the area law places them near a
+    hyperbola $\Gamma=x^+x^-$ of a few GeV$^2$.
+  \item \textbf{The $b$ quark's string} (\cref{sec:children_getting_married:fragmentation_function}).
+    The $69\GeV$ string that holds the mother, $b\,g\,g\,g\,g\,\bar u$, in
+    the $(\eta,\phi)$ plane. Hadrons appear from the two ends in the random
+    order the script drew, red from the $b$ end and blue from the $\bar u$
+    end, and the table on the right fills with the end, the fraction $z$
+    and the remaining mass of each: the \Bstarbar is the second hadron,
+    with $z=0.984$, and after fourteen the remaining $1.2\GeV$ is given to
+    the final two.
+  \item \textbf{The two ends walk through the regions} (\cref{sec:children_getting_married:kinks}).
+    The world sheet of the same string as a map of regions, one for every
+    pair of a piece from the $b$ side and a piece from the $\bar u$ side.
+    The red path of the $b$ end and the blue path of the other end advance
+    as the hadrons are placed, and the bars on the right show how much of
+    each gluon half is still uncrossed. When a hadron needs more than its
+    region holds, the path jumps a cell: that is a hadron forming across a
+    kink.
+  \item \textbf{The whole event} (\cref{sec:children_getting_married:our_jet_at_this_stage_the_hadron_level_f}).
+    The 211 partons of \cref{ch:uninvited_cousins} are grouped into 33
+    colour singlets and fragmented one after the other, heaviest first; the
+    partons disappear and the purple hadrons appear, 365 of them, the two
+    B~hadrons in red and blue, with the momentum sum unchanged.
+  \item \textbf{Again and again} (\cref{sec:children_getting_married:xb}).
+    The same partons hadronised with seeds $1,2,3,\ldots$: the histogram of
+    $\xE$ of the $b$ quark's hadron fills up and its running mean settles
+    on $0.882$ next to \PYTHIA's $0.913$ on the same partons; our event,
+    the first entry, is at $1.004$. On the right the species of the
+    hadron: a vector $B^*$ twice as often as a pseudoscalar $B$.
+\end{enumerate}
+Rendering needs matplotlib in addition to NumPy, and \code{ffmpeg} for an
+\code{.mp4}:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/Had/Standalone
+python3 animate_standalone_hadronisation.py            # the film, about a minute to render
+python3 animate_standalone_hadronisation.py --fast     # low-resolution preview
+python3 animate_standalone_hadronisation.py --scene bstring -o bstring.gif
+python3 animate_standalone_hadronisation.py --stills stills.pdf --no-video
+\end{minted}
+The physics options are those of the standalone script: \code{--seed 7}
+films another hadronisation, \code{--peterson} another fragmentation
+function for the $b$, \code{--rfactb 0} the plain Lund function.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.49\textwidth]{Had/Standalone/animate_standalone_hadronisation_stills.pdf}\hfill
+\includegraphics[page=2,width=0.49\textwidth]{Had/Standalone/animate_standalone_hadronisation_stills.pdf}\\[2mm]
+\includegraphics[page=3,width=0.49\textwidth]{Had/Standalone/animate_standalone_hadronisation_stills.pdf}\hfill
+\includegraphics[page=4,width=0.49\textwidth]{Had/Standalone/animate_standalone_hadronisation_stills.pdf}\\[2mm]
+\includegraphics[page=5,width=0.49\textwidth]{Had/Standalone/animate_standalone_hadronisation_stills.pdf}
+\caption[Key frames of the animated standalone hadronisation stage]{Key
+frames of the five scenes of the animated standalone hadronisation stage,
+drawn by \file{animate_standalone_hadronisation.py} with \code{--stills}.
+Top left: a $28\GeV$ two-parton string breaking in its rest frame, with the
+vertices in light-cone coordinates. Top right: the $b$ quark's string
+producing its sixteen hadrons from both ends. Middle left: the two ends
+walking through the regions of the world sheet. Middle right: the whole
+event, 33 strings becoming 365 hadrons. Bottom: four hundred hadronisations
+of the same partons against the \PYTHIA reference, and the species of the
+$b$ quark's hadron. The film is on the JitJet YouTube playlist.}
+\label{fig:children_getting_married:stills}
+\end{figure}
+
+\section{Press the button: the standalone hadronisation stage}
+\label{sec:children_getting_married:standalone_code}
+
+Now marry them yourself. The material of this chapter is in
+\file{example/Had/} of the JitJet repository,
+\begin{center}
+  \url{https://github.com/ravindkv/JitJet}
+\end{center}
+with the script, its log, its validation and its plots under
+\file{example/Had/Standalone/}, the event record and the plotting script one
+level up, and the \CMSSW figure under \file{example/Had/CMSSW/}. As before
+the code is not printed; each script gets a description, the command and
+the output to expect.
+
+\subsection{The standalone script}
+
+The script, \file{standalone_hadronisation.py} in
+\file{example/Had/Standalone/}, is a port of \PYTHIA~8's string classes,
+\code{ColourTracing}, \code{StringFragmentation}, \code{StringFlav},
+\code{StringZ}, \code{StringPT} and \code{MiniStringFragmentation}, into
+fifteen hundred lines of Python that need NumPy and nothing else. It imports
+the shower script of \cref{ch:mother_gives_birth} for the event record and
+the Lorentz frames; its hadron table, the names, masses and charges of the
+78 hadrons the string can make and the constituent masses of the quarks and
+diquarks, is embedded between \code{BEGIN/END GENERATED TABLES} by
+\file{dump_hadron_tables.py}, which read \PYTHIA's \code{ParticleData} once
+in the environment of \file{example/ME/Standalone/}. A map of the file:
+\code{colour\_singlets} (the strings, \cref{sec:children_getting_married:string});
+\code{StringFlav} and \code{StringPT} (what comes out of the vacuum,
+\cref{sec:children_getting_married:breakup}); \code{StringZ} with the Lund,
+Lund--Bowler and Peterson functions (\cref{sec:children_getting_married:fragmentation_function,sec:children_getting_married:bowler});
+\code{StringSystem} with its regions and \code{place\_vertex}
+(\cref{sec:children_getting_married:kinks}); \code{fragment},
+\code{final\_two} and \code{MiniString} (the iteration,
+\cref{sec:children_getting_married:fragmentation_function}); and
+\code{summarise}, which measures the two B~hadrons and the hadron-level
+cones around the two $b$ quarks. From the repository root:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/Had/Standalone
+python3 standalone_hadronisation.py                      # seed 1 -> ../event_Had.lhe (the book's record)
+python3 standalone_hadronisation.py -v                   # learning mode: the b quark's string hadron by hadron
+python3 standalone_hadronisation.py -vv                  # ... every string in full
+python3 standalone_hadronisation.py --peterson           # Peterson instead of Lund-Bowler for b and c
+python3 standalone_hadronisation.py --rfactb 0           # plain Lund for the b quark
+python3 standalone_hadronisation.py --repeat 400 --quiet --history standalone_had_stats.json
+\end{minted}
+The first command hadronises the record in half a second and prints
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+input example/MPI/event_MPI.lhe: 1491 rows after hadronisation; seed = 1
+  29 strings and 4 ministrings (0 closed gluon loops, 48 partons joined), total string mass 3071 GeV
+    -> 365 primary hadrons, 184 charged, 52 baryons, 94 with strangeness; 179 (95 charged) at |eta| < 2.5
+  most common: pi0 45, pi+ 43, pi- 37, rho0 24, rho- 23, omega 20, rho+ 18, eta 17, Kbar0 15, K+ 13, ...
+  bbar (row 708, pT = 72.50, E = 1106.73 GeV) -> B*0 (row 1069): pT = 82.83, E = 1276.92 GeV, dR = 0.012;
+    x_E = 1.154, x_pT = 1.142, x_+ = 1.154 (rank 1 from the - end of a 40 GeV string, 5 hadrons)
+     cone R = 0.4: 4 partons, pT 93.87, m 7.75 -> 4 hadrons (1 charged), pT 91.34, m 7.58 GeV; ...
+  b (row 719, pT = 78.29, E = 165.42 GeV) -> B*bar0 (row 1012): pT = 78.56, E = 166.04 GeV, dR = 0.005;
+    x_E = 1.004, x_pT = 1.004, x_+ = 1.004 (z drawn 0.984, rank 1 from the + end of a 69 GeV string, 16 hadrons)
+     cone R = 0.4: 3 partons, pT 100.67, m 13.52 -> 6 hadrons (2 charged), pT 99.23, m 16.08 GeV;
+       the b hadron carries 79% of the cone pT; R = 0.8: pT 104.09 -> 105.98, m 20.17 -> 35.87, 14 hadrons
+\end{minted}
+and writes the record to \file{example/Had/event_Had.lhe}. With
+\code{--history} the strings and the summary go to a JSON file as well; with
+\code{--repeat N} the script hadronises the same partons $N$ times with
+seeds $1\ldots N$ and writes the per-event quantities of
+\cref{tab:children_getting_married:numbers} to a \file{.stats.json} file,
+three minutes for $400$. The physics options are \code{--alund} and
+\code{--blund} (the fragmentation function, \cref{sec:children_getting_married:fragmentation_function}),
+\code{--rfactb}, \code{--rfactc} and \code{--peterson} (the heavy-quark
+end, \cref{sec:children_getting_married:bowler}), \code{--sigma},
+\code{--prob-s} and \code{--prob-qq} (the break-up,
+\cref{sec:children_getting_married:breakup}), and \code{--radius}. The
+output with \code{--seed 1} is byte-for-byte the committed record.
+
+The two learning modes work as before. \code{-v} prints, before the
+event, the parameters of the model with the mean $z$ of the fragmentation
+function for a pion, a $\rho$ and a $B$; then the table of all 33 colour
+singlets with their partons, masses and the partons joined; then, for the
+string that holds the $b$ quark, every hadron in production order with the
+end it came from, the flavour draw and its weights, the hadron and its mass,
+the \pt kick, the fragmentation function and the $z$ drawn, the proper time
+of the vertex, the regions stepped through and the momentum, then the
+remaining mass against \Wmin, the final two and the orientation draw; one
+line per hadron for every other string; the ministrings; the conservation
+checks and the full record. \code{-vv} does the same for every string. The
+$2200$ lines of \code{-v} for seed~1 are committed as
+\file{example/Had/Standalone/standalone_hadronisation.log}, and every
+number quoted in the theory sections is taken from that file. The plots of
+the theory sections come from a sibling script,
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/Had/Standalone/plot_theory_Had.py   # -> theory_hadronisation.pdf, one page per section
+\end{minted}
+which replays the seed-1 hadronisation with the classes of the script and
+reads the \code{--repeat} statistics and the \PYTHIA validation files when
+they are present; \code{make figures} regenerates it.
+
+\subsection{Reading the record}
+\label{sec:children_getting_married:record_format}
+
+The record keeps \PYTHIA's conventions and adds the status codes of the
+hadron level to those of \cref{sec:uninvited_cousins:record_format}. When a
+colour singlet is collected, every one of its partons is copied with status
+$-71$; two partons that are joined because their pair mass is within
+$m_{\mathrm{join}}=0.3\GeV$ of their masses become one row with status
+$-73$ and two mothers; a string that absorbs the recoil of a collapsing
+ministring would be copied with status $-72$ (none in our event). The
+hadrons are positive: $82$ for the two hadrons of a ministring ($81$ for a
+single one), $83$ for a hadron produced from the colour end of a string and
+$84$ from its anticolour end, with the string's partons as the mother range.
+Our record has $1491$ rows: the $963$ of \cref{ch:uninvited_cousins}, every
+final parton of which now has a negative status because this stage copied
+it, then $122$ rows of status $-71$ and $41$ of status $-73$ (the $48$ joins
+leave $163$ string partons), then $170$ hadrons of status $83$, $187$ of
+status $84$ and $8$ of status $82$, the $365$ primary hadrons. The final
+state of the record is every row with a positive status; their momentum sum
+is still that of the two protons, and their charge sum is $+2$. Hadrons
+whose daughters are zero are stable for now; \cref{ch:children_producing_grandchildren}
+decays them.
+
+\subsection{Drawing the event}
+
+\file{example/Had/plot_journey_Had.py} draws the record in the $(\eta,\phi)$
+plane in the layout of the \CMSSW analyser of
+\cref{sec:children_getting_married:cmssw} (\cref{fig:children_getting_married:journey}),
+reusing the reader and the frame of chapter~2's script. The categories of
+this stage are three: the hadron of each hard $b$ quark, found as the
+primary hadron of the quark's string that carries its flavour, in red and
+blue; their vector sum, the magenta star of every stage; and every other
+primary hadron in purple, filled because a hadron is what the detector will
+see. The header keeps the two B~hadron lines of the \CMSSW figure and adds
+\xE and \xpt of each, the number of strings, and the vector sum of all
+hadrons, which must vanish.
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/Had/plot_journey_Had.py                 # -> example/Had/journey_Had.pdf
+python3 example/Had/plot_journey_Had.py -i my.lhe --png
+\end{minted}
 
 \section{From partons to hadrons: the Lund string}
 \label{sec:children_getting_married:from_partons_to_hadrons_the_lund_string}
-\todo{Write this section.}
+
+\subsection{A rope between the dancers: the linear potential and the area law}
+\label{sec:children_getting_married:string}
+
+Guess first. Two partons of our record fly apart, a $u$ quark and an $\bar s$
+antiquark from one of the secondary scatterings, with $27.5\GeV$ of
+invariant mass between them. In QED they would simply separate, the field
+between them falling as $1/r^2$. What happens in QCD? The gluons carry
+colour themselves and attract one another, and the field between a colour
+charge and an anticolour charge does not spread out but collapses into a
+tube of constant cross section, so that its energy grows in proportion to
+its length. The lattice confirms the picture and measures the constant: the
+potential between a static quark and antiquark is
+\begin{equation}
+  V(r)=\kappa r,\qquad \kappa\approx1\GeV/\mathrm{fm}=0.197\GeV^2,
+  \label{eq:children_getting_married:potential}
+\end{equation}
+the \emph{string tension}, at distances beyond half a fermi. Our two
+partons would stretch a $28\,\mathrm{fm}$ string before the tension stopped
+them, and $28\,\mathrm{fm}$ of string holds $28\GeV$: far more than the
+mass of a few quark pairs. The string does not get that long. It breaks,
+and this subsection is about where.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_string}}
+\caption[The Lund string, its world sheet and the strings of our event]{Left:
+the colour field between a quark and an antiquark is a tube of constant
+energy per length, so the potential is linear,
+\cref{eq:children_getting_married:potential}. Middle: the world sheet of a
+two-parton string in its rest frame: the ends move on the light cone, the
+string breaks at vertices that sit near a hyperbola of constant proper
+time, and every piece between two neighbouring vertices is one hadron.
+Right: the strings of our event from the \code{-v} log.}
+\label{fig:children_getting_married:string_sketch}
+\end{figure}
+
+Think of the string in its own rest frame with light-cone coordinates
+$x^\pm=t\pm x$ along it (\cref{fig:children_getting_married:string_sketch},
+middle). A massless quark at the $+$ end starts at the origin and moves on
+$x^-=0$; the antiquark on $x^+=0$. A break-up at the point $(x^+,x^-)$
+creates a pair at rest in the field, and the invariant
+\begin{equation}
+  \Gamma=\kappa^2x^+x^-=\kappa^2\tau^2
+  \label{eq:children_getting_married:gamma}
+\end{equation}
+is the squared proper time of the vertex in units of the string tension.
+The hadron between two neighbouring vertices $1$ and $2$ is a small string
+of its own, a ``yo-yo'' that oscillates for ever, and its transverse mass
+is fixed by the two vertices, $\mT^2=\kappa^2(x_1^+-x_2^+)(x_2^--x_1^-)$.
+The Lund model makes one assumption about where the vertices are, and the
+rest follows from it: the probability of a given set of break-ups is
+proportional to the exponential of the space-time area the string swept
+before it broke,
+\begin{equation}
+  P\propto\exp(-bA),
+  \label{eq:children_getting_married:area_law}
+\end{equation}
+the \emph{area law}, which is what a string decaying at a constant rate per
+unit area would give, and which the string's own classical dynamics
+suggests~\cite{Artru:1974hr}. Three things follow. The vertices cluster
+near a hyperbola $\Gamma=\mathrm{const}$: the distribution of $\Gamma$ is
+$P(\Gamma)\propto\Gamma^a e^{-b\Gamma}$, with a mean of $(1+a)/b$. The
+hadrons are produced ``inside out'', the ones nearest the ends first in
+time, so that a hadron's rank from the end has no relation to its
+production time. And the number of hadrons grows only logarithmically with
+the mass of the string, because the vertices are spread uniformly in
+rapidity along the hyperbola with a density fixed by $\kappa$ and the
+hadron masses: a string twice as heavy makes a constant number more
+hadrons, not twice as many. The constants $a$ and $b$ are the Monash
+values $a=0.68$ and $b=0.98\GeV^{-2}$, and they are the first two knobs of
+the model.
+
+\paragraph{The numbers.} The \code{-v} log opens with the parameters and
+then the table of the record's colour singlets. Following every colour tag
+from a quark or an antidiquark through the gluons to an antiquark or a
+diquark gives 33 of them, with no closed gluon loop; their masses run from
+$1036\GeV$, a string from a remnant $d$ to a remnant $\bar u$ that spans
+the whole event, down to $1.5\GeV$, and add up to $3071\GeV$. The $27.5\GeV$
+$u\bar s$ string of the film is string~20; it broke into seven hadrons,
+$\pi^+\,n\,\bar n\,K^0\,K^-\,\eta\,K^+$, with a neutron and an antineutron
+side by side because a diquark pair makes a baryon and an antibaryon as
+neighbours. The $1036\GeV$ string made 18 hadrons, the $554\GeV$ one 20,
+the $107\GeV$ $s\bar s$ one 8: the logarithm of
+\cref{eq:children_getting_married:area_law} in action, and panel~(c) of
+\cref{fig:children_getting_married:string_plot} fits the two-parton strings
+of the ensemble with $n\approx0.1+3.0\ln(W/\GeV)$. The vertices of the $b$
+quark's string, which \cref{sec:children_getting_married:fragmentation_function}
+follows one by one, have $\Gamma$ between $0.45$ and $25\GeV^2$, that is
+proper times between $0.7$ and $5\,\mathrm{fm}$, and $(1+a)/b=1.7\GeV^2$ is
+where most of them sit.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[The linear potential, the break-up vertices and the multiplicity]{Page~1
+of \file{theory_hadronisation.pdf}. (a) The linear potential of
+\cref{eq:children_getting_married:potential} against the Cornell form
+with a Coulomb term, and the energy of a $1\,\mathrm{fm}$ string against
+the mass of a light-quark pair. (b) The break-up vertices of the $27.5\GeV$
+two-parton string of our event in light-cone coordinates, from the two
+ends, with the hyperbolae of constant $\Gamma$. (c) The number of primary
+hadrons of every string of our event against its mass, with the ensemble
+means of the script and of \PYTHIA on the same partons, and the logarithmic
+fit for two-parton strings; strings with gluons lie above it.}
+\label{fig:children_getting_married:string_plot}
+\end{figure}
+
+\subsection{How the rope snaps: tunnelling, flavours and transverse momentum}
+\label{sec:children_getting_married:breakup}
+
+Guess first: the string breaks by creating a quark--antiquark pair. Which
+flavour? The energy is there for any of them, a $28\GeV$ string could pay
+for a $b\bar b$ pair three times over, and yet no $b$ quark has ever come
+out of a string. The reason is the \emph{mechanism}
+(\cref{fig:children_getting_married:breakup_sketch}): the pair is created
+at a point, where the field has no energy to give it, and the two quarks
+must separate to a distance $2\mT/\kappa$ before the field energy between
+them equals their transverse mass. That is a classically forbidden step,
+and its probability is the tunnelling factor of Schwinger pair production
+in a constant field~\cite{Casher:1978wy},
+\begin{equation}
+  P\propto\exp\!\left(-\frac{\pi\mT^2}{\kappa}\right)
+  =\exp\!\left(-\frac{\pi m^2}{\kappa}\right)\exp\!\left(-\frac{\pi\pt^2}{\kappa}\right),
+  \qquad \mT^2=m^2+\pt^2,
+  \label{eq:children_getting_married:tunnelling}
+\end{equation}
+which does three jobs at once. It suppresses heavy flavours: with the
+constituent masses $m_{u,d}=0.33$ and $m_s=0.5\GeV$ the ratio
+$s/u=\exp[-\pi(m_s^2-m_u^2)/\kappa]$ is $0.106$, charm is below $10^{-10}$
+and bottom unreachable. It gives every break a transverse momentum,
+Gaussian with $\sigma^2=\kappa/2\pi$ per component, $0.18\GeV$, with the
+quark and the antiquark of the pair taking $\pm\vec p_{\mathrm{T}}$ so that
+a hadron's transverse momentum is the sum of the kicks of its two
+constituents. And it makes baryons rare: a diquark--antidiquark pair, which
+is how a string makes a baryon and an antibaryon next to each other, is
+heavier and tunnels less. The model keeps the structure and lets the data
+set the sizes: $s/u=0.217$ rather than $0.106$, because constituent masses
+are not the masses the formula wants; $\sigma=0.335\GeV$ for the pair,
+$0.237$ per component, rather than $0.18$, because gluon radiation below
+the shower's cut-off ends up here; the diquark weight $0.081$ with the
+strange-diquark and spin-$1$ suppressions $0.915$ and $3\times0.0275$. The
+new quark then joins the old end into a hadron, and spin counting does the
+rest: a vector meson with probability $V/(1+V)$, where $V$ is $0.5$ for
+$u,d$, $0.55$ for $s$, $0.88$ for $c$ and $2.2$ for $b$, the heavy ones
+higher because the hyperfine splitting that favours the pseudoscalar shrinks
+with the quark mass; $u\bar u$, $d\bar d$ and $s\bar s$ mixed into $\pi^0$,
+$\eta$ and $\eta'$ with the extra suppressions $0.6$ and $0.12$; and the
+SU(6) weights for the octet and decuplet baryons.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_breakup}}
+\caption[The break-up: tunnelling, flavour weights and hadron
+multiplets]{Left: a pair created at a point has to tunnel apart before it
+is on shell, \cref{eq:children_getting_married:tunnelling}. Middle: the
+relative rates of the flavours in the tune against the tunnelling formula.
+Right: how the new quark and the old end become a hadron, with the
+numbers of the \code{-v} log.}
+\label{fig:children_getting_married:breakup_sketch}
+\end{figure}
+
+\paragraph{The numbers.} The first hadron of the $b$ quark's string is
+drawn from the $\bar u$ end. The log prints the flavour draw, a quark
+rather than a diquark with $P=1/(1+0.081)=0.925$, then $u$ among
+$d:u:s=1:1:0.217$; the hadron, $u\bar u$ with the pseudoscalar chosen with
+$1/2$ and $\pi^0$ among the $\pi^0$, $\eta$, $\eta'$ mixtures with weights
+$0.5$, $0.296$, $0.204$; and the kick, $(-0.603,-0.143)\GeV$ from the
+Gaussian of width $0.237$, a $2.5\sigma$ draw in $p_x$, which gives the pion
+$\mT=0.634\GeV$. Two hadrons later the diquark branch fires with its
+$P=0.075$: an $sd_0$ antidiquark, the SU(6) weights $\Lambda^0$ $0.125$ and
+$\Sigma^0$ $0.375$ (the rest of the unit weight means ``reject and draw a
+new flavour''), a $\bar\Sigma^0$, and the next hadron from that end must
+be its baryon partner, $\Sigma^0$. The $b$ end draws $\bar d$ and a vector
+with $P=2.2/3.2=0.688$: \Bstarbar. Over the whole event the 365 hadrons are
+125 pions, 65 $\rho$, 20 $\omega$, 17 $\eta$, 50 kaons, 25 $K^*$ and 52
+baryons, 94 with strangeness; \PYTHIA on the same partons makes $38\%$ pions, $18\%$
+$\rho$, $6\%$ $\omega$, $5\%$ $\eta$, $12\%$ kaons and $6\%$ $K^*$, and
+panel~(c) of \cref{fig:children_getting_married:breakup_plot} puts the two
+side by side. The 580 kick components of the event have a root mean
+square of $0.231\GeV$ against the $0.237$ of the input, and the hadrons'
+$\langle\pt^2\rangle$ relative to the string is $2\sigma^2=0.224\GeV^2$.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=2,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[Tunnelling, the transverse kicks and the species]{Page~2 of
+\file{theory_hadronisation.pdf}. (a) The tunnelling factor of
+\cref{eq:children_getting_married:tunnelling} against the mass of the
+pair's quark or diquark, with the tune's $s/u$ and diquark weights marked.
+(b) The $p_x$ and $p_y$ components of every break-up kick of our event
+against the Gaussian of the tune. (c) The species of the primary hadrons:
+our event, the script's 400 hadronisations and \PYTHIA's on the same
+partons.}
+\label{fig:children_getting_married:breakup_plot}
+\end{figure}
+
+\subsection{Who takes how much: the fragmentation function and the iteration from both ends}
+\label{sec:children_getting_married:fragmentation_function}
+
+Guess first: the $b$ quark's string has $69\GeV$ of mass and will make
+sixteen hadrons. How is the momentum shared? Not equally, and not in any
+order of rank: the area law of \cref{eq:children_getting_married:area_law}
+fixes the answer, and the way to use it is to produce the hadrons
+iteratively from the two ends in random order, each taking a fraction $z$
+of the remaining light-cone momentum of its end,
+$p^+_{\mathrm{had}}=z\,p^+_{\mathrm{rem}}$ for a hadron from the $+$ end,
+with the other light-cone component fixed by its mass shell,
+$p^-_{\mathrm{had}}=\mT^2/p^+_{\mathrm{had}}$. The area law translated
+into $z$ is the Lund symmetric fragmentation
+function~\cite{Andersson:1983jt},
+\begin{equation}
+  f(z)\propto\frac{1}{z}\,z^{a_{\mathrm{old}}}\left(\frac{1-z}{z}\right)^{a_{\mathrm{new}}}
+  \exp\!\left(-\frac{b\,\mT^2}{z}\right)
+  \;\xrightarrow{\;a_{\mathrm{old}}=a_{\mathrm{new}}=a\;}\;
+  \frac{1}{z}(1-z)^a\exp\!\left(-\frac{b\,\mT^2}{z}\right),
+  \label{eq:children_getting_married:lund}
+\end{equation}
+``symmetric'' because it gives the same hadrons whether the chain is
+started from the quark end or from the antiquark end, which is what forced
+this form and no other; $a_{\mathrm{old}}$ and $a_{\mathrm{new}}$ are the
+$a$ parameters of the flavour at the end and of the new flavour, equal for
+quarks and larger by $0.97$ for a diquark. The exponential is the area law
+with the hadron's own area $\mT^2/z$ in it, and it is what makes heavy
+hadrons take large $z$: a $\rho$ takes $0.53$ of its end's momentum on
+average, a pion $0.33$. After each hadron the vertex moves out along the
+string, and its proper time follows from the previous one by
+\begin{equation}
+  \Gamma_{\mathrm{new}}=(1-z)\left(\Gamma_{\mathrm{old}}+\frac{\mT^2}{z}\right),
+  \label{eq:children_getting_married:gamma_step}
+\end{equation}
+with $\Gamma=0$ at the ends. The iteration cannot go on for ever: when the
+invariant mass of what is left between the two current ends falls below
+\begin{equation}
+  \Wmin=m_{q_1}+m_{q_2}+\mathrm{stopMass}+\mathrm{stopNewFlav}\;m_{q_{\mathrm{last}}}
+  =m_{q_1}+m_{q_2}+1.0+2.0\,m_{q_{\mathrm{last}}},
+  \label{eq:children_getting_married:wmin}
+\end{equation}
+smeared by $\pm20\%$ so that the stop does not leave a scar in the
+spectrum, the two chains are joined: one last pair is created, the two
+final hadrons share what is left with the transverse momentum of that
+break, and the orientation along the string, which hadron goes forward, is
+drawn with the product of the two ends' fragmentation functions. If no
+hadron fits at all the string is restarted with new random numbers.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_iteration}}
+\caption[The iteration from both ends on the $b$ quark's string]{The
+iteration from both ends on the $b$ quark's string of our event, from the
+\code{-v} log: each bar is the string that is left, the $b$ end eats from
+the left (red) and the $\bar u$ end from the right (blue), the width of each
+bite is the drop of the remaining invariant mass, and the final two share
+the $1.21\GeV$ that is below \Wmin.}
+\label{fig:children_getting_married:iteration_sketch}
+\end{figure}
+
+\paragraph{The numbers.} \Cref{fig:children_getting_married:iteration_sketch}
+and the log tell the whole story of string~1, $W=69.34\GeV$,
+$b\,g\,g\,g\,g\,\bar u$. The $\bar u$ end goes first: $\pi^0$, $\mT=0.634$,
+$b\mT^2=0.394$, $\langle z\rangle=0.452$ from
+\cref{eq:children_getting_married:lund}, drawn $z=0.1342$, and
+\cref{eq:children_getting_married:gamma_step} gives
+$\Gamma=(1-0.1342)(0+0.402/0.1342)=2.595\GeV^2$, a vertex at
+$\tau=1.61\,\mathrm{fm}$. Then the $b$ end: \Bstarbar, $\mT=5.332$,
+$b\mT^2=27.9$, and the Lund--Bowler function of
+\cref{sec:children_getting_married:bowler} with $\langle z\rangle=0.891$;
+the draw is $z=0.9843$, $\Gamma=0.453\GeV^2$, and the hadron takes
+$166.0$ of the quark's $165.4\GeV$ of energy, more than all of it because
+its region reaches into the first gluon. The remaining mass drops from
+$68.8$ to $29.0\GeV$ in that one step. Twelve more hadrons follow, with
+$z$ between $0.24$ and $0.76$ and $\Gamma$ between $1.1$ and $25\GeV^2$,
+until after the fourteenth the remaining $1.209\GeV$ is below
+$\Wmin=2.750$ smeared to $2.998\GeV$; the final pair is $d\bar d$, the
+final two are a $\rho^+$ from the $b$ side and a $\pi^-$ from the other,
+and the orientation draw, $\ln(f^+f^-)=-1.74$ forward against $-0.02$
+reversed, reverses them with $P=0.848$. Sixteen hadrons, momentum
+conserved to $10^{-12}\GeV$. Over the whole event the 293 light-flavour
+hadrons drew a mean $z$ of $0.486$ against the $0.472$ the functions
+predict for their masses, and panel~(c) of
+\cref{fig:children_getting_married:fragmentation_plot} shows the remaining
+mass of the $b$ string falling step by step towards \Wmin.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[The Lund function and the iteration on the $b$ quark's string]{Page~3
+of \file{theory_hadronisation.pdf}. (a) The Lund symmetric function of
+\cref{eq:children_getting_married:lund} for a pion, a $\rho$, a proton from
+a diquark end and a kaon from an $s$ end, with their means. (b) The $z$
+fractions actually drawn for the light-flavour hadrons of our event against
+the expectation. (c) The remaining mass of the $b$ quark's string after
+each hadron, red from the $b$ end and blue from the other, and \Wmin of
+\cref{eq:children_getting_married:wmin} at each step.}
+\label{fig:children_getting_married:fragmentation_plot}
+\end{figure}
+
+\subsection{Gluons as kinks: regions of the world sheet}
+\label{sec:children_getting_married:kinks}
+
+Guess first: the $b$ quark's string has four gluons on it. Does each gluon
+make its own jet of hadrons, or do the hadrons follow the string? The
+string. A gluon in the Lund model is not a string end but a \emph{kink}, a
+point on the string that carries energy and momentum and is pulled by two
+string pieces at once, so that it loses its momentum at twice the rate of a
+quark end, $2\kappa$~\cite{Andersson:1983ia}. A string
+$q\,g_1\,g_2\cdots g_n\,\bar q$ is therefore $n+1$ pieces, and the hadrons
+come out along the pieces, between the quark and the first gluon and
+between neighbouring gluons, not around each parton: this is the ``string
+effect'', the depletion of hadrons between the $q$ and $\bar q$ of a
+three-jet event, that JADE saw in 1981 and that the independent
+fragmentation of Field and Feynman~\cite{Field:1977fa} could not produce.
+The bookkeeping that Sj\"ostrand worked out for it~\cite{Sjostrand:1984ic}
+is the hardest part of the script. In the string's frame every parton
+contributes a massless light-cone piece, a gluon half of its momentum to
+the piece on either side, and the world sheet becomes a set of
+\emph{regions} $(i,k)$ spanned by the $p^+$ of piece $i$ from the $q$ side
+and the $p^-$ of piece $k$ from the $\bar q$ side, with mass
+\begin{equation}
+  W_{ik}^2=p_i^+\,p_k^-,
+  \qquad
+  p_{\mathrm{had}}=\sum_{\text{regions crossed}}
+  \left(x^+_{i}\,p_i^+ + x^-_{k}\,p_k^-\right)+\vec p_{\mathrm{T}},
+  \label{eq:children_getting_married:regions}
+\end{equation}
+where the fractions $x^\pm$ are the parts of each piece the hadron
+consumes. A hadron that fits in the current region takes $z$ of its own
+piece and what its mass needs of the other side; one that does not, because
+the region is too light or has been used up, has its vertex placed further
+along the string by the proper-time rule, the new vertex being the point at
+which \cref{eq:children_getting_married:gamma_step} and the mass shell both
+hold, two bilinear equations and a quadratic, scanning first the regions on
+the end's own side outwards and then those on the other side. The gluon
+halves between the old and the new vertex are swallowed whole, and that is
+how a hadron forms \emph{across a kink}, taking momentum from both pieces.
+Get this rule wrong, by letting the hadron take $z$ of the current piece
+and simply stepping the other side forward, and a hadron with a small $z$
+swallows half a gluon that was never its to take: the string ends after
+three hadrons with the momentum wrong, a day of my life.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_kinks}}
+\caption[Gluons as kinks and the regions of the $b$ quark's string]{Left:
+a gluon is a kink on the string, pulled by two pieces, and gives half its
+momentum to each. Right: the regions $(i,k)$ of the world sheet of the $b$
+quark's string, $b\,g\,g\,g\,g\,\bar u$, and the paths of the two ends
+through them from the \code{-v} log: the \Bstarbar formed in $(0,1)$, the
+$\eta'$ jumped to $(1,3)$ across a kink, and the two paths met in $(2,3)$
+and $(2,4)$.}
+\label{fig:children_getting_married:kinks_sketch}
+\end{figure}
+
+\paragraph{The numbers.} The log's ``region'' lines are this subsection.
+Six partons give five pieces on each side: the $b$ and the four gluon
+halves on the $+$ side, the four other halves and the $\bar u$ on the $-$
+side. The \Bstarbar formed in region $(0,1)$, the $b$ against the first
+gluon's half, taking $0.9843$ of its own piece and $0.9631$ of the other
+side's; the first four hadrons from the $\bar u$ end all formed in $(4,5)$.
+The sixth hadron, the $\eta'$ from the $b$ end, is the one across a kink:
+the log says ``region $(1,3)$, after using up the other side's piece [2]
+and its own piece [0]'', so the hadron swallowed what was left of the $b$
+piece and the whole of the second gluon's $-$ half, and its vertex was
+placed with \cref{eq:children_getting_married:gamma_step} at
+$\Gamma=1.600\GeV^2$. The $K^+$ from the other end did the same in $(2,4)$,
+swallowing piece 3 on the other side and piece 5 on its own. The two ends
+met in $(2,3)$, which the last three hadrons of the $b$ end share, and the
+hadrons of the string fill the rapidity range from the $\bar u$ direction
+to the $b$ direction without a gap at the gluons (panel~(c) of
+\cref{fig:children_getting_married:kinks_plot}). The whole event made
+48 joins of this kind's prerequisite, two colour-connected partons closer
+than $m_{\mathrm{join}}=0.3\GeV$ in pair mass above their own masses,
+which \PYTHIA also makes 48 times on the same partons.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=4,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[The $b$ quark's string, its regions and its hadrons in
+rapidity]{Page~4 of \file{theory_hadronisation.pdf}. (a) The $b$ quark's
+string in the $(\eta,\phi)$ plane: the six partons joined by the string and
+the sixteen hadrons, red from the $b$ end and blue from the other. (b) The
+regions of the world sheet, shaded by the logarithm of their mass, with the
+paths of the two ends. (c) The hadrons against the rapidity along the $b$
+direction: they fill the range between the partons.}
+\label{fig:children_getting_married:kinks_plot}
+\end{figure}
 
 \section{$b$-fragmentation: how much of the mother's energy the B~hadron keeps ($x_B$)}
 \label{sec:children_getting_married:b_fragmentation_how_much_of_the_mother_s}
-\todo{Write this section.}
+
+\subsection{The heavy end of the rope: the Bowler factor}
+\label{sec:children_getting_married:bowler}
+
+Guess first. A pion from a light-quark end takes a third of its end's
+momentum; the \Bstarbar took $0.98$. Why does a heavy quark keep its
+momentum? The area law again, with one new ingredient. A massless quark at
+a string end moves on the light cone; a $b$ quark of $4.8\GeV$ pulled by a
+string tension of $1\GeV/\mathrm{fm}$ moves on a hyperbola, slower, and
+bends inward while the string grows (\cref{fig:children_getting_married:bowler_sketch}).
+The area swept between the quark's world line and the first vertex is
+larger than for a massless quark by $(m_Q^2/\kappa^2)\ln(1/z)$, and the
+exponential of \cref{eq:children_getting_married:area_law} turns that into
+a factor $z^{-b\,m_Q^2}$ in the fragmentation function. Bowler derived
+it~\cite{Bowler:1981sb}; the tune multiplies the exponent by a fitted
+$r_Q$ and the Lund--Bowler function is
+\begin{equation}
+  f_Q(z)\propto\frac{1}{z^{\,1+r_Q\,b\,m_Q^2}}\,(1-z)^a\exp\!\left(-\frac{b\,\mT^2}{z}\right),
+  \qquad r_b=0.855,\; r_c=1.32,\; m_b=4.8,\; m_c=1.5\GeV.
+  \label{eq:children_getting_married:bowler}
+\end{equation}
+The two factors fight: the exponential $e^{-b\mT^2/z}$ with $b\mT^2=28$ for
+a $B^*$ wants $z$ as close to $1$ as possible, the power $z^{-20.3}$ pulls
+the other way, and the product peaks at $z=0.93$ with a mean of $0.89$.
+Without the Bowler factor, the plain Lund function with the $B$ mass gives
+$\langle z\rangle=0.95$, too hard: the $r_b$ of the tune, fitted to the LEP
+spectra, is the single most important hadronisation parameter for a $b$
+jet. The alternative the script offers is the Peterson
+function~\cite{Peterson:1982ak},
+\begin{equation}
+  f_Q(z)\propto\frac{1}{z\left[1-\dfrac1z-\dfrac{\epsilon_Q}{1-z}\right]^2},
+  \qquad \epsilon_b=0.005,\;\epsilon_c=0.05,
+  \label{eq:children_getting_married:peterson}
+\end{equation}
+which comes from the energy denominator of the transition
+$Q\to H+q$ in old-fashioned perturbation theory, with no string behind it;
+$\epsilon_Q\sim m_q^2/m_Q^2$ sets its width, and it is softer and wider
+than Bowler's. Both are tried on the same partons below.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_bowler}}
+\caption[The heavy end of the string and the three fragmentation
+functions]{Left: a massless quark end moves on the light cone, a $b$ quark
+on a hyperbola, and the larger area between its world line and the first
+vertex is what the area law turns into the Bowler factor of
+\cref{eq:children_getting_married:bowler}. Right: the three functions the
+script offers and the mean energy fraction each gives the $b$ quark's
+hadron, standalone against \PYTHIA on the same partons.}
+\label{fig:children_getting_married:bowler_sketch}
+\end{figure}
+
+\paragraph{The numbers.} The log prints for the \Bstarbar: exponent
+$1+0.855\times0.98\times4.8^2=20.305$, $b\mT^2=27.859$,
+$\langle z\rangle=0.891$, drawn $z=0.9843$. The secondary $b$ at the other
+end of the $\bar b$'s string, string~3, drew $z=0.9077$ for its own
+\Bstarbar, with $\langle z\rangle=0.896$ for its slightly larger \mT. Over
+the 400 hadronisations of the same partons the $b$ quark's hadron keeps
+$\xE=0.882\pm0.078$ of its energy, against \PYTHIA's $0.913\pm0.062$;
+with \code{--rfactb 0} the two give $0.952$ and $0.963$, with
+\code{--peterson} $0.839$ and $0.870$. The three choices move the two
+implementations by the same amounts, so the $0.03$ between them is in the
+rest of the construction, not in $f_Q(z)$. The species follow the weights
+of \cref{sec:children_getting_married:breakup}: a vector $B^*$ in
+$69\%$ of the hadronisations ($2.2/3.2=0.688$), $B_s$ in $8\%$, a
+$b$ baryon in $4\%$; our event's \Bstarbar is the most common outcome.
+Panel~(b) of \cref{fig:children_getting_married:bowler_plot} is the
+distribution; our $1.004$ sits in its upper tail, at $+1.6\sigma$.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=5,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[The $b$ fragmentation function and \xE]{Page~5 of
+\file{theory_hadronisation.pdf}. (a) The Lund--Bowler function of
+\cref{eq:children_getting_married:bowler} at $\mT=m_{B^*}$ against the
+plain Lund and the Peterson functions. (b) The energy fraction \xE of the
+$b$ quark's hadron over 400 hadronisations of the same partons, the script
+against \PYTHIA for the three functions, with our event marked. (c) Which
+B~hadron: the script, \PYTHIA on the same partons and \PYTHIA's full
+chain.}
+\label{fig:children_getting_married:bowler_plot}
+\end{figure}
+
+\subsection{One word, several numbers: \texorpdfstring{$x_B$}{xB} at LEP, in the ensemble and in our event}
+\label{sec:children_getting_married:xb}
+
+Guess first: LEP measured ``$x_B=0.716$''~\cite{ALEPH:2001pfo}; the script
+says $0.88$ and \PYTHIA's full chain $0.94$. Which is right? All of them,
+for different quantities, and the detector chapters will need the
+difference. The four fractions this chapter uses are
+\begin{equation}
+  \xE=\frac{E_B}{E_b},\qquad
+  \xpt=\frac{\pt^B}{\pt^b},\qquad
+  x_+=\frac{(E+p_\parallel)_B}{(E+p_\parallel)_b},\qquad
+  \frac{\pt^B}{\pt(\text{cone})},
+  \label{eq:children_getting_married:xb_defs}
+\end{equation}
+with $b$ the final copy of the quark after the shower and the
+primordial-$k_{\mathrm{T}}$ boost, $B$ its primary hadron, and $x_+$ the
+light-cone fraction along the quark direction, which is the $z$ the string
+actually drew when the hadron is the first from that end. LEP measures
+something else: the energy of the \emph{weakly decaying} B~hadron, after
+$B^*\to B\gamma$ and the other strong decays, divided by the \emph{beam}
+energy, so that every gluon the $b$ radiated before the string formed is
+counted as lost. The shower of \cref{ch:mother_gives_birth} took a third of
+our mother's energy, $252\to165\GeV$, and about $15\%$ on average
+(\cref{tab:mother_gives_birth:numbers}); multiply a shower loss of that
+size by the string's $0.9$ and the LEP number appears. The second
+difference is between the ensembles: the same partons give $0.88$ because
+the seed-1 shower of this book left the $b$ with four gluons on its
+string, while the full chain, which reshowers every time, has on average
+fewer and softer gluons next to the quark and gives $0.94$. The third is
+the single draw: our $1.004$ and the \CMSSW event's $1.025$ are one
+hadronisation each, in the upper tail of a distribution whose width is
+$0.08$, and a fraction above one is not a mistake but the hadron's region
+reaching into the gluon next to the quark.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_xb}}
+\caption[The definitions of $x_B$ and its values in different
+settings]{Left: the $b$ quark, its \Bstarbar and the hadrons within
+$\dR<0.4$ of our event with the four fractions of
+\cref{eq:children_getting_married:xb_defs}. Right: the mean of ``$x_B$''
+from ALEPH at the $Z$ to the \CMSSW event, and why the numbers differ.}
+\label{fig:children_getting_married:xb_sketch}
+\end{figure}
+
+\paragraph{The numbers.} For our $b$: $E_b=165.42$, $E_B=166.04\GeV$,
+$\xE=1.004$; $\pt$ $78.29\to78.56$, $\xpt=1.004$; $x_+=1.004$; the hadron
+sits $\dR=0.005$ from the quark. For the $\bar b$ the numbers are stranger:
+$E$ $1106.7\to1276.9\GeV$, $\xE=1.154$. Its string, string~3, is
+$b\,g\,g\,\bar b$ with a secondary $b$ at the other end, and its \Bstar was
+one of the \emph{final two}: after the secondary $b$'s \Bstarbar, a $K^0$
+and a $\bar K^0$ had come from the other end, the remaining $6.28\GeV$ was
+below $\Wmin=7.22$, and the \Bstar took its share of what was left, which
+included the two gluons' halves. Over the ensembles the $\bar b$'s hadron
+keeps $1.03$ on average for the same reason. The $b$'s hadron carries
+$79\%$ of the $99.23\GeV$ inside $\dR<0.4$ in our event, $71\%$ on
+average for the same partons and $80\%$ in the full chain; this share, not
+\xE, is what a $b$-jet calibration sees. Panel~(a) of
+\cref{fig:children_getting_married:xb_plot} is the same statement for
+two thousand full-chain events: the hadron's \pt follows the quark's along
+a line of slope $0.94$ with a spread that a single event cannot reveal.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=6,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[$x_B$ in different settings]{Page~6 of
+\file{theory_hadronisation.pdf}. (a) The \pt of the $b$ quark's hadron
+against the \pt of the quark before hadronisation for \PYTHIA's full chain
+and for the same partons, with our event and the \CMSSW event. (b) The
+hadron's share of the $\dR<0.4$ cone against \xE. (c) The mean of
+``$x_B$'' in each setting, from ALEPH's $Z\to b\bar b$ to the single
+events, with the spread of each distribution.}
+\label{fig:children_getting_married:xb_plot}
+\end{figure}
+
+\subsection{The recipe, step by step}
+\label{sec:children_getting_married:step_by_step}
+
+\Cref{fig:children_getting_married:flow} is the whole stage as the script
+runs it, with the numbers of our event beside each step. Read it once from
+top to bottom and the \code{-v} log becomes a narrative rather than a dump:
+the colour singlets of \cref{sec:children_getting_married:string}, the
+joins and the ministrings, the world sheet of
+\cref{sec:children_getting_married:kinks}, one hadron at a time with the
+draws of \cref{sec:children_getting_married:breakup,sec:children_getting_married:fragmentation_function},
+the stop of \cref{eq:children_getting_married:wmin}, and the record of
+\cref{sec:children_getting_married:record_format}. The four ministrings
+are the one branch the theory sections did not describe: a colour singlet
+too light to fragment, below $m_{q_1}+m_{q_2}+1\GeV$, becomes two hadrons
+along its first parton with the \pt of a single break, or, if even two do
+not fit, one hadron whose mass difference is borrowed from the string
+system with the smallest pair mass. Our event has four of them, $1.5$ to
+$2.7\GeV$, all of which made two hadrons.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/had_flow}}
+\caption[The hadronisation stage as a flow chart]{The steps of
+\file{standalone_hadronisation.py} with the numbers of our event from the
+\code{-v} log. The functions of the script are named in grey.}
+\label{fig:children_getting_married:flow}
+\end{figure}
+
+\section{Validation from official packages}
+\label{sec:children_getting_married:validation}
+
+Two official sources again: \PYTHIA driven from a script, and the CMS
+generator job of \cref{ch:ancestral_home}, which hadronised its event in
+the same step that showered and dressed it. The new thing at this stop is
+that the first comparison can be made on \emph{identical} input.
+
+\subsection{The same strings with \PYTHIA: the validation script}
+\label{sec:children_getting_married:pythia}
+
+\file{validate_hadronisation_with_pythia.py} has two modes. In mode
+\code{record} it switches \PYTHIA's process level off,
+\code{ProcessLevel:all = off}, fills the event record by hand with the 211
+final partons of \file{event_MPI.lhe}, their colour tags and status 23, in
+the manner of \PYTHIA's \code{main21} example, and lets \code{next()} run
+the hadron level on them with the Monash fragmentation parameters that CP5
+keeps and hadron decays off, $N$ times with different seeds. The standalone
+script does the same with \code{--repeat N}. Same strings, two
+implementations of one model: this is the sharpest test in the book so
+far. In mode \code{full} the hard event of \cref{ch:ancestral_home} is
+written to a Les Houches file $N$ times and \PYTHIA runs showers,
+multiparton interactions, remnants, colour reconnection and hadronisation
+with the CP5 settings, decays off, with or without the impact-parameter
+window of \cref{sec:uninvited_cousins:pythia}. Both modes record per event
+what \cref{tab:children_getting_married:numbers} lists, in the JSON layout
+of the standalone statistics so that \file{plot_theory_Had.py} draws both.
+As before \PYTHIA's output goes through C++ streams and is captured by
+redirecting the file descriptor:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{bash}
+cd example/Had/Standalone
+PY=../../ME/Standalone/.venv/bin/python
+$PY validate_hadronisation_with_pythia.py -n 400 \
+    --standalone-stats standalone_had_stats.stats.json                  # mode record (the default)
+$PY validate_hadronisation_with_pythia.py -n 400 --no-bowler --output ..._record_rfactb0.json
+$PY validate_hadronisation_with_pythia.py -n 400 --peterson  --output ..._record_peterson.json
+$PY validate_hadronisation_with_pythia.py --mode full -n 2000
+$PY validate_hadronisation_with_pythia.py --mode full -n 8000 --impact 0.3136 --window 0.03
+\end{minted}
+The first three runs take a few seconds each, the full chain a few minutes.
+The columns of \cref{tab:children_getting_married:numbers} are the result;
+read the first two together. \PYTHIA finds the same 33 colour singlets and
+joins the same 48 partons. It makes $383$ hadrons where the script makes
+$402$, and the $5\%$ excess has an address: the gluon-rich strings, on
+average $46$ against $43$ hadrons from the $108\GeV$ string with 21 partons
+and $24$ against $21$ from the $95\GeV$ one with 9, while the two-parton
+strings agree to $2\%$; the region bookkeeping of \cref{sec:children_getting_married:kinks}
+is where the two implementations differ in detail. The script makes $11\%$
+fewer baryons because it has no popcorn mechanism, \PYTHIA's option of
+putting a meson between a baryon and its antibaryon, which raises the
+baryon rate at fixed diquark weight. The B~hadron keeps $0.03$ less of the
+quark's energy, for every choice of fragmentation function. What the
+detector will see agrees better than any of these: the hadron-level \pt
+within $\dR<0.4$ of the $b$ differs by $1.2\GeV$ between the two and
+within $\dR<0.8$ by $0.4\GeV$, both within $4\GeV$ of the parton-level
+cone, the cone masses agree to $0.5\GeV$, and the species to a percent. The
+full chain with $b$ drawn gives $226\pm87$ hadrons, a wide distribution
+because the number of secondary scatterings is wide; at the \CMSSW impact
+parameter it gives $306\pm52$, and the \CMSSW event's $320$ sits inside.
+\PYTHIA's first hadronisation of our partons is in
+\file{validate_hadronisation_with_pythia_record_event1.txt} and its first
+full-chain event in \file{validate_hadronisation_with_pythia_full_event1.txt},
+both in the standalone format, so that \file{plot_journey_Had.py} draws
+them.
+
+\subsection{How CMS does it in practice: hadronisation inside the GEN step}
+\label{sec:children_getting_married:cmssw}
+
+Nothing new has to be run. The \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} hadronised the event, since
+\code{HadronLevel:all} is on in every CMS configuration, and
+\code{JitJetSW}'s analyser drew the primary hadrons as its fourth figure.
+From the setup of \cref{sec:mother_gives_birth:cmssw},
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd CMSSW_15_0_5/src/JitJetSW/Journey/test
+./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
+\end{minted}
+produces \file{genPartAnalyzer_ME_PS_MPI_Had_out.pdf}, whose fourth page is
+\cref{fig:children_getting_married:cmssw}; the copy in
+\file{example/Had/CMSSW/} is the one used here, and the log is the one of
+\cref{ch:mother_gives_birth}. The hadronisation settings do not appear in
+the log's table of changed settings because CP5 changes none of them:
+\code{Tune:pp = 14} selects \code{Tune:ee = 7}, the Monash values of
+\cref{sec:children_getting_married:breakup,sec:children_getting_married:fragmentation_function,sec:children_getting_married:bowler}
+that the script embeds.
+
+\subsubsection{Reading the log}
+
+The particle listing of \file{step1_GEN_PS_cfg.log} has, after the
+status-62 and 63 rows of \cref{ch:uninvited_cousins}, $120$ rows of status
+$71$ and $45$ of status $73$, the copies \PYTHIA makes when it collects
+each colour singlet and joins very soft partons; grouped by their common
+daughter range they form 24 colour singlets. Follow the mother once more:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\scriptsize]{text}
+  515 |     5 -     b | 62 |  182  182  824  824 |  1  1 |  91.744  -1.570 -2.084 | ...
+  824 |     5 -     b | 71 |  515  515  829  834 |  1  6 |  91.744  -1.570 -2.084 | ...
+  825 |    21 -     g | 71 |  520  520  829  834 |  1  6 |  15.374  -1.579 -2.151 | ...
+  828 |    -3 -  sbar | 71 |  516  516  829  834 |  1  6 |   3.510  -1.723 -1.963 | ...
+  829 |  -521 -    B- |  2 |  824  828 1434 1436 |  5  3 |  94.279  -1.567 -2.092 | ...
+\end{minted}
+Row 515 is her status-62 copy at $91.744\GeV$; row 824 is her status-71
+copy, the first of five partons, $b\,g\,g\,g\,\bar s$, that form a string
+whose daughters are rows 829 to 834, six hadrons: a $B^-$, three $\pi^0$, a
+$\pi^+$ and a $K^0$. The $B^-$ at $94.279\GeV$ and $\eta=-1.567$ is
+$0.01$ from the quark in $\dR$ and carries $\xpt=94.279/91.744=1.028$ and
+$\xE=235.85/230.04=1.025$: above one, as in our record, and for the same
+reason. The $\bar b$'s string is the shortest kind, $d\,\bar b$, rows 963
+and 964, and made four hadrons, $\pi^-\,K^+\,K^{*-}\,B^{*+}$, the $B^{*+}$
+at $114.17\GeV$ keeping $\xE=0.980$ of the $116.36\GeV$ quark. Around the
+$B^-$, nine primary hadrons within $\dR<0.4$ carry $114.45\GeV$ with a mass
+of $20.4\GeV$, the $B^-$ being $82\%$ of it; within $\dR<0.8$, $28$ hadrons,
+$141.1\GeV$ and $49.8\GeV$ of mass. These are the \CMSSW numbers of
+\cref{tab:children_getting_married:numbers}.
+
+\subsubsection{The figure}
+
+\Cref{fig:children_getting_married:cmssw} is the analyser's stage-4 picture:
+320 primary hadrons, the $B^-$ in red at $\eta=-1.57$ and the $B^{*+}$ in
+blue at $\eta=-3.75$, and the purple hadrons everywhere, 25 of them beyond
+$|\eta|=6$ on the border where the remnants' strings put them. Set it next
+to \cref{fig:children_getting_married:journey}. The two are different
+hadronisations of different showers of the same hard event, and the
+comparison to make is \cref{tab:children_getting_married:numbers}; what the
+pictures share is the structure: a dense cluster of hadrons around each
+B~hadron, the B~hadron itself carrying most of the cluster's momentum, and
+a uniform purple background from the strings of the underlying event that
+reaches into both cones.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=4,width=\textwidth]{Had/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_out.pdf}
+\caption[The event after hadronisation in \CMSSW]{Stage~4 of our event in
+\CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}: the primary
+hadrons after the Lund string fragmentation. Red and blue are the $B^-$ and
+$B^{*+}$ that carry the flavours of the $b$ and $\bar b$, magenta their
+vector sum, purple every other primary hadron; hadrons beyond $|\eta|=6$ are
+drawn on the border. The same stage of the standalone record is
+\cref{fig:children_getting_married:journey}.}
+\label{fig:children_getting_married:cmssw}
+\end{figure}
 
 \section{Our jet at this stage: the hadron-level family and the B~hadron's share}
 \label{sec:children_getting_married:our_jet_at_this_stage_the_hadron_level_f}
-\todo{Numbers, plots and event display of the $b$-jet at this stage.}
+
+Here is the family after the wedding. The record,
+\file{example/Had/event_Had.lhe}, has 1491 rows; the first 963 are the
+record of \cref{ch:uninvited_cousins} with every final parton's status
+negated. The $b$ quark's string begins at row 1006:
+\filelistinglines[\widelisting]{text}{example/Had/event_Had.lhe}{1010}{1016}{the $b$ quark's string (rows 1006 to 1011, status $-71$ and $-73$; row 1009 is two gluons joined) and its first hadron, the \Bstarbar (row 1012, status 83, mothers 1006 to 1011)}
+where row 1006 is the mother's string copy at the momentum of row 719, row
+1009 holds the two gluons whose pair mass was within $0.043\GeV$ of zero,
+and row 1012 is the \Bstarbar at $(p_x,p_y,p_z,E)=(-72.156,-31.074,-146.183,166.042)\GeV$,
+that is $\pt=78.56\GeV$ against the quark's $78.29$. Fifteen more hadrons
+of status 83 and 84 follow up to row 1027. The $\bar b$ is row 1064 and its
+\Bstar, one of the final two of its string, row 1069:
+\filelistinglines[\widelisting]{text}{example/Had/event_Had.lhe}{1068}{1068}{the $\bar b$'s string copy (row 1064, status $-71$, mother 708)}
+\filelistinglines[\widelisting]{text}{example/Had/event_Had.lhe}{1073}{1073}{its \Bstar (row 1069, status 84, from the anticolour end)}
+The record ends with the last hadron of the $1036\GeV$ remnant string and
+the sums,
+\filelistinglines[\widelisting]{text}{example/Had/event_Had.lhe}{1494}{1495}{the last primary hadron and the charge and momentum sums over the final state}
+the charge of two protons and their momentum to a few MeV.
+
+\begin{table}[htbp]\centering\small
+\caption[Kinematics of the two $b$ quarks, their hadrons and their cones
+after hadronisation]{Kinematics of the two $b$ quarks, their primary
+hadrons, and the partons and hadrons within $\dR<0.4$ and $0.8$ of each
+quark after hadronisation, from \file{event_Had.lhe} as printed by
+\file{standalone_hadronisation.py}. The parton rows are those of
+\cref{tab:uninvited_cousins:kinematics}.}
+\label{tab:children_getting_married:kinematics}
+\footnotesize\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{llrrrr}\toprule
+ & & $\pt$ [GeV] & $m$ [GeV] & $n$ & $E$ [GeV] \\ \midrule
+$b$ & after the MPI stage (row 719) & $78.29$ & $4.80$ & $1$ & $165.42$ \\
+    & its \Bstarbar (row 1012, status 83) & $78.56$ & $5.33$ & $1$ & $166.04$ \\
+    & partons within $\dR<0.4$ (chapter 4) & $100.67$ & $13.52$ & $3$ & \\
+    & hadrons within $\dR<0.4$ & $99.23$ & $16.08$ & $6$ ($2$ ch.) & \\
+    & partons within $\dR<0.8$ & $104.09$ & $20.17$ & $6$ & \\
+    & hadrons within $\dR<0.8$ & $105.98$ & $35.87$ & $14$ & \\ \midrule
+$\bar b$ & after the MPI stage (row 708) & $72.50$ & $4.80$ & $1$ & $1106.73$ \\
+    & its \Bstar (row 1069, status 84) & $82.83$ & $5.33$ & $1$ & $1276.92$ \\
+    & partons within $\dR<0.4$ & $93.88$ & $7.75$ & $4$ & \\
+    & hadrons within $\dR<0.4$ & $91.34$ & $7.58$ & $4$ ($1$ ch.) & \\
+    & partons within $\dR<0.8$ & $116.07$ & $41.61$ & & \\
+    & hadrons within $\dR<0.8$ & $116.92$ & $47.92$ & $11$ & \\ \midrule
+all primary hadrons & & $0.00$ & $13600$ & $365$ & $13600$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Cref{tab:children_getting_married:kinematics} and
+\cref{fig:children_getting_married:journey} say what the record means for
+the ledger, and the lesson is that hadronisation conserves energy but not
+the energy of a cone. The three partons within $\dR<0.4$ of the mother, her
+two children and herself, carried $100.67\GeV$; the six primary hadrons
+there carry $99.23$. Nothing was lost: the $b$ quark's string runs from her
+to a $\bar u$ at $\eta=-2.5$, well outside the cone, and its sixteen
+hadrons are spread along the string, some inside the cone and some out,
+while the strings of the underlying event that cross the cone put a few of
+their hadrons in. The balance, $-1.44\GeV$ in our event, is
+$-3.9\pm3.1\GeV$ on average for the same partons and $-2.6\GeV$ for
+\PYTHIA, and for the full chain it is nearly zero at $R=0.4$ and
+positive at $R=0.8$; its sign depends on where the string's other end is.
+The mass of the cone grows, from $13.5$ to $16.1\GeV$ at $R=0.4$ and from
+$20.2$ to $35.9$ at $R=0.8$, because six objects with transverse momentum
+relative to the string axis replace three massless ones. The \Bstarbar
+keeps $79\%$ of the cone, the rest is the other five hadrons; the detector
+will see the B~hadron's decay products as the core of the jet and the five
+as its halo. The $\bar b$ at $\eta=-3.4$ lost $2.5\GeV$ from its cone and
+its hadron carries $91\%$ of what is left.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=7,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
+\caption[The hadron-level cone around the $b$]{Page~7 of
+\file{theory_hadronisation.pdf}. (a) The \pt of the primary hadrons within
+$\dR<0.4$ and $0.8$ of the $b$ for the script and \PYTHIA on the same
+partons, with the parton-level values as the dashed lines and our event
+marked. (b) The cone mass against the number of hadrons in it for the two
+radii, with our event and the \CMSSW event. (c) The ledger from quark to
+hadron to cone: our event, the mean of 400 hadronisations, and the \CMSSW
+event.}
+\label{fig:children_getting_married:our_jet_plot}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{Had/journey_Had.pdf}
+\caption[The event after hadronisation in the $(\eta,\phi)$ plane]{The
+hadron level of our event after the standalone hadronisation stage, drawn
+by \file{example/Had/plot_journey_Had.py} from
+\file{example/Had/event_Had.lhe} in the layout of
+\cref{fig:children_getting_married:cmssw}. Red and blue are the \Bstarbar
+and \Bstar that carry the flavours of the $b$ and $\bar b$, magenta their
+vector sum, purple the other 363 primary hadrons, 30 of them beyond
+$|\eta|=6$ on the border. The header lists each B~hadron with its \xE and
+\xpt and the vector sum of all 365 hadrons, which vanishes.}
+\label{fig:children_getting_married:journey}
+\end{figure}
+
+The ledger gets the row that makes the mother a hadron. The first row is
+the last one of \cref{ch:uninvited_cousins}; the $R=0.8$ row is listed
+because the large-radius jets of \cref{ch:three_families} will need it.
 
 \begin{ledger}{The Children Get Married}
-  \ledgerrow{before this stage}{}{}{}{--}
-  \ledgerrow{after this stage}{}{}{}{}
+  \ledgerrow{$b$ family after the MPI stage ($\dR<0.4$, partons)}{100.67}{13.52}{3}{--}
+  \ledgerrow{$b$ family after this stage ($\dR<0.4$, hadrons)}{99.23}{16.08}{6}{$-1.44$}
+  \ledgerrow{\quad of which the \Bstarbar itself ($\xE=1.004$)}{78.56}{5.33}{1}{--}
+  \ledgerrow{\quad the same within $\dR<0.8$}{105.98}{35.87}{14}{$+1.89$}
 \end{ledger}
+
+\section{What this stage is, and what it is not}
+\label{sec:children_getting_married:caveats}
+
+The agreement in \cref{tab:children_getting_married:numbers} was obtained
+by porting the model's construction, not by tuning to \PYTHIA's output, and
+the disagreements are understood. Each omission is a caveat to carry:
+\begin{itemize}
+  \item \textbf{No popcorn.} A baryon and its antibaryon are always
+    neighbours here; \PYTHIA can put a meson between them, which is why it
+    makes $11\%$ more baryons at the same diquark weight.
+  \item \textbf{No junctions.} Three colour lines meeting at a point, the
+    baryon-number-carrying topology of \PYTHIA's remnants and of its
+    QCD-based colour reconnection~\cite{Sjostrand:2002ip,Christiansen:2015yqa},
+    never occur in the chapter-4 record and are not implemented.
+  \item \textbf{A simplified final two.} The last two hadrons share the
+    remaining momentum with the \pt of the final break and the direction
+    of the positive end, the orientation drawn with the area law; \PYTHIA's
+    construction is more careful about the transverse momentum balance.
+  \item \textbf{The region bookkeeping differs in detail.} The $5\%$ excess
+    of hadrons in the gluon-rich strings is where the two implementations
+    of \cref{sec:children_getting_married:kinks} part company; the
+    two-parton strings agree to $2\%$.
+  \item \textbf{No thermal model, no ropes, no close packing.} The thermal
+    \pt alternative of \cite{Fischer:2016zzs} and the interactions between
+    overlapping strings~\cite{Bierlich:2014xba} are the open problems below.
+  \item \textbf{Primary hadrons only.} Every $\rho$, $\omega$, $K^*$,
+    $\Delta$ and $B^*$ of the record is still here; their decays, and the
+    weakly decaying B~hadron the detector will see, are
+    \cref{ch:children_producing_grandchildren}.
+  \item \textbf{The ensemble keeps the seed-1 partons.} The spread of
+    $\pm0.08$ in \xE is the hadronisation's alone; the full chain adds the
+    shower's and the underlying event's, and \cref{tab:children_getting_married:numbers}
+    gives both.
+  \item \textbf{One hadronisation is one sample.} The $\xE=1.004$ of our
+    event and the $-1.44\GeV$ of its cone are draws from distributions whose
+    means are $0.88$ and $-3.9\GeV$; the ledger rows are those of
+    \emph{this} event.
+\end{itemize}
 
 \section{Further reading}
 \label{sec:children_getting_married:further_reading}
-Official and theory references for this stage: \cite{Andersson:1983ia}, \cite{Peterson:1982ak}, \cite{Bowler:1981sb}, \cite{ALEPH:2001pfo}.
+The Lund model is \cite{Andersson:1983ia}, with the symmetric fragmentation
+function derived in \cite{Andersson:1983jt}, the treatment of gluons as
+kinks and nearby partons in \cite{Sjostrand:1984ic}, and Andersson's book
+\cite{Andersson:1998tv} as the full account; the string picture of
+multiparticle production goes back to Artru and
+Mennessier~\cite{Artru:1974hr}, and the tunnelling mechanism of
+\cref{eq:children_getting_married:tunnelling} to Casher, Neuberger and
+Nussinov~\cite{Casher:1978wy}. The alternatives are the independent
+fragmentation of Field and Feynman~\cite{Field:1977fa}, historically first,
+and the cluster model of Webber~\cite{Webber:1983if} that
+Herwig~\cite{Bellm:2019zci} uses. For heavy quarks the functions are
+\cite{Bowler:1981sb,Peterson:1982ak,Kartvelishvili:1977pi,Collins:1984ms},
+the perturbative fragmentation function that complements them
+\cite{Mele:1990cw,Braaten:1994bz,Cacciari:2005uk}, the LEP measurements of
+$x_B$ \cite{ALEPH:2001pfo,OPAL:2002plk,SLD:2002poq,DELPHI:2011aa}, and the
+LHC measurements inside jets \cite{ATLAS:2021agf,CMS:2021sln} with the
+$b$-hadron fractions of \cite{LHCb:2019fns}. The Monash
+tune~\cite{Skands:2014pea} fixes every parameter named here and
+CP5~\cite{CMS:2019csb} keeps them; the \PYTHIA~8.3
+guide~\cite{Bierlich:2022pfr} documents the settings and the general
+review remains \cite{Buckley:2011ms}. Junctions are
+\cite{Sjostrand:2002ip,Christiansen:2015yqa}, ropes
+\cite{Bierlich:2014xba,Bierlich:2017vhg} and the thermal model
+\cite{Fischer:2016zzs}.
 
 \begin{pitfalls}
-\todo{Pitfalls and FAQs for newcomers at this stage.}
+\begin{itemize}[nosep]
+  \item \textbf{$x_B>1$ is not a bug.} The hadron's region can reach into
+    the gluon next to the quark, and a hadron that is one of the final two
+    takes whatever is left. Our \Bstarbar has $\xE=1.004$, the \Bstar
+    $1.154$, the \CMSSW $B^-$ $1.025$; the ensemble mean is below one.
+  \item \textbf{``$x_B$'' means five different things.} $E_B/E_b$ after
+    the shower, $\pt^B/\pt^b$, the light-cone fraction, the share of the
+    jet, and LEP's $E_B/E_{\mathrm{beam}}$ of the weakly decaying hadron.
+    Say which one before comparing $0.72$ with $0.94$.
+  \item \textbf{Primary is not final.} The record's hadrons include
+    every $\rho$, $K^*$ and $B^*$; the multiplicity after decays is roughly
+    twice as large, and the weakly decaying B~hadron is a different
+    particle from the \Bstarbar.
+  \item \textbf{Every colour tag must appear twice.} A record in which a
+    tag appears once cannot be hadronised; the chapter-4 string count of
+    51 was such a bookkeeping error (lone anticolour ends counted as
+    chains), corrected to 33 when this stage traced the tags.
+  \item \textbf{The vertex across a kink obeys the proper-time rule, not the
+    $z$ rule.} Taking $z$ of the current piece and stepping the other side
+    forward lets small-$z$ hadrons swallow whole gluon halves; the string
+    ends after three hadrons. Use \cref{eq:children_getting_married:gamma_step}
+    and the mass shell, and scan the regions in the right order.
+  \item \textbf{All pieces must be massless.} The $b$ quark's piece is
+    massless in the string's light-cone construction; its mass is carried
+    by the pairing of adjacent regions, not by the piece.
+  \item \textbf{``No room'' is not a failure.} When an end finds no region
+    that can hold its hadron the chain ends with the final two; only a
+    string that fails ten times is restarted ($0.5\%$ of the
+    hadronisations have one).
+  \item \textbf{A rejected $\eta$ is a new flavour.} The $\eta$ and
+    $\eta'$ suppressions and the rejected part of the SU(6) weights do
+    not resample the multiplet; they resample the flavour, as \PYTHIA does.
+    Doing otherwise changes the kaon and baryon rates.
+  \item \textbf{A hadron in the cone need not come from the cone's string.}
+    Of the six hadrons within $\dR<0.4$ of the $b$, not all are from its
+    string; the underlying event's strings cross every cone. Hadron-level
+    jets have no parton ancestry.
+  \item \textbf{The join threshold changes the multiplicity.} Two partons
+    within $m_{\mathrm{join}}=0.3\GeV$ become one; the 48 joins of our
+    record remove 48 pieces from the world sheets, and a different
+    threshold gives a different hadron count. \PYTHIA's value is the one
+    to use for a comparison.
+  \item \textbf{Which Python?} The standalone, plotting and animation
+    scripts run with a \code{python3} that has NumPy and matplotlib; the
+    validation script and \file{dump_hadron_tables.py} need the virtual
+    environment of \file{example/ME/Standalone/}.
+\end{itemize}
 \end{pitfalls}
 
 \begin{exercises}
-\item \todo{Exercise 1.}
-\item \todo{Exercise 2.}
+\item \textbf{Run it.} Run \file{standalone_hadronisation.py} and confirm
+  $365$ primary hadrons, $33$ colour singlets, $\xE=1.004$ for the $b$ and
+  $99.23\GeV$ within $\dR<0.4$. Run seeds $2$ to $10$ and tabulate the
+  hadron count, \xE and the cone \pt; compare the spread with
+  \cref{tab:children_getting_married:numbers}.
+\item \textbf{The rope.} With $\kappa=1\GeV/\mathrm{fm}$, how long can the
+  $27.5\GeV$ string of \cref{sec:children_getting_married:string} get in
+  its rest frame if it does not break, and how long does that take? Its
+  seven hadrons have proper times of $1$ to $3\,\mathrm{fm}$: estimate the
+  string's length at the time of the first break and compare with the
+  hadron size.
+\item \textbf{The area law.} Derive $P(\Gamma)\propto\Gamma^ae^{-b\Gamma}$
+  from \cref{eq:children_getting_married:lund,eq:children_getting_married:gamma_step}
+  for a long chain, and verify with the $\Gamma$ values of the $b$ string
+  in the log, $0.45$ to $25\GeV^2$, that their mean is near $(1+a)/b$. Why
+  are the two largest, $25$ and $22\GeV^2$, both from the $b$ end?
+\item \textbf{Tunnelling.} Reproduce $s/u=0.106$ from
+  \cref{eq:children_getting_married:tunnelling} with constituent masses,
+  then find the mass $m_s$ that gives the tune's $0.217$ with $m_u=0.33$.
+  Compute the charm suppression with $m_c=1.5\GeV$ and explain why no
+  tune parameter exists for it.
+\item \textbf{The kicks.} From the $-$v log collect the $p_x$ and $p_y$
+  kicks of the $b$ string's break-ups and verify that the hadrons' \pt
+  relative to the string is the vector sum of two kicks; compute the rms of
+  the components and compare with $0.237\GeV$.
+\item \textbf{The mean of $f(z)$.} Integrate
+  \cref{eq:children_getting_married:lund} numerically for $\mT=m_\pi$,
+  $m_\rho$ and $m_{B^*}$ (the last with and without the Bowler factor) and
+  reproduce the means $0.328$, $0.529$, $0.888$ and $0.95$ of the log's
+  opening lines.
+\item \textbf{The chain by hand.} Starting from the $b$ string's $W=69.34\GeV$,
+  take the $z$, \mT and end of each hadron from the log and reproduce the
+  $\Gamma$ of every vertex with \cref{eq:children_getting_married:gamma_step}
+  and the \Wmin of every step with \cref{eq:children_getting_married:wmin}
+  (the smearing is a uniform $\pm20\%$ draw). At which step would the
+  chain have stopped without the smearing?
+\item \textbf{Regions.} From the momenta of the six partons of rows 1006 to
+  1011 of \file{event_Had.lhe}, boost to the string's rest frame, build
+  the light-cone pieces and the region masses $W_{ik}$ of
+  \cref{eq:children_getting_married:regions}, and reproduce the map of
+  \cref{fig:children_getting_married:kinks_plot}b. Which region is the
+  heaviest and why is $(0,5)$ not the one the \Bstarbar used?
+\item \textbf{The Bowler exponent.} Verify $20.305$ and compute the mean
+  and the mode of \cref{eq:children_getting_married:bowler} for
+  $r_b=0.5$, $0.855$ and $1.2$. Then run \code{--rfactb} with those values
+  and \code{--repeat 100} and plot $\langle\xE\rangle$ against $r_b$: the
+  slope is what a tune to the LEP spectra constrains.
+\item \textbf{Peterson against Bowler.} Run \code{--peterson --repeat 100}
+  and compare the \xE distribution with the Lund--Bowler one of
+  \cref{fig:children_getting_married:bowler_plot}b: which is wider, and
+  which has the longer low-$x$ tail? Why does Peterson's width grow with
+  $\epsilon_b$?
+\item \textbf{Four definitions.} From rows 719 and 1012 of
+  \file{event_Had.lhe} compute \xE, \xpt and $x_+$ of
+  \cref{eq:children_getting_married:xb_defs} and confirm that all three
+  are $1.004$; then compute the same for the $\bar b$ (rows 708 and 1069)
+  and explain from the log why they are $1.154$, $1.142$ and $1.154$.
+\item \textbf{The cone against the radius.} With the reader of
+  \file{plot_journey_Had.py}, sum the primary hadrons within $R$ of the $b$
+  for $R$ from $0$ to $2$ and compare with the parton-level curve of
+  \cref{fig:uninvited_cousins:our_jet_plot}c. At which $R$ does the
+  hadron-level \pt first exceed the parton-level one, and which hadron
+  causes it?
+\item \textbf{Which string?} For each of the six hadrons within $\dR<0.4$
+  of the $b$, find its mother range in the record and hence its string.
+  How many are from the $b$ string, and what is the \pt of the rest?
+\item \textbf{Read the \CMSSW record.} In \file{step1_GEN_PS_cfg.log}
+  group the status-71 and 73 rows by their daughter range, count the
+  colour singlets and the hadrons of each, and reproduce the 24 singlets
+  and the $B^-$'s string. Then compute \xE for the $B^-$ and the $B^{*+}$
+  from the rows quoted in \cref{sec:children_getting_married:cmssw}.
+\item \textbf{\PYTHIA's first event.} Run \file{plot_journey_Had.py} on
+  \file{validate_hadronisation_with_pythia_record_event1.txt} and compare
+  the header with \cref{fig:children_getting_married:journey}; then run
+  the validation script with \code{-n 100} and \code{--no-bowler} and
+  check that only the $b$ and $\bar b$ rows of the summary move.
+\item \textbf{Film it.} Run the animation with \code{--scene kinks} and
+  \code{--seed 3} and, from the \code{-v} log of that seed, predict before
+  watching how many cells each path will jump.
 \end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:children_getting_married:open_problems}
+
+Hadronisation is the part of the simulation with the least theory behind
+it and the largest influence on what a $b$ jet looks like, and the
+High-Luminosity LHC will test it from two sides: its precision
+measurements of the top quark and of jets will be limited by the
+fragmentation parameters of this chapter~\cite{Azzi:2019yne}, and its
+heavy-flavour programme will measure hadron production inside jets with
+samples a hundred times larger than today's~\cite{Cerri:2018ypt}. Each of
+the following can be started with the scripts of this chapter.
+\begin{enumerate}
+  \item \textbf{The $b$-jet energy scale and $r_b$.} The B~hadron carries
+    $80\%$ of the $R=0.4$ cone, so the response of a $b$ jet in the
+    calorimeter depends on how that energy is split between the hadron
+    and the rest, and on how the hadron decays
+    (\cref{ch:children_producing_grandchildren}). The flavour dependence
+    of the jet energy scale is a few percent in both
+    experiments~\cite{CMS:2016lmd,ATLAS:2020cli}, and the $b$-fragmentation
+    tune is among the largest modelling uncertainties of the top-quark
+    mass~\cite{CMS:2018quc,CMS:2023ebf,Corcella:2017rpt}, whose Run-2
+    precision is already $0.4\GeV$~\cite{ATLAS:2024dxp}. The LEP spectra
+    that fixed $r_b$~\cite{ALEPH:2001pfo,OPAL:2002plk,SLD:2002poq,DELPHI:2011aa}
+    were taken at the $Z$; the LHC measurements inside
+    jets~\cite{ATLAS:2021agf,CMS:2021sln} are the first at the relevant
+    scale. Exercise~9 gives $\mathrm{d}\langle\xE\rangle/\mathrm{d}r_b$;
+    the question is which Phase-2 observable, the B~hadron's share of the
+    jet or the charged-particle spectrum around it, fixes $r_b$ well
+    enough to make the fragmentation term of the top mass subdominant.
+  \item \textbf{What the top-quark mass measures.} The mass extracted from
+    a jet-level template is the mass of the generator, and its relation to
+    a field-theoretic mass passes through this chapter's model: the
+    hadronisation corrections to the jet mass are power corrections of
+    $\Lambda_{\mathrm{QCD}}/m_t$ times numbers the string model
+    sets~\cite{Nason:2017cxd,Hoang:2020iah}, and alternative fragmentation
+    models shift the result~\cite{Corcella:2010qgp,Corcella:2017rpt}. With
+    \code{--peterson}, \code{--rfactb} and \code{--alund} measure how far
+    the hadron-level cone around the $b$ moves for changes that leave the
+    LEP mean unchanged; this is the model dependence a Phase-2 top mass of
+    $0.2\GeV$ precision must either calibrate away or quote.
+  \item \textbf{Baryons, strangeness and collectivity in jets.} The
+    enhancement of strange hadrons with
+    multiplicity~\cite{ALICE:2016fzo} and the baryon-to-meson ratios
+    measured inside jets against the underlying event~\cite{ALICE:2022ecr}
+    are not what independent strings produce; ropes~\cite{Bierlich:2014xba},
+    junctions~\cite{Christiansen:2015yqa,Sjostrand:2002ip} and the thermal
+    model~\cite{Fischer:2016zzs} each reproduce part of it. Our $b$ jet
+    hadronises next to 32 other strings. Measure in the script how the
+    baryon and strange fractions of the $b$ string's hadrons change with
+    \code{--prob-qq} and \code{--prob-s}, and ask whether the $\Lambda_b$
+    fraction, which LHCb finds to fall with \pt~\cite{LHCb:2019fns}, can
+    be measured in Phase-2 $b$-jet samples as a function of the
+    underlying-event activity.
+  \item \textbf{Perturbative against non-perturbative fragmentation.} The
+    string model is applied to a $b$ quark at the shower's cut-off scale,
+    and the perturbative evolution above it, Mele and
+    Nason's~\cite{Mele:1990cw,Cacciari:2005uk}, with the resummation of
+    mass and soft logarithms~\cite{Ghira:2023bxr}, is what the shower of
+    \cref{ch:mother_gives_birth} approximates. The two are tuned together:
+    a harder shower needs a softer $r_b$. Quantify with the chapter-2
+    options (\code{--ptmin-fsr}, the coupling) and \code{--rfactb} how
+    degenerate the two are for the cone around the $b$, and which
+    observable, the B~hadron's \xE or the radiation pattern inside the
+    jet, breaks the degeneracy for a Phase-2 fit.
+  \item \textbf{Machine-learned hadronisation.} The string's rules are a
+    sequence of conditional draws, and a model that learns the draws from
+    data rather than from a parametrisation is within reach: MLHAD learns
+    the fragmentation function and the flavour selection~\cite{Ilten:2022jfm,Bierlich:2023zzd},
+    HadML the cluster decays~\cite{Ghosh:2022zdz}, both trained so far on
+    the generators themselves. The kink and region bookkeeping of
+    \cref{sec:children_getting_married:kinks} is the part no model has
+    learned yet. Train a small network on the $(z,\mT,\Gamma)$ draws the
+    \code{-v} log prints for a thousand hadronisations and test whether it
+    reproduces the cone \pt and mass of
+    \cref{tab:children_getting_married:numbers}; the Phase-2 question is
+    whether such a model, fitted to hadron spectra inside jets, can be
+    tuned to data as a whole rather than knob by knob, within the
+    computing budget of \cite{HSFPhysicsEventGeneratorWG:2020gxw}.
+  \item \textbf{Hadronisation corrections to jet substructure.} The cone
+    mass of our event grew from $13.5$ to $16.1\GeV$ at this stage, and
+    the groomed masses that the boosted-top and $W$ tagging of
+    \cref{ch:three_families} rely on receive non-perturbative corrections
+    that are calculable in part~\cite{Hoang:2019ceu} and reviewed in
+    \cite{Larkoski:2017jix}; the Lund jet plane~\cite{Dreyer:2018nbf}
+    isolates the region where they live. With \code{--repeat} and the
+    reader of \file{plot_journey_Had.py}, measure the shift and the spread
+    of the cone mass for $R=0.4$ and $0.8$ and its dependence on
+    \code{--sigma} and \code{--blund}; the Phase-2 question is whether the
+    substructure calibrations can be made independent of these knobs or
+    must carry them as a systematic.
+\end{enumerate}
+Two of these, the decay of the B~hadron and the jet it leaves behind, are
+taken up at the next stop, where the children have children.

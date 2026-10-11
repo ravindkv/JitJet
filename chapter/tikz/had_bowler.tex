@@ -1,0 +1,53 @@
+% ---------------------------------------------------------------------------
+% The heavy end of the string. (a) A massless quark end moves on the light
+% cone; a b quark of mass 4.8 GeV moves on a hyperbola, slower, so the
+% string area between the quark and the first vertex is larger and the area
+% law exp(-bA) adds the Bowler factor z^(-r_b b m_b^2) to f(z): the B hadron
+% must take most of the quark's momentum. (b) The three fragmentation
+% functions the script offers and the mean energy fraction they give on
+% the same partons (standalone --repeat 400 and the PYTHIA validation).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  vtx/.style={circle,inner sep=0pt,minimum size=1.8mm,fill=black},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the world lines ------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.6) {(a) a heavy quark leaves the light cone};
+\draw[-{Stealth}] (0,0) -- (5.6,0) node[below left,lab] {$x$};
+\draw[-{Stealth}] (0,0) -- (0,4.3) node[left,lab] {$t$};
+\fill[orange!18] (0,0) -- (4.0,4.0) -- (0,4.0) -- cycle;
+\draw[blue!80!black,thick] (0,0) -- (4.0,4.0);
+\node[lab,text=blue!80!black,anchor=west] at (4.05,4.0) {massless $q$: $x=t$};
+% heavy quark: hyperbola x = sqrt(t^2 + 1.3^2) - 1.3
+\draw[red!80!black,thick] plot[domain=0:4.0,samples=41] ({sqrt(\x*\x+1.69)-1.3},\x);
+\node[lab,text=red!80!black,anchor=west] at (3.0,1.3) {$b$ quark: a hyperbola,\\ it lags behind the light cone};
+\node[vtx] at (1.4,2.6) {};
+\draw[black!70] (1.4,2.6) -- ++(0.9,0.9); \draw[black!70] (1.4,2.6) -- ++(-0.9,0.9);
+\node[lab,anchor=west] at (1.6,2.45) {first vertex};
+\fill[pattern=north east lines,pattern color=red!60] (0,0) -- plot[domain=0:3.5,samples=36] ({sqrt(\x*\x+1.69)-1.3},\x) -- (2.3,3.5) -- (1.4,2.6) -- cycle;
+\node[lab,anchor=north west,text width=5.6cm] at (-0.3,-0.35) {the hatched area $A$ between the quark's world line and the first vertex is what the area law weights, $P\propto e^{-bA}$; for a massive quark it is larger by $\frac{m_Q^2}{\kappa^2}\ln\frac1z$, hence the factor $z^{-r_Q b m_Q^2}$};
+\end{scope}
+% ---------------- (b) the three functions -------------------------------------------------------
+\begin{scope}[xshift=8.2cm]
+\node[head,anchor=west] at (-0.3,4.6) {(b) three choices for the $b$ end, same partons};
+\node[lab,anchor=north west,text width=8.6cm,align=left] at (-0.3,4.2) {
+\textbf{Lund--Bowler} (CP5, $r_b=0.855$): $f(z)=z^{-(1+r_b b m_b^2)}(1-z)^a e^{-bm_{\mathrm{T}}^2/z}$,\\ exponent $1+0.855\times0.98\times4.8^2=20.3$\\[3pt]
+\textbf{plain Lund} ($r_b=0$): the light-quark function with $m_{\mathrm{T}}=m_B$; far too hard\\[3pt]
+\textbf{Peterson} ($\epsilon_b=0.005$): $f(z)\propto z^{-1}\,[1-1/z-\epsilon_b/(1-z)]^{-2}$; no string behind it};
+\draw[-{Stealth}] (0.2,0.0) -- (8.4,0.0);
+\foreach \x/\t in {0.8/0.80,2.7/0.85,4.6/0.90,6.5/0.95,8.4/1.00} {\draw (\x,-0.05) -- (\x,0.05); \node[lab,anchor=north] at (\x,-0.08) {\t};}
+\node[lab,anchor=north] at (4.6,-0.45) {$\langle x_E\rangle$ of the $b$ quark's hadron, 400 hadronisations of the same partons};
+% x = 0.8 + (v-0.80)*38
+\foreach \v/\y/\c in {0.882/1.3/red, 0.913/1.3/black, 0.952/0.85/red, 0.963/0.85/black, 0.839/0.4/red, 0.870/0.4/black} {
+  \fill[\c] ({0.8+(\v-0.80)*38},\y) circle (1.2mm);}
+\node[lab,anchor=east,text=red!80!black] at (3.75,1.3) {Bowler: $0.882$ (script)};
+\node[lab,anchor=west] at (5.25,1.3) {$0.913$ (\PYTHIA)};
+\node[lab,anchor=east,text=red!80!black] at (6.4,0.85) {plain Lund: $0.952$};
+\node[lab,anchor=west] at (7.15,0.85) {$0.963$};
+\node[lab,anchor=east,text=red!80!black] at (2.1,0.4) {Peterson: $0.839$};
+\node[lab,anchor=west] at (3.6,0.4) {$0.870$};
+\node[lab,anchor=north west,text=black!65,text width=8.6cm] at (-0.3,-0.95) {the two implementations differ by $0.03$ for every choice and move together; our event's $\bar B^{*0}$ sits at $x_E=1.004$, in the upper tail};
+\end{scope}
+\end{tikzpicture}

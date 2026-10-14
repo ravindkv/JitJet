@@ -58,16 +58,16 @@ GREEK = {"Lambda": r"\Lambda", "Sigma": r"\Sigma", "Xi": r"\Xi", "Omega": r"\Ome
 
 def hadron_tex(name: str) -> str:
     """PYTHIA's hadron name as TeX: B*bar0 -> \\bar B^{*0}, Lambda_b0 -> \\Lambda_b^0, K*- -> K^{*-}."""
-    m = re.match(r"^([A-Za-z]+)(\*?)(?:_([a-z]+?))?(bar)?(\*?)([+\-0]*)$", name)
+    m = re.match(r"^([A-Za-z]+)('?)(\*?)(?:_([a-z]+?))?(bar)?(\*?)([+\-0]*)$", name)
     if not m:
         return name
-    base, star1, sub, bar, star2, charge = m.groups()
+    base, prime, star1, sub, bar, star2, charge = m.groups()
     bar_flag = bar is not None
     if base.endswith("bar"):
         base, bar_flag = base[:-3], True
     if sub and sub.endswith("bar"):
         sub, bar_flag = sub[:-3], True
-    sym = GREEK.get(base, base)
+    sym = GREEK.get(base, base) + prime
     if bar_flag:
         sym = rf"\bar{{{sym}}}" if len(sym) > 1 else rf"\bar {sym}"
     sup = (star1 or star2) + charge.replace("+", "+").replace("-", "-")

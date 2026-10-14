@@ -1,0 +1,101 @@
+% ---------------------------------------------------------------------------
+% How the world sheet breaks. (a) Light-cone coordinates in the string's rest
+% frame: x+- = t +- x, so the two light-like directions are the axes, a
+% massless quark end runs along one of them, and a point has x+ x- =
+% t^2 - x^2 = tau^2, the hyperbola of constant proper time. (b) The same on
+% the world sheet: the break-up vertices, and the diamond between two
+% neighbouring vertices and their forward light-cones is one hadron, with
+% m_T^2 = kappa^2 Dx+ Dx-. (c) Snapshots of the rope in time: the ends fly
+% apart, the rope fills, a pair appears at a break, the pieces between
+% neighbouring breaks are the hadrons, each a "yo-yo" that oscillates for
+% ever.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=red!80!black},
+  aq/.style={circle,inner sep=0pt,minimum size=2.2mm,fill=blue!80!black},
+  nq/.style={circle,inner sep=0pt,minimum size=1.9mm,fill=green!50!black},
+  naq/.style={circle,inner sep=0pt,minimum size=1.9mm,fill=green!50!black,draw=black,line width=0.5pt},
+  vtx/.style={circle,inner sep=0pt,minimum size=1.8mm,fill=black},
+  rope/.style={orange!80!black,line width=2.0pt},
+  lab/.style={font=\scriptsize,align=center},
+  tiny/.style={font=\tiny,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) light-cone coordinates ----------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-3.4,4.55) {(a) light-cone coordinates $x^\pm=t\pm x$};
+\fill[orange!15] (0,0) -- (-3.2,3.2) -- (3.2,3.2) -- cycle;
+\draw[-{Stealth}] (-3.4,0) -- (3.6,0) node[below left,lab] {$x$};
+\draw[-{Stealth}] (0,0) -- (0,3.9) node[left,lab] {$t$};
+\draw[red!80!black,thick] (0,0) -- (3.3,3.3) node[above,lab,text=red!80!black] {$x^-=0$: the $q$ end\\ (the $x^+$ axis)};
+\draw[blue!80!black,thick] (0,0) -- (-3.3,3.3) node[above,lab,text=blue!80!black] {$x^+=0$: the $\bar q$ end\\ (the $x^-$ axis)};
+% point P at (x,t) = (0.8, 2.3): x+ = 3.1, x- = 1.5; feet at (x+/2)(1,1) = (1.55,1.55) and (x-/2)(-1,1) = (-0.75,0.75)
+\node[vtx] (P) at (0.8,2.3) {}; \node[lab,anchor=south west] at (0.85,2.35) {a break at $(x,t)$};
+\draw[dashed,black!60] (0.8,2.3) -- (1.55,1.55); \draw[dashed,black!60] (0.8,2.3) -- (-0.75,0.75);
+\draw[decorate,decoration={brace,amplitude=3pt},red!80!black] (0,0) -- (1.55,1.55) node[midway,above left=1pt,lab,text=red!80!black] {$x^+/\sqrt2$};
+\draw[decorate,decoration={brace,amplitude=3pt,mirror},blue!80!black] (0,0) -- (-0.75,0.75) node[midway,above right=1pt,lab,text=blue!80!black] {$x^-/\sqrt2$};
+\draw[black!60,dashed,thin] plot[domain=-2.9:2.9,samples=41] (\x,{sqrt(\x*\x+2.25)});
+\node[lab,text=black!65,anchor=west] at (2.0,1.7) {$x^+x^-=\tau^2$};
+\node[lab,anchor=north,text width=7.0cm] at (0.1,-0.35) {the light-cone becomes the axes: a massless end has one coordinate fixed, $x^+x^-=t^2-x^2=\tau^2$ is the proper time, and the same combinations of a momentum, $p^\pm=E\pm p_x$, obey $p^+p^-=\mT^2$; the string tension turns one into the other, $p^\pm=\kappa\,\Delta x^\pm$};
+\end{scope}
+% ---------------- (b) the world sheet with the hadrons ----------------------------------------
+\begin{scope}[xshift=9.0cm,yshift=-0.2cm]
+\node[head,anchor=west] at (-3.9,4.75) {(b) on the world sheet: two vertices make one hadron};
+\begin{scope}[x=0.42cm,y=0.42cm]
+\fill[orange!15] (0,0) -- (-8,8) -- (8,8) -- cycle;
+\draw[-{Stealth}] (-8.5,0) -- (8.8,0) node[below left,lab] {$x$};
+\draw[-{Stealth}] (0,0) -- (0,9.4) node[left,lab] {$t$};
+\draw[red!80!black,thick] (0,0) -- (-8,8); \draw[blue!80!black,thick] (0,0) -- (8,8);
+\node[lab,text=red!80!black] at (-7.3,8.7) {$q$}; \node[lab,text=blue!80!black] at (7.3,8.7) {$\bar q$};
+\draw[black!60,dashed,thin] plot[domain=-7.5:7.5,samples=61] (\x,{sqrt(\x*\x+2.25)});
+% vertices V1 (-4.0,4.27), V2 (-1.2,1.92), V3 (1.6,2.19), V4 (5.0,5.22), all with tau = 1.5
+% yo-yo between V1 and V2: apex of the forward cones at (-3.775,4.495), bottom where the backward cones meet at (-2.6,0.52)
+\fill[teal!35] (-4.0,4.27) -- (-3.775,4.495) -- (-1.2,1.92) -- (-2.6,0.52) -- cycle;
+% yo-yo between V3 and V4: apex (4.815,5.405), bottom (3.3,0.49)
+\fill[teal!35] (1.6,2.19) -- (4.815,5.405) -- (5.0,5.22) -- (3.3,0.49) -- cycle;
+\foreach \px/\pt in {-4.0/4.27,-1.2/1.92,1.6/2.19,5.0/5.22} {\node[vtx] at (\px,\pt) {};}
+\foreach \px/\pt in {-4.0/4.27,-1.2/1.92,1.6/2.19,5.0/5.22} {\draw[black!70] (\px,\pt) -- ++(1.4,1.4); \draw[black!70] (\px,\pt) -- ++(-1.4,1.4);}
+\node[lab,anchor=east] at (-4.1,4.5) {$V_1$}; \node[lab,anchor=north] at (-1.2,1.7) {$V_2$}; \node[lab,anchor=north] at (1.6,1.95) {$V_3$}; \node[lab,anchor=west] at (5.2,5.2) {$V_4$};
+\node[lab,anchor=south,text=teal!40!black] at (-2.6,3.4) {hadron};
+\node[lab,anchor=south,text=teal!40!black] at (3.7,3.5) {hadron};
+\node[lab,anchor=south] at (0.2,2.6) {$\cdots$};
+\draw[{Stealth}-{Stealth},thin,red!80!black] (-4.3,4.6) -- (-1.5,7.4) node[midway,above left,lab,text=red!80!black] {$\Delta x^-$};
+\draw[{Stealth}-{Stealth},thin,blue!80!black] (-4.3,3.95) -- (-1.5,1.15) node[midway,below left,lab,text=blue!80!black] {$\Delta x^+$};
+\node[lab,anchor=north,text width=7.4cm] at (0,-1.0) {the piece between vertices $V_1$ and $V_2$ is one hadron: the quark born at $V_1$ (the vertex nearer the $q$ end) and the antiquark born at $V_2$ run towards each other, cross at the apex and oscillate (the shaded yo-yo, its first swing drawn); its mass is the area, $\mT^2=\kappa^2\,\Delta x^+\Delta x^-$, so the order of the vertices in $x^\pm$ is the order of the hadrons along the string, while their order in $t$ is not};
+\end{scope}
+\end{scope}
+% ---------------- (c) the rope in time -----------------------------------------------------------
+\begin{scope}[xshift=-1.2cm,yshift=-7.6cm]
+\node[head,anchor=west] at (-2.2,4.35) {(c) the rope, snapshot by snapshot, in its rest frame};
+\foreach \y/\t in {3.5/{$t=0$},2.6/{$t_1$},1.7/{$t_2$},0.8/{$t_3$},-0.1/{$t\to\infty$}} {\node[lab,anchor=east,text=black!65] at (-0.8,\y) {\t};}
+% t = 0: the pair at a point
+\node[q] at (2.75,3.5) {}; \node[aq] at (3.05,3.5) {};
+\node[lab,anchor=west,text=black!65] at (3.4,3.5) {$q\bar q$ created at one point};
+% t1: stretched
+\draw[rope] (1.4,2.6) -- (4.4,2.6); \node[q] at (1.3,2.6) {}; \node[aq] at (4.5,2.6) {};
+\draw[-{Stealth},thin] (1.2,2.85) -- (0.6,2.85); \draw[-{Stealth},thin] (4.6,2.85) -- (5.2,2.85);
+\node[lab,anchor=west,text=black!65,text width=6.2cm,align=left] at (6.6,2.6) {the ends fly apart at the speed of light, the rope fills with $\kappa r$};
+% t2: one break
+\draw[rope] (0.5,1.7) -- (2.5,1.7); \draw[rope] (3.3,1.7) -- (5.3,1.7);
+\node[q] at (0.4,1.7) {}; \node[aq] at (5.4,1.7) {};
+\node[naq] at (2.6,1.7) {}; \node[nq] at (3.2,1.7) {};
+\node[tiny,text=green!40!black] at (2.6,1.98) {$\bar q'$}; \node[tiny,text=green!40!black] at (3.2,1.98) {$q'$};
+\node[lab,anchor=west,text=black!65,text width=6.2cm,align=left] at (6.6,1.7) {a break: the pair is born at rest and is pulled apart by the two pieces};
+% t3: three breaks
+\draw[rope] (-0.4,0.8) -- (0.9,0.8); \draw[rope] (1.5,0.8) -- (2.6,0.8); \draw[rope] (3.2,0.8) -- (4.4,0.8); \draw[rope] (5.0,0.8) -- (6.2,0.8);
+\node[q] at (-0.5,0.8) {}; \node[aq] at (6.3,0.8) {};
+\foreach \x in {1.0,2.7,4.5} {\node[naq] at (\x,0.8) {};} \foreach \x in {1.4,3.1,4.9} {\node[nq] at (\x,0.8) {};}
+\node[vtx,minimum size=1.2mm,fill=black!50] at (1.2,0.8) {}; \node[vtx,minimum size=1.2mm,fill=black!50] at (2.9,0.8) {}; \node[vtx,minimum size=1.2mm,fill=black!50] at (4.7,0.8) {};
+\node[lab,anchor=west,text=black!65,text width=6.2cm,align=left] at (6.6,0.8) {more breaks, each a vertex; the pieces no longer know about one another};
+% t -> infinity: hadrons
+\foreach \x/\n in {0.3/{$q\bar q'$},2.0/{$q'\bar q''$},3.7/{$q''\bar q'''$},5.4/{$q'''\bar q$}} {
+  \draw[rounded corners=2pt,black!60,fill=white] (\x-0.55,-0.4) rectangle (\x+0.55,0.2);
+  \draw[rope,line width=1.4pt] (\x-0.3,-0.1) -- (\x+0.3,-0.1);
+  \node[tiny,anchor=south] at (\x,-0.07) {\n};}
+\node[nq,minimum size=1.5mm] at (2.3,-0.1) {}; \node[naq,minimum size=1.5mm] at (1.7,-0.1) {};
+\node[nq,minimum size=1.5mm] at (4.0,-0.1) {}; \node[naq,minimum size=1.5mm] at (3.4,-0.1) {};
+\node[q,minimum size=1.5mm] at (0.0,-0.1) {}; \node[naq,minimum size=1.5mm] at (0.6,-0.1) {};
+\node[nq,minimum size=1.5mm] at (5.1,-0.1) {}; \node[aq,minimum size=1.5mm] at (5.7,-0.1) {};
+\node[lab,anchor=west,text=black!65,text width=6.2cm,align=left] at (6.6,-0.1) {four hadrons: each piece is a short string that oscillates for ever, a ``yo-yo''; panel (b) is the same story on the world sheet};
+\end{scope}
+\end{tikzpicture}

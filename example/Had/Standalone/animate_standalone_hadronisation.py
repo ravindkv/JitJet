@@ -1,28 +1,45 @@
 #!/usr/bin/env python3
 """Animated companion to standalone_hadronisation.py.
 
-Five scenes, about 50 s in total, show how the partons of the chapter-4 record turn into
+Nine scenes, about 90 s in total, show how the partons of the chapter-4 record turn into
 the primary hadrons of chapter 5. Every number on screen is computed with the classes of
 that script: the seed-1 hadronisation of ../../MPI/event_MPI.lhe (the record
-../event_Had.lhe) is replayed.
+../event_Had.lhe) is replayed. The first four are sketches that introduce the picture
+(the TikZ figures of the chapter, animated); the last five follow the record.
 
-  1  yoyo       A two-parton string of the event, drawn in the string rest frame: the
+  1  guests     The guest list: which combinations of quarks and antiquarks QCD lets out
+                of the house (mesons, baryons, the rare tetraquarks, pentaquarks and
+                glueballs) and which carry a net colour charge and are never free; the
+                string makes mesons and baryons only.
+  2  wedding    The mother's rope, b g g g g ubar, with its four knots; the rope snapping
+                in the order the script drew, a pair from the vacuum at every break; and
+                the procession of its sixteen hadrons with their quark content, the b in
+                the first and the ubar in the last.
+  3  snapshots  A generic rope in its rest frame, snapshot by snapshot: the ends fly
+                apart, pairs appear at the breaks, every piece becomes a yo-yo; on the
+                right the same history on the world sheet, with light-cone coordinates
+                x+- = t +- x and x+ x- = tau^2 read off the newest break.
+  4  ladder     The mother's rope break by break from the -v log: each row the string that
+                is left, the end that fires, the pair and the hadron, down to the final
+                two; then the chain of sixteen with the fifteen vacuum pairs between
+                neighbours.
+  5  yoyo       A two-parton string of the event, drawn in the string rest frame: the
                 quark and the antiquark fly apart at the speed of light with the string
                 between them, the string breaks at the vertices of the record one after
                 the other in time, and the pieces between neighbouring vertices become
                 the hadrons; on the right the same vertices appear in the (x+, x-)
                 plane on which the area law lines up.
-  2  bstring    The b quark's string in the (eta, phi) plane: the partons with the colour
+  6  bstring    The b quark's string in the (eta, phi) plane: the partons with the colour
                 line through them, then the hadrons popping out one by one in the order
                 the script produced them, from both ends, with the flavour chain and the
                 remaining mass of the string running down to W_min on the right.
-  3  kinks      The regions of the same string's world sheet: the two ends walk through
+  7  kinks      The regions of the same string's world sheet: the two ends walk through
                 the (i, k) grid of regions, swallowing gluon halves on the way; the
                 hadrons are placed where they formed.
-  4  event      The whole event: the 211 partons of stage 3 fade string by string, in
+  8  event      The whole event: the 211 partons of stage 3 fade string by string, in
                 order of mass, and the 365 primary hadrons take their place; the counter
                 follows the strings, the ministrings and the hadrons.
-  5  ensemble   The same partons hadronised again and again: the x_E = E_B/E_b of the b
+  9  ensemble   The same partons hadronised again and again: the x_E = E_B/E_b of the b
                 quark's hadron fills a histogram, its running mean settles on the
                 Lund-Bowler value next to PYTHIA 8 on the same partons, and the B species
                 fractions grow.
@@ -68,7 +85,7 @@ TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 FIGSIZE = (12.8, 7.2)
 STATS_FILE = HERE / "standalone_had_stats.stats.json"
 PY_FILE = HERE / "validate_hadronisation_with_pythia_record.json"
-SCENE_NAMES = {"1": "yoyo", "2": "bstring", "3": "kinks", "4": "event", "5": "ensemble"}
+SCENE_NAMES = {"1": "guests", "2": "wedding", "3": "snapshots", "4": "ladder", "5": "yoyo", "6": "bstring", "7": "kinks", "8": "event", "9": "ensemble"}
 HBARC = 0.19732698
 
 
@@ -150,9 +167,525 @@ class Scene:
         return self.nframes - 1
 
 
-# --- scene 1: the yo-yo -----------------------------------------------------------------------------------
+# --- quark content helpers for the introductory scenes --------------------------------------------------
+FLAV_ORDER = {2: 0, 1: 1, 3: 2, 4: 3, 5: 4}
+Q_COL = {"r": "#d62728", "g": "#2ca02c", "b": "#1f77b4", "ar": "#5fd3e8", "ag": "#e377c2", "ab": "#f2d74e"}
+COL_VAC = COL_GLU
+
+
+def flavs(pid: int):
+    """the quark flavours (signed) inside a quark, antiquark or diquark id"""
+    if core.is_diquark(pid):
+        q1, q2, _ = core.diquark_flavours(pid)
+        return [q1, q2] if pid > 0 else [-q1, -q2]
+    return [pid]
+
+
+def flav_tex(f: int) -> str:
+    n = core.QUARK_NAME[abs(f)]
+    return n if f > 0 else r"\bar{" + n + "}"
+
+
+def fl_tex(pid: int) -> str:
+    """a quark, antiquark or diquark id as TeX (without the dollars)"""
+    return "".join(flav_tex(f) for f in flavs(pid))
+
+
+def content_tex(info) -> str:
+    """the constituents of a hadron from the end flavour and the new one: quarks first, u d s order"""
+    fl = flavs(info["old"]) + flavs(info["new"])
+    q = sorted([f for f in fl if f > 0], key=lambda f: FLAV_ORDER.get(f, 9))
+    a = sorted([f for f in fl if f < 0], key=lambda f: FLAV_ORDER.get(-f, 9))
+    return "$" + "".join(flav_tex(f) for f in q + a) + "$"
+
+
+def pair_tex(new: int) -> str:
+    """the vacuum pair of a break, from the flavour that joined the hadron"""
+    q = [f for f in flavs(new) + flavs(-new) if f > 0]
+    a = [f for f in flavs(new) + flavs(-new) if f < 0]
+    if len(q) == 1:
+        return "$" + flav_tex(q[0]) + flav_tex(a[0]) + "$"
+    return "$(" + "".join(flav_tex(f) for f in q) + r")(" + "".join(flav_tex(f) for f in a) + ")$"
+
+
+def constituents(info):
+    """(left, right) constituent of a hadron along the string: quark end hadrons keep the old flavour on the left"""
+    return (info["old"], info["new"]) if info["end"] == "+" else (info["new"], info["old"])
+
+
+def ball(ax, x, y, col, ms=9, edge=None, alpha=1.0, z=6):
+    ax.plot([x], [y], "o", color=col, ms=ms, mec=edge or col, mew=1.0 if edge else 0.0, alpha=alpha, zorder=z, clip_on=False)
+
+
+def box(ax, x, y, w, h, fc, ec, alpha=1.0, ls="-", z=3):
+    from matplotlib.patches import FancyBboxPatch
+    ax.add_patch(FancyBboxPatch((x - w / 2, y - h / 2), w, h, boxstyle="round,pad=0.02,rounding_size=0.08",
+                                fc=fc, ec=ec, lw=1.0, ls=ls, alpha=alpha, zorder=z, clip_on=False))
+
+
+def coil(ax, x0, x1, y, col, alpha=1.0, amp=0.08, n=7):
+    s = np.linspace(0, 1, 120)
+    ax.plot(x0 + s * (x1 - x0), y + amp * np.sin(2 * math.pi * n * s), color=col, lw=1.6, alpha=alpha, zorder=5, clip_on=False)
+
+
+def blank_axes(fig, rect, xlim, ylim):
+    ax = fig.add_axes(rect)
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    ax.axis("off")
+    return ax
+
+
+# --- scene 1: the guest list ------------------------------------------------------------------------------
+class GuestsScene(Scene):
+    number, title = 1, "the guest list: which combinations of quarks QCD lets out"
+    ALLOWED = [
+        ("meson  $q\\bar q$", r"$3\otimes\bar 3 = 1\oplus 8$", r"$\pi^+\,(u\bar d)$, $K^-\,(s\bar u)$, $\bar B^{*0}\,(b\bar d)$", ["r", "ar"], None),
+        ("baryon  $qqq$", r"$3\otimes3\otimes3 = 1\oplus8\oplus8\oplus10$", r"$p\,(uud)$, $n\,(udd)$, $\Sigma^0\,(uds)$", ["r", "g", "b"], None),
+        (r"antibaryon  $\bar q\bar q\bar q$", "the conjugate", r"$\bar n\,(\bar u\bar d\bar d)$, $\bar\Sigma^0\,(\bar u\bar d\bar s)$", ["ar", "ag", "ab"], None),
+        (r"tetraquark  $qq\bar q\bar q$", "rare (LHCb); not from a string", r"$T_{cc}^+\,(cc\bar u\bar d)$", ["r", "g", "ar", "ag"], None),
+        (r"pentaquark  $qqqq\bar q$", "rare (LHCb); not from a string", r"$P_c^+\,(uudc\bar c)$", ["r", "g", "b", "r", "ar"], None),
+        ("glueball  $gg$, $ggg$", r"$8\otimes8 \ni 1$", "predicted, not yet certain", [], "gg"),
+    ]
+    FORBIDDEN = [
+        ("a lone quark  $q$", "a triplet 3", "never seen", ["r"], None),
+        ("a diquark  $qq$", r"$3\otimes3=\bar3\oplus6$: no singlet", r"but a fine string end (a $\bar 3$)", ["r", "g"], None),
+        (r"two quarks, one antiquark  $qq\bar q$", r"$n_q - n_{\bar q} = 1$", "no singlet", ["r", "g", "ar"], None),
+        ("a lone gluon  $g$", "an octet 8", "never seen", [], "g"),
+    ]
+
+    def __init__(self, phys, fps):
+        super().__init__(phys, fps)
+        self.per = max(int(0.55 * fps), 3)
+        self.nframes = self.per * 10 + int(2.5 * fps)
+
+    def keyframe(self):
+        return self.nframes - 1
+
+    def item(self, ax, x, y, spec, k0, k, bad):
+        a = ramp(k, k0, k0 + self.per)
+        if a <= 0:
+            return
+        name, line1, line2, balls, glue = spec
+        w = 0.55 * max(len(balls), 2) + 0.5
+        box(ax, x, y, w, 0.95, "#fdeaea" if bad else "#f4f4f2", "#c0392b" if bad else "#9a9a94", alpha=a, ls="--" if bad else "-")
+        if glue:
+            for dy in ([0.12, -0.12] if glue == "gg" else [0.0]):
+                coil(ax, x - w / 2 + 0.25, x + w / 2 - 0.25, y + dy, COL_GLU, alpha=a)
+        for j, c in enumerate(balls):
+            ball(ax, x + 0.55 * (j - (len(balls) - 1) / 2), y, Q_COL[c], ms=13, edge="#444444" if c.startswith("a") else None, alpha=a)
+        ax.text(x, y - 0.68, name, fontsize=9.5, weight="bold", ha="center", va="top", color=TEXT, alpha=a)
+        ax.text(x, y - 1.02, line1, fontsize=8.5, ha="center", va="top", color=TEXT2, alpha=a)
+        ax.text(x, y - 1.34, line2, fontsize=8.5, ha="center", va="top", color=TEXT2, alpha=a)
+
+    def draw(self, fig, k):
+        chrome(fig, self.number, self.title,
+               "A free particle must be a colour singlet: the colours of its quarks (red, green, blue) and the anticolours of its antiquarks "
+               "must cancel, otherwise the field it drags behind it would stretch to infinity. The rule is that the number of quarks minus the "
+               "number of antiquarks is a multiple of three. The Lund string makes only the first two kinds, mesons and baryons: a string end is "
+               "a quark, an antiquark or a diquark.")
+        ax = blank_axes(fig, [0.03, 0.12, 0.94, 0.80], (0, 16), (0, 7.4))
+        ax.text(0.2, 7.2, "allowed: colour singlets, the colours cancel", fontsize=11, weight="bold", color=TEXT, va="top")
+        xs = [1.3, 4.0, 6.7, 9.5, 12.3, 14.7]
+        for j, (x, spec) in enumerate(zip(xs, self.ALLOWED)):
+            self.item(ax, x, 5.8, spec, j * self.per, k, False)
+        a_head = ramp(k, 6 * self.per - self.per // 2, 6 * self.per)
+        ax.text(0.2, 3.55, "forbidden: a net colour charge, the field would stretch to infinity", fontsize=11, weight="bold", color="#c0392b", va="top", alpha=a_head)
+        for j, (x, spec) in enumerate(zip([1.3, 4.0, 7.0, 9.8], self.FORBIDDEN)):
+            self.item(ax, x, 2.2, spec, (6 + j) * self.per, k, True)
+        a_rule = ramp(k, 10 * self.per, 10 * self.per + self.fps)
+        ax.text(11.6, 2.95, "the rule", fontsize=10, weight="bold", color=TEXT, va="top", alpha=a_rule)
+        ax.text(11.6, 2.6, "a free hadron is invariant under SU(3) of colour:\n"
+                "$n_q - n_{\\bar q}$ a multiple of three, any number of gluons.\n"
+                "Every string break creates a pair, $q'\\bar q'$ or a diquark pair,\n"
+                "so flavour, charge and baryon number are conserved,\n"
+                "and the string's hadrons are mesons and baryons only.",
+                fontsize=8.5, color=TEXT2, va="top", alpha=a_rule, linespacing=1.35)
+
+
+# --- scene 2: the wedding -------------------------------------------------------------------------------
+class WeddingScene(Scene):
+    number, title = 2, "the wedding: the mother's rope snaps into a chain of mesons and baryons"
+
+    def __init__(self, phys, fps):
+        super().__init__(phys, fps)
+        self.x = phys.bstring
+        self.sysm = self.x["system"]
+        self.chain = self.sysm.ordered()                      # string order, from the b end
+        self.prod = list(self.sysm.hadrons)                   # production order
+        n = len(self.chain)
+        # which break (index j = between chain[j] and chain[j+1]) each production step creates
+        self.break_order, seen = [], set()
+        n_pos = len(self.sysm.pos.hadrons)
+        for hid, p, info in self.prod:
+            if info.get("final"):
+                j = n_pos - 1
+            elif info["end"] == "+":
+                j = info["rank"] - 1
+            else:
+                j = n - 1 - info["rank"]
+            if j not in seen and 0 <= j < n - 1:
+                seen.add(j)
+                self.break_order.append((j, info))
+        self.per = max(int(0.4 * fps), 3)
+        self.t_rope = int(1.6 * fps)
+        self.t_snap = self.t_rope + int(0.6 * fps)
+        self.nframes = self.t_snap + self.per * len(self.break_order) + int(2.5 * fps)
+
+    def keyframe(self):
+        return self.nframes - 1
+
+    def draw(self, fig, k):
+        ph = self.phys
+        x = self.x
+        n = len(self.chain)
+        chrome(fig, self.number, self.title,
+               f"Every parton of the record holds one end of a colour line and nobody may leave alone. The mother's rope, string 1, runs from the b "
+               f"through {len(x['partons']) - 2} gluons to a $\\bar u$ from the rest of the event (W = {x['w']:.0f} GeV). As the partons fly apart the rope "
+               f"snaps, in the order the script drew, and at every break a pair from the vacuum holds the two new ends; what walks out is a chain of "
+               f"{n} hadrons, couples and triples, with the b in the first and the $\\bar u$ in the last.")
+        ax = blank_axes(fig, [0.03, 0.12, 0.94, 0.80], (0, 16), (0, 7.6))
+        # (a) the rope with its kinks
+        ax.text(0.1, 7.5, "(a) the ropes of the record: the mother's, with four knots", fontsize=10.5, weight="bold", color=TEXT, va="top")
+        partons = x["partons"]
+        m = len(partons)
+        xs = np.linspace(1.0, 12.0, m)
+        ys = [6.35 + (0.35 if (j % 2 == 1 and 0 < j < m - 1) else (-0.25 if 0 < j < m - 1 else 0.0)) for j in range(m)]
+        a_rope = ramp(k, 0, self.t_rope)
+        seg = a_rope * (m - 1)
+        for j in range(m - 1):
+            f = min(max(seg - j, 0.0), 1.0)
+            if f > 0:
+                ax.plot([xs[j], xs[j] + f * (xs[j + 1] - xs[j])], [ys[j], ys[j] + f * (ys[j + 1] - ys[j])], color="#d98c1f", lw=4, solid_capstyle="round", zorder=2)
+        for j, (pid, p, mass, rows) in enumerate(partons):
+            if seg >= j - 0.05 or j == 0:
+                col = COL_B if pid == 5 else COL_BBAR if pid < 0 else COL_GLU
+                ball(ax, xs[j], ys[j], col, ms=11 if pid != 21 else 9)
+                lab = "g" if pid == 21 else "$" + fl_tex(pid) + "$"
+                ax.text(xs[j], ys[j] + (0.32 if ys[j] > 6.35 else -0.32), f"{lab}  {core.pt(p):.1f} GeV", fontsize=8, ha="center",
+                        va="bottom" if ys[j] > 6.35 else "top", color=col)
+        ax.text(13.0, 6.4, f"string 1 of {len(ph.had.strings)} colour singlets;\nthe mother's b carries {core.pt(partons[0][1]):.1f} GeV of $p_T$",
+                fontsize=8.5, color=TEXT2, va="center")
+        # (b) the rope snaps
+        a_b = ramp(k, self.t_rope, self.t_snap)
+        if a_b > 0:
+            ax.text(0.1, 5.15, "(b) the rope snaps: a pair from the vacuum at every break, in the order the script drew them", fontsize=10.5,
+                    weight="bold", color=TEXT, va="top", alpha=a_b)
+            x0, x1, yb = 1.0, 15.2, 4.3
+            slot = (x1 - x0) / n
+            n_br = 0 if k < self.t_snap else min(len(self.break_order), (k - self.t_snap) // self.per + 1)
+            made = self.break_order[:n_br]
+            cuts = sorted(j for j, _ in made)
+            edges = [x0] + [x0 + slot * (j + 1) for j in cuts] + [x1]
+            for e0, e1 in zip(edges, edges[1:]):
+                ax.plot([e0 + 0.16, e1 - 0.16], [yb, yb], color="#d98c1f", lw=4, alpha=a_b, solid_capstyle="round", zorder=2)
+            ball(ax, x0, yb, COL_B, ms=11, alpha=a_b)
+            ball(ax, x1, yb, COL_BBAR, ms=11, alpha=a_b)
+            ax.text(x0, yb - 0.3, "b", fontsize=9, ha="center", va="top", color=COL_B, alpha=a_b)
+            ax.text(x1, yb - 0.3, r"$\bar u$", fontsize=9, ha="center", va="top", color=COL_BBAR, alpha=a_b)
+            for i, (j, info) in enumerate(made):
+                a = 1.0 if i < n_br - 1 else ramp(k - self.t_snap - (n_br - 1) * self.per, 0, self.per)
+                xc = x0 + slot * (j + 1)
+                new = info["new"]
+                left, right = (new, -new) if info["end"] == "+" else (-new, new)
+                ball(ax, xc - 0.17, yb, COL_VAC, ms=8, edge="#222222" if left < 0 else None, alpha=a)
+                ball(ax, xc + 0.17, yb, COL_VAC, ms=8, edge="#222222" if right < 0 else None, alpha=a)
+                ax.text(xc, yb + 0.22, "$" + fl_tex(left) + r"\;" + fl_tex(right) + "$", fontsize=7.5, ha="center", va="bottom", color=COL_GLU, alpha=a)
+                ax.annotate("", (xc - 0.5, yb - 0.3), (xc - 0.2, yb - 0.3), arrowprops=dict(arrowstyle="->", color=COL_GLU, lw=0.8, alpha=a))
+                ax.annotate("", (xc + 0.5, yb - 0.3), (xc + 0.2, yb - 0.3), arrowprops=dict(arrowstyle="->", color=COL_GLU, lw=0.8, alpha=a))
+            ax.text(x0, 3.75, f"{n_br} of {n - 1} breaks: each costs the rope's own energy, 1 GeV per fermi, and pays for one pair", fontsize=8.5,
+                    color=TEXT2, va="top", alpha=a_b)
+        # (c) the procession
+        if k >= self.t_snap:
+            ax.text(0.1, 3.0, f"(c) the procession: the {n} hadrons in their order along the rope, with their quark content", fontsize=10.5,
+                    weight="bold", color=TEXT, va="top")
+            n_br = min(len(self.break_order), (k - self.t_snap) // self.per + 1)
+            have = set(j for j, _ in self.break_order[:n_br])
+            slot = 14.2 / n
+            for i, (hid, p, info) in enumerate(self.chain):
+                ready = (i == 0 or (i - 1) in have) and (i == n - 1 or i in have)
+                if not ready:
+                    continue
+                xc = 1.0 + slot * (i + 0.5)
+                left, right = constituents(info)
+                fl = flavs(left) + flavs(right)
+                bary = len(fl) == 3
+                col = COL_B if info["end"] == "+" else COL_BBAR
+                box(ax, xc, 1.95, slot * 0.9, 0.95, "white", col)
+                for jq, f in enumerate(fl):
+                    orig = (f == 5 and i == 0) or (f == -2 and i == n - 1)
+                    c = COL_B if (orig and f > 0) else COL_BBAR if orig else COL_VAC
+                    ball(ax, xc + 0.22 * (jq - (len(fl) - 1) / 2), 2.1, c, ms=7, edge="#222222" if (f < 0 and not orig) else None)
+                ax.text(xc, 1.75, content_tex(info), fontsize=7.5, ha="center", va="center", color=TEXT2)
+                ax.text(xc, 2.5, journey.hadron_tex(core.pname(hid)), fontsize=8.5, ha="center", va="bottom", color=col)
+            if n_br >= len(self.break_order):
+                a = ramp(k - self.t_snap - len(self.break_order) * self.per, 0, self.fps)
+                nb = sum(1 for _, _, info in self.chain if len(flavs(info["old"]) + flavs(info["new"])) == 3)
+                ax.text(1.0, 1.25, f"{n - nb} mesons and {nb} baryons (a diquark pair makes a baryon and an antibaryon side by side); red boxes from the b end, "
+                        f"blue from the $\\bar u$ end; the {ph.b['hadron']} ($b\\bar d$) keeps {100 * ph.b['x_e']:.0f}% of the mother's energy",
+                        fontsize=8.5, color=TEXT, va="top", alpha=a)
+
+
+# --- scene 3: the rope snapshot by snapshot, and light-cone coordinates ------------------------------------
+class SnapshotScene(Scene):
+    number, title = 3, "the rope in time, and why light-cone coordinates: a yo-yo at every break"
+    T_END = 6.5            # fm of string time shown
+    T_TURN = 3.0           # W / 2 kappa: when the original ends have given all their momentum to the rope
+    VERTICES = [(1.8, -1.0), (1.5, 0.5), (2.2, 1.7)]      # (t, x) in fm, string order from the q end
+
+    def __init__(self, phys, fps):
+        super().__init__(phys, fps)
+        self.t_run = int(6.5 * fps)
+        self.nframes = self.t_run + int(1.5 * fps)
+        self.dt = self.T_END / self.t_run
+        self.simulate()
+
+    def keyframe(self):
+        return int(self.t_run * 0.62)
+
+    def simulate(self):
+        """ends move at the speed of light; a piece reverses its two ends when their separation reaches its size"""
+        ends = [dict(x=0.0, v=-1.0, kind="q", born=0.0, id=0), dict(x=0.0, v=+1.0, kind="qbar", born=0.0, id=1)]
+        next_id = 2
+        pieces = [dict(L=None)]                       # piece i joins ends[2i] (left) and ends[2i+1] (right)
+        pending = sorted(self.VERTICES)
+        self.hist = []                                # per frame: list of (x, kind) and the pieces
+        self.vertex_frames = []
+        t = 0.0
+        for k in range(self.t_run + 1):
+            while pending and pending[0][0] <= t:
+                tb, xb = pending.pop(0)
+                # the piece that contains xb
+                for i, pc in enumerate(pieces):
+                    a, b = ends[2 * i]["x"], ends[2 * i + 1]["x"]
+                    if min(a, b) <= xb <= max(a, b):
+                        ends.insert(2 * i + 1, dict(x=xb, v=+1.0, kind="q", born=t, id=next_id + 1))
+                        ends.insert(2 * i + 1, dict(x=xb, v=-1.0, kind="qbar", born=t, id=next_id))
+                        next_id += 2
+                        pieces.insert(i + 1, dict(L=None))
+                        pieces[i]["L"] = None
+                        break
+                else:
+                    raise RuntimeError(f"vertex at x = {xb} lies outside the string at t = {tb}")
+                self.vertex_frames.append((k, t, xb))
+            if t >= self.T_TURN:
+                for e in (ends[0], ends[-1]):
+                    if e.get("turned") is None:
+                        e["v"], e["turned"] = -e["v"], True
+            for i, pc in enumerate(pieces):
+                le, ri = ends[2 * i], ends[2 * i + 1]
+                sep = ri["x"] - le["x"]
+                approaching = le["v"] > 0 and ri["v"] < 0
+                if pc["L"] is None and approaching:
+                    pc["L"] = max(sep, 0.05)
+                if pc["L"] is not None:
+                    if approaching and sep <= -pc["L"]:
+                        le["v"], ri["v"] = -1.0, +1.0
+                    elif (not approaching) and le["v"] < 0 and ri["v"] > 0 and sep >= pc["L"]:
+                        le["v"], ri["v"] = +1.0, -1.0
+            self.hist.append(([(e["x"], e["kind"], e["born"], e["id"]) for e in ends], [pc["L"] for pc in pieces], t))
+            for e in ends:
+                e["x"] += e["v"] * self.dt
+            t += self.dt
+
+    def draw(self, fig, k):
+        kk = min(k, self.t_run)
+        ends, Ls, t = self.hist[kk]
+        chrome(fig, self.number, self.title,
+               "Left: a quark and an antiquark created at one point fly apart at the speed of light, the rope between them stores 1 GeV per fermi, and "
+               "pairs appear at rest in the field at the break-ups; the pieces between neighbouring breaks are short strings whose ends run towards "
+               "each other, cross and run apart again for ever, the yo-yos that are the hadrons. Right: the same history on the world sheet. The light-like "
+               "directions are the natural axes, $x^\\pm = t \\pm x$: a massless end keeps one of them fixed and a break at proper time $\\tau$ has $x^+ x^- = \\tau^2$.")
+        # left: the snapshot
+        ax = blank_axes(fig, [0.04, 0.14, 0.50, 0.76], (-6.8, 6.8), (-0.9, 7.2))
+        ax.text(-6.6, 7.0, f"the rope at $t$ = {t:.1f} fm", fontsize=11, weight="bold", color=TEXT, va="top")
+        y0 = 4.6
+        n_pc = len(Ls)
+        for i in range(n_pc):
+            a, b = ends[2 * i][0], ends[2 * i + 1][0]
+            ax.plot([a, b], [y0, y0], color="#d98c1f", lw=6, solid_capstyle="round", zorder=2)
+        for i, (xx, kind, born, _) in enumerate(ends):
+            orig = born == 0.0
+            col = (COL_B if kind == "q" else COL_BBAR) if orig else COL_VAC
+            ball(ax, xx, y0, col, ms=12 if orig else 9, edge="#222222" if (kind == "qbar" and not orig) else None, z=7)
+            lab = ("$q$" if kind == "q" else r"$\bar q$") if orig else ("$q'$" if kind == "q" else r"$\bar q'$")
+            ax.text(xx, y0 + 0.32 + 0.3 * (i % 2), lab, fontsize=9, ha="center", va="bottom", color=col)
+        # the earlier snapshots, faded, as a ladder below
+        shown = [j for j in range(0, kk + 1, max(1, self.t_run // 9))][-5:]
+        for r, j in enumerate(shown):
+            e_j, L_j, t_j = self.hist[j]
+            yy = y0 - 0.65 * (len(shown) - r)
+            al = 0.25 + 0.5 * (r + 1) / len(shown)
+            for i in range(len(L_j)):
+                ax.plot([e_j[2 * i][0], e_j[2 * i + 1][0]], [yy, yy], color="#d98c1f", lw=3, alpha=al, solid_capstyle="round")
+            for xx, kind, born, _ in e_j:
+                col = (COL_B if kind == "q" else COL_BBAR) if born == 0.0 else COL_VAC
+                ball(ax, xx, yy, col, ms=6, alpha=al, z=5)
+            ax.text(-6.6, yy, f"$t$ = {t_j:.1f}", fontsize=7.5, color=TEXT2, va="center")
+        msg = (f"{n_pc} piece{'s' if n_pc > 1 else ''}: " + ("the rope fills with energy, $\\kappa r$" if n_pc == 1 else
+               f"{n_pc - 1} break{'s' if n_pc > 2 else ''}; " + ("every piece is a hadron, a yo-yo" if not any(L is None for L in Ls) else "the new pairs are pulled apart")))
+        ax.text(-6.6, 6.2, msg, fontsize=9, color=TEXT2, va="top")
+        ax.text(-6.6, -0.3, "earlier snapshots, bottom to top", fontsize=7.5, color=TEXT2, va="top")
+        # right: the world sheet in light-cone coordinates
+        ax2 = fig.add_axes([0.60, 0.19, 0.37, 0.70])
+        ax2.set_xlim(-6.8, 6.8)
+        ax2.set_ylim(0, 7.2)
+        ax2.set_xlabel("$x$  [fm]", fontsize=10)
+        ax2.set_ylabel("$t$  [fm]", fontsize=10)
+        style_2d(ax2, 8)
+        tt = np.linspace(0, t, 50)
+        ax2.fill_between(np.concatenate([-tt[::-1], tt]), np.concatenate([tt[::-1], tt]), t, color="#fbe9d2", lw=0, zorder=0)
+        ax2.plot([0, 6.8], [0, 6.8], color=COL_B, lw=1.5, ls="--")
+        ax2.plot([0, -6.8], [0, 6.8], color=COL_BBAR, lw=1.5, ls="--")
+        ax2.text(6.6, 7.05, "$x^- = 0$: the $q$ end\n(the $x^+$ axis)", fontsize=8, color=COL_B, ha="right", va="top")
+        ax2.text(-6.6, 7.05, "$x^+ = 0$: the $\\bar q$ end\n(the $x^-$ axis)", fontsize=8, color=COL_BBAR, ha="left", va="top")
+        xx = np.linspace(-6.5, 6.5, 200)
+        for tau in (1.0, 1.45, 2.0):
+            ax2.plot(xx, np.sqrt(xx ** 2 + tau ** 2), color=GRID, lw=0.8)
+        ax2.text(5.6, math.sqrt(5.6 ** 2 + 1.45 ** 2) + 0.15, r"$x^+ x^- = \tau^2$", fontsize=8, color=TEXT2, ha="right")
+        # world lines of every end so far
+        for xx, kind, born, eid in ends:
+            pts = [(e[0], self.hist[j][2]) for j in range(0, kk + 1) for e in self.hist[j][0] if e[3] == eid]
+            col = (COL_B if kind == "q" else COL_BBAR) if born == 0.0 else COL_VAC
+            ax2.plot([q[0] for q in pts], [q[1] for q in pts], color=col, lw=1.4, zorder=4)
+        ax2.axhline(t, color="#d98c1f", lw=2.5, zorder=3)
+        for i in range(len(Ls)):
+            ax2.plot([ends[2 * i][0], ends[2 * i + 1][0]], [t, t], color="#d98c1f", lw=5, solid_capstyle="round", zorder=3)
+        for kv, tv, xv in self.vertex_frames:
+            if kv <= kk:
+                ax2.plot([xv], [tv], "o", color="black", ms=6, mec="white", zorder=6)
+        # the newest vertex, projected on the light-cone axes
+        done = [(kv, tv, xv) for kv, tv, xv in self.vertex_frames if kv <= kk]
+        if done:
+            kv, tv, xv = done[-1]
+            xp, xm = tv + xv, tv - xv
+            ax2.plot([xv, xp / 2], [tv, xp / 2], color=COL_B, lw=1, ls=":")
+            ax2.plot([xv, -xm / 2], [tv, xm / 2], color=COL_BBAR, lw=1, ls=":")
+            ax2.annotate(f"$x^+$ = {xp:.1f}", (xp / 2, xp / 2), xytext=(6, -2), textcoords="offset points", fontsize=8, color=COL_B)
+            ax2.annotate(f"$x^-$ = {xm:.1f}", (-xm / 2, xm / 2), xytext=(-6, -2), textcoords="offset points", fontsize=8, color=COL_BBAR, ha="right")
+            ax2.text(0.5, 0.97, f"newest break: $x$ = {xv:.1f}, $t$ = {tv:.1f} fm\n$x^\\pm = t \\pm x$ = {xp:.1f}, {xm:.1f}; "
+                     f"$\\tau = \\sqrt{{x^+ x^-}}$ = {math.sqrt(max(xp * xm, 0)):.2f} fm", transform=ax2.transAxes, fontsize=8.5, color=TEXT, va="top", ha="center")
+        ax2.set_title("the world sheet: every end moves on a light-like line", fontsize=9, color=TEXT2)
+
+
+# --- scene 4: the ladder: the mother's rope break by break ---------------------------------------------------
+class LadderScene(Scene):
+    number, title = 4, "break by break: the mother's rope from both ends"
+
+    def __init__(self, phys, fps):
+        super().__init__(phys, fps)
+        self.x = phys.bstring
+        self.sysm = self.x["system"]
+        self.prod = list(self.sysm.hadrons)
+        self.chain = self.sysm.ordered()
+        # rows: (description, plus_end, minus_end, left hadrons, right hadrons, W after, new hadron info)
+        self.rows = [("the string the shower\nand the cousins left", self.sysm.ids[0], self.sysm.ids[-1], [], [], self.x["w"], None)]
+        plus, minus, left, right = self.sysm.ids[0], self.sysm.ids[-1], [], []
+        i = 0
+        while i < len(self.prod):
+            hid, p, info = self.prod[i]
+            if info.get("final"):
+                h2 = self.prod[i + 1]
+                fl = [(hid, info), (h2[0], h2[2])]
+                for h, inf in fl:
+                    (left if inf["end"] == "+" else right).append((h, inf))
+                self.rows.append((f"W = {info['w_rem']:.1f} < W_min: one last\n{pair_tex(info['new'])} pair, the final two", None, None, list(left), list(right), None, (hid, info, h2[0], h2[2])))
+                break
+            w_after = self.prod[i + 1][2]["w_rem"] if i + 1 < len(self.prod) else None
+            endname = "b end" if info["end"] == "+" else r"$\bar u$ end"
+            if core.is_diquark(info["new"]):
+                desc = f"{endname}: a diquark pair {pair_tex(info['new'])}"
+            elif core.is_diquark(info["old"]):
+                desc = f"{endname}: {pair_tex(info['new'])}; the quark\njoins the diquark, a baryon"
+            else:
+                desc = f"{endname}: a {pair_tex(info['new'])} pair"
+            if info["end"] == "+":
+                left.append((hid, info))
+                plus = -info["new"]
+            else:
+                right.append((hid, info))
+                minus = -info["new"]
+            self.rows.append((desc, plus, minus, list(left), list(right), w_after, (hid, info)))
+            i += 1
+        self.per = max(int(0.5 * fps), 3)
+        self.t_rows = self.per * len(self.rows)
+        self.nframes = self.t_rows + int(3.5 * fps)
+
+    def keyframe(self):
+        return self.nframes - 1
+
+    def draw(self, fig, k):
+        ph = self.phys
+        n = len(self.chain)
+        chrome(fig, self.number, self.title,
+               f"String 1 break by break, as the -v log recorded it (the gluon kinks are left out of the drawing). A break at the $\\bar u$ end creates a "
+               f"$u\\bar u$ pair: the new u joins the old $\\bar u$ into a $\\pi^0$ and the new $\\bar u$ is the end of what is left; a break at the b end "
+               f"creates a $d\\bar d$ pair and the $\\bar d$ joins the mother. The two ends take turns in random order until the remaining mass is below "
+               f"W_min and the final two share what is left: {n} hadrons, {n - 1} vacuum pairs, the b in the first, the $\\bar u$ in the last.")
+        ax = blank_axes(fig, [0.03, 0.11, 0.94, 0.82], (0, 16.5), (0, 18.6))
+        n_rows = min(len(self.rows), k // self.per + 1)
+        xc, bw = 8.6, 0.56
+        for r in range(n_rows):
+            desc, plus, minus, left, right, w_after, new = self.rows[r]
+            a = 1.0 if r < n_rows - 1 else ramp(k - r * self.per, 0, self.per)
+            y = 18.0 - 0.93 * r
+            ax.text(2.35, y, desc, fontsize=7, color=TEXT2, ha="right", va="center", alpha=a, linespacing=1.1)
+            if plus is not None:
+                W = w_after if w_after is not None else 0.0
+                half = (1.2 + 0.07 * (self.rows[r][5] or 1.2)) / 2
+                ax.plot([xc - half, xc + half], [y, y], color="#d98c1f", lw=4, solid_capstyle="round", alpha=a, zorder=2)
+                orig_p, orig_m = plus == self.sysm.ids[0], minus == self.sysm.ids[-1]
+                ball(ax, xc - half, y, COL_B if orig_p else COL_VAC, ms=8, alpha=a, edge=None if (orig_p or plus > 0) else "#222222")
+                ball(ax, xc + half, y, COL_BBAR if orig_m else COL_VAC, ms=8, alpha=a, edge=None if (orig_m or minus > 0) else "#222222")
+                ax.text(xc - half, y + 0.22, "$" + fl_tex(plus) + "$", fontsize=7.5, ha="center", va="bottom", color=COL_B if orig_p else COL_GLU, alpha=a)
+                ax.text(xc + half, y + 0.22, "$" + fl_tex(minus) + "$", fontsize=7.5, ha="center", va="bottom", color=COL_BBAR if orig_m else COL_GLU, alpha=a)
+                ax.text(15.3, y, f"W = {self.rows[r][5]:.1f} GeV" if r == 0 else f"{self.rows[r][5]:.1f}", fontsize=8, color=TEXT2, va="center", alpha=a)
+            else:
+                half = 0.5
+                ax.plot([xc - half, xc + half], [y, y], color="#d98c1f", lw=4, solid_capstyle="round", alpha=a, zorder=2)
+                hid1, info1, hid2, info2 = new
+                ball(ax, xc - 0.15, y, COL_VAC, ms=7, alpha=a, edge="#222222" if info1["new"] < 0 else None)
+                ball(ax, xc + 0.15, y, COL_VAC, ms=7, alpha=a, edge="#222222" if info1["new"] > 0 else None)
+                ax.text(xc, y + 0.22, pair_tex(info1["new"]), fontsize=7.5, ha="center", va="bottom", color=COL_GLU, alpha=a)
+                ax.text(15.3, y, f"{info1['w_rem']:.1f} < {info1['w_min']:.1f}", fontsize=8, color=TEXT2, va="center", alpha=a)
+            for j, (hid, info) in enumerate(reversed(left)):
+                xb = xc - half - 0.45 - bw / 2 - j * (bw + 0.05)
+                is_new = new is not None and (hid, info) in [(new[0], new[1])] + ([(new[2], new[3])] if len(new) == 4 else [])
+                box(ax, xb, y, bw, 0.62, "#fde8e8" if is_new else "white", COL_B, alpha=a)
+                ax.text(xb, y, journey.hadron_tex(core.pname(hid)), fontsize=7.5, ha="center", va="center", color=COL_B, alpha=a)
+            for j, (hid, info) in enumerate(reversed(right)):
+                xb = xc + half + 0.45 + bw / 2 + j * (bw + 0.05)
+                is_new = new is not None and (hid, info) in [(new[0], new[1])] + ([(new[2], new[3])] if len(new) == 4 else [])
+                box(ax, xb, y, bw, 0.62, "#e8ecfd" if is_new else "white", COL_BBAR, alpha=a)
+                ax.text(xb, y, journey.hadron_tex(core.pname(hid)), fontsize=7.5, ha="center", va="center", color=COL_BBAR, alpha=a)
+        # the chain with the pairs
+        if k >= self.t_rows:
+            a = ramp(k - self.t_rows, 0, self.fps)
+            yc = 18.0 - 0.93 * len(self.rows) - 0.9
+            ax.text(0.2, yc + 0.75, f"the chain: {n} hadrons along the rope, the {n - 1} vacuum pairs between neighbours (quark to the right, antiquark to the left)",
+                    fontsize=9, weight="bold", color=TEXT, va="bottom", alpha=a)
+            slot = 16.0 / n
+            for i, (hid, p, info) in enumerate(self.chain):
+                x0 = 0.25 + slot * (i + 0.5)
+                col = COL_B if info["end"] == "+" else COL_BBAR
+                fc = "#eeeeee" if info.get("final") else "white"
+                box(ax, x0, yc, slot * 0.86, 0.95, fc, col, alpha=a)
+                ax.text(x0, yc + 0.18, journey.hadron_tex(core.pname(hid)), fontsize=8, ha="center", va="center", color=col, alpha=a)
+                ax.text(x0, yc - 0.22, content_tex(info), fontsize=7, ha="center", va="center", color=TEXT2, alpha=a)
+                if i < n - 1:
+                    nxt = self.chain[i + 1][2]
+                    new = nxt["new"] if nxt["end"] == "-" else -constituents(info)[1]
+                    ax.text(x0 + slot / 2, yc - 0.72, pair_tex(new if new > 0 or core.is_diquark(new) else -new), fontsize=6.5, ha="center", va="center",
+                            color=COL_GLU, alpha=a, rotation=0)
+            ax.text(0.25 + slot * 0.5, yc - 1.15, "holds the mother's b", fontsize=7.5, ha="center", va="top", color=COL_B, alpha=a)
+            ax.text(0.25 + slot * (n - 0.5), yc - 1.15, r"holds the original $\bar u$", fontsize=7.5, ha="center", va="top", color=COL_BBAR, alpha=a)
+            ax.text(0.25 + slot * n / 2, yc - 1.15, "every other quark came out of the vacuum at a break; flavour, charge and baryon number are conserved at every step",
+                    fontsize=7.5, ha="center", va="top", color=TEXT2, alpha=a)
+
+
+# --- scene 5: the yo-yo -----------------------------------------------------------------------------------
 class YoyoScene(Scene):
-    number, title = 1, "a string breaks: the two-parton string in its rest frame"
+    number, title = 5, "a string breaks: the two-parton string in its rest frame"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -232,9 +765,9 @@ class YoyoScene(Scene):
         ax2.legend(loc="upper right", fontsize=8, frameon=False)
 
 
-# --- scene 2: the b string --------------------------------------------------------------------------------
+# --- scene 6: the b string --------------------------------------------------------------------------------
 class BStringScene(Scene):
-    number, title = 2, "the b quark's string: hadrons from both ends"
+    number, title = 6, "the b quark's string: hadrons from both ends"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -290,9 +823,9 @@ class BStringScene(Scene):
                      fontsize=9.5, color=TEXT, va="top")
 
 
-# --- scene 3: the regions ---------------------------------------------------------------------------------
+# --- scene 7: the regions ---------------------------------------------------------------------------------
 class KinkScene(Scene):
-    number, title = 3, "gluons as kinks: the two ends walk through the regions of the world sheet"
+    number, title = 7, "gluons as kinks: the two ends walk through the regions of the world sheet"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -369,9 +902,9 @@ class KinkScene(Scene):
         ax2.legend(loc="upper right", fontsize=8, frameon=False)
 
 
-# --- scene 4: the whole event -----------------------------------------------------------------------------
+# --- scene 8: the whole event -----------------------------------------------------------------------------
 class EventScene(Scene):
-    number, title = 4, "the whole event: 33 strings become 365 hadrons"
+    number, title = 8, "the whole event: 33 strings become 365 hadrons"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -439,9 +972,9 @@ class EventScene(Scene):
             y -= 0.04
 
 
-# --- scene 5: the ensemble --------------------------------------------------------------------------------
+# --- scene 9: the ensemble --------------------------------------------------------------------------------
 class EnsembleScene(Scene):
-    number, title = 5, "the same partons hadronised again and again: x_E of the b quark's hadron"
+    number, title = 9, "the same partons hadronised again and again: x_E of the b quark's hadron"
 
     def __init__(self, phys, fps, nevents):
         super().__init__(phys, fps)
@@ -501,7 +1034,15 @@ class EnsembleScene(Scene):
 def build_scenes(names: List[str], phys: Physics, args) -> List[Scene]:
     out = []
     for n in names:
-        if n == "yoyo":
+        if n == "guests":
+            out.append(GuestsScene(phys, args.fps))
+        elif n == "wedding":
+            out.append(WeddingScene(phys, args.fps))
+        elif n == "snapshots":
+            out.append(SnapshotScene(phys, args.fps))
+        elif n == "ladder":
+            out.append(LadderScene(phys, args.fps))
+        elif n == "yoyo":
             out.append(YoyoScene(phys, args.fps))
         elif n == "bstring":
             out.append(BStringScene(phys, args.fps))
@@ -568,7 +1109,7 @@ def write_stills(scenes, out: Path, dpi: int):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_hadronisation.mp4")
-    p.add_argument("--scene", default="all", help="all, or a comma list of yoyo,bstring,kinks,event,ensemble (or 1..5)")
+    p.add_argument("--scene", default="all", help="all, or a comma list of guests,wedding,snapshots,ladder,yoyo,bstring,kinks,event,ensemble (or 1..9)")
     p.add_argument("--fps", type=int, default=24)
     p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame")

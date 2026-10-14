@@ -175,10 +175,17 @@ full-chain event in `..._full_event1.txt`, both in the standalone format.
   masses and multiplicities and the ledger from quark to B hadron to jet.
   It replays the seed-1 hadronisation and reads the `--repeat` statistics
   (`standalone_had_stats*.stats.json`) and the validation files when present.
-* `animate_standalone_hadronisation.py`: five scenes (a two-parton string
-  breaking in its rest frame, the b quark's string hadron by hadron, the
-  two ends walking through the regions of the world sheet, the whole event
-  turning from partons into hadrons, the x_E ensemble), same CLI as the
-  chapter-2 film; `make figures` writes the stills PDF only.
+* `animate_standalone_hadronisation.py`: nine scenes, about 80 s. Four
+  introductory sketches (the guest list of colour singlets QCD allows; the
+  mother's rope snapping into its chain of sixteen hadrons with their
+  quark content; a generic rope snapshot by snapshot with its world sheet
+  in light-cone coordinates; the mother's rope break by break from the -v
+  log, down to the final two and the chain with its vacuum pairs), then
+  the five scenes that follow the record (a two-parton string breaking in
+  its rest frame, the b quark's string hadron by hadron, the two ends
+  walking through the regions of the world sheet, the whole event turning
+  from partons into hadrons, the x_E ensemble); same CLI as the chapter-2
+  film, `--scene guests,wedding,...` or `1..9`; `make figures` writes the
+  stills PDF only.
 
 `make records` regenerates `../event_Had.lhe`, `make figures` the three PDFs.

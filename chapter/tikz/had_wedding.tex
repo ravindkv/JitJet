@@ -1,0 +1,76 @@
+% ---------------------------------------------------------------------------
+% The wedding: the chain of mesons and baryons. (a) The mother's rope as the
+% shower left it, b g g g g ubar, one colour line with four kinks, and one of
+% the 32 other ropes of the record. (b) The rope snaps: at every break a
+% quark-antiquark pair (or a diquark pair) appears from the vacuum, each new
+% quark holding one of the new ends, so that nobody is ever alone. (c) The
+% procession that leaves the house: the sixteen hadrons of the b quark's
+% string in their order along the rope (the -v log, string 1), couples
+% (mesons, q qbar) and triples (baryons, qqq); the original b sits in the
+% first, the original ubar in the last, every other quark came out of the
+% vacuum at a break.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  q/.style={circle,inner sep=0pt,minimum size=2.4mm,fill=red!80!black},
+  aq/.style={circle,inner sep=0pt,minimum size=2.4mm,fill=blue!80!black},
+  g/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=green!50!black},
+  nq/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=green!50!black},
+  naq/.style={circle,inner sep=0pt,minimum size=2.0mm,fill=green!50!black,draw=black,line width=0.5pt},
+  rope/.style={orange!80!black,line width=2.2pt},
+  had/.style={rounded corners=2pt,draw=black!60,fill=white,minimum width=9.6mm,minimum height=8mm,inner sep=1pt},
+  lab/.style={font=\scriptsize,align=center},
+  tiny/.style={font=\tiny,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the ropes -----------------------------------------------------------------
+\node[head,anchor=west] at (-9.0,3.55) {(a) the ropes: every parton holds one end of a colour line};
+\node[q] (b) at (-8.4,2.4) {};
+\node[g] (g1) at (-6.4,2.95) {}; \node[g] (g2) at (-4.6,2.15) {}; \node[g] (g3) at (-2.6,2.85) {}; \node[g] (g4) at (-0.8,2.25) {};
+\node[aq] (ub) at (1.2,2.6) {};
+\draw[rope] (b) -- (g1) -- (g2) -- (g3) -- (g4) -- (ub);
+\node[lab,below=1pt of b] {$b$, the mother}; \node[lab,above=1pt of g1,text=green!40!black] {$g$}; \node[lab,below=1pt of g2,text=green!40!black] {$g$};
+\node[lab,above=1pt of g3,text=green!40!black] {$g$}; \node[lab,below=1pt of g4,text=green!40!black] {$g$}; \node[lab,below=1pt of ub] {$\bar u$, from a cousin};
+\node[lab,text=black!65] at (-3.6,1.35) {string~1 of the record: $W=69.3\GeV$, one rope with four knots};
+\node[q] (u2) at (3.6,2.4) {}; \node[aq] (s2) at (6.2,2.4) {};
+\draw[rope] (u2) -- (s2);
+\node[lab,below=1pt of u2] {$u$}; \node[lab,below=1pt of s2] {$\bar s$};
+\node[lab,text=black!65] at (4.9,3.05) {string~20: $27.5\GeV$};
+\node[lab,text=black!65,anchor=west] at (6.9,2.4) {$\ldots$ and 31 more ropes: 33 colour singlets,\\ every colour tag held at both ends};
+% ---------------- (b) the ropes snap ------------------------------------------------------------
+\node[head,anchor=west] at (-9.0,0.45) {(b) the ropes snap: a pair from the vacuum at every break, nobody is left alone};
+\node[q] (bb) at (-8.4,-0.5) {}; \node[aq] (ue) at (6.2,-0.5) {};
+\node[lab,below=1pt of bb] {$b$}; \node[lab,below=1pt of ue] {$\bar u$};
+\foreach \xl/\xr in {-8.3/-6.9, -5.9/-4.4, -3.4/-1.4, -0.4/1.6, 2.6/4.3, 5.3/6.1} {\draw[rope] (\xl,-0.5) -- (\xr,-0.5);}
+\foreach \x/\p/\ap in {-6.4/{$d$}/{$\bar d$}, -3.9/{$d$}/{$\bar d$}, -0.9/{$u$}/{$\bar u$}, 2.1/{$d$}/{$\bar d$}, 4.8/{$u$}/{$\bar u$}} {
+  \node[naq] at (\x-0.3,-0.5) {}; \node[nq] at (\x+0.3,-0.5) {};
+  \node[tiny,text=green!40!black] at (\x-0.3,-0.15) {\ap}; \node[tiny,text=green!40!black] at (\x+0.3,-0.15) {\p};
+  \draw[-{Stealth},green!40!black,thin] (\x-0.3,-0.75) -- (\x-0.6,-0.75); \draw[-{Stealth},green!40!black,thin] (\x+0.3,-0.75) -- (\x+0.6,-0.75);}
+\node[lab,text=black!65,anchor=west] at (6.9,-0.5) {each break: $\kappa\,r$ of rope energy\\ paid for one $q'\bar q'$ (or diquark) pair;\\ the pieces that are left are the hadrons};
+% ---------------- (c) the procession ------------------------------------------------------------
+\node[head,anchor=west] at (-9.0,-1.75) {(c) the procession: the sixteen hadrons of the mother's rope, couples and triples, in their order along the rope};
+\def\wedmeson#1#2#3#4#5{\node[had] (h#1) at (#1*1.1-8.25,-2.9) {};
+  \node[#4] at (#1*1.1-8.25-0.18,-2.75) {}; \node[#5] at (#1*1.1-8.25+0.18,-2.75) {};
+  \node[tiny] at (#1*1.1-8.25,-3.12) {#3}; \node[lab,anchor=south] at (#1*1.1-8.25,-2.48) {#2};}
+\def\wedbaryon#1#2#3#4#5#6{\node[had] (h#1) at (#1*1.1-8.25,-2.9) {};
+  \node[#4] at (#1*1.1-8.25-0.26,-2.75) {}; \node[#5] at (#1*1.1-8.25,-2.75) {}; \node[#6] at (#1*1.1-8.25+0.26,-2.75) {};
+  \node[tiny] at (#1*1.1-8.25,-3.12) {#3}; \node[lab,anchor=south] at (#1*1.1-8.25,-2.48) {#2};}
+\wedmeson{0}{$\bar B^{*0}$}{$b\bar d$}{q}{naq}
+\wedmeson{1}{$\eta'$}{$d\bar d$}{nq}{naq}
+\wedmeson{2}{$\rho^-$}{$d\bar u$}{nq}{naq}
+\wedmeson{3}{$\pi^0$}{$u\bar u$}{nq}{naq}
+\wedmeson{4}{$\rho^+$}{$u\bar d$}{nq}{naq}
+\wedmeson{5}{$\pi^0$}{$d\bar d$}{nq}{naq}
+\wedmeson{6}{$\pi^-$}{$d\bar u$}{nq}{naq}
+\wedmeson{7}{$\rho^+$}{$u\bar d$}{nq}{naq}
+\wedmeson{8}{$\pi^-$}{$d\bar u$}{nq}{naq}
+\wedmeson{9}{$K^+$}{$u\bar s$}{nq}{naq}
+\wedmeson{10}{$\bar K^{*0}$}{$s\bar d$}{nq}{naq}
+\wedmeson{11}{$\pi^0$}{$d\bar d$}{nq}{naq}
+\wedmeson{12}{$\pi^-$}{$d\bar u$}{nq}{naq}
+\wedbaryon{13}{$\Sigma^0$}{$uds$}{nq}{nq}{nq}
+\wedbaryon{14}{$\bar\Sigma^0$}{$\bar u\bar d\bar s$}{naq}{naq}{naq}
+\wedmeson{15}{$\pi^0$}{$u\bar u$}{nq}{aq}
+\draw[decorate,decoration={brace,mirror,amplitude=3pt}] (-8.7,-3.45) -- (-7.8,-3.45) node[midway,below=3pt,lab] {the\\ mother's $b$};
+\draw[decorate,decoration={brace,mirror,amplitude=3pt}] (7.8,-3.45) -- (8.7,-3.45) node[midway,below=3pt,lab] {the\\ original $\bar u$};
+\draw[decorate,decoration={brace,mirror,amplitude=3pt}] (-7.6,-3.45) -- (7.6,-3.45) node[midway,below=3pt,lab,text width=11cm] {the fourteen quarks and antiquarks in between came out of the vacuum at the breaks; a diquark pair gives a baryon and an antibaryon side by side};
+\end{tikzpicture}

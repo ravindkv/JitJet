@@ -68,6 +68,7 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PS/Standalone/veto_algorithm.pdf \
            example/ME/Standalone/theory_qqbar_bbbar.pdf \
            example/PS/Standalone/theory_parton_showering.pdf \
+           example/MnM/animate_whose_child_stills.pdf \
            example/MPI/journey_MPI.pdf \
            example/MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf \
            example/MPI/Standalone/theory_multiparton_interactions.pdf \
@@ -149,6 +150,10 @@ example/Had/Standalone/animate_standalone_hadronisation_stills.pdf: \
 		example/Had/Standalone/animate_standalone_hadronisation.py \
 		example/Had/Standalone/standalone_hadronisation.py example/Had/plot_journey_Had.py example/MPI/event_MPI.lhe
 	$(PYTHON) example/Had/Standalone/animate_standalone_hadronisation.py --stills $@ --no-video
+
+# Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
+example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
+	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
 
 # The four steps of the Sudakov veto algorithm with the numbers of the seed-1
 # shower (imports AlphaStrong from the shower script; needs matplotlib).

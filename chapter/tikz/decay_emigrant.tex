@@ -1,0 +1,44 @@
+% ---------------------------------------------------------------------------
+% The emigrants and the ledger. (a) What leaves the cone for good: the
+% neutrino, and the muon's energy that the calorimeter does not measure.
+% (b) The cone around the b quark through the stages, for our event, for the
+% ensemble, for the semileptonic decay of seed 4 and for the CMSSW event.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the cone ----------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.7) {(a) what the detector will and will not see};
+\fill[blue!6] (0,2.0) -- (6.0,3.7) -- (6.0,0.3) -- cycle;
+\draw[blue!50!black,thin] (0,2.0) -- (6.0,3.7); \draw[blue!50!black,thin] (0,2.0) -- (6.0,0.3);
+\node[lab,text=blue!50!black,anchor=north west] at (0.0,1.75) {$\dR<0.4$ around the $b$};
+\fill[black!70,rounded corners=2pt] (6.0,-0.2) rectangle (7.0,4.2); \node[lab,rotate=90,text=white] at (6.5,3.2) {ECAL+HCAL};
+\fill[black!25,rounded corners=2pt] (7.4,-0.2) rectangle (8.0,4.2); \node[lab,rotate=90] at (7.7,3.3) {muon chambers};
+\fill[red!80!black] (0,2.0) circle (1.2mm);
+\foreach \x/\y in {5.3/2.6,5.6/2.1,5.9/1.6,5.2/1.3,5.8/3.0,5.5/1.9,5.95/2.4} {\draw[black!60,thin] (0,2.0) -- (\x,\y); \fill[black!60] (\x,\y) circle (0.7mm);}
+\foreach \x/\y in {5.4/3.4,5.7/0.8} {\draw[violet!70,thin] (0,2.0) -- (\x,\y); \fill[violet!70] (\x,\y) circle (0.7mm);}
+\node[lab,text=black!65,anchor=west] at (0.6,3.05) {hadrons and photons: stopped in the calorimeter};
+\draw[-{Stealth[length=2mm]},orange!80!black,line width=1.3pt] (0,2.0) -- (7.9,2.9); \node[lab,text=orange!80!black,anchor=west] at (8.1,2.9) {$\mu$: a few GeV deposited, the rest walks through};
+\draw[-{Stealth[length=2mm]},green!50!black,line width=1.3pt,dashed] (0,2.0) -- (7.9,1.1); \node[lab,text=green!50!black,anchor=west] at (8.1,1.1) {$\nu$: nothing, ever};
+\node[lab,anchor=north west,text width=8.6cm,align=left,text=black!65] at (-0.3,-0.4) {the B's products carry $79\%$ of the cone, so one semileptonic decay in five costs the jet, on average, a tenth of its energy; the later chapters call the ratio of what is measured to what was there the \emph{response}, and this is its first and largest term};
+\end{scope}
+% ---------------- (b) the ledger ---------------------------------------------------------------------
+\begin{scope}[xshift=13.2cm]
+\node[head,anchor=west] at (-0.3,4.95) {(b) the cone around the $b$, $\dR<0.4$: \pt [GeV]};
+% y = (pt - 50)/14 ; bars for: our event, ensemble, seed 4, CMSSW (B- system)
+\draw[-{Stealth}] (0,0) -- (0,3.9); \foreach \y/\t in {0/50,1.43/70,2.86/90,3.57/100} {\draw (-0.06,\y) -- (0.06,\y); \node[lab,anchor=east] at (-0.08,\y) {\t};}
+\def\trio#1#2#3#4#5{% x0, primaries, final, visible, label
+  \fill[violet!70] (#1,0) rectangle (#1+0.55,{(#2-50)/14}); \node[font=\tiny,anchor=south,text=violet!70!black] at (#1+0.275,{(#2-50)/14}) {#2};
+  \fill[black!50] (#1+0.65,0) rectangle (#1+1.2,{(#3-50)/14}); \node[font=\tiny,anchor=south,text=black!65] at (#1+0.925,{(#3-50)/14}) {#3};
+  \fill[blue!60] (#1+1.3,0) rectangle (#1+1.85,{(#4-50)/14}); \node[font=\tiny,anchor=south,text=blue!70!black] at (#1+1.575,{(#4-50)/14}) {#4};
+  \node[lab,anchor=north,text width=2.2cm] at (#1+0.925,-0.05) {#5};}
+\trio{0.3}{99.23}{99.43}{99.43}{our event\\ (seed 1, hadronic)}
+\trio{2.6}{99.23}{98.79}{91.08}{400 decays\\ (mean)}
+\trio{4.9}{99.23}{99.2}{89.7}{seed 4\\ (semileptonic)}
+\trio{7.2}{94.28}{94.28}{56.8}{\CMSSW $B^-$\\ system}
+\node[lab,anchor=west,text=violet!70!black] at (0.1,-1.3) {primary hadrons}; \node[lab,anchor=west,text=black!65] at (3.0,-1.3) {all final particles}; \node[lab,anchor=west,text=blue!70!black] at (6.2,-1.3) {visible (no $\nu$)};
+\node[lab,anchor=north west,text width=8.0cm,align=left,text=black!65] at (-0.3,-1.6) {decays keep the sum, within what crosses the cone's border ($+0.20\GeV$ here, $-0.44$ on average); the neutrinos take theirs: $7.7\GeV$ on average, $19.8$ for seed 4, $37.5$ for the \CMSSW $B^-$, whose $e^-$ kept only $5.0$};
+\end{scope}
+\end{tikzpicture}

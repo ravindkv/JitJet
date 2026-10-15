@@ -1,0 +1,41 @@
+% ---------------------------------------------------------------------------
+% The stage as a flow chart: the steps of standalone_hadron_decays.py on the
+% left, the numbers of our event (the -v log, seed 1) on the right. Method
+% names of the Decayer class in grey.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=10mm,text width=5.6cm},
+  stepbox/.style={box,fill=orange!12},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.6cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!45,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.4) {the recipe};
+\node[head,anchor=west] at (6.7,1.4) {our event (seed 1)};
+\node[stepbox] (S1) at (2.5,0) {\textbf{1\; does it decay here?}\\ a decay table, open channels, and $c\tau_0<\tau_0^{\max}=10\,\mathrm{mm}$; otherwise it is the detector's};
+\node[stepbox,below=7mm of S1] (S2) {\textbf{2\; the clock and the walk}\\ $\tau=-\tau_0\ln r$; the decay vertex $x_{\mathrm{prod}}+\tau\,\vec p/m$, written to the vertex table};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; a change of name?}\\ $B^0$, $B_s^0$: oscillate with $\sin^2(x\tau/2\tau_0)$; if so flip the id and mark the products with status 92};
+\node[stepbox,below=7mm of S3] (S4) {\textbf{4\; the channel}\\ one random number against the cumulative branching ratios of the open channels (\code{onMode} 1, 2 or 3)};
+\node[stepbox,below=7mm of S4] (S5) {\textbf{5\; masses and multiplicity}\\ Breit--Wigner masses for broad products; partonic channels: colour singlets, Poisson $n$, chapter 5's flavour draws; redraw the channel if the products do not fit};
+\node[stepbox,below=7mm of S5] (S6) {\textbf{6\; the kinematics}\\ two bodies: $p^*$, isotropic; more: the M-generator, then the matrix-element weight of the \code{meMode}; boost to the lab};
+\node[stepbox,below=7mm of S6] (S7) {\textbf{7\; write and repeat}\\ the mother keeps its row with a negative status, the products get status 91 (92); they join the queue; check $\sum p$ and the charge at the end};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7} {\draw[flow] (\a) -- (\b);}
+\draw[flow] (S7.west) -- ++(-0.9,0) |- (S1.west);
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {decides\_to\_decay, open\_channels};
+\node[fn,anchor=south east] at (S2.north east) {draw\_lifetime, decay\_vertex};
+\node[fn,anchor=south east] at (S3.north east) {decay (mixing)};
+\node[fn,anchor=south east] at (S4.north east) {pick\_channel};
+\node[fn,anchor=south east] at (S5.north east) {mass\_sel, pick\_hadrons, chain};
+\node[fn,anchor=south east] at (S6.north east) {two\_body, mgenerator, me\_weight, dalitz};
+\node[fn,anchor=south east] at (S7.north east) {run, verify, listing};
+\node[numbox,anchor=west] (N1) at (6.7,0) {365 primary hadrons: 222 decay, 143 are left to the detector ($\pi^\pm$, $K^\pm$, $K_S^0$, $K_L^0$, $n$, $p$, $\Lambda$, $\Sigma$, \ldots); the queue grows to 376 decays in all};
+\node[numbox,anchor=west] (N2) at (6.7,0 |- S2) {$\bar B^0$ (row 1527): $r=0.768$, $\tau=2.237\,\mathrm{ps}=1.46\,\tau_0$, $\gamma\beta=31.3$, $L=21.0\,\mathrm{mm}$, vertex $(-9.13,-3.93,-18.51)$ mm; the $\bar b$'s $B^0$: $146.9\,\mathrm{mm}$; 330 rows in the vertex table};
+\node[numbox,anchor=west] (N3) at (6.7,0 |- S3) {$\bar B^0$: $P=0.289$, $r=0.519$, stays; $B^0$ (row 1590): $P=0.246$, $r=0.061$, decays as a $\bar B^0$ into $\Xi_c^0\pi^+\bar\Delta^-$ (status 92): one oscillation in the event};
+\node[numbox,anchor=west] (N4) at (6.7,0 |- S4) {$\bar B^0$: $r=0.840$ lands on channel 850 of 870, $\bar c s\,c\bar d$ (BR $7.4\%$, meMode 43); $B^{*}\to B\gamma$ had one channel; $D^0$ (row 2179): channel 64 of 84, $K^-\omega\pi^+$ ($3.0\%$)};
+\node[numbox,anchor=west] (N5) at (6.7,0 |- S5) {singlets $(\bar c s)(c\bar d)$, $m_{\mathrm{diff}}=1.255\GeV$, $\langle n\rangle=3.33$, $n=3$: $D_s^{*-}$, $D^{*0}\rho^+$ with Breit--Wigner masses $2.112$, $2.007$, $0.790\GeV$; the $\omega$ of the $D^0$ at $0.787$};
+\node[numbox,anchor=west] (N6) at (6.7,0 |- S6) {$\bar B^{*0}\to\bar B^0\gamma$: $p^*=45\,\mathrm{MeV}$; $\bar B^0$: three bodies, accepted at try 1 ($0.329$ of the maximum); $K^{*-}$: $\cos\theta=0.728$ with the $\cos^2\theta$ weight; $\omega$: 111 tries};
+\node[numbox,anchor=west] (N7) at (6.7,0 |- S7) {2251 rows: 222 primaries with status $-81\ldots-84$, 154 products that decayed ($-91$, $-92$), 606 final products (605 of status 91, 1 of 92), 143 surviving primaries; 749 final particles, charge $+2$, $\sum p$ conserved to $2\times10^{-8}\GeV$};
+\end{tikzpicture}

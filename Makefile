@@ -74,7 +74,10 @@ FIGURES := example/ME/journey_ME.pdf \
            example/MPI/Standalone/theory_multiparton_interactions.pdf \
            example/Had/journey_Had.pdf \
            example/Had/Standalone/animate_standalone_hadronisation_stills.pdf \
-           example/Had/Standalone/theory_hadronisation.pdf
+           example/Had/Standalone/theory_hadronisation.pdf \
+           example/Decay/journey_Decay.pdf \
+           example/Decay/Standalone/animate_standalone_hadron_decays_stills.pdf \
+           example/Decay/Standalone/theory_hadron_decays.pdf
 
 figures: $(FIGURES)
 
@@ -91,6 +94,11 @@ example/MPI/journey_MPI.pdf: example/MPI/plot_journey_MPI.py example/PS/plot_jou
 # Stage 4: the primary hadrons after the Lund string fragmentation.
 example/Had/journey_Had.pdf: example/Had/plot_journey_Had.py example/PS/plot_journey_PS.py example/Had/event_Had.lhe
 	$(PYTHON) example/Had/plot_journey_Had.py -i example/Had/event_Had.lhe -o $@
+
+# Stage 5: everything the detector will see, after the hadron decays.
+example/Decay/journey_Decay.pdf: example/Decay/plot_journey_Decay.py example/PS/plot_journey_PS.py example/Had/plot_journey_Had.py \
+		example/Decay/event_Decay.lhe
+	$(PYTHON) example/Decay/plot_journey_Decay.py -i example/Decay/event_Decay.lhe -o $@
 
 # Key frames of the 3D animation (one page per scene). The film itself takes
 # minutes to render and is not a build product: run the script without
@@ -151,6 +159,18 @@ example/Had/Standalone/animate_standalone_hadronisation_stills.pdf: \
 		example/Had/Standalone/standalone_hadronisation.py example/Had/plot_journey_Had.py example/MPI/event_MPI.lhe
 	$(PYTHON) example/Had/Standalone/animate_standalone_hadronisation.py --stills $@ --no-video
 
+# The plots behind the theory sections of chapter 6: the seed-1 decays replayed with the script's
+# classes, the --repeat statistics and the PYTHIA validation files when present (about 30 s).
+example/Decay/Standalone/theory_hadron_decays.pdf: example/Decay/Standalone/plot_theory_Decay.py \
+		example/Decay/Standalone/standalone_hadron_decays.py example/Decay/Standalone/decay_tables.json example/Had/event_Had.lhe
+	$(PYTHON) example/Decay/Standalone/plot_theory_Decay.py -o $@
+
+# Key frames of the hadron-decay animation (one page per scene; the film is not a build product).
+example/Decay/Standalone/animate_standalone_hadron_decays_stills.pdf: \
+		example/Decay/Standalone/animate_standalone_hadron_decays.py \
+		example/Decay/Standalone/standalone_hadron_decays.py example/Decay/Standalone/decay_tables.json example/Had/event_Had.lhe
+	$(PYTHON) example/Decay/Standalone/animate_standalone_hadron_decays.py --stills $@ --no-video
+
 # Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
 example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
 	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
@@ -163,7 +183,7 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
-RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe
+RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe
 
 records: $(RECORDS)
 
@@ -179,6 +199,10 @@ example/MPI/event_MPI.lhe: example/MPI/Standalone/standalone_multiparton_interac
 # Chapter 5 hadronises the record of chapter 4 (seed 1; the hadron table is embedded, no PYTHIA needed).
 example/Had/event_Had.lhe: example/Had/Standalone/standalone_hadronisation.py example/MPI/event_MPI.lhe
 	$(PYTHON) example/Had/Standalone/standalone_hadronisation.py -i example/MPI/event_MPI.lhe -o $@
+
+# Chapter 6 decays the primary hadrons of chapter 5 (seed 1; the decay tables are in decay_tables.json, no PYTHIA needed).
+example/Decay/event_Decay.lhe: example/Decay/Standalone/standalone_hadron_decays.py example/Decay/Standalone/decay_tables.json example/Had/event_Had.lhe
+	$(PYTHON) example/Decay/Standalone/standalone_hadron_decays.py -i example/Had/event_Had.lhe -o $@
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

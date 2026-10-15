@@ -1,0 +1,70 @@
+% ---------------------------------------------------------------------------
+% The grandchildren: (a) the decay tree of the mother's hadron in our event
+% (the -v log, rows 1012 to 2247), generation by generation from left to
+% right, with the distance each weakly decaying hadron walked before it
+% decayed; (b) the emigrant: a semileptonic decay of the same hadron (seed 4
+% of the ensemble) in which the neutrino leaves the cone for good and the
+% muon walks out through the calorimeter.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  had/.style={rounded corners=2pt,draw=black!60,fill=white,inner sep=2pt,align=center,font=\scriptsize},
+  bh/.style={had,draw=red!70!black,fill=red!8,font=\scriptsize\bfseries},
+  ch/.style={had,draw=orange!80!black,fill=orange!12},
+  fin/.style={had,draw=black!50,fill=black!5},
+  gam/.style={had,draw=yellow!60!black,fill=yellow!18},
+  lnk/.style={-{Stealth[length=1.6mm]},black!55,thin},
+  walk/.style={-{Stealth[length=2.2mm]},red!80!black,line width=1.5pt,dashed},
+  cwalk/.style={-{Stealth[length=2mm]},orange!80!black,line width=1.2pt,dashed},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the tree -----------------------------------------------------------------
+\node[head,anchor=west] at (-0.8,5.1) {(a) the grandchildren of the mother's hadron: six generations, three weak decays, three vertices};
+\node[bh] (B0) at (0,0) {$\bar B^{*0}$ ($b\bar d$)\\ row 1012};
+\node[gam] (g1) at (2.3,1.6) {$\gamma$, $0.57\GeV$};
+\node[bh] (B) at (2.3,0) {$\bar B^0$ ($b\bar d$)\\ row 1527};
+\draw[lnk] (B0) -- (g1); \draw[lnk] (B0) -- (B);
+\node[lab,anchor=north] at (1.15,-0.55) {strong: at the origin};
+\draw[walk] (B.east) -- (5.0,0);
+\node[lab,text=red!80!black,anchor=south] at (3.65,0.12) {$2.24\,\mathrm{ps}$: $L=21.0\,\mathrm{mm}$};
+\node[ch] (Ds) at (6.0,2.6) {$D_s^{*-}$ ($\bar c s$)};
+\node[ch] (D0s) at (6.0,0.0) {$D^{*0}$ ($c\bar u$)};
+\node[had] (rho) at (6.0,-2.3) {$\rho^+$ ($u\bar d$)};
+\foreach \t in {Ds,D0s,rho} {\draw[lnk] (5.0,0) -- (\t);}
+\node[lab,anchor=north] at (4.2,-3.55) {$b\to cW^-$, $W^-\to s\bar c$, spectator $\bar d$ (meMode 43, BR $7.4\%$)};
+\node[ch] (Dsm) at (8.5,3.2) {$D_s^-$ ($\bar c s$)}; \node[gam] (g2) at (8.5,2.1) {$\gamma$};
+\node[ch] (D0) at (8.5,0.6) {$D^0$ ($c\bar u$)}; \node[gam] (g3) at (8.5,-0.5) {$\gamma$};
+\node[fin] (pi1) at (8.5,-1.8) {$\pi^+$}; \node[had] (pi0a) at (8.5,-2.8) {$\pi^0$};
+\draw[lnk] (Ds) -- (Dsm); \draw[lnk] (Ds) -- (g2); \draw[lnk] (D0s) -- (D0); \draw[lnk] (D0s) -- (g3);
+\draw[lnk] (rho) -- (pi1); \draw[lnk] (rho) -- (pi0a);
+\draw[cwalk] (Dsm.east) -- (10.7,3.2); \node[lab,text=orange!80!black,anchor=south] at (9.6,3.3) {$+5.4\,\mathrm{mm}$};
+\draw[cwalk] (D0.east) -- (10.7,0.6); \node[lab,text=orange!80!black,anchor=south] at (9.6,0.7) {$+11.0\,\mathrm{mm}$};
+\node[had] (Ksm) at (11.6,3.9) {$K^{*-}$ ($s\bar u$)}; \node[had] (Ks0) at (11.6,2.6) {$K^{*0}$ ($d\bar s$)};
+\draw[lnk] (10.7,3.2) -- (Ksm); \draw[lnk] (10.7,3.2) -- (Ks0);
+\node[fin] (Km) at (11.6,1.4) {$K^-$ ($s\bar u$)}; \node[had] (om) at (11.6,0.5) {$\omega$}; \node[fin] (pi2) at (11.6,-0.4) {$\pi^+$};
+\draw[lnk] (10.7,0.6) -- (Km); \draw[lnk] (10.7,0.6) -- (om); \draw[lnk] (10.7,0.6) -- (pi2);
+\node[gam] (gg1) at (11.6,-2.8) {$\gamma\gamma$};
+\draw[lnk] (pi0a) -- (gg1);
+\node[fin] (K0b) at (14.2,4.4) {$\bar K^0\to K_S^0$}; \node[fin] (pim1) at (14.2,3.5) {$\pi^-$};
+\node[fin] (Kp) at (14.2,2.6) {$K^+$ ($u\bar s$)}; \node[fin] (pim2) at (14.2,1.7) {$\pi^-$};
+\draw[lnk] (Ksm) -- (K0b); \draw[lnk] (Ksm) -- (pim1); \draw[lnk] (Ks0) -- (Kp); \draw[lnk] (Ks0) -- (pim2);
+\node[fin] (pi3) at (14.2,0.9) {$\pi^+$}; \node[fin] (pim3) at (14.2,0.1) {$\pi^-$}; \node[gam] (gg2) at (14.2,-0.7) {$\pi^0\to\gamma\gamma$};
+\draw[lnk] (om) -- (pi3); \draw[lnk] (om) -- (pim3); \draw[lnk] (om) -- (gg2);
+\draw[decorate,decoration={brace,mirror,amplitude=4pt}] (15.6,4.8) -- (15.6,-3.5) node[midway,right=5pt,lab,text width=3.1cm,align=left] {16 final particles:\\ 8 charged ($3\pi^+$, $3\pi^-$, $K^+$, $K^-$),\\ 7 photons, one $K_S^0$;\\ no neutrino, nothing lost};
+\node[lab,anchor=north west,text=black!65] at (-0.8,-4.2) {the $\rho^+$, $D^{*}$, $K^{*}$, $\omega$ and $\pi^0$ decay where they are born (strong or electromagnetic, $\tau_0=0$ on this scale); only the three weak decays, $\bar B^0$, $D_s^-$ and $D^0$, walk};
+% ---------------- (b) the emigrant --------------------------------------------------------------
+\begin{scope}[yshift=-7.6cm]
+\node[head,anchor=west] at (-0.8,1.9) {(b) the emigrant: a neutrino leaves the family for good (seed 4)};
+\fill[blue!6] (0,0) -- (7.5,1.7) -- (7.5,-1.7) -- cycle;
+\draw[blue!50!black,thin] (0,0) -- (7.5,1.7); \draw[blue!50!black,thin] (0,0) -- (7.5,-1.7);
+\node[lab,text=blue!50!black,anchor=west] at (7.6,-1.6) {the cone $\dR<0.4$};
+\fill[red!80!black] (0,0) circle (1.3mm); \node[lab,anchor=north] at (0,-0.2) {$\bar B^0$};
+\draw[walk] (0,0) -- (1.6,0.1);
+\node[ch] (Dst) at (2.9,-0.9) {$D^{*+}$ ($c\bar d$)}; \draw[lnk] (1.6,0.1) -- (Dst);
+\foreach \x/\y in {5.2/-1.3,5.6/-0.9,6.1/-1.5,5.0/-0.6,6.4/-0.8} {\fill[black!60] (\x,\y) circle (0.8mm); \draw[lnk] (Dst) -- (\x,\y);}
+\draw[-{Stealth[length=2mm]},orange!80!black,line width=1.3pt] (1.6,0.1) -- (7.9,0.9); \node[lab,text=orange!80!black,anchor=west] at (8.0,0.9) {$\mu^-$: a track, then a hit in the muon chambers};
+\draw[-{Stealth[length=2mm]},green!50!black,line width=1.3pt,dashed] (1.6,0.1) -- (9.4,2.3); \node[lab,text=green!50!black,anchor=west] at (9.5,2.3) {$\bar\nu_\mu$: $19.8\GeV$, $12\%$ of the B, never seen: through the calorimeter and out};
+\draw[black!40,line width=3pt] (7.5,-2.0) -- (7.5,1.9); \node[lab,anchor=west,text=black!55] at (7.6,-0.3) {calorimeter};
+\node[lab,anchor=north west,text width=7.6cm,align=left] at (8.4,0.35) {$\bar B^0\to D^{*+}\mu^-\bar\nu_\mu$ (meMode 22, V$-$A): the muon is hard, the neutrino harder, and the detector will never recover it. The cone's \pt drops from $99.2$ to $89.7\GeV$ in that decay; over 400 decays of the same hadrons the visible \pt averages $91.1\pm12.2$ against $98.8\GeV$ of final particles. Our seed-1 decay is hadronic and loses nothing.};
+\end{scope}
+\end{tikzpicture}

@@ -1,0 +1,59 @@
+% ---------------------------------------------------------------------------
+% The decay table and the roll of the dice. (a) The 870 open channels of a
+% B0 as one bar of cumulative branching ratio, grouped by class, and the
+% random number of our event. (b) The onMode bookkeeping that keeps the sum
+% at one. (c) The partonic channel of our event turned into hadrons: the
+% partons paired into colour singlets, the multiplicity from a Poissonian
+% with a logarithmic mean, the hadrons from chapter 5's flavour machinery.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  box/.style={rounded corners=2pt,draw=black!60,fill=white,inner sep=3pt,align=center,font=\scriptsize},
+  flow/.style={-{Stealth[length=2mm]},thick,black!60}]
+% ---------------- (a) the bar --------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,5.0) {(a) the $B^0$ table: 870 channels, one bar};
+% bar from y = 0 (cumulative 1) to y = 4.2 (cumulative 0); widths: e 0.104, mu 0.104, tau 0.030, hadronic 0.264, partonic 0.498
+\fill[orange!70!black] (0,{4.2*(1-0.104)}) rectangle (1.2,4.2);
+\fill[green!55!black] (0,{4.2*(1-0.208)}) rectangle (1.2,{4.2*(1-0.104)});
+\fill[black!45] (0,{4.2*(1-0.238)}) rectangle (1.2,{4.2*(1-0.208)});
+\fill[violet!70] (0,{4.2*(1-0.502)}) rectangle (1.2,{4.2*(1-0.238)});
+\fill[blue!60] (0,0) rectangle (1.2,{4.2*(1-0.502)});
+\draw[black!60] (0,0) rectangle (1.2,4.2);
+\node[lab,anchor=west] at (1.3,{4.2*(1-0.052)}) {semileptonic, $e$: $10.4\%$};
+\node[lab,anchor=west] at (1.3,{4.2*(1-0.156)}) {semileptonic, $\mu$: $10.4\%$};
+\node[lab,anchor=west] at (1.3,{4.2*(1-0.223)}) {semileptonic, $\tau$: $3.0\%$};
+\node[lab,anchor=west] at (1.3,{4.2*(1-0.37)}) {explicit hadronic: $26.4\%$\\ ($D^{*-}D_s^{*+}$, $J/\psi K^{*0}$, \ldots)};
+\node[lab,anchor=west] at (1.3,{4.2*(1-0.75)}) {partonic: $49.8\%$\\ ($b\to c\,u\bar d$, $b\to c\,c\bar s$, \ldots)\\ hadronised on the spot};
+\draw[red!80!black,thick,-{Stealth[length=2mm]}] (-1.1,{4.2*(1-0.840)}) -- (-0.05,{4.2*(1-0.840)});
+\node[lab,text=red!80!black,anchor=east,text width=2.2cm] at (-1.15,{4.2*(1-0.840)}) {$r=0.840$\\ channel 850 of 870};
+\node[lab,anchor=north] at (0.6,-0.1) {$\sum\mathrm{BR}=1.0000$};
+\node[lab,anchor=north west,text width=5.2cm,align=left,text=black!65] at (-1.7,-0.55) {one random number picks the channel in proportion to its branching ratio; a $B^+$ ($u\bar b$) has 725 channels, $43\%$ partonic; a $D^0$ ($c\bar u$) 84, none partonic, $13\%$ semileptonic};
+\end{scope}
+% ---------------- (b) onMode ----------------------------------------------------------------------
+\begin{scope}[xshift=7.0cm]
+\node[head,anchor=west] at (-0.3,5.0) {(b) \code{onMode}: whose channel is it?};
+\node[box,anchor=north west,text width=6.0cm,align=left] at (-0.3,4.5) {%
+\textbf{1} \; open for the particle and the antiparticle\\
+\textbf{2} \; open for the particle only ($B^0$)\\
+\textbf{3} \; open for the antiparticle only ($\bar B^0$)\\
+\textbf{0} \; closed};
+\node[lab,anchor=north west,text width=5.5cm,align=left] at (-0.3,2.9) {the two largest partonic channels of the $B^0$ table, $0.316$ each ($b\to c\,\bar u d$ with the spectator, meMode 23), are such a pair: one with mode~2 for the $B^0$, its mirror with mode~3 for the $\bar B^0$. Count both and the branching ratios sum to $1.32$, the semileptonic fraction drops by a quarter and the lepton yield of every $b$ jet is wrong.};
+\node[lab,anchor=north west,text width=5.5cm,align=left,text=black!65] at (-0.3,0.55) {the script reads the dumped table as \PYTHIA does: a $\bar B^0$ sees modes 1 and 3, with the products conjugated};
+\end{scope}
+% ---------------- (c) partons to hadrons ------------------------------------------------------------
+\begin{scope}[xshift=15.6cm]
+\node[head,anchor=west] at (-0.3,5.0) {(c) channel 850: $\bar B^0\to\bar c\,s\;c\,\bar d$ (meMode 43)};
+\node[box] (p) at (0.9,4.1) {$\bar c\;s\;c\;\bar d$\\ $b\to cW^-$, $W^-\to s\bar c$, spectator $\bar d$};
+\node[box] (s1) at (-0.6,2.7) {singlet $(\bar c\,s)$}; \node[box] (s2) at (2.4,2.7) {singlet $(c\,\bar d)$};
+\draw[flow] (p) -- (s1); \draw[flow] (p) -- (s2);
+\node[lab,anchor=west,text=black!65] at (3.6,2.7) {or $(\bar c\,c)(s\,\bar d)$\\ with $P=0.5$};
+\node[box,text width=7.6cm,align=left] (n) at (1.4,1.3) {$m_{\mathrm{diff}}=5.280-0-4.025=1.255\GeV$\\ $\langle n\rangle=\tfrac{0}{2}+\tfrac{4}{4}+4\ln\tfrac{1.255}{0.7}=3.33$\\ Poisson, at least 3: $n=3$ (fifth try)};
+\draw[flow] (s1) -- (n); \draw[flow] (s2) -- (n);
+\node[box] (h1) at (-0.6,-0.2) {$D_s^{*-}$ ($\bar c s$)\\ $2.112\GeV$}; \node[box] (h2) at (2.4,-0.2) {$D^{*0}\;\rho^+$ ($c\bar u$, $u\bar d$)\\ $2.007$, $0.790\GeV$ (Breit--Wigner)};
+\draw[flow] (n) -- (h1); \draw[flow] (n) -- (h2);
+\node[lab,anchor=north west,text width=6.4cm,align=left,text=black!65] at (-1.6,-0.75) {one hadron from the first singlet, two from the second, flavours and spins drawn with chapter 5's \code{StringFlav}; then three-body phase space};
+\end{scope}
+\end{tikzpicture}

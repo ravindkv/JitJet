@@ -1,0 +1,119 @@
+
+2000 events analysed
+quantity                             PYTHIA mean       std
+n_final                                 458.8175  174.8834
+n_charged                               210.0190   80.7198
+n_photons                               210.9170   82.3286
+n_neutrinos                               1.3185    1.1896
+n_electrons                               3.2450    2.6790
+n_muons                                   0.5685    0.7578
+n_hadrons_final                         242.7685   93.0007
+n_primary_stable                         86.1835   34.7412
+n_final_central                         204.3115   89.5004
+n_charged_central                        90.9710   40.3436
+e_neutrinos                             170.5146  266.7866
+pt_neutrinos                             12.2238   15.2600
+n_decays                                205.0420   78.9744
+n_oscillated                              0.1825    0.3990
+bbar tau_ps                               1.5435    1.5080
+bbar L                                  152.2656  159.8304
+bbar Lxy                                  7.4062    7.7163
+bbar gamma                              329.9166   87.8557
+bbar n_direct                             3.5895    1.3468
+bbar n_final                             11.0750    3.6020
+bbar n_charged_final                      4.7585    1.9345
+bbar n_photons_final                      4.8985    3.2305
+bbar n_neutrinos                          0.5280    0.7150
+bbar e_nu                               146.5212  263.4384
+bbar e_nu_frac                            0.0838    0.1430
+bbar pt_lepton                            6.5113   12.2559
+bbar n_tracks                             4.7585    1.9345
+bbar n_tracks_d0_100um                    2.8905    1.9213
+bbar max_d0                               0.7936    0.9813
+bbar L_charm                             64.5093   92.8261
+bbar d0 of the tracks                     0.3428    0.5801
+bbar oscillated                           0.0325    0.1773
+bbar lepton from the B                    0.1920    0.3939
+bbar R=0.4 primaries pt                 106.7043   20.1733
+bbar R=0.4 primaries m                   15.7481    6.5268
+bbar R=0.4 primaries n                    6.2725    2.7025
+bbar R=0.4 final pt                     106.2818   20.2664
+bbar R=0.4 final m                       13.1381    5.0812
+bbar R=0.4 final n                       20.6945    5.9026
+bbar R=0.4 visible pt                    99.0997   22.7652
+bbar R=0.4 visible m                     12.5149    5.0065
+bbar R=0.4 visible n                     20.1840    6.0284
+bbar R=0.4 charged pt                    59.1689   22.6175
+bbar R=0.4 charged m                      7.0577    3.6471
+bbar R=0.4 charged n                      9.0655    3.2532
+bbar R=0.4 B share                        0.8000    0.1456
+bbar R=0.4 nu pT in cone                  7.1904   12.8809
+bbar R=0.8 primaries pt                 114.7134   16.5123
+bbar R=0.8 primaries m                   31.1906   11.2006
+bbar R=0.8 primaries n                   11.8145    4.7548
+bbar R=0.8 final pt                     114.9778   16.4205
+bbar R=0.8 final m                       26.4534    9.3126
+bbar R=0.8 final n                       31.9150    9.3176
+bbar R=0.8 visible pt                   107.7818   19.9484
+bbar R=0.8 visible m                     25.4475    9.1827
+bbar R=0.8 visible n                     31.3810    9.3928
+bbar R=0.8 charged pt                    64.2715   21.7705
+bbar R=0.8 charged m                     14.4435    6.3558
+bbar R=0.8 charged n                     14.2585    4.9215
+bbar R=0.8 B share                        0.7411    0.1629
+bbar R=0.8 nu pT in cone                  7.2118   12.8758
+  bbar decay classes (PYTHIA): hadronic 77.0%, semileptonic (mu) 10.4%, semileptonic (e) 9.9%, semileptonic (tau) 2.8%
+  bbar weakly decaying hadron (PYTHIA): B+ 43.7%, B0 41.0%, B_s0 10.7%, Lambda_bbar0 3.5%, Xi_bbar0 0.7%, Xi_bbar+ 0.4%
+  bbar charm hadron (PYTHIA): Dbar0 42.9%, D- 17.1%, D_s+ 12.0%, D0 7.0%, D+ 5.8%, D_s- 5.0%, Lambda_cbar- 4.5%, none 4.5%
+b tau_ps                                  1.5936    1.5999
+b L                                      18.7214   22.6607
+b Lxy                                     7.9077    8.7256
+b gamma                                  38.8220   16.0548
+b n_direct                                3.5578    1.3596
+b n_final                                11.0334    3.8178
+b n_charged_final                         4.7676    1.9932
+b n_photons_final                         4.8311    3.4223
+b n_neutrinos                             0.5535    0.7492
+b e_nu                                   18.6211   35.5633
+b e_nu_frac                               0.0906    0.1531
+b pt_lepton                               6.7548   12.6114
+b n_tracks                                4.7676    1.9932
+b n_tracks_d0_100um                       2.9564    1.9870
+b max_d0                                  0.8208    0.9952
+b L_charm                                 8.1137   12.5694
+b d0 of the tracks                        0.3578    0.5966
+b oscillated                              0.0371    0.1890
+b lepton from the B                       0.2136    0.4098
+b R=0.4 primaries pt                    109.1654   27.4919
+b R=0.4 primaries m                      14.1945    5.3249
+b R=0.4 primaries n                       6.0984    2.7383
+b R=0.4 final pt                        109.3200   27.1961
+b R=0.4 final m                          12.3186    4.3159
+b R=0.4 final n                          20.9618    6.1822
+b R=0.4 visible pt                      101.4194   28.5860
+b R=0.4 visible m                        11.6778    4.3288
+b R=0.4 visible n                        20.4282    6.3267
+b R=0.4 charged pt                       60.5790   25.4099
+b R=0.4 charged m                         6.6653    3.0263
+b R=0.4 charged n                         9.1603    3.3551
+b R=0.4 B share                           0.7988    0.1501
+b R=0.4 nu pT in cone                     7.9097   14.3083
+b R=0.8 primaries pt                    118.0923   24.9908
+b R=0.8 primaries m                      27.7203   10.0914
+b R=0.8 primaries n                      11.6966    4.9269
+b R=0.8 final pt                        119.1983   24.3400
+b R=0.8 final m                          25.4380    8.8594
+b R=0.8 final n                          33.3077   10.0763
+b R=0.8 visible pt                      111.2795   26.2415
+b R=0.8 visible m                        24.4121    8.7604
+b R=0.8 visible n                        32.7509   10.1698
+b R=0.8 charged pt                       66.1415   24.7021
+b R=0.8 charged m                        13.8799    6.0148
+b R=0.8 charged n                        14.6132    5.0918
+b R=0.8 B share                           0.7323    0.1690
+b R=0.8 nu pT in cone                     7.9357   14.3155
+  b decay classes (PYTHIA): hadronic 74.3%, semileptonic (mu) 11.4%, semileptonic (e) 10.9%, semileptonic (tau) 3.4%
+  b weakly decaying hadron (PYTHIA): B- 43.5%, Bbar0 42.8%, B_sbar0 9.5%, Lambda_b0 3.8%, Xi_b0 0.3%, Xi_b- 0.2%
+  b charm hadron (PYTHIA): D0 42.2%, D+ 21.0%, D_s- 9.7%, Dbar0 7.1%, D- 5.6%, D_s+ 4.7%, Lambda_c+ 4.5%, none 3.9%
+species (PYTHIA, % of all final particles): gamma 46.0, pi+ 18.6, pi- 18.4, K+ 2.5, K- 2.5, K_S0 2.4, K_L0 2.4, p+ 1.2, n0 1.2, pbar- 1.0, nbar0 1.0, Lambda0 0.4, Lambdabar0 0.4, e- 0.4, e+ 0.4, Sigma+ 0.1
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/Decay/Standalone/validate_decays_with_pythia_full.json

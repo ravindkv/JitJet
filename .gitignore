@@ -45,3 +45,10 @@ example/MPI/Standalone/validate_mpi_with_pythia.lhe
 example/Had/Standalone/validate_hadronisation_with_pythia.lhe
 example/Had/journey_Had.png
 example/Had/Standalone/animate_standalone_hadronisation.mp4
+# the Les Houches input written for the decay validation (copies of the hard event)
+example/Decay/Standalone/validate_decays_with_pythia.lhe
+example/Decay/journey_Decay.png
+example/Decay/Standalone/animate_standalone_hadron_decays.mp4
+example/Decay/Standalone/animate_video.out
+example/Decay/animate_standalone_hadron_decays.mp4
+

@@ -1,0 +1,30 @@
+wrote /dev/null (2251 rows, 749 final particles)
+wrote standalone_decay_stats.json
+averages over 400 decays of the same 365 primary hadrons (seeds 1..400):
+  n_final            mean =   740.335  std =   11.684
+  n_charged          mean =   331.225  std =    7.771
+  n_photons          mean =   329.950  std =   12.976
+  n_neutrinos        mean =     3.095  std =    1.708
+  n_electrons        mean =     5.340  std =    3.036
+  n_muons            mean =     1.380  std =    1.049
+  n_hadrons_final    mean =   400.570  std =    7.235
+  n_primary_stable   mean =   143.000  std =    0.000
+  n_final_central    mean =   395.680  std =    8.950
+  n_charged_central  mean =   169.650  std =    6.117
+  e_neutrinos        mean =   262.267  std =  230.031
+  pt_neutrinos       mean =    13.967  std =   12.625
+  n_decays           mean =   371.757  std =    9.362
+  n_oscillated       mean =     0.562  std =    0.711
+  bbar: hadrons B0 79%, Bbar0 21%; oscillated 20.8%
+     tau = 1.631 +- 1.639 ps, L = 117.20 +- 117.78 mm (L_xy 7.60), gamma = 239.7; 3.53 direct products, 10.9 +- 3.8 final (4.8 charged, 0.55 neutrinos with 119.13 GeV = 9.4% of the B energy)
+     classes: hadronic 78.8%, semileptonic (mu) 11.0%, semileptonic (e) 7.8%, semileptonic (tau) 2.5%; a lepton (e or mu) among the final particles in 46.0% (from the B itself 21.2%), pT = 13.19 GeV
+     tracks: 4.8 per B, 3.0 with d0 > 100 um, largest d0 838 um; median d0 165 um
+     cone R = 0.4: primaries pT 91.34 -> final 92.42 +- 0.80, visible 84.68 +- 12.75, charged 46.32; n 4.0 -> 18.6 (6.7 charged); m 7.59 -> 8.79; B share 0.888
+     cone R = 0.8: primaries pT 116.92 -> final 111.26 +- 3.84, visible 102.44 +- 13.45, charged 54.76; n 11.0 -> 37.8 (13.5 charged); m 47.92 -> 39.53; B share 0.739
+  b: hadrons Bbar0 83%, B0 17%; oscillated 16.8%
+     tau = 1.548 +- 1.458 ps, L = 14.46 +- 13.64 mm (L_xy 6.85), gamma = 31.2; 3.53 direct products, 11.1 +- 3.7 final (4.8 charged, 0.57 neutrinos with 16.36 GeV = 9.9% of the B energy)
+     classes: hadronic 74.8%, semileptonic (e) 13.0%, semileptonic (mu) 11.0%, semileptonic (tau) 1.2%; a lepton (e or mu) among the final particles in 48.5% (from the B itself 25.2%), pT = 14.06 GeV
+     tracks: 4.8 per B, 3.0 with d0 > 100 um, largest d0 874 um; median d0 166 um
+     cone R = 0.4: primaries pT 99.23 -> final 98.79 +- 0.68, visible 91.08 +- 12.20, charged 49.92; n 6.0 -> 24.7 (9.5 charged); m 16.09 -> 14.22; B share 0.788
+     cone R = 0.8: primaries pT 105.97 -> final 107.21 +- 0.79, visible 99.49 +- 12.18, charged 52.75; n 14.0 -> 43.6 (16.6 charged); m 35.88 -> 36.87; B share 0.727
+wrote standalone_decay_stats.stats.json

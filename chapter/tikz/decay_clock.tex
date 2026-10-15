@@ -1,0 +1,58 @@
+% ---------------------------------------------------------------------------
+% Lifetimes. (a) The decay law: the survivors of a population follow
+% exp(-t/tau0) and the clock has no memory; the proper times drawn for the
+% two B hadrons of our event are marked. (b) The walk in the laboratory,
+% L = gamma beta c tau: the b quark's B at gamma beta = 31 and the bbar's at
+% 239, to the same proper-time scale. (c) The ladder of c tau0 with the
+% generator's 10 mm line: who decays in PYTHIA and who in the detector.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  walk/.style={-{Stealth[length=2.2mm]},line width=1.6pt}]
+% ---------------- (a) the decay law --------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.4,4.75) {(a) the clock without memory};
+\draw[-{Stealth}] (0,0) -- (5.6,0) node[below left,lab] {$t/\tau_0$};
+\draw[-{Stealth}] (0,0) -- (0,4.3) node[left,lab] {$N(t)/N_0$};
+\foreach \x in {1,2,3,4,5} {\draw (\x,-0.06) -- (\x,0.06); \node[lab,anchor=north] at (\x,-0.08) {\x};}
+\foreach \y/\t in {1/0.25,2/0.5,3/0.75,4/1} {\draw (-0.06,\y) -- (0.06,\y); \node[lab,anchor=east] at (-0.08,\y) {\t};}
+\draw[blue!70!black,thick] plot[domain=0:5.5,samples=60] (\x,{4*exp(-\x)});
+\node[lab,text=blue!70!black,anchor=west] at (2.3,2.4) {$N(t)=N_0\,e^{-t/\tau_0}$};
+\draw[dashed,black!60] (1,0) -- (1,{4*exp(-1)}) -- (0,{4*exp(-1)});
+\node[lab,anchor=west] at (1.05,1.75) {$\tau_0$: $37\%$ left};
+\draw[red!80!black,thick] (1.46,0) -- (1.46,{4*exp(-1.46)}); \fill[red!80!black] (1.46,{4*exp(-1.46)}) circle (1mm);
+\node[lab,text=red!80!black,anchor=west] at (1.6,1.15) {the $b$'s $\bar B^0$: $t=1.46\,\tau_0=2.24\,\mathrm{ps}$\\ ($r=0.768$, $23\%$ would still be alive)};
+\draw[blue!80!black,thick] (1.34,0) -- (1.34,{4*exp(-1.34)}); \fill[blue!80!black] (1.34,{4*exp(-1.34)}) circle (1mm);
+\node[lab,text=blue!80!black,anchor=west] at (2.3,0.55) {the $\bar b$'s $B^0$: $1.34\,\tau_0=2.05\,\mathrm{ps}$};
+\node[lab,anchor=north west,text width=5.6cm,align=left,text=black!65] at (-0.4,-0.55) {the chance to decay in the next picosecond is the same at $t=0$ and at $t=5\,\mathrm{ps}$; a draw $t=-\tau_0\ln r$ reproduces the curve, $\tau_0=1.530\,\mathrm{ps}=0.459\,\mathrm{mm}/c$ for a $B^0$};
+\end{scope}
+% ---------------- (b) the walk ------------------------------------------------------------------
+\begin{scope}[xshift=7.0cm]
+\node[head,anchor=west] at (-0.4,4.75) {(b) the walk: $L=\gamma\beta\,c\tau$};
+\fill[black!70] (0,3.2) circle (1.2mm); \node[lab,anchor=east] at (-0.15,3.2) {primary\\ vertex};
+\draw[walk,red!80!black] (0,3.2) -- (2.1,3.2); \fill[red!80!black] (2.1,3.2) circle (1mm);
+\node[lab,text=red!80!black,anchor=south west] at (0,3.3) {$\bar B^0$ of the $b$: $\gamma\beta=31.3$, $9.4\,\mathrm{mm}$ per ps};
+\node[lab,text=red!80!black,anchor=north west] at (0,3.05) {$2.24\,\mathrm{ps}\to L=21.0\,\mathrm{mm}$ ($L_{xy}=9.9$)};
+\fill[black!70] (0,1.3) circle (1.2mm);
+\draw[walk,blue!80!black] (0,1.3) -- (5.0,1.3); \draw[blue!80!black,line width=1.6pt] (5.2,1.2) -- (5.4,1.4) (5.5,1.2) -- (5.7,1.4); \draw[walk,blue!80!black] (5.9,1.3) -- (6.6,1.3); \fill[blue!80!black] (6.6,1.3) circle (1mm);
+\node[lab,text=blue!80!black,anchor=south west] at (0,1.4) {$B^0$ of the $\bar b$ ($\eta=-3.4$): $\gamma\beta=239$, $72\,\mathrm{mm}$ per ps};
+\node[lab,text=blue!80!black,anchor=north west] at (0,1.15) {$2.05\,\mathrm{ps}\to L=146.9\,\mathrm{mm}$, almost all along the beam ($L_{xy}=9.5$)};
+\draw[black!40] (0,-0.2) -- (2.1,-0.2); \node[lab,anchor=west,text=black!65] at (2.2,-0.2) {$=21\,\mathrm{mm}$ (the scale of the two arrows)};
+\node[lab,anchor=north west,text width=6.4cm,align=left,text=black!65] at (-0.4,-0.55) {the same proper time, a different walk: the boost stretches the clock. The \CMSSW $B^-$ walked $7.83\,\mathrm{mm}$; over 400 decays the $b$'s hadron walks $14.5\pm13.6\,\mathrm{mm}$, $6.8$ in the transverse plane};
+\end{scope}
+% ---------------- (c) the ladder ------------------------------------------------------------------
+\begin{scope}[xshift=15.8cm]
+\node[head,anchor=west] at (-0.4,4.75) {(c) who decays where: $c\tau_0$};
+% log10(c tau0 / mm) from -5 to 15 mapped to y = 0 .. 4.2 => y = (lg + 5) * 0.21
+\draw[-{Stealth}] (0,-0.1) -- (0,4.45) node[left,lab] {$c\tau_0$};
+\foreach \lgv/\t in {-4/{$0.1\,\mu$m},-2/{$10\,\mu$m},0/{$1$ mm},2/{$10$ cm},4/{$10$ m},6/{$1$ km},14/{$10^{11}$ m}} {\draw (-0.06,{(\lgv+5)*0.21}) -- (0.06,{(\lgv+5)*0.21}); \node[lab,anchor=east] at (-0.08,{(\lgv+5)*0.21}) {\t};}
+\draw[red!80!black,thick,dashed] (-0.2,{(1+5)*0.21}) -- (6.2,{(1+5)*0.21}); \node[lab,text=red!80!black,anchor=west,text width=2.4cm,align=left] at (6.3,{(1+5)*0.21}) {$\tau_0^{\max}=10\,\mathrm{mm}$: above it the detector decays them (GEANT4)};
+\foreach \lgv/\x/\t in {-4.6/0.6/{$\pi^0$}, -1.06/1.0/{$\tau$}, -1.22/1.4/{$\Lambda_c^+$}, -0.91/1.8/{$D^0$}, -0.82/2.2/{$D_s^+$}, -0.51/2.6/{$D^+$}, -0.36/3.0/{$B_s^0$}, -0.36/3.4/{$\Lambda_b^0$}, -0.34/3.8/{$B^0$}, -0.31/4.2/{$B^+$}} {
+  \fill[red!75!black] (\x-0.12,0) rectangle (\x+0.12,{(\lgv+5)*0.21}); \node[lab,anchor=west,rotate=90,text=red!75!black] at (\x,{(\lgv+5)*0.21+0.03}) {\t};}
+\foreach \lgv/\x/\t in {1.43/0.6/{$K_S^0$}, 1.38/1.0/{$\Sigma^+$}, 1.69/1.4/{$\Xi^-$}, 1.90/1.8/{$\Lambda$}, 3.57/2.2/{$K^+$}, 3.89/2.6/{$\pi^+$}, 4.18/3.0/{$K_L^0$}, 5.82/3.4/{$\mu$}, 14.4/3.8/{$n$}} {
+  \fill[black!45] (\x-0.12,{(1+5)*0.21}) rectangle (\x+0.12,{(\lgv+5)*0.21}); \node[lab,anchor=west,rotate=90,text=black!65] at (\x,{(\lgv+5)*0.21+0.03}) {\t};}
+\node[lab,anchor=north west,text width=5.8cm,align=left,text=black!65] at (-0.4,-0.55) {red: decayed by the generator, $c\tau_0$ of $25\,$nm ($\pi^0$) to $0.49\,$mm ($B^+$); grey: handed to the detector. The $\rho$, $K^*$, $\omega$, $\Delta$, $B^*$ and $D^*$ have no bar at all, they decay where they are born};
+\end{scope}
+\end{tikzpicture}

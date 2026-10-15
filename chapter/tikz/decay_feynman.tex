@@ -1,0 +1,50 @@
+% ---------------------------------------------------------------------------
+% The W inside the hadron. (a) The spectator picture of a Bbar0 decay: the b
+% quark emits a W-, the light antiquark watches; the W can become a lepton
+% pair (semileptonic) or a quark pair (hadronic). (b) The counting of the
+% nine W channels and what the tables say. (c) The lepton energy spectrum of
+% the V-A matrix element against flat phase space.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  ferm/.style={thick,postaction={decorate},decoration={markings,mark=at position 0.55 with {\arrow{Stealth}}}},
+  wav/.style={decorate,decoration={snake,amplitude=0.6mm,segment length=2.2mm},thick,blue!70!black}]
+% ---------------- (a) the spectator diagram -------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.3) {(a) $b\to c\,W^-$, the $\bar d$ watches};
+\draw[ferm,red!75!black] (0,3.0) -- (2.2,3.0) node[midway,above,lab] {$b$};
+\draw[ferm,orange!80!black] (2.2,3.0) -- (5.2,3.0) node[midway,above,lab] {$c$};
+\draw[ferm] (0,1.6) -- (5.2,1.6) node[midway,below,lab] {$\bar d$ (spectator)};
+\draw[wav] (2.2,3.0) -- (3.4,1.9); \node[lab,text=blue!70!black] at (2.35,2.25) {$W^-$};
+\draw[ferm,green!50!black] (3.4,1.9) -- (5.2,2.5) node[right,lab] {$\ell^-$ ($e^-$, $\mu^-$, $\tau^-$)};
+\draw[ferm,green!50!black] (3.4,1.9) -- (5.2,1.1) node[right,lab] {$\bar\nu_\ell$};
+\draw[rounded corners=3pt,black!50] (-0.45,1.2) rectangle (0.45,3.4); \node[lab,anchor=south] at (0,3.45) {$\bar B^0$ ($b\bar d$)};
+\draw[rounded corners=3pt,orange!80!black] (4.75,1.2) rectangle (5.65,3.4); \node[lab,anchor=south,text=orange!80!black] at (5.2,3.45) {$D^{(*)+}$ ($c\bar d$)};
+\node[lab,anchor=north west,text width=6.6cm,align=left,text=black!65] at (-0.3,0.75) {hadronic: the $W^-$ becomes $d\bar u$ (three colours) or $s\bar c$ (three colours); then the four quarks are strung into hadrons as in chapter 5. Our event: $W^-\to s\bar c$, hence a $D_s^{*-}$ next to the $D^{*0}$};
+\end{scope}
+% ---------------- (b) the counting ----------------------------------------------------------------
+\begin{scope}[xshift=7.6cm]
+\node[head,anchor=west] at (-0.3,4.3) {(b) nine doors for the $W$};
+\foreach \i/\t/\colr in {0/{$e\bar\nu_e$}/green,1/{$\mu\bar\nu_\mu$}/green,2/{$\tau\bar\nu_\tau$}/green,3/{$d\bar u$}/blue,4/{$d\bar u$}/blue,5/{$d\bar u$}/blue,6/{$s\bar c$}/orange,7/{$s\bar c$}/orange,8/{$s\bar c$}/orange} {
+  \draw[fill=\colr!20,draw=\colr!60!black] (\i*0.68,2.6) rectangle (\i*0.68+0.6,3.4); \node[lab] at (\i*0.68+0.3,3.0) {\t};}
+\node[lab,anchor=north west,text width=6.2cm,align=left] at (-0.3,2.4) {free quark: $1/9=11\%$ per lepton before phase space; the $\tau$ and the $s\bar c$ doors are narrowed by their masses, the quark doors widened by QCD. The tables: $10.4\%$ $e$, $10.4\%$ $\mu$, $3.0\%$ $\tau$ for a $B^0$; $11.3$, $11.3$, $3.0$ for a $B^+$; the world average of $b\to\ell$ is $10.7\%$};
+\node[lab,anchor=north west,text width=6.2cm,align=left,text=black!65] at (-0.3,0.55) {over 400 decays of our $\bar B^0$: $13.0\%$ $e$, $11.0\%$ $\mu$, $1.2\%$ $\tau$ (\PYTHIA on the same hadron: $9.5$, $10.0$, $4.0$); at rest, 20\,000 times: $20.5\%$ $e+\mu$ against \PYTHIA's $20.7$};
+\end{scope}
+% ---------------- (c) the spectrum ----------------------------------------------------------------
+\begin{scope}[xshift=15.0cm]
+\node[head,anchor=west] at (-0.3,4.3) {(c) the lepton is hard};
+\draw[-{Stealth}] (0,0) -- (5.6,0) node[below left,lab] {$E_\ell$ in the B rest frame [GeV]};
+\draw[-{Stealth}] (0,0) -- (0,3.4) node[left,lab] {$\mathrm{d}N/\mathrm{d}E_\ell$};
+\foreach \x/\t in {1/0.5,2/1.0,3/1.5,4/2.0,5/2.5} {\draw (\x,-0.06) -- (\x,0.06); \node[lab,anchor=north] at (\x,-0.08) {\t};}
+% flat phase space (B -> D* mu nu), hand-drawn
+\fill[black!15] (0,0) -- plot[smooth] coordinates {(0,0) (0.6,0.35) (1.2,0.95) (1.8,1.6) (2.4,2.15) (3.0,2.5) (3.4,2.55) (3.8,2.3) (4.2,1.6) (4.5,0.6) (4.62,0)} -- cycle;
+\draw[black!50,thick] plot[smooth] coordinates {(0,0) (0.6,0.35) (1.2,0.95) (1.8,1.6) (2.4,2.15) (3.0,2.5) (3.4,2.55) (3.8,2.3) (4.2,1.6) (4.5,0.6) (4.62,0)};
+\draw[orange!80!black,very thick] plot[smooth] coordinates {(0,0) (0.6,0.2) (1.2,0.6) (1.8,1.2) (2.4,1.9) (3.0,2.6) (3.4,2.95) (3.8,2.85) (4.2,2.0) (4.5,0.7) (4.62,0)};
+\node[lab,text=black!60,anchor=west] at (0.4,2.7) {phase space:\\ $\langle E_\ell\rangle=1.34\GeV$};
+\node[lab,text=orange!80!black,anchor=west] at (0.4,1.7) {V$-$A:\\ $\langle E_\ell\rangle=1.40\GeV$\\ (\PYTHIA $1.38$)};
+\draw[black!60,dashed] (4.62,0) -- (4.62,1.2); \node[lab,anchor=south] at (4.62,1.25) {end point\\ $\frac{m_B^2-m_{D^*}^2}{2m_B}=2.26$};
+\node[lab,anchor=north west,text width=5.8cm,align=left,text=black!65] at (-0.3,-0.5) {$|M|^2\propto(p_B\cdot p_\nu)(p_{D^*}\cdot p_\ell)$ pushes the lepton and the neutrino to the end point: the neutrino carries $9\%$ of the B energy on average over all decays, $20\%$ when there is one};
+\end{scope}
+\end{tikzpicture}

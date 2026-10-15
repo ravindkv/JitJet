@@ -1,0 +1,54 @@
+% ---------------------------------------------------------------------------
+% Where the grandchildren go. (a) A two-body decay in the rest frame: one
+% momentum p*, fixed by the three masses, isotropic. (b) Three and more
+% bodies with the M-generator: the mass is split step by step, the weight is
+% the product of the two-body momenta, accepted against its maximum. (c) The
+% matrix elements the script applies on top of phase space, by PYTHIA's
+% meMode, with the decays of our event that used each.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  mom/.style={-{Stealth[length=2mm]},thick}]
+% ---------------- (a) two bodies ------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.3) {(a) two bodies: one number, $p^*$};
+\draw[black!40,dashed] (1.8,2.2) circle (1.5);
+\fill[black!70] (1.8,2.2) circle (0.9mm);
+\draw[mom,red!75!black] (1.8,2.2) -- ++(35:1.5) node[above right,lab] {$m_1$, $p^*$};
+\draw[mom,blue!75!black] (1.8,2.2) -- ++(215:1.5) node[below left,lab] {$m_2$, $p^*$};
+\node[lab] at (1.8,0.35) {$p^*=\dfrac{\sqrt{[M^2-(m_1+m_2)^2][M^2-(m_1-m_2)^2]}}{2M}$};
+\node[lab,anchor=north west,text width=5.4cm,align=left,text=black!65] at (-0.3,-0.25) {the direction is drawn isotropic in the rest frame, then boosted. Our event: $\bar B^{*0}\to\bar B^0\gamma$ $45\,\mathrm{MeV}$ (the photon gets $0.57\GeV$ in the lab), $D^{*0}\to D^0\gamma$ $137$, $\rho^+\to\pi^+\pi^0$ $370$, $D_s^-\to K^{*-}K^{*0}$ $512\,\mathrm{MeV}$};
+\end{scope}
+% ---------------- (b) the M-generator ---------------------------------------------------------------
+\begin{scope}[xshift=6.6cm]
+\node[head,anchor=west] at (-0.3,4.3) {(b) three bodies and more: the M-generator};
+\node[lab,draw=black!60,rounded corners=2pt,inner sep=3pt] (M) at (1.0,3.3) {$M$};
+\node[lab,draw=black!60,rounded corners=2pt,inner sep=3pt] (m12) at (0.2,2.1) {$m_{12}$};
+\node[lab,draw=black!60,rounded corners=2pt,inner sep=3pt] (m3) at (2.0,2.1) {$m_3$};
+\node[lab,draw=black!60,rounded corners=2pt,inner sep=3pt] (m1) at (-0.5,0.9) {$m_1$};
+\node[lab,draw=black!60,rounded corners=2pt,inner sep=3pt] (m2) at (0.9,0.9) {$m_2$};
+\draw[mom,black!60] (M) -- (m12); \draw[mom,black!60] (M) -- (m3); \draw[mom,black!60] (m12) -- (m1); \draw[mom,black!60] (m12) -- (m2);
+\node[lab,anchor=west,text width=4.9cm,align=left] at (2.6,2.6) {$m_{12}$ drawn flat between $m_1+m_2$ and $M-m_3$;\\ $W=p^*(M;m_{12},m_3)\,p^*(m_{12};m_1,m_2)$;\\ accept if $W>r\,W_{\max}$, else draw again};
+\node[lab,anchor=north west,text width=6.3cm,align=left,text=black!65] at (-0.8,0.45) {our $\bar B^0\to D_s^{*-}D^{*0}\rho^+$ was accepted at the first try, $W/W_{\max}=0.329$; the $\omega\to\pi^+\pi^-\pi^0$ of the $D^0$ chain needed 111 tries because its matrix element, $|\vec p_1\times\vec p_2|^2$, adds a second accept/reject. The method is Raubold and Lynch's, written as GENBOD};
+\end{scope}
+% ---------------- (c) the matrix elements -------------------------------------------------------------
+\begin{scope}[xshift=15.4cm]
+\node[head,anchor=west] at (-0.3,4.3) {(c) the matrix elements on top of phase space};
+\node[lab,anchor=north west,text width=9.2cm,align=left] at (-0.3,3.9) {%
+\begin{tabular}{@{}lll@{}}
+\textbf{mode} & \textbf{weight} & \textbf{in our event}\\
+0 & phase space & $\bar B^{*0}\to\bar B^0\gamma$, $D^0\to K^-\omega\pi^+$\\
+1 & $|\vec p_1\times\vec p_2|^2$ & $\omega,\phi\to3\pi$\\
+2 & $\cos^2\theta$ ($P\to V\to PP$) & $K^{*-}\to\bar K^0\pi^-$, $\cos\theta=0.728$\\
+4 & two-body, $L=1$ & $\bar\Delta^-\to\bar p\,\pi^0$\\
+11, 12 & Kroll--Wada lepton pair & $\pi^0\to\gamma e^+e^-$ (row 1132)\\
+22 & V$-$A, $m_B E_\nu\,(p_X\cdot p_\ell)$ & $D^-\to e^-\bar\nu_e\bar K^0$ (row 1337)\\
+23 & V$-$A, partonic, spectator & the $0.316$ channels of the $B^0$\\
+42, 43 & partonic, Poisson $n$ & $\bar B^0\to\bar c s\,c\bar d$, $\Xi_c^0\to s\,su_1$\\
+62, 63 & partonic, fixed $n$ & $\bar B^0\to cs_1\,\overline{ud}_1$ (the $\bar b$)
+\end{tabular}};
+\node[lab,anchor=north west,text width=9.2cm,align=left,text=black!65] at (-0.3,-0.1) {every mode is a reweighting of the same phase-space draw; modes 22 and 23 contract the \emph{first} product of the channel with the mother (the neutrino in a $B$ table, the charged lepton in a $D$ table), and that ordering is the whole of the physics};
+\end{scope}
+\end{tikzpicture}

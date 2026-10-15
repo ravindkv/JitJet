@@ -1,0 +1,21 @@
+quantity                             PYTHIA mean       std   standalone mean       std  diff/err
+n_final                                  10.8707    3.6885           11.1122    3.8257      6.43
+n_charged                                 4.8545    1.9956            4.8964    2.0197      2.09
+n_photons                                 4.5018    3.2132            4.7721    3.3669      8.21
+n_neutrinos                               0.5707    0.7266            0.5542    0.7310     -2.27
+n_kaons                                   1.6170    1.0867            1.6008    1.0924     -1.49
+n_pions                                   3.4493    2.0391            3.5044    2.0777      2.67
+n_direct                                  3.5888    1.3944            3.5979    1.3918      0.65
+e_nu                                      0.4866    0.6811            0.4693    0.6743     -2.55
+e_lepton                                  0.4223    0.5981            0.4125    0.6027     -1.64
+e_lepton_direct                           1.3829    0.4386            1.3958    0.4430      1.34
+  direct semileptonic (e, mu) decays: PYTHIA 20.70%, standalone 20.51%
+  classes (PYTHIA): hadronic 76.22%, semileptonic (mu) 10.47%, semileptonic (e) 10.22%, semileptonic (tau) 3.09%
+  classes (standalone): hadronic 76.33%, semileptonic (mu) 10.26%, semileptonic (e) 10.24%, semileptonic (tau) 3.17%
+  charm hadron (PYTHIA): D- 35.1%, Dbar0 27.2%, D0 10.5%, D+ 10.2%, D_s+ 6.8%, none 5.0%, Lambda_cbar- 2.1%, D_s- 2.1%
+  charm hadron (standalone): D- 29.6%, Dbar0 28.4%, D0 11.6%, D+ 9.2%, D_s+ 7.7%, none 5.4%, D_s- 3.1%, Lambda_cbar- 2.9%
+  E_lepton spectrum (direct, rest frame), PYTHIA:      0.01  0.06  0.15  0.30  0.52  0.65  0.73  0.81  0.82  0.61  0.28  0.04  0.01
+  E_lepton spectrum (direct, rest frame), standalone:  0.01  0.06  0.16  0.30  0.49  0.62  0.72  0.83  0.82  0.62  0.33  0.04  0.02
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/Decay/Standalone/validate_decays_with_pythia_single_511.json
+
+[exited with code 0]

@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
-"""The one-minute trailer: the cone of cover_timeline.tex grows part by part.
+"""The short trailer: the cone of cover_timeline.tex grows part by part, narrated.
 
-No narration. The film starts at the hard scattering, a glow on an empty page,
-and the cone grows along its axis, one part of the book at a time: the b quark
-and her shower, the hadrons, the pileup crowd and the detector wall, the two
-trigger gates, the Particle-Flow census, PUPPI and the R = 0.4 cone, the JEC
-scale, the b tag, and finally the R = 0.8 top jet that caps the cone. At each
-part the growth pauses, the cover's own label for that part appears, and a
-caption names the part. The camera pulls back as the cone grows, and the film
-ends on the whole cone with the title of the book. A synthesised pad plays
-underneath.
+The film starts at the hard scattering, a glow on an empty page, and the cone
+grows along its axis, one part of the book at a time: the b quark and her
+shower, the hadrons, the pileup crowd and the detector wall, the two trigger
+gates, the Particle-Flow census, PUPPI and the R = 0.4 cone, the JEC scale, the
+b tag, and finally the R = 0.8 top jet that caps the cone. At each part the
+growth pauses, the cover's own label for that part appears, and a caption names
+the part. The camera pulls back as the cone grows, and the film ends on the
+whole cone with the title of the book.
+
+Narration and music
+  One sentence or two per part (NARRATION below), spoken by a neural voice
+  through edge-tts (Microsoft's online voices; `pip install --user edge-tts`,
+  needs the network) or, with --engine say, by a macOS voice. The clips are
+  cached in the work directory, so a re-run with the same text is free.
+  Recorded clips can replace the synthesis: --narration-dir with one file per
+  line, named <key>.wav|mp3 (keys: title, apex, part1 ... part7, end; see
+  --print-script). The length of each stop stretches to fit its line, so the
+  film is about 85 s narrated and about 58 s with --no-narration.
+  The score is synthesised in numpy and follows the cues: a drone, a pad whose
+  chord changes as each part starts to grow, a plucked pulse that joins at the
+  first growth and gains a voice with every ring of the cone, and a bell on the
+  arrival of each part. It ducks under the voice. An .srt with the narration is
+  written next to the .mp4.
 
 How the frames are made
   cover_timeline.tex takes two macros, \\smax (draw the cone up to this point on
@@ -19,11 +33,14 @@ How the frames are made
   camera moves, in the manner of the animate_*.py scripts of example/. The
   compiled frames can be kept (--work-dir) so that a re-run only re-renders.
 
-Examples (needs numpy, Pillow, pdflatex, gs and ffmpeg; on this Mac use /usr/bin/python3):
-  python3 animate_short_cover_timeline.py                 # -> animate_short_cover_timeline.mp4
+Examples (needs numpy, Pillow, pdflatex, gs, ffmpeg and edge-tts; on this Mac use /usr/bin/python3):
+  python3 animate_short_cover_timeline.py                 # -> animate_short_cover_timeline.mp4 + .srt
   python3 animate_short_cover_timeline.py --fast          # 960x540, fewer steps, quick
   python3 animate_short_cover_timeline.py --stills stills.pdf --no-video
-  python3 animate_short_cover_timeline.py --steps 24 --grow 3.0     # finer growth, slower film
+  python3 animate_short_cover_timeline.py --print-script  # the narration, for recording it yourself
+  python3 animate_short_cover_timeline.py --voice en-US-AndrewMultilingualNeural
+  python3 animate_short_cover_timeline.py --engine say --voice Daniel --rate 156
+  python3 animate_short_cover_timeline.py --audio-only    # just the soundtrack, to check the mix
 
 The compiled frames go to build/short_cover_frames/ (about 4 min the first
 time, six pdflatex jobs in parallel) and are re-used by later runs; after a
@@ -37,12 +54,11 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import wave
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -51,8 +67,11 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import animate_cover_timeline as long_film  # noqa: E402  (same directory: cover, fonts, ruler, music)
 from animate_cover_timeline import (  # noqa: E402
-    GOLD, NAVY, PALE, SR, WHITE, Cover, Fonts, Ruler, _SUP, alpha_paste, clamp01, draw_rich, make_music, smooth,
+    GOLD, NAVY, PALE, WHITE, Cover, Fonts, Ruler, _SUP, alpha_paste, clamp01, draw_rich, smooth,
 )
+sys.path.insert(0, str(HERE.parent / "example"))
+import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the mix)
+from soundtrack import SR  # noqa: E402
 
 COVER_TEX = HERE / "cover_timeline.tex"
 
@@ -88,6 +107,29 @@ PARTS = [
 S_START = -1.3                      # before the apex: only the glow of the collision is visible
 TITLE_SHOT = (10.5, 26.9, 13.5)
 WHOLE_SHOT = (10.8, 14.8, 31.0)
+
+# The narration, one line per stop ("..." is a pause). Keys: title (over the
+# title, before the descent), apex (the camera has reached the collision),
+# part1 ... part7 (spoken while that part of the cone grows and is shown), end
+# (over the end card). The clip of a line sets how long its stop lasts.
+NARRATION = {
+    "title": "In the CMS experiment, a jet is not something you find at the end of reconstruction... "
+             "It is a journey.",
+    "apex": "It begins here... in a single collision.",
+    "part1": "A bottom quark is born. She showers into gluons, and dresses herself in hadrons... "
+             "The family is born.",
+    "part2": "She leaves with a crowd of strangers from pileup, crosses the detector wall, "
+             "and passes two trigger gates.",
+    "part3": "Hours later, Particle Flow takes the census: every track, every cluster, every candidate.",
+    "part4": "PUPPI sends the strangers home, and an anti-k-T cone of radius zero point four "
+             "decides who belongs to the family.",
+    "part5": "The jet energy corrections settle the accounts: scale, then resolution, "
+             "until the jet is calibrated.",
+    "part6": "A displaced vertex gives the family name away. The jet is b-tagged... Arrival.",
+    "part7": "And the top quark takes the same road, three prongs in one wide cone of radius zero point eight.",
+    "end": "Journey Is The Jet... One simulated event, followed from bottom to top.",
+}
+VOICE_KEYS = ["title", "apex"] + [f"part{p.number}" for p in PARTS] + ["end"]
 
 
 # --- the compiled frames ----------------------------------------------------
@@ -173,18 +215,30 @@ class Cue:
 
 
 class Timeline:
-    def __init__(self, ends: List[int], t_title: float, grow: float, hold: float, finale: float, fade_out: float):
-        self.t_title = t_title                # the title, then the move down to the apex
-        self.t_first = t_title + 3.0          # the camera reaches the apex; a beat before growth starts
+    """The film clock. `lengths` are the narration clips in seconds (empty: the nominal timing)."""
+
+    def __init__(self, ends: List[int], lengths: Dict[str, float], t_title: float, grow: float, hold: float,
+                 finale: float, fade_out: float):
+        d = lambda key: lengths.get(key, 0.0)  # noqa: E731
+        self.voice: Dict[str, float] = {}      # key -> when the line starts
+        # the title; the descent to the apex starts under the last words of the opening line
+        self.voice["title"] = 0.8
+        self.t_title = max(t_title, 0.8 + d("title") - 2.0)
+        self.t_first = self.t_title + 3.0      # the camera reaches the apex; a beat before growth starts
+        self.voice["apex"] = self.t_first - 0.6
         self.cues: List[Cue] = []
-        t = self.t_first + 1.0
+        t = self.t_first + max(1.0, d("apex") - 0.6 + 0.7)
         i0 = 0
         for part, i1 in zip(PARTS, ends):
-            cue = Cue(part, t, t + grow, t + grow + hold, i0, i1)
+            key = f"part{part.number}"
+            self.voice[key] = t + 0.2
+            length = max(grow + hold, 0.2 + d(key) + 1.5)   # the stop lasts until the line has been said
+            cue = Cue(part, t, t + grow, t + length, i0, i1)
             self.cues.append(cue)
             t, i0 = cue.t_end, i1
         self.t_finale = t                     # pull back a touch and show the title card
-        self.duration = t + finale
+        self.voice["end"] = t + 2.0           # the end card is in by then
+        self.duration = t + max(finale, 2.0 + d("end") + 3.5)
         self.fade_in = 1.2
         self.fade_out = fade_out
         self.last_index = ends[-1]
@@ -319,16 +373,23 @@ class Renderer:
         return frame.convert("RGB")
 
 
+# --- the score ------------------------------------------------------------------
+def score_spec(tl: Timeline) -> snd.ScoreSpec:
+    """Drone and pad, a chord per part (the dominant under the top jet, resolving under the end card),
+    a pulse that gains a voice with every ring, a bell when a part arrives, a thud at the collision."""
+    progression = [snd.Dm, snd.Bb, snd.F, snd.C, snd.Gm, snd.Bb, snd.A]
+    spec = snd.ScoreSpec(tl.duration, tl.fade_out,
+                         chords=[(0.0, snd.Dm)] + [(cue.t_grow, ch) for cue, ch in zip(tl.cues, progression)]
+                                + [(tl.t_finale, snd.Dm_hi)],
+                         thuds=[tl.t_first], outro=(tl.t_finale, [f * 2 for f in snd.Dm_hi]))
+    for i, cue in enumerate(tl.cues):
+        spec.pulses.append(snd.pulse_for(i, cue.t_grow, cue.t_hold, cue.t_end, progression[i]))
+        spec.bells.append(snd.Bell(cue.t_hold, progression[i][0] * 4))
+    spec.bells.append(snd.Bell(tl.t_finale + 1.2, snd.D4, gain=0.55, seconds=6.0, spread=0.015))
+    return spec
+
+
 # --- output -------------------------------------------------------------------
-def write_music(duration: float, level_db: float, out: Path) -> None:
-    st = make_music(duration) * (10 ** (level_db / 20))
-    with wave.open(str(out), "wb") as w:
-        w.setnchannels(2)
-        w.setsampwidth(2)
-        w.setframerate(SR)
-        w.writeframes((np.clip(st, -1, 1) * 32767).astype("<i2").tobytes())
-
-
 def write_stills(rend: Renderer, tl: Timeline, out: Path) -> None:
     times = [(0.5 * tl.t_title, "title")] + [(c.t_hold + 1.5, f"part{c.part.number}") for c in tl.cues] + \
             [(tl.duration - tl.fade_out - 0.5, "end")]
@@ -349,27 +410,40 @@ def main() -> None:
     p.add_argument("--steps", type=int, default=16, help="compiled growth steps per part")
     p.add_argument("--jobs", type=int, default=6, help="parallel pdflatex jobs")
     p.add_argument("--grow", type=float, default=2.6, help="seconds of growth per part")
-    p.add_argument("--hold", type=float, default=3.4, help="seconds of pause per part")
-    p.add_argument("--title", type=float, default=3.0, help="seconds on the title before the descent")
-    p.add_argument("--finale", type=float, default=9.0, help="seconds on the whole cone and the end card")
-    p.add_argument("--music-db", type=float, default=-9.0, help="music level; --no-music for silence")
-    p.add_argument("--no-music", action="store_true")
+    p.add_argument("--hold", type=float, default=3.4, help="minimum seconds of pause per part (longer if the line is)")
+    p.add_argument("--title", type=float, default=3.0, help="minimum seconds on the title before the descent")
+    p.add_argument("--finale", type=float, default=9.0, help="minimum seconds on the whole cone and the end card")
+    snd.add_narration_args(p)             # --engine --voice --rate --narration-dir --no-narration --print-script --music-db --no-music
     p.add_argument("--work-dir", type=Path, default=HERE.parent / "build" / "short_cover_frames",
-                   help="the compiled frames are kept here and re-used on the next run (make clean removes them)")
+                   help="the compiled frames and narration clips are kept here and re-used (make clean removes them)")
     p.add_argument("--stills", type=Path, default=None, help="one key frame per part (.pdf stack or .png files)")
     p.add_argument("--no-video", action="store_true")
+    p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
+                   help="write just the soundtrack (narration + score) and exit, without compiling the cover")
     p.add_argument("--fast", action="store_true", help="preview: 960x540, 12 fps, 150 dpi, 6 steps")
     args = p.parse_args()
+    if args.print_script:
+        snd.print_script(NARRATION)
+        return
+    snd.narration_defaults(args)
     if args.fast:
         args.size, args.fps, args.dpi, args.steps = "960x540", 12, 150.0, 6
     W, H = (int(v) for v in args.size.lower().split("x"))
+    ffmpeg = shutil.which("ffmpeg")
     for tool in ("pdflatex", "gs", "ffmpeg"):
-        if shutil.which(tool) is None:
+        if shutil.which(tool) is None and not (args.audio_only and tool != "ffmpeg"):
             sys.exit(f"{tool} not found on PATH")
 
     states, ends = build_states(args.steps)
-    tl = Timeline(ends, args.title, args.grow, args.hold, args.finale, fade_out=2.0)
+    print("narration ..." if not args.no_narration else "no narration")
+    clips = snd.load_narration(NARRATION, args, args.work_dir / "narration", ffmpeg)
+    tl = Timeline(ends, snd.clip_lengths(clips), args.title, args.grow, args.hold, args.finale, fade_out=2.0)
     print(f"{len(states)} cone frames; film {tl.duration:.1f} s")
+    score = None if args.no_music else score_spec(tl)
+    if args.audio_only:
+        snd.mix_audio(tl.duration, tl.voice, clips, score, args.music_db, args.audio_only)
+        print(f"wrote {args.audio_only}")
+        return
 
     tmp = tempfile.TemporaryDirectory(prefix="jitjet_short_")
     pngs = compile_all(states, args.work_dir, args.dpi, args.jobs)
@@ -379,11 +453,13 @@ def main() -> None:
         print(f"wrote {args.stills}")
     if args.no_video:
         return
-    audio = Path(tmp.name) / "music.wav"
-    write_music(tl.duration, -60.0 if args.no_music else args.music_db, audio)
+    audio = Path(tmp.name) / "soundtrack.wav"
+    snd.mix_audio(tl.duration, tl.voice, clips, score, args.music_db, audio)
+    if clips:
+        snd.write_srt(tl.voice, clips, NARRATION, args.output.with_suffix(".srt"))
     print(f"film: {W}x{H} at {args.fps} fps ...")
     long_film.write_video(rend, SimpleNamespace(duration=tl.duration), audio, args.output, args.fps,
-                          shutil.which("ffmpeg"), "ultrafast" if args.fast else "medium")
+                          ffmpeg, "ultrafast" if args.fast else "medium")
     print(f"wrote {args.output}")
 
 

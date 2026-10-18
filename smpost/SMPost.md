@@ -1,9 +1,16 @@
 # JitJet on social media: one post per video
 
+
 JitJet: Journey is the Jet
 Director: Ravindra Verma (University of Heslinki)
 Producer: Claude Fable, ChatGPT Astra
-Github: https://github.com/ravindkv
+
+JitJet Book: https://github.com/ravindkv
+JitJet CMSSW : https://github.com/ravindkv/JitJetSW
+JitJet Playlist: https://www.youtube.com/playlist?list=PLbSW20iyZFd4 
+
+#LHC, #CMS, #QCD, #ParticlePhysics
+
 
 ### --------------------------------------
 (0/30) JitJet | Introduction to the Book

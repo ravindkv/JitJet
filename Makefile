@@ -5,7 +5,7 @@
 #   make cover-timeline -> cover/cover_timeline.pdf, the alternative timeline-cone cover
 #   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
-#   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the one-minute cone-growth trailer
+#   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the narrated cone-growth trailer (~80 s)
 #   make cover-youtube -> smpost/cover_photo_youtube.png, the 2560x1440 YouTube channel banner
 #   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
 #   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos
@@ -57,8 +57,11 @@ cover/cover_timeline_minimal.pdf: cover/cover_timeline_minimal.tex
 cover-video: cover/cover_timeline.pdf
 	$(PYTHON) cover/animate_cover_timeline.py
 
-# The short trailer (about 1 min, no narration): the cone grows part by part.
-# Compiles cover_timeline.tex once per growth step into build/short_cover_frames.
+# The short trailer (about 80 s): the cone grows part by part, one narrated line
+# per part (neural voice via edge-tts, needs the network; --engine say for the
+# macOS voice, --no-narration for music only) over a synthesised score, plus an
+# .srt. Compiles cover_timeline.tex once per growth step into
+# build/short_cover_frames, where the narration clips are cached as well.
 cover-video-short: cover/cover_timeline.tex
 	$(PYTHON) cover/animate_short_cover_timeline.py
 

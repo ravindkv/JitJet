@@ -135,9 +135,10 @@ at leading order uses the very same Born matrix element, as
 We begin, as at every stop of this book, by looking out of the window. The
 script \file{example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py}
 imports the standalone calculation of \cref{sec:ancestral_home:standalone_code}
-and renders a four-scene film of about thirty seconds from its tables, its
-interpolators and its \code{born\_weights} function, so every number on the
-screen comes from the same code that prints the cross section. The film is
+and renders a narrated four-scene film of about two and a half minutes from
+its tables, its interpolators and its \code{born\_weights} function, so every
+number on the screen, and every number the narrator says, comes from the same
+code that prints the cross section. The film is
 on the JitJet playlist,
 \begin{center}
   \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
@@ -181,12 +182,19 @@ catch up with the pictures.
     few hundred points swing wildly; by $2^{16}$ the estimate has stopped
     moving at the fourth digit.
 \end{enumerate}
-To render it yourself you need matplotlib in addition to NumPy and SciPy, and
-\code{ffmpeg} for an \code{.mp4} (a \code{.gif} needs only Pillow):
+To render it yourself you need matplotlib in addition to NumPy and SciPy,
+\code{ffmpeg} for an \code{.mp4} (a \code{.gif} needs only Pillow and is
+silent), and for the voice the \code{edge-tts} package (\code{pip install
+edge-tts}; it fetches Microsoft's neural voices over the network). The
+narration and the score live in \file{example/soundtrack.py}, shared by all
+the films of the book; each phase of a scene lasts at least as long as its
+line, so \code{--no-narration} gives the silent, half-minute cut:
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/ME/Standalone
-python3 animate_standalone_qqbar_bbbar_xsec.py            # the film, a few minutes
+python3 animate_standalone_qqbar_bbbar_xsec.py            # the film and its .srt, a few minutes
 python3 animate_standalone_qqbar_bbbar_xsec.py --fast     # low-resolution preview
+python3 animate_standalone_qqbar_bbbar_xsec.py --print-script   # the narration, to record it yourself
+python3 animate_standalone_qqbar_bbbar_xsec.py --no-narration   # music only, about 35 s
 python3 animate_standalone_qqbar_bbbar_xsec.py --scene surface -o surface.gif
 python3 animate_standalone_qqbar_bbbar_xsec.py --stills stills.pdf --no-video
 \end{minted}

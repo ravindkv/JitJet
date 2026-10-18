@@ -1,0 +1,40 @@
+%% smpost/thumbnail/chapter_04_uninvited_cousins.tex : thumbnail of video 4/30,
+%% "Chapter-4 | Cousins Nobody Invited: Underlying Event and Colour
+%% Reconnection". Motif: the two protons overlapping in the transverse plane,
+%% the impact parameter, the hard scattering and the extra scatterings in the
+%% overlap, and the remnants carrying off what is left.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_04_uninvited_cousins)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{4}{Chapter 4}{4 / 30}{Cousins Nobody\\Invited}{Underlying event and colour reconnection: the rest of the two protons joins the record}
+
+\begin{scope}[shift={(\mx,\my)}]
+%% the two protons seen along the beam, overlapping
+\fill[bblue, opacity=0.22] (-0.9,0.2) circle[radius=2.3];
+\fill[bred, opacity=0.22] (0.9,-0.2) circle[radius=2.3];
+\draw[bblue, line width=1.6pt] (-0.9,0.2) circle[radius=2.3];
+\draw[bred, line width=1.6pt] (0.9,-0.2) circle[radius=2.3];
+\node[bblue, motiflabel, anchor=south east] at (-2.4,1.6) {$p$};
+\node[bred, motiflabel, anchor=north west] at (2.4,-1.6) {$p$};
+%% the impact parameter
+\draw[arrowg, {Stealth[length=7pt]}-{Stealth[length=7pt]}] (-0.9,0.2) -- (0.9,-0.2);
+\node[circle, fill=bblue, inner sep=0pt, minimum size=5pt] at (-0.9,0.2) {};
+\node[circle, fill=bred, inner sep=0pt, minimum size=5pt] at (0.9,-0.2) {};
+\node[gold, motiflabel, anchor=south] at (0,0.15) {$b$};
+%% the hard scattering and the uninvited extra ones in the overlap
+\shade[inner color=gold, outer color=navy, opacity=0.9] (0.2,1.3) circle[radius=0.65];
+\node[circle, fill=gold, inner sep=0pt, minimum size=8pt] at (0.2,1.3) {};
+\foreach \x/\y in {-0.5/-1.1, 0.6/-0.9, -0.2/-1.9, 0.3/0.6, -0.7/0.9}{
+  \shade[inner color=isr, outer color=navy, opacity=0.8] (\x,\y) circle[radius=0.32];
+  \node[circle, fill=isr, inner sep=0pt, minimum size=4pt] at (\x,\y) {};}
+\node[isr, motiflabel, anchor=west] at (1.0,-1.5) {MPI};
+%% the remnants leave along the beam
+\draw[arrowg, draw=steel, line width=1.8pt] (-3.3,0.2) -- (-4.4,0.2) node[pos=0.5, above=2pt, steel, font=\sffamily\bfseries\scriptsize] {remnant};
+\draw[arrowg, draw=steel, line width=1.8pt] (3.3,-0.2) -- (4.4,-0.2) node[pos=0.5, below=2pt, steel, font=\sffamily\bfseries\scriptsize] {remnant};
+\node[gold!85!white, font=\sffamily\small\itshape, anchor=north] at (0,-3.05) {colour reconnection ties the strings};
+\end{scope}
+\end{tikzpicture}
+\end{document}

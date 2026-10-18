@@ -52,3 +52,13 @@ example/Decay/Standalone/animate_standalone_hadron_decays.mp4
 example/Decay/Standalone/animate_video.out
 example/Decay/animate_standalone_hadron_decays.mp4
 
+
+example/GenJet/
+smpost/*.aux
+smpost/*.png
+smpost/*.pdf
+
+smpost/thumbnail/*.aux
+smpost/thumbnail/*.log
+smpost/thumbnail/*.png
+

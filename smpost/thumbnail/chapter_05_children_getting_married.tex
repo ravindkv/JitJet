@@ -1,0 +1,40 @@
+%% smpost/thumbnail/chapter_05_children_getting_married.tex : thumbnail of
+%% video 5/30, "Chapter-5 | The Children Get Married: Hadronisation and
+%% b-Fragmentation". Motif: the colour string from the b quark to a light
+%% quark, kinked by gluons, snapping at q-qbar pairs into a chain of hadrons
+%% with the B hadron at the b end.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_05_children_getting_married)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{5}{Chapter 5}{5 / 30}{The Children\\Get Married}{Hadronisation and $b$ fragmentation: the Lund string snaps into hadrons}
+
+\begin{scope}[shift={(\mx,\my)}]
+%% the string, before: b --- kink --- kink --- q (faint, above)
+\draw[string, opacity=0.35] (-3.6,2.3) -- (-1.4,2.9) -- (1.0,2.1) -- (3.6,2.5);
+\node[circle, fill=bred, inner sep=0pt, minimum size=10pt] at (-3.6,2.3) {};
+\node[circle, fill=hadroncol, inner sep=0pt, minimum size=8pt] at (3.6,2.5) {};
+\foreach \x/\y in {-1.4/2.9, 1.0/2.1} \node[circle, fill=fsr, inner sep=0pt, minimum size=7pt] at (\x,\y) {};
+\node[bred, motiflabel, anchor=east] at (-3.9,2.3) {$b$};
+\node[hadroncol, motiflabel, anchor=west] at (3.9,2.5) {$q$};
+\node[fsr, motiflabel, anchor=south] at (-1.4,3.1) {$g$};
+\node[fsr, motiflabel, anchor=north] at (1.0,1.9) {$g$};
+%% the string breaks
+\foreach \x in {-2.6,-1.3,0.0,1.3,2.6}
+  \draw[-{Stealth[length=5pt]}, gold, line width=0.8pt, opacity=0.6] (\x,1.75) -- (\x,0.95);
+\node[gold!85!white, font=\sffamily\small\itshape] at (0,0.55) {$q\bar q$ pairs pop out of the string};
+%% after: the chain of hadrons
+\draw[string, opacity=0.5] (-3.6,-0.6) -- (3.6,-0.6);
+\foreach \x in {-3.0,-2.3,-1.6,-0.9,-0.2,0.5,1.2,1.9,2.6,3.3}
+  \draw[white, line width=1.2pt, opacity=0.7] (\x,-0.4) -- (\x,-0.8);
+\node[circle, fill=bred, draw=gold, line width=1.6pt, inner sep=0pt, minimum size=22pt,
+      font=\sffamily\bfseries\small, text=white] at (-3.6,-0.6) {B};
+\foreach \x/\l in {-2.65/$\pi$, -1.95/$K$, -1.25/$\pi$, -0.55/$\pi$, 0.15/$\rho$, 0.85/$\pi$, 1.55/$K$, 2.25/$\pi$, 2.95/$\pi$}
+  \node[hadron, minimum size=13pt, font=\scriptsize, text=navy] at (\x,-0.6) {\l};
+\node[gold, motiflabel, anchor=north] at (0,-1.3) {211 partons $\to$ 365 primary hadrons};
+\node[bred, motiflabel, anchor=north] at (-3.2,-1.3) {$x_B$};
+\end{scope}
+\end{tikzpicture}
+\end{document}

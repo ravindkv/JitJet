@@ -1,0 +1,376 @@
+%% ==========================================================================
+%% smpost/cover_photo_youtube.tex : the JitJet YouTube channel banner, drawn
+%% with TikZ from the same cone as cover/cover_timeline.tex.
+%%
+%% Compile and rasterise:   make cover-youtube
+%%   (or: cd smpost && pdflatex cover_photo_youtube
+%%        gs -q -dBATCH -dNOPAUSE -sDEVICE=png16m -r169.3333 -g2560x1440 \
+%%           -dPDFFitPage -dTextAlphaBits=4 -dGraphicsAlphaBits=4 \
+%%           -sOutputFile=cover_photo_youtube.png cover_photo_youtube.pdf)
+%% then upload smpost/cover_photo_youtube.png as the channel banner.
+%%
+%% YouTube crops the banner per device, so the page follows its "safe areas":
+%%   whole image          2560 x 1440 px  (TV)
+%%   desktop              2560 x  423 px  (the central band, full width)
+%%   tablet               1855 x  423 px
+%%   phone, minimum       1546 x  423 px  (always visible; text and logos here)
+%% The page is 38.4 cm x 21.6 cm, i.e. 1 px = 0.015 cm, so the safe band is
+%% y in [7.63, 13.97] and the phone area x in [7.60, 30.80] (tablet [5.3, 33.1]).
+%%
+%% Layout. In the phone area: the title on the left and the timeline cone on
+%% the right, horizontal, with the b quark, its shower, the hadrons, the pileup
+%% crowd, the detector wall, the trigger gates, the Particle-Flow census, PUPPI
+%% and clustering, JEC, the b tag and the three-prong top jet, as on the cover,
+%% just without the ruler and the part labels, which would not fit in the band.
+%% The desktop-only margins carry the credits (left) and the caption with the
+%% GitHub address (right). The TV-only strips above and below the band carry
+%% the seven parts of the book as a road of stops (top) and the time ruler
+%% (bottom), whose ticks sit directly under the matching stages of the cone.
+%% ==========================================================================
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tgheros}          % TeX Gyre Heros for the sans-serif title
+\usepackage{amssymb}
+\usetikzlibrary{calc,arrows.meta,decorations.pathmorphing,shapes.geometric}
+
+%% -------- palette (identical to cover.tex) ----------------------------------
+\definecolor{navy}{HTML}{0B1D3A}
+\definecolor{navytop}{HTML}{17365F}
+\definecolor{gold}{HTML}{F4B942}
+\definecolor{bred}{HTML}{FF5A5A}     % b quark  (red in the journey figures)
+\definecolor{bblue}{HTML}{6E8EFF}    % bbar     (blue in the journey figures)
+\definecolor{fsr}{HTML}{3DD16E}      % FSR gluons (green)
+\definecolor{isr}{HTML}{FF9A3C}      % ISR gluon  (orange)
+\definecolor{hadroncol}{HTML}{FFC24D}
+\definecolor{ecalcol}{HTML}{3FBF77}
+\definecolor{hcalcol}{HTML}{E58F2A}
+\definecolor{steel}{HTML}{9AA7B8}
+\definecolor{trackcol}{HTML}{E4ECF7}
+\definecolor{pu}{HTML}{8D9AAB}
+\definecolor{nucol}{HTML}{5EE7EA}
+\definecolor{muoncol}{HTML}{8FB8FF}
+
+%% -------- the cone (as in cover_timeline.tex) --------------------------------
+%% Local frame: the apex at the origin, time along +x, the cross-section plane
+%% seen at a slant so that a circle of radius rho becomes an ellipse with
+%% half-axes (kk*rho, rho). rf(s) is the cone radius at time s, sc(s) the zoom
+%% of the (eta, phi) patch drawn in the slice at s.
+\def\kk{0.30}
+\pgfmathdeclarefunction{rf}{1}{\pgfmathparse{0.18*#1+0.6*(1+((#1-16.8)/1.2)/sqrt(1+((#1-16.8)/1.2)^2))}}
+\pgfmathdeclarefunction{sc}{1}{\pgfmathparse{min(rf(#1)/2.2,1)}}
+\newcommand{\xy}[3]{({#1+\kk*#2*sc(#1)*cos(#3)},{#2*sc(#1)*sin(#3)})}
+\newcommand{\xring}[2]{%
+  \draw[ringback] ({#1},{#2}) arc[start angle=90, end angle=-90, x radius={\kk*#2}, y radius={#2}];
+  \draw[ring]     ({#1},{#2}) arc[start angle=90, end angle=270, x radius={\kk*#2}, y radius={#2}];}
+\newcommand{\xellipse}[3][]{\path[#1] ({#2},0) ellipse [x radius={\kk*#3}, y radius={#3}];}
+\newcommand{\cell}[5]{\fill[#5] ({#1+\kk*(#2-#4)*sc(#1)},{(#3-#4)*sc(#1)}) rectangle ({#1+\kk*(#2+#4)*sc(#1)},{(#3+#4)*sc(#1)});}
+
+%% where the cone sits on the page, and its size: 1 unit of s = \cs cm
+\def\cx{16.9}
+\def\cy{10.8}
+\def\cs{0.62}
+
+%% -------- styles ------------------------------------------------------------
+\tikzset{
+  ring/.style={draw=gold!75!white, line width=0.45pt, opacity=0.85},
+  ringback/.style={draw=white, line width=0.3pt, opacity=0.28, dash pattern=on 1pt off 1pt},
+  meridian/.style={draw=white, line width=0.3pt, opacity=0.13},
+  edge/.style={draw=gold!80!white, line width=0.7pt, opacity=0.9},
+  bline/.style={draw=bred, line width=1.6pt, line cap=round},
+  bbarline/.style={draw=bblue, line width=1.6pt, line cap=round},
+  gluon/.style={draw=fsr, line width=0.7pt, decorate,
+    decoration={coil, aspect=0.55, segment length=2.0pt, amplitude=1.2pt}},
+  isrgluon/.style={gluon, draw=isr},
+  quark/.style={draw=hadroncol, line width=0.8pt, line cap=round},
+  string/.style={draw=hadroncol, line width=0.4pt, opacity=0.8},
+  hadron/.style={circle, fill=hadroncol, draw=navy, line width=0.3pt,
+    inner sep=0pt, minimum size=3.2pt},
+  track/.style={draw=trackcol, line width=0.5pt, opacity=0.9},
+  photon/.style={draw=hadroncol, line width=0.5pt, dash pattern=on 1.2pt off 1.2pt},
+  putrack/.style={draw=pu, line width=0.3pt, opacity=0.45},
+  pudot/.style={circle, fill=pu, inner sep=0pt, minimum size=1.8pt, opacity=0.7},
+  pf/.style={circle, inner sep=0pt, minimum size=3.4pt, draw=navy, line width=0.25pt},
+  road/.style={draw=white, line width=5pt, opacity=0.09, line cap=round},
+  roadline/.style={draw=gold, line width=0.8pt, dash pattern=on 5pt off 4pt},
+  milestone/.style={circle, draw=gold, fill=navy, line width=0.9pt,
+    minimum size=10.5pt, inner sep=0pt, font=\sffamily\bfseries\tiny, text=gold},
+  mlabel/.style={font=\sffamily\footnotesize, text=white, align=center,
+    inner sep=3pt, fill=navy, rounded corners=1.5pt, draw=gold!60!navy, line width=0.4pt},
+  ruler/.style={draw=gold!85!white, line width=0.6pt},
+  tick/.style={draw=gold!85!white, line width=0.5pt},
+  ticklabel/.style={font=\sffamily\scriptsize, text=white!85!navy, align=left,
+    inner sep=1.5pt, rotate=-72, anchor=west},
+  gate/.style={draw=gold, line width=0.5pt, dash pattern=on 2pt off 1.5pt, opacity=0.9},
+  tiny/.style={font=\sffamily\tiny, inner sep=1pt},
+  side/.style={font=\sffamily\scriptsize, text=white!75!navy},
+}
+\newcommand{\sub}[1]{\\{\scriptsize\color{gold!85!white}#1}}
+
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\useasboundingbox (0,0) rectangle (38.4,21.6);
+\clip (0,0) rectangle (38.4,21.6);
+
+%% ======== background ========================================================
+\shade[top color=navytop, bottom color=navy!80!black] (0,0) rectangle (38.4,21.6);
+\draw[white, opacity=0.045, line width=0.3pt, step=1cm] (0,0) grid (38.4,21.6);
+%% the safe band, a touch lighter, so the TV strips read as margins
+\fill[white, opacity=0.025] (0,7.63) rectangle (38.4,13.97);
+
+%% ======== the cone, horizontal, in the phone-safe area =======================
+\begin{scope}[shift={(\cx,\cy)}, scale=\cs]
+
+%% the glow of the hard scattering
+\shade[inner color=gold, outer color=navy, opacity=0.65] (0,0) circle[radius=1.1];
+
+%% the cone body
+\fill[gold, opacity=0.10]
+  plot[domain=0:19, samples=80] (\x,{rf(\x)})
+  arc[start angle=90, end angle=-90, x radius={\kk*rf(19)}, y radius={rf(19)}]
+  -- plot[domain=19:0, samples=80] (\x,{-rf(\x)}) -- cycle;
+\foreach \t in {0,30,...,330}
+  \draw[meridian] plot[domain=0:19, samples=70] ({\x+\kk*rf(\x)*cos(\t)},{rf(\x)*sin(\t)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{rf(\x)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{-rf(\x)});
+
+%% the road: the jet axis, up to the detector wall
+\draw[road] (0,0) -- (9,0);
+\draw[roadline] (0,0) -- (9,0);
+
+%% I. the family is born
+\draw[bbarline] (0,0) -- (0.3,1.35);
+\node[bblue, font=\small\bfseries, inner sep=1pt] at (0.1,1.65) {$\bar b$};
+\draw[isrgluon] (0,0) -- (1.25,1.2);
+\node[isr, tiny] at (1.45,1.45) {ISR};
+\coordinate (B1) at (1.1,0.12);
+\coordinate (B2) at (2.3,0.02);
+\coordinate (B3) at (3.6,-0.08);
+\path \xy{2.9}{1.0}{120} coordinate (G1);
+\path \xy{3.6}{1.05}{210} coordinate (G2);
+\path \xy{3.6}{1.1}{330} coordinate (G3);
+\path \xy{3.6}{1.5}{112} coordinate (Q1);
+\path \xy{3.6}{1.0}{145} coordinate (Q2);
+\draw[bline] (0,0) -- (B1) -- (B2) -- (B3);
+\draw[gluon] (B1) -- (G1);
+\draw[gluon] (B2) -- (G2);
+\draw[gluon] (B2) -- (G3);
+\draw[quark] (G1) -- (Q1);
+\draw[quark] (G1) -- (Q2);
+\node[bred, font=\small\bfseries, inner sep=1pt] at ($(B1)+(0.05,-0.5)$) {$b$};
+\node[fsr, tiny] at ($(G1)+(-0.4,0.2)$) {FSR};
+\xring{3.6}{rf(3.6)}
+
+% hadronisation
+\path \xy{5.2}{0.0}{0} coordinate (H1);
+\path \xy{5.2}{1.4}{118} coordinate (H2);
+\path \xy{5.2}{0.9}{150} coordinate (H3);
+\path \xy{5.2}{1.0}{200} coordinate (H4);
+\path \xy{5.2}{1.4}{222} coordinate (H5);
+\path \xy{5.2}{1.2}{335} coordinate (H6);
+\path \xy{5.2}{0.6}{305} coordinate (H7);
+\path \xy{5.2}{1.6}{95} coordinate (H8);
+\path \xy{5.2}{0.5}{30} coordinate (H9);
+\foreach \p/\h in {Q1/H2, Q1/H8, Q2/H3, G2/H4, G2/H5, G3/H6, G3/H7, B3/H1, B3/H9}
+  \draw[string] (\p) -- (\h);
+\foreach \h in {H2,H3,H4,H5,H6,H7,H8,H9} \node[hadron] at (\h) {};
+\node[hadron, minimum size=6pt, font=\tiny\bfseries, text=navy] at (H1) {B};
+\xring{5.2}{rf(5.2)}
+
+% the hadrons fly to the wall; the B hadron decays after 1.5 ps
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30}
+  \draw[track] \xy{5.2}{\r}{\t} -- \xy{9}{\r}{\t};
+\foreach \r/\t in {1.0/200, 1.4/222, 0.6/305}
+  \draw[photon] \xy{5.2}{\r}{\t} -- \xy{9}{\r}{\t};
+\coordinate (SV) at (6.2,0);
+\draw[draw=hadroncol, line width=1.4pt] (H1) -- (SV);
+\draw[track] (SV) -- \xy{9}{0.25}{20};
+\draw[draw=muoncol, line width=0.7pt] (SV) -- \xy{9}{0.5}{250}
+  node[pos=0.6, below=1pt, muoncol, tiny] {$\mu$};
+\draw[draw=nucol, line width=0.6pt, dash pattern=on 3pt off 2.5pt, -{Stealth[length=3.5pt]}]
+  (SV) -- \xy{10.2}{2.55}{75} coordinate (NUEND);
+\node[circle, draw=bred, fill=navy, line width=0.6pt, inner sep=1.2pt] at (SV) {};
+\node[bred, tiny] at ($(SV)+(0,-0.45)$) {SV};
+
+%% II. on the road: the pileup crowd joins
+\pgfmathsetseed{2026}
+\foreach \i in {1,...,55}{
+  \pgfmathsetmacro{\r}{1.95*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot] at \xy{7}{\r}{\t} {};
+  \pgfmathparse{rnd<0.55 ? 1 : 0}
+  \ifnum\pgfmathresult=1 \draw[putrack] \xy{7}{\r}{\t} -- \xy{9}{\r}{\t}; \fi}
+\xring{7}{rf(7)}
+
+%% the detector wall at 25 ns
+\def\Rd{3.25}
+\pgfmathsetmacro{\scw}{sc(9)}
+\xellipse[fill=navy!75!black, fill opacity=0.82]{9}{\Rd*\scw}
+\foreach \v in {-3.2,-2.8,...,3.2}{
+  \pgfmathsetmacro{\w}{sqrt(\Rd*\Rd-\v*\v)}
+  \draw[steel, opacity=0.3, line width=0.3pt] ({9-\kk*\w*\scw},{\v*\scw}) -- ({9+\kk*\w*\scw},{\v*\scw});}
+\foreach \u in {-3.2,-2.8,...,3.2}{
+  \pgfmathsetmacro{\w}{sqrt(\Rd*\Rd-\u*\u)}
+  \draw[steel, opacity=0.3, line width=0.3pt] ({9+\kk*\u*\scw},{-\w*\scw}) -- ({9+\kk*\u*\scw},{\w*\scw});}
+\pgfmathsetseed{7}
+\foreach \i in {1,...,28}{
+  \pgfmathsetmacro{\r}{3.0*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \pgfmathsetmacro{\u}{\r*cos(\t)}
+  \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.16}{pu, opacity=0.5}}
+\pgfmathsetseed{11}
+\foreach \i in {1,...,30}{
+  \pgfmathsetmacro{\r}{3.0*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot, minimum size=1.5pt] at \xy{9}{\r}{\t} {};}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30, 0.25/20}{
+  \pgfmathsetmacro{\u}{\r*cos(\t)} \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.30}{hcalcol!90!white, opacity=0.9}}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.0/200, 1.4/222, 1.2/335, 1.6/95, 0.5/30, 0.25/20}{
+  \pgfmathsetmacro{\u}{\r*cos(\t)} \pgfmathsetmacro{\v}{\r*sin(\t)}
+  \cell{9}{\u}{\v}{0.17}{ecalcol!85!white}}
+\cell{9}{0.6*cos(305)}{0.6*sin(305)}{0.30}{hcalcol!90!white, opacity=0.9}
+\cell{9}{0.5*cos(250)}{0.5*sin(250)}{0.17}{muoncol}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30, 0.25/20, 0.5/250}
+  \node[circle, fill=white, inner sep=0pt, minimum size=2.2pt] at \xy{9}{\r}{\t} {};
+\draw[edge, opacity=0.6] (9,0) ellipse [x radius={\kk*\Rd*\scw}, y radius={\Rd*\scw}];
+\node[gold!90!white, tiny, anchor=north] at (9,{-\Rd*\scw-0.1}) {tracker $\cdot$ ECAL $\cdot$ HCAL $\cdot$ $\mu$ chambers};
+\node[nucol, tiny, anchor=south west] at ($(NUEND)+(0.05,0.05)$) {$\nu$: never arrived};
+
+%% the road continues: reconstruction
+\draw[road] (9,0) -- (19,0);
+\draw[roadline] (9,0) -- (19,0);
+
+%% the two trigger gates
+\foreach \s/\l in {10.0/L1T, 10.7/HLT}{
+  \draw[gate] (\s,0) ellipse [x radius={\kk*rf(\s)}, y radius={rf(\s)}];
+  \node[gold, tiny, anchor=north] at (\s,{-rf(\s)-0.05}) {\l\ \checkmark};}
+
+%% III. the census: Particle-Flow candidates
+\pgfmathsetseed{5}
+\foreach \i in {1,...,22}{
+  \pgfmathsetmacro{\r}{2.1*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot] at \xy{12}{\r}{\t} {};}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{12}{\r}{\t} {};
+\xring{12}{rf(12)}
+
+%% IV. PUPPI weights and anti-kT: the family inside R = 0.4
+\pgfmathsetseed{5}
+\foreach \i in {1,...,22}{
+  \pgfmathsetmacro{\r}{2.1*sqrt(rnd)}
+  \pgfmathsetmacro{\t}{360*rnd}
+  \node[pudot, opacity=0.12] at \xy{13.8}{\r}{\t} {};}
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.7pt]{13.8}{1.75}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{13.8}{\r}{\t} {};
+\node[gold, tiny, anchor=north] at (13.8,-1.8) {$R=0.4$};
+\xring{13.8}{rf(13.8)}
+
+%% V. settling the accounts: JEC and JER
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.7pt]{15.3}{1.75}
+\xellipse[draw=gold, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt, opacity=0.7]{15.3}{2.1}
+\draw[gold, line width=0.6pt, {Stealth[length=3.5pt]}-{Stealth[length=3.5pt]}] (15.3,-2.0) -- (15.3,2.0);
+\node[gold, tiny, fill=navy, fill opacity=0.7, text opacity=1, anchor=west] at (15.42,0.9) {JEC};
+\node[gold!80!white, tiny, anchor=north] at (15.3,-2.2) {JER $\pm$};
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 0.25/20/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol,
+                      0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c, minimum size=3pt] at \xy{15.3}{\r}{\t} {};
+\xring{15.3}{rf(15.3)}
+
+%% VI. arrival: the registry office stamps the b jet
+\xellipse[fill=gold, fill opacity=0.12, draw=gold, line width=0.7pt]{16.8}{1.75}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      1.0/200/ecalcol, 1.4/222/ecalcol, 0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c, minimum size=3pt] at \xy{16.8}{\r}{\t} {};
+\xring{16.8}{rf(16.8)}
+
+%% VII. the top family: the AK8 cap of the cone
+\coordinate (T) at (19,0);
+\xellipse[fill=gold, fill opacity=0.18, draw=gold, line width=0.7pt, dash pattern=on 2.5pt off 2pt]{19}{rf(19)}
+\foreach \t/\c in {90/bred, 210/hadroncol, 330/hadroncol}{
+  \path \xy{19}{2.25}{\t} coordinate (SJ);
+  \draw[draw=\c, fill=\c, fill opacity=0.15, line width=0.6pt] (SJ) ellipse [x radius={\kk*1.3}, y radius=1.3];
+  \draw[draw=\c, line width=0.5pt, opacity=0.8] (T) -- (SJ);
+  \pgfmathsetseed{\t}
+  \foreach \i in {1,...,7}{
+    \pgfmathsetmacro{\rr}{1.05*sqrt(rnd)}
+    \pgfmathsetmacro{\tt}{360*rnd}
+    \node[pf, fill=\c, minimum size=2.8pt] at ({19+\kk*(2.25*cos(\t)+\rr*cos(\tt))},{2.25*sin(\t)+\rr*sin(\tt)}) {};}}
+\node[bred, font=\small\bfseries, inner sep=1pt] at \xy{19}{3.45}{118} {$b$};
+\node[hadroncol, font=\tiny\sffamily, inner sep=1pt] at \xy{19}{2.25}{270} {$W\!\to q\bar q'$};
+\node[gold, tiny, anchor=north] at (19,{-rf(19)-0.05}) {$R=0.8$};
+
+%% milestones on the axis
+\node[milestone] at (0,0) {I};
+\node[milestone] at (7.4,0) {II};
+\node[milestone] at (12,0) {III};
+\node[milestone] at (13.8,0) {IV};
+\node[milestone] at (15.3,0) {V};
+\node[circle, draw=gold, fill=bred, line width=0.9pt, minimum size=12pt, inner sep=0pt,
+      font=\sffamily\bfseries\scriptsize, text=white] (m6) at (16.8,0) {b};
+\node[gold, font=\tiny\bfseries] at ($(m6)+(0.30,0.30)$) {\checkmark};
+\node[circle, fill=gold, draw=navy, line width=0.5pt, minimum size=12pt, inner sep=0pt,
+      font=\sffamily\bfseries\scriptsize, text=navy] at (T) {$t$};
+
+\end{scope}
+
+%% ======== title, left of the cone, in the phone-safe area ====================
+\node[anchor=center] at (12.0,11.75)
+  {\fontsize{58}{62}\selectfont\sffamily\bfseries{\color{white}Jit}{\color{gold}Jet}};
+\draw[gold, line width=0.7pt] (8.9,10.72) -- (15.1,10.72);
+\node[anchor=center, white, font=\fontsize{18}{21}\selectfont\sffamily] at (12.0,10.2) {Journey Is The Jet};
+\node[anchor=center, gold!90!white, font=\fontsize{9}{11}\selectfont\sffamily\itshape] at (12.0,9.55)
+  {(bottom to top)};
+
+%% ======== desktop-only margins: credits (left), caption + address (right) ====
+\node[anchor=east, align=right, side] at (5.0,10.8) {%
+  {\color{gold}\scshape Directed by}\\[1pt]
+  {\color{white}\bfseries\footnotesize Ravindra Verma}\\
+  (JME-Freelancer)\\[5pt]
+  {\color{gold}\scshape Produced by}\\[1pt]
+  {\color{white}Claude Fable\ $\cdot$\ ChatGPT Astra}\\[5pt]
+  University of Helsinki\\CMS Collaboration};
+\node[anchor=west, align=left, side, text width=4.3cm, font=\sffamily\scriptsize\itshape] at (33.4,11.1)
+  {Every slice is the $(\eta,\varphi)$ patch around the jet axis: the cone is the jet.
+   Time runs along the axis, from the hard scattering to the analysis, thirty orders of magnitude.};
+\node[anchor=west, gold, font=\sffamily\scriptsize\bfseries] at (33.4,9.3) {github.com/ravindkv/JitJet};
+
+%% ======== TV-only strip above: the seven parts of the book, as a road =======
+\node[anchor=center, gold, font=\sffamily\scriptsize\scshape] at (19.2,19.4) {The journey, in seven parts \,$\cdot$\, bottom to top};
+\draw[roadline, opacity=0.8] (1.6,17.4) -- (36.8,17.4);
+\foreach \x/\n/\t/\s in {
+    4.2/I/The family is born/{ME\,$\cdot$\,parton shower\,$\cdot$\,hadrons},
+    9.2/II/On the road/{pileup\,$\cdot$\,detector\,$\cdot$\,L1T\,$\cdot$\,HLT},
+   14.2/III/Taking the census/{RecHits\,$\cdot$\,Particle Flow},
+   19.2/IV/Who belongs to the family?/{PUPPI\,$\cdot$\,anti-$k_{\mathrm{T}}$ clustering},
+   24.2/V/Settling the accounts/{JEC\,$\cdot$\,JER},
+   29.2/VI/Arrival/{$b$ tagging},
+   34.2/VII/The top family/{top tagging}}
+  \node[mlabel] at (\x,17.4) {\n. \t\sub{\s}};
+
+%% ======== TV-only strip below: the time ruler, aligned with the cone ========
+%% a tick at time s sits at the page x of the cone slice at s
+\draw[ruler, -{Stealth[length=5pt]}] ({\cx},5.6) -- ({\cx+\cs*14.2},5.6);
+\node[gold, font=\sffamily\scriptsize\itshape, anchor=west] at ({\cx+\cs*14.3},5.6) {time (not to scale)};
+\node[gold, font=\sffamily\scriptsize\scshape, anchor=east] at ({\cx-0.4},5.6) {the clock};
+\foreach \s/\l in {0/{$10^{-27}$ s\\hard scattering}, 3.6/{$10^{-24}$ s\\parton shower},
+                   5.2/{$10^{-23}$ s\\hadronisation}, 7.0/{same crossing\\pileup},
+                   9.0/{25 ns\\detector}, 10.0/{4 $\mu$s\\L1 trigger},
+                   12.0/{hours\\reconstruction}, 13.2/{months\\analysis}}{
+  \draw[tick] ({\cx+\cs*\s},5.75) -- ({\cx+\cs*\s},5.45);
+  \node[ticklabel] at ({\cx+\cs*\s},5.4) {\l};}
+%% two stages too close to their neighbours sit on the other side of the ruler
+\foreach \s/\l in {6.2/{1.5 ps\\$B$ decay}, 10.7/{0.3 s\\HLT}}{
+  \draw[tick] ({\cx+\cs*\s},5.75) -- ({\cx+\cs*\s},5.45);
+  \node[ticklabel, anchor=east] at ({\cx+\cs*\s},5.8) {\l};}
+
+\end{tikzpicture}
+\end{document}

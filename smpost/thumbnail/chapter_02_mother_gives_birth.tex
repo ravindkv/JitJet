@@ -1,0 +1,43 @@
+%% smpost/thumbnail/chapter_02_mother_gives_birth.tex : thumbnail of video 2/30,
+%% "Chapter-2 | The Mother Gives Birth: Parton Showering". Motif: the b quark
+%% radiating gluons, one of them splitting, inside its opening cone, and the
+%% pT scale running down beside it.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_02_mother_gives_birth)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{2}{Chapter 2}{2 / 30}{The Mother\\Gives Birth}{Parton showering: a colour charge radiates, the $p_{\mathrm T}$ scale runs down}
+
+\begin{scope}[shift={(\mx-3.4,\my-2.2)}, rotate=28]
+%% the cone that opens around the b
+\fill[gold, opacity=0.1] (0,0) -- (7.2,2.0) -- (7.2,-2.0) -- cycle;
+\draw[edge, dash pattern=on 4pt off 3pt, opacity=0.7] (0,0) -- (7.2,2.0);
+\draw[edge, dash pattern=on 4pt off 3pt, opacity=0.7] (0,0) -- (7.2,-2.0);
+\shade[inner color=gold, outer color=navy, opacity=0.85] (0,0) circle[radius=0.7];
+%% the sibling leaves
+\draw[bbarline] (0,0) -- (-0.7,-0.9);
+\node[bblue, font=\sffamily\bfseries\large] at (-1.0,-1.25) {$\bar b$};
+%% the b with its emissions
+\coordinate (B1) at (1.6,0.1); \coordinate (B2) at (3.1,-0.05); \coordinate (B3) at (4.6,0.1); \coordinate (B4) at (6.6,0.0);
+\draw[bline] (0,0) -- (B1) -- (B2) -- (B3) -- (B4);
+\node[bred, font=\sffamily\bfseries\Large] at (7.1,0.0) {$b$};
+\draw[gluon] (B1) -- (2.9,1.5);
+\draw[gluon] (B2) -- (4.4,-1.6);
+\draw[gluon] (B3) -- (5.6,1.2);
+\draw[gluon] (B3) -- (6.0,-0.9);
+%% one gluon splits into a quark pair
+\draw[quark] (2.9,1.5) -- (4.2,2.2);
+\draw[quark] (2.9,1.5) -- (3.9,1.1);
+\node[fsr, motiflabel] at (2.3,1.1) {$g$};
+\node[hadroncol, motiflabel] at (4.5,2.35) {$q$};
+\node[hadroncol, motiflabel] at (4.2,0.95) {$\bar q$};
+\end{scope}
+%% the scale that runs down
+\draw[arrowg] (\mx+3.5,\my+3.2) -- (\mx+3.5,\my-1.6);
+\node[gold, motiflabel, anchor=south] at (\mx+3.5,\my+3.3) {$p_{\mathrm T}$};
+\node[gold!80!white, font=\sffamily\scriptsize, anchor=east] at (\mx+3.35,\my+2.6) {113 GeV};
+\node[gold!80!white, font=\sffamily\scriptsize, anchor=east] at (\mx+3.35,\my-1.3) {0.5 GeV};
+\end{tikzpicture}
+\end{document}

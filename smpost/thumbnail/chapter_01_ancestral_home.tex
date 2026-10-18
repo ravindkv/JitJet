@@ -1,0 +1,39 @@
+%% smpost/thumbnail/chapter_01_ancestral_home.tex : thumbnail of video 1/30,
+%% "Chapter-1 | The Ancestral Home: Protons, PDFs and the Hard Scattering".
+%% Motif: two protons, a u quark from one and a u antiquark from the other,
+%% the hard scattering, and the b and anti-b leaving back to back.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_01_ancestral_home)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{1}{Chapter 1}{1 / 30}{The Ancestral\\Home}{Protons, PDFs and the hard scattering: $u\bar u\to b\bar b$ at 13.6 TeV}
+
+\begin{scope}[shift={(\mx,\my)}]
+%% the two protons, each a bag of three valence quarks and a gluon
+\foreach \x/\name in {-3.0/pL, 3.0/pR}{
+  \node[circle, draw=steel, fill=navy!70!black, line width=1.6pt, minimum size=2.4cm, inner sep=0pt] (\name) at (\x,0) {};
+  \node[circle, fill=trackcol, inner sep=0pt, minimum size=7pt] at ({\x-0.35},0.4) {};
+  \node[circle, fill=trackcol, inner sep=0pt, minimum size=7pt] at ({\x+0.4},0.45) {};
+  \node[circle, fill=trackcol, inner sep=0pt, minimum size=7pt] at ({\x+0.05},-0.45) {};
+  \draw[gluon, line width=0.9pt, decoration={coil, aspect=0.6, segment length=3pt, amplitude=1.6pt}]
+    ({\x-0.35},0.4) -- ({\x+0.05},-0.45);}
+\node[steel, motiflabel, anchor=south] at (-3.0,1.35) {$p$};
+\node[steel, motiflabel, anchor=south] at (3.0,1.35) {$p$};
+%% the beams
+\draw[arrowg, draw=steel] (-4.6,0) -- (-4.25,0);
+\draw[arrowg, draw=steel] (4.6,0) -- (4.25,0);
+%% the quarks that meet
+\draw[qline] (-2.6,-0.45) -- (-0.35,-0.1) node[pos=0.55, above=3pt, trackcol, motiflabel] {$u$};
+\draw[qline] (2.6,0.45) -- (0.35,0.1) node[pos=0.55, below=3pt, trackcol, motiflabel] {$\bar u$};
+%% the hard scattering
+\shade[inner color=gold, outer color=navy, opacity=0.9] (0,0) circle[radius=0.9];
+\node[circle, fill=gold, inner sep=0pt, minimum size=9pt] at (0,0) {};
+%% the b and the anti-b, back to back
+\draw[bline, -{Stealth[length=9pt]}] (0.1,0.2) -- (1.6,2.9) node[pos=1, above right=1pt, bred, font=\sffamily\bfseries\Large] {$b$};
+\draw[bbarline, -{Stealth[length=9pt]}] (-0.1,-0.2) -- (-1.6,-2.9) node[pos=1, below left=1pt, bblue, font=\sffamily\bfseries\Large] {$\bar b$};
+\node[gold, motiflabel, anchor=north] at (0,-3.4) {$\sqrt{s}=13.6$ TeV};
+\end{scope}
+\end{tikzpicture}
+\end{document}

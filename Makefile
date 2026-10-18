@@ -6,6 +6,9 @@
 #   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
 #   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the one-minute cone-growth trailer
+#   make cover-youtube -> smpost/cover_photo_youtube.png, the 2560x1440 YouTube channel banner
+#   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
+#   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
 #   make clean     -> remove auxiliary files
 #   make distclean -> also remove the PDF
@@ -58,6 +61,40 @@ cover-video: cover/cover_timeline.pdf
 # Compiles cover_timeline.tex once per growth step into build/short_cover_frames.
 cover-video-short: cover/cover_timeline.tex
 	$(PYTHON) cover/animate_short_cover_timeline.py
+
+# The YouTube channel banner: the timeline cone laid out for YouTube's safe
+# areas, compiled with pdflatex and rasterised with gs to exactly 2560x1440.
+cover-youtube: smpost/cover_photo_youtube.png
+
+smpost/cover_photo_youtube.pdf: smpost/cover_photo_youtube.tex
+	cd smpost && pdflatex -interaction=nonstopmode -halt-on-error cover_photo_youtube.tex
+
+smpost/cover_photo_youtube.png: smpost/cover_photo_youtube.pdf
+	gs -q -dBATCH -dNOPAUSE -sDEVICE=png16m -r169.3333 -g2560x1440 -dPDFFitPage \
+	   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sOutputFile=$@ $<
+
+# The YouTube profile picture: a square 800x800 drawn for the circular crop.
+profile-youtube: smpost/profile_photo_youtube.png
+
+smpost/profile_photo_youtube.pdf: smpost/profile_photo_youtube.tex
+	cd smpost && pdflatex -interaction=nonstopmode -halt-on-error profile_photo_youtube.tex
+
+smpost/profile_photo_youtube.png: smpost/profile_photo_youtube.pdf
+	gs -q -dBATCH -dNOPAUSE -sDEVICE=png16m -r254 -g800x800 -dPDFFitPage \
+	   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sOutputFile=$@ $<
+
+# The video thumbnails: one standalone TikZ page per video of smpost/SMPost.md,
+# sharing smpost/thumbnail/thumbnail_common.tex, rasterised to 1280x720.
+THUMBS := $(patsubst %.tex,%.png,$(wildcard smpost/thumbnail/chapter_*.tex))
+
+thumbnails-youtube: $(THUMBS)
+
+smpost/thumbnail/%.pdf: smpost/thumbnail/%.tex smpost/thumbnail/thumbnail_common.tex
+	cd smpost/thumbnail && pdflatex -interaction=nonstopmode -halt-on-error $(notdir $<)
+
+smpost/thumbnail/%.png: smpost/thumbnail/%.pdf
+	gs -q -dBATCH -dNOPAUSE -sDEVICE=png16m -r169.3333 -g1280x720 -dPDFFitPage \
+	   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sOutputFile=$@ $<
 
 # Figures drawn from the example files. The PDFs are committed, so building the
 # book does not need matplotlib; run `make figures` after changing a script.
@@ -208,10 +245,13 @@ clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
 	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux \
 	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log \
-	      cover/cover_timeline_minimal.aux cover/cover_timeline_minimal.log
+	      cover/cover_timeline_minimal.aux cover/cover_timeline_minimal.log \
+	      smpost/cover_photo_youtube.aux smpost/cover_photo_youtube.log \
+	      smpost/profile_photo_youtube.aux smpost/profile_photo_youtube.log \
+	      smpost/thumbnail/*.aux smpost/thumbnail/*.log
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
 	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
 
-.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short figures records clean distclean
+.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short cover-youtube profile-youtube thumbnails-youtube figures records clean distclean

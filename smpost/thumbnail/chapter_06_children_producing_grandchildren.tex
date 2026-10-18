@@ -1,0 +1,41 @@
+%% smpost/thumbnail/chapter_06_children_producing_grandchildren.tex : thumbnail
+%% of video 6/30, "Chapter-6 | The Children Produce Grandchildren: B-Hadron
+%% Decays". Motif: the B hadron walks away from the collision point and decays
+%% at a displaced vertex into a charm hadron that walks on and decays too; the
+%% tracks fan out from the two vertices, the muon leaves, the neutrino escapes.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_06_children_producing_grandchildren)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{6}{Chapter 6}{6 / 30}{The Children Produce\\Grandchildren}{$B$-hadron decays: displaced vertices, the decay tree, and the first energy lost for good}
+
+\begin{scope}[shift={(\mx+0.3,\my-0.6)}]
+%% the collision point, the primary vertex
+\shade[inner color=gold, outer color=navy, opacity=0.9] (-3.4,-1.6) circle[radius=0.7];
+\node[circle, fill=gold, inner sep=0pt, minimum size=8pt] (pv) at (-3.4,-1.6) {};
+\node[gold, motiflabel, anchor=north] at (-3.4,-2.1) {PV};
+%% prompt tracks from the primary vertex
+\foreach \a in {-25, 5, 40, 75} \draw[track, opacity=0.5] (pv) -- +(\a:2.2);
+%% the B flies 1.5 ps, then decays
+\coordinate (sv) at (-0.6,-0.2);
+\draw[flight, line width=2pt] (pv) -- (sv);
+\node[bred, motiflabel, anchor=north west] at (-2.3,-1.0) {$B$ flight};
+\node[vertex, minimum size=12pt] at (sv) {};
+\node[bred, motiflabel, anchor=north west] at ($(sv)+(0.1,-0.2)$) {SV};
+\foreach \a in {-30, -5, 50} \draw[track] (sv) -- +(\a:2.6);
+%% the muon and the neutrino of the semileptonic decay
+\draw[draw=muoncol, line width=1.6pt, line cap=round] (sv) -- +(20:3.4) node[pos=1, right=1pt, muoncol, motiflabel] {$\mu$};
+\draw[draw=nucol, line width=1.4pt, dash pattern=on 5pt off 4pt, -{Stealth[length=7pt]}] (sv) -- +(78:3.3)
+  node[pos=1, above=1pt, nucol, motiflabel] {$\nu$ leaves the jet};
+%% the charm hadron walks on and decays as well
+\coordinate (tv) at (1.9,0.9);
+\draw[flight, draw=hadroncol, line width=1.8pt] (sv) -- (tv);
+\node[hadroncol, motiflabel, anchor=north west] at ($(sv)!0.45!(tv)+(0.1,-0.1)$) {$D$};
+\node[vertex, draw=hadroncol, minimum size=10pt] at (tv) {};
+\foreach \a in {-20, 15, 45} \draw[track] (tv) -- +(\a:2.0);
+\node[hadroncol, motiflabel, anchor=north west] at ($(tv)+(0.1,-0.15)$) {TV};
+\end{scope}
+\end{tikzpicture}
+\end{document}

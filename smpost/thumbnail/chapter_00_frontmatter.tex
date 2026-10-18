@@ -1,0 +1,69 @@
+%% smpost/thumbnail/chapter_00_frontmatter.tex : thumbnail of video 0/30,
+%% "JitJet | Introduction to the Book". Motif: the timeline cone of the cover,
+%% the whole road from the hard scattering to the top tag.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_00_frontmatter)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{0}{Introduction}{0 / 30}{A jet is\\its journey}{One simulated event, followed from the proton to the histogram: the tour guide, the passengers and the van}
+
+%% the cone, horizontal, as on the profile picture
+\begin{scope}[shift={(\mx-3.6,\my+0.2)}, scale=0.36]
+\shade[inner color=gold, outer color=navy, opacity=0.8] (0,0) circle[radius=1.6];
+\fill[gold, opacity=0.13]
+  plot[domain=0:19, samples=80] (\x,{rf(\x)})
+  arc[start angle=90, end angle=-90, x radius={\kk*rf(19)}, y radius={rf(19)}]
+  -- plot[domain=19:0, samples=80] (\x,{-rf(\x)}) -- cycle;
+\foreach \t in {0,45,...,315}
+  \draw[meridian] plot[domain=0:19, samples=70] ({\x+\kk*rf(\x)*cos(\t)},{rf(\x)*sin(\t)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{rf(\x)});
+\draw[edge] plot[domain=0:19, samples=80] (\x,{-rf(\x)});
+\draw[roadline, line width=1pt, dash pattern=on 4pt off 3pt] (0,0) -- (19,0);
+\draw[bbarline, line width=2pt] (0,0) -- (0.5,2.2);
+\draw[isrgluon, line width=1pt, decoration={coil, aspect=0.55, segment length=2.4pt, amplitude=1.5pt}] (0,0) -- (1.9,1.9);
+\coordinate (B1) at (1.3,0.12); \coordinate (B2) at (2.8,0.02); \coordinate (B3) at (4.6,-0.08);
+\path \xy{3.4}{1.0}{120} coordinate (G1);
+\path \xy{4.4}{1.05}{210} coordinate (G2);
+\path \xy{4.4}{1.1}{330} coordinate (G3);
+\path \xy{4.4}{1.5}{112} coordinate (Q1);
+\path \xy{4.4}{1.0}{145} coordinate (Q2);
+\draw[bline, line width=2pt] (0,0) -- (B1) -- (B2) -- (B3);
+\foreach \a/\b in {B1/G1, B2/G2, B2/G3}
+  \draw[gluon, line width=1pt, decoration={coil, aspect=0.55, segment length=2.4pt, amplitude=1.5pt}] (\a) -- (\b);
+\draw[quark, line width=1pt] (G1) -- (Q1); \draw[quark, line width=1pt] (G1) -- (Q2);
+\xring{4.4}{rf(4.4)}
+\foreach \r/\t in {1.4/118, 0.9/150, 1.2/335, 1.6/95, 0.5/30, 1.0/200, 0.6/305}
+  \draw[track, line width=0.7pt] \xy{6.5}{\r}{\t} -- \xy{12}{\r}{\t};
+\xring{8}{rf(8)}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol, 0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{12}{\r}{\t} {};
+\xring{12}{rf(12)}
+\xellipse[fill=gold, fill opacity=0.15, draw=gold, line width=0.9pt]{14.5}{1.75}
+\foreach \r/\t/\c in {1.4/118/trackcol, 0.9/150/trackcol, 1.2/335/trackcol, 1.6/95/trackcol,
+                      0.5/30/trackcol, 1.0/200/ecalcol, 1.4/222/ecalcol, 0.6/305/hcalcol, 0.5/250/muoncol}
+  \node[pf, fill=\c] at \xy{14.5}{\r}{\t} {};
+\xring{14.5}{rf(14.5)}
+\coordinate (T) at (19,0);
+\xellipse[fill=gold, fill opacity=0.2, draw=gold, line width=0.9pt, dash pattern=on 2.5pt off 2pt]{19}{rf(19)}
+\foreach \t/\c in {90/bred, 210/hadroncol, 330/hadroncol}{
+  \path \xy{19}{2.25}{\t} coordinate (SJ);
+  \draw[draw=\c, fill=\c, fill opacity=0.2, line width=0.8pt] (SJ) ellipse [x radius={\kk*1.3}, y radius=1.3];
+  \draw[draw=\c, line width=0.7pt, opacity=0.85] (T) -- (SJ);
+  \pgfmathsetseed{\t}
+  \foreach \i in {1,...,6}{
+    \pgfmathsetmacro{\rr}{1.0*sqrt(rnd)}
+    \pgfmathsetmacro{\tt}{360*rnd}
+    \node[pf, fill=\c, minimum size=3.5pt] at ({19+\kk*(2.25*cos(\t)+\rr*cos(\tt))},{2.25*sin(\t)+\rr*sin(\tt)}) {};}}
+\node[circle, draw=gold, fill=bred, line width=1pt, minimum size=15pt, inner sep=0pt,
+      font=\sffamily\bfseries\small, text=white] at (16.6,0) {b};
+\node[circle, fill=gold, draw=navy, line width=0.6pt, minimum size=15pt, inner sep=0pt,
+      font=\sffamily\bfseries\small, text=navy] at (T) {$t$};
+\end{scope}
+%% the ends of the road
+\node[gold, motiflabel, anchor=north west] at (\mx-3.3,\my-1.0) {hard scattering};
+\node[gold, motiflabel, anchor=north] at (\mx+3.4,\my-2.2) {top tag};
+\end{tikzpicture}
+\end{document}

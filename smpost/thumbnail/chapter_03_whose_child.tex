@@ -1,0 +1,30 @@
+%% smpost/thumbnail/chapter_03_whose_child.tex : thumbnail of video 3/30,
+%% "Chapter-3 | Whose Child Is It? Matching and Merging". Motif: one gluon with
+%% two would-be parents, the matrix element and the shower, and the sign at
+%% this stop that says our event does not get off here.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_03_whose_child)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{3}{Chapter 3}{3 / 30}{Whose Child\\Is It?}{Matching and merging: when the matrix element and the shower both claim the same parton}
+
+\begin{scope}[shift={(\mx,\my)}]
+%% the two parents
+\node[mlabel, font=\sffamily\bfseries\large, minimum width=2.6cm] (me) at (-2.3,2.6) {ME\\{\normalfont\small\color{gold!85!white}matrix element}};
+\node[mlabel, font=\sffamily\bfseries\large, minimum width=2.6cm, draw=fsr] (ps) at (2.3,2.6) {PS\\{\normalfont\small\color{fsr}parton shower}};
+%% the child: a gluon, claimed by both
+\coordinate (kid) at (0,-0.4);
+\draw[arrowg, dash pattern=on 5pt off 4pt] (me.south) -- ($(kid)+(-0.35,0.55)$);
+\draw[arrowg, dash pattern=on 5pt off 4pt, draw=fsr] (ps.south) -- ($(kid)+(0.35,0.55)$);
+\draw[gluon, line width=2.2pt, decoration={coil, aspect=0.6, segment length=5pt, amplitude=3.2pt}] ($(kid)+(-1.3,-0.7)$) -- ($(kid)+(1.3,0.3)$);
+\node[fsr, font=\sffamily\bfseries\Large] at ($(kid)+(1.75,0.55)$) {$g$};
+\node[white, font=\sffamily\bfseries\fontsize{40}{44}\selectfont] at (0,1.1) {?};
+%% the sign at the stop: not for us
+\node[rotate=-12, draw=bred, text=bred, line width=2pt, rounded corners=3pt, inner xsep=8pt, inner ysep=4pt,
+      font=\sffamily\bfseries\large, fill=navy, fill opacity=0.85, text opacity=1] at (1.6,-2.5) {NOT FOR US};
+\node[white!80!navy, font=\sffamily\small, anchor=east, align=right] at (-0.4,-2.5) {$u\bar u\to b\bar b$ at LO:\\every parton has one parent};
+\end{scope}
+\end{tikzpicture}
+\end{document}

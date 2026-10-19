@@ -2,14 +2,14 @@
 
 
 JitJet: Journey is the Jet
-Director: Ravindra Verma (University of Heslinki)
+Director: Ravindra Verma (University of Helsinki)
 Producer: Claude Fable, ChatGPT Astra
 
 JitJet Book: https://github.com/ravindkv
 JitJet CMSSW : https://github.com/ravindkv/JitJetSW
 JitJet Playlist: https://www.youtube.com/playlist?list=PLbSW20iyZFd4 
 
-#LHC, #CMS, #QCD, #ParticlePhysics
+#CERN, #LHC, #CMS, #JME, #BTV, #QCD, #ParticlePhysics
 
 
 ### --------------------------------------
@@ -64,7 +64,7 @@ chapter/chapter_02_mother_gives_birth.tex
 ### --------------------------------------
 (3/30) JitJet | Chapter-3 | Whose Child Is It? Matching and Merging
 
-Chapter 3 is a stop at which our event does not get off. The ten-second clip shows the road
+Chapter 3 is a stop at which our event does not get off. The short clip shows the road
 of the book with its stops, the cart carrying our event, u anti-u -> b anti-b, rolling up to
 stop 3, and the sign that says who this stop is for: events with extra-parton subprocesses
 or a next-to-leading-order matrix element, where the matrix element and the shower both

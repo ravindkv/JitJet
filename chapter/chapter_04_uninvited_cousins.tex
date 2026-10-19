@@ -158,10 +158,11 @@ the data fix.
 
 The film first. \file{example/MPI/Standalone/animate_standalone_multiparton_interactions.py}
 imports the standalone script of \cref{sec:uninvited_cousins:standalone_code}
-and replays the seed-1 dressing at the \CMSSW impact parameter in five scenes
-of about fifty seconds in all, once without and once with colour
-reconnection, so that every number on the screen is produced by the classes
-that wrote the record. It is on the JitJet playlist,
+and replays the seed-1 dressing at the \CMSSW impact parameter in five
+narrated scenes of a little over four minutes in all, once without and
+once with colour reconnection, so that every number on the screen, and every
+number the narrator says, is produced by the classes that wrote the record.
+It is on the JitJet playlist,
 \begin{center}
   \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
 \end{center}
@@ -212,12 +213,17 @@ scene names the section that explains it.
     $3.48$ and $1.80$ of the validation run. Our event, the first frame, is
     on the lucky side for the cone and on the busy side for the chain.
 \end{enumerate}
-Rendering needs matplotlib in addition to NumPy and SciPy, and
-\code{ffmpeg} for an \code{.mp4}:
+Rendering needs matplotlib in addition to NumPy and SciPy, \code{ffmpeg}
+for an \code{.mp4}, and \code{edge-tts} for the voice, as for the earlier
+films; the narration and the score come from the shared
+\file{example/soundtrack.py}, and \code{--no-narration} gives the silent
+cut of under a minute:
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/MPI/Standalone
-python3 animate_standalone_multiparton_interactions.py            # the film, about a minute to render
+python3 animate_standalone_multiparton_interactions.py            # the film and its .srt, about an hour to render
 python3 animate_standalone_multiparton_interactions.py --fast     # low-resolution preview
+python3 animate_standalone_multiparton_interactions.py --print-script   # the narration, to record it yourself
+python3 animate_standalone_multiparton_interactions.py --no-narration   # music only, about 55 s
 python3 animate_standalone_multiparton_interactions.py --scene chain -o chain.gif
 python3 animate_standalone_multiparton_interactions.py --stills stills.pdf --no-video
 \end{minted}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Animated companion to standalone_hadronisation.py.
 
-Nine scenes, about 90 s in total, show how the partons of the chapter-4 record turn into
-the primary hadrons of chapter 5. Every number on screen is computed with the classes of
-that script: the seed-1 hadronisation of ../../MPI/event_MPI.lhe (the record
+Nine scenes, narrated, show how the partons of the chapter-4 record turn into the primary
+hadrons of chapter 5. Every number on screen and in the narration is computed with the
+classes of that script: the seed-1 hadronisation of ../../MPI/event_MPI.lhe (the record
 ../event_Had.lhe) is replayed. The first four are sketches that introduce the picture
 (the TikZ figures of the chapter, animated); the last five follow the record.
 
@@ -41,28 +41,45 @@ that script: the seed-1 hadronisation of ../../MPI/event_MPI.lhe (the record
                 follows the strings, the ministrings and the hadrons.
   9  ensemble   The same partons hadronised again and again: the x_E = E_B/E_b of the b
                 quark's hadron fills a histogram, its running mean settles on the
-                Lund-Bowler value next to PYTHIA 8 on the same partons, and the B species
+                Lund-Bowler value next to Pythia 8 on the same partons, and the B species
                 fractions grow.
 
-Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
-  python3 animate_standalone_hadronisation.py                  # -> .mp4 next to this file
-  python3 animate_standalone_hadronisation.py --fast           # quick low-resolution preview
-  python3 animate_standalone_hadronisation.py --scene bstring -o bstring.gif
-  python3 animate_standalone_hadronisation.py --stills stills.pdf --no-video
+Narration and music
+  Each scene is a few phases (the allowed guests, the forbidden ones, the rule; the rope,
+  the breaks, the procession; ...) and each phase has one line of narration (narration()
+  below), spoken by a neural voice through edge-tts (Microsoft's online voices; `pip
+  install --user edge-tts`, needs the network) or, with --engine say, by a macOS voice;
+  --narration-dir takes recorded clips named <key>.wav|mp3 (--print-script lists the keys
+  and the text). A phase lasts at least as long as its line: its motion is slowed down (up
+  to 4x) and then held, so the narrated film is about 7 min and the silent one
+  (--no-narration) about 80 s. The score comes from example/soundtrack.py: a drone, a pad
+  with one chord per scene, a pulse that gains a voice with every scene, a bell as each
+  scene opens, a thud at the first break of the mother's rope. The clips are cached in
+  build/narration/Had/. An .srt is written next to the .mp4.
 
-An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow. --frames-dir writes the
-individual frames as PNG files instead. --seed is the one of the standalone script
-(default: seed 1, the committed record).
+Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
+  python3 animate_standalone_hadronisation.py                  # -> .mp4 + .srt next to this file
+  python3 animate_standalone_hadronisation.py --fast           # quick low-resolution preview
+  python3 animate_standalone_hadronisation.py --scene bstring -o bstring.gif   # silent
+  python3 animate_standalone_hadronisation.py --stills stills.pdf --no-video
+  python3 animate_standalone_hadronisation.py --print-script   # the narration, for recording it yourself
+  python3 animate_standalone_hadronisation.py --audio-only x.wav   # the soundtrack alone
+
+An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow and is silent. --frames-dir
+writes the individual frames as PNG files instead. --seed is the one of the standalone
+script (default: seed 1, the committed record).
 """
 from __future__ import annotations
 
 import argparse
 import json
 import math
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
-from typing import List
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -72,11 +89,13 @@ sys.path.insert(0, str(HERE.parent))
 import standalone_hadronisation as core  # noqa: E402
 import plot_journey_Had as journey  # noqa: E402
 
+sys.path.insert(0, str(HERE.parent.parent))
+import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the film clock)
+
 import matplotlib  # noqa: E402
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import animation  # noqa: E402
 
 COL_B, COL_BBAR, COL_HAD = "#ff0000", "#0000ff", "#9b4dff"
 COL_STR, COL_GLU, COL_A, COL_PY, COL_EVENT = "#2a78d6", "#2f8f5b", "#8e5bb5", "#7f7f7f", "#c0392b"
@@ -94,7 +113,7 @@ def smooth(t: float) -> float:
     return t * t * (3 - 2 * t)
 
 
-def ramp(k: int, k0: int, k1: int) -> float:
+def ramp(k: float, k0: int, k1: int) -> float:
     return smooth((k - k0) / max(k1 - k0, 1))
 
 
@@ -155,16 +174,22 @@ def msize(pt: float, scale=1.0) -> float:
 
 
 class Scene:
+    """nframes frames at the nominal fps and a draw(fig, k) for frame k (a float between frames when the film
+    clock slows the motion down)."""
     number, title, nframes = 0, "", 1
 
     def __init__(self, phys: Physics, fps: int):
         self.phys, self.fps = phys, fps
 
-    def draw(self, fig, k: int):
+    def draw(self, fig, k: float):
         raise NotImplementedError
 
     def keyframe(self) -> int:
         return self.nframes - 1
+
+    def phases(self) -> List[Tuple[str, int, int]]:
+        """(key, first frame, frame after the last) of each phase; one line of narration per phase."""
+        return [("all", 0, self.nframes)]
 
 
 # --- quark content helpers for the introductory scenes --------------------------------------------------
@@ -262,6 +287,9 @@ class GuestsScene(Scene):
     def keyframe(self):
         return self.nframes - 1
 
+    def phases(self):
+        return [("allowed", 0, 6 * self.per), ("forbidden", 6 * self.per, 10 * self.per), ("rule", 10 * self.per, self.nframes)]
+
     def item(self, ax, x, y, spec, k0, k, bad):
         a = ramp(k, k0, k0 + self.per)
         if a <= 0:
@@ -330,10 +358,17 @@ class WeddingScene(Scene):
         self.per = max(int(0.4 * fps), 3)
         self.t_rope = int(1.6 * fps)
         self.t_snap = self.t_rope + int(0.6 * fps)
-        self.nframes = self.t_snap + self.per * len(self.break_order) + int(2.5 * fps)
+        self.t_done = self.t_snap + self.per * len(self.break_order)
+        self.nframes = self.t_done + int(2.5 * fps)
 
     def keyframe(self):
         return self.nframes - 1
+
+    def phases(self):
+        return [("rope", 0, self.t_rope), ("snap", self.t_rope, self.t_done), ("procession", self.t_done, self.nframes)]
+
+    def n_breaks(self, k) -> int:
+        return 0 if k < self.t_snap else min(len(self.break_order), int(k - self.t_snap) // self.per + 1)
 
     def draw(self, fig, k):
         ph = self.phys
@@ -373,7 +408,7 @@ class WeddingScene(Scene):
                     weight="bold", color=TEXT, va="top", alpha=a_b)
             x0, x1, yb = 1.0, 15.2, 4.3
             slot = (x1 - x0) / n
-            n_br = 0 if k < self.t_snap else min(len(self.break_order), (k - self.t_snap) // self.per + 1)
+            n_br = self.n_breaks(k)
             made = self.break_order[:n_br]
             cuts = sorted(j for j, _ in made)
             edges = [x0] + [x0 + slot * (j + 1) for j in cuts] + [x1]
@@ -399,7 +434,7 @@ class WeddingScene(Scene):
         if k >= self.t_snap:
             ax.text(0.1, 3.0, f"(c) the procession: the {n} hadrons in their order along the rope, with their quark content", fontsize=10.5,
                     weight="bold", color=TEXT, va="top")
-            n_br = min(len(self.break_order), (k - self.t_snap) // self.per + 1)
+            n_br = self.n_breaks(k)
             have = set(j for j, _ in self.break_order[:n_br])
             slot = 14.2 / n
             for i, (hid, p, info) in enumerate(self.chain):
@@ -442,6 +477,11 @@ class SnapshotScene(Scene):
 
     def keyframe(self):
         return int(self.t_run * 0.62)
+
+    def phases(self):
+        k_break = self.vertex_frames[0][0] if self.vertex_frames else self.t_run // 4
+        k_turn = int(self.T_TURN / self.dt)
+        return [("stretch", 0, k_break), ("breaks", k_break, k_turn), ("yoyo", k_turn, self.t_run), ("end", self.t_run, self.nframes)]
 
     def simulate(self):
         """ends move at the speed of light; a piece reverses its two ends when their separation reaches its size"""
@@ -489,7 +529,7 @@ class SnapshotScene(Scene):
             t += self.dt
 
     def draw(self, fig, k):
-        kk = min(k, self.t_run)
+        kk = min(int(round(k)), self.t_run)
         ends, Ls, t = self.hist[kk]
         chrome(fig, self.number, self.title,
                "Left: a quark and an antiquark created at one point fly apart at the speed of light, the rope between them stores 1 GeV per fermi, and "
@@ -614,6 +654,9 @@ class LadderScene(Scene):
     def keyframe(self):
         return self.nframes - 1
 
+    def phases(self):
+        return [("first", 0, 3 * self.per), ("turns", 3 * self.per, self.t_rows), ("chain", self.t_rows, self.nframes)]
+
     def draw(self, fig, k):
         ph = self.phys
         n = len(self.chain)
@@ -623,7 +666,7 @@ class LadderScene(Scene):
                f"creates a $d\\bar d$ pair and the $\\bar d$ joins the mother. The two ends take turns in random order until the remaining mass is below "
                f"W_min and the final two share what is left: {n} hadrons, {n - 1} vacuum pairs, the b in the first, the $\\bar u$ in the last.")
         ax = blank_axes(fig, [0.03, 0.11, 0.94, 0.82], (0, 16.5), (0, 18.6))
-        n_rows = min(len(self.rows), k // self.per + 1)
+        n_rows = min(len(self.rows), int(k) // self.per + 1)
         xc, bw = 8.6, 0.56
         for r in range(n_rows):
             desc, plus, minus, left, right, w_after, new = self.rows[r]
@@ -703,15 +746,21 @@ class YoyoScene(Scene):
         self.verts = sorted(verts, key=lambda v: v["t"])
         self.names = [core.pname(h) for h, _, _ in x["hadrons"]]
         self.tmax = self.W / 2 * 1.05
+        self.k_end = int(self.nframes * 0.8)
+        self.k_first = next((k for k in range(self.k_end) if ramp(k, 0, self.k_end) * self.tmax >= self.verts[0]["t"]),
+                            self.k_end // 3) if self.verts else self.k_end // 3
 
     def keyframe(self) -> int:
         return int(self.nframes * 0.8)
+
+    def phases(self):
+        return [("fly", 0, self.k_first), ("break", self.k_first, self.k_end), ("area", self.k_end, self.nframes)]
 
     def draw(self, fig, k):
         ph = self.phys
         W = self.W
         q, qbar = core.pname(self.sysm.ids[0]), core.pname(self.sysm.ids[-1])
-        t_now = ramp(k, 0, int(self.nframes * 0.8)) * self.tmax
+        t_now = ramp(k, 0, self.k_end) * self.tmax
         chrome(fig, self.number, self.title,
                f"A {W:.0f} GeV {q} {qbar} string of our event in its own rest frame (seed {ph.seed}). The quark and the antiquark fly apart at the "
                f"speed of light, the string between them stores 1 GeV per fermi, and it breaks where the record's vertices are: every piece "
@@ -777,10 +826,15 @@ class BStringScene(Scene):
         self.per = max(int(0.45 * fps), 4)
         self.nframes = self.per * (len(self.order) + 1) + 2 * fps
 
+    def phases(self):
+        n, per = len(self.order), self.per
+        return [("string", 0, per), ("produce", per, per * (n // 2 + 1)), ("run", per * (n // 2 + 1), per * (n + 1)),
+                ("done", per * (n + 1), self.nframes)]
+
     def draw(self, fig, k):
         ph = self.phys
         x, sysm = self.x, self.sysm
-        n_show = min(len(self.order), k // self.per)
+        n_show = min(len(self.order), int(k) // self.per)
         shown = self.order[:n_show]
         chrome(fig, self.number, self.title,
                f"The string that holds the b quark: {len(x['partons'])} partons (the b, {len(x['partons']) - 2} gluons and the other end), "
@@ -835,10 +889,14 @@ class KinkScene(Scene):
         self.per = max(int(0.45 * fps), 4)
         self.nframes = self.per * (len(self.order) + 1) + 2 * fps
 
+    def phases(self):
+        n, per = len(self.order), self.per
+        return [("map", 0, per), ("walk", per, per * (n + 1)), ("end", per * (n + 1), self.nframes)]
+
     def draw(self, fig, k):
         sysm = self.sysm
         n = sysm.n
-        n_show = min(len(self.order), k // self.per)
+        n_show = min(len(self.order), int(k) // self.per)
         chrome(fig, self.number, self.title,
                f"The world sheet of the b quark's string is made of regions (i, k), one for every pair of a piece from the b side "
                f"(the b, then half of each gluon) and a piece from the other side. Each hadron from the b end takes a fraction of its own "
@@ -910,7 +968,9 @@ class EventScene(Scene):
         super().__init__(phys, fps)
         self.strings = sorted(phys.had.strings, key=lambda s: -s["w"])
         self.per = max(int(0.14 * fps), 2)
-        self.nframes = self.per * (len(self.strings) + 2) + 3 * fps
+        self.k_intro = fps                                 # the partons alone, before the first string goes
+        self.k_all = self.k_intro + self.per * (len(self.strings) + 2)
+        self.nframes = self.k_all + 3 * fps
         self.n_partons = sum(len(rows) for s in self.strings for _, _, _, rows in s["partons"])
         ev = phys.ev
         self.parton_rows = {}
@@ -919,12 +979,17 @@ class EventScene(Scene):
                 self.parton_rows[rows[0]] = (pid, p)
 
     def keyframe(self) -> int:
-        return self.per * (len(self.strings) // 2)
+        return self.k_intro + self.per * (len(self.strings) // 2)
+
+    def phases(self):
+        return [("intro", 0, self.k_intro), ("heavy", self.k_intro, self.k_intro + 8 * self.per),
+                ("rest", self.k_intro + 8 * self.per, self.k_all), ("all", self.k_all, self.nframes)]
 
     def draw(self, fig, k):
         ph = self.phys
-        n_done = min(len(self.strings), k // self.per)
-        prog = ramp(k - n_done * self.per, 0, self.per)
+        kk = max(0.0, k - self.k_intro)
+        n_done = min(len(self.strings), int(kk) // self.per)
+        prog = ramp(kk - n_done * self.per, 0, self.per) if k >= self.k_intro else 0.0
         chrome(fig, self.number, self.title,
                f"The {self.n_partons} partons of stage 3 are grouped into {len(self.strings)} colour singlets "
                f"by their colour tags ({sum(1 for s in self.strings if s['kind'] == 'mini')} of them ministrings). String by string, heaviest "
@@ -994,20 +1059,24 @@ class EnsembleScene(Scene):
         self.xe = self.xe[:max(nevents, 20)]
         self.py_xe = np.array(phys.py["b"]["b"]["x_e"]) if phys.py else None
         self.nframes = 6 * fps
+        self.k_full = int(self.nframes * 0.85)
+
+    def phases(self):
+        return [("fill", 0, self.k_full // 2), ("mean", self.k_full // 2, self.k_full), ("species", self.k_full, self.nframes)]
 
     def draw(self, fig, k):
         ph = self.phys
-        n = max(1, int(ramp(k, 0, int(self.nframes * 0.85)) * len(self.xe)))
+        n = max(1, int(ramp(k, 0, self.k_full) * len(self.xe)))
         xs = np.array([x for x, _ in self.xe[:n]])
         chrome(fig, self.number, self.title,
                f"The partons of stage 3 are kept and only the hadronisation is redrawn, seeds 1, 2, 3, ...: the energy fraction the B hadron keeps, "
-               f"x_E = E_B/E_b, scatters around its Lund-Bowler mean; PYTHIA 8 on the very same partons "
+               f"x_E = E_B/E_b, scatters around its Lund-Bowler mean; Pythia 8 on the very same partons "
                f"({ph.py['nevents'] if ph.py else 0} times) gives the dashed line. Our event (seed 1) is the first entry. Right: which B hadron it was.")
         ax = fig.add_axes([0.06, 0.13, 0.55, 0.76])
         ax.hist(xs, bins=np.linspace(0.4, 1.3, 28), color=COL_A, alpha=0.7, label=f"this script, {n} hadronisations")
         if self.py_xe is not None:
             ax.hist(self.py_xe, bins=np.linspace(0.4, 1.3, 28), histtype="step", color=COL_PY, lw=1.5, ls="--",
-                    weights=np.full(len(self.py_xe), n / len(self.py_xe)), label=f"PYTHIA 8, same partons (scaled): mean {self.py_xe.mean():.3f}")
+                    weights=np.full(len(self.py_xe), n / len(self.py_xe)), label=f"Pythia 8, same partons (scaled): mean {self.py_xe.mean():.3f}")
         ax.axvline(xs.mean(), color=COL_A, lw=2)
         ax.axvline(self.xe[0][0], color=COL_EVENT, lw=1.5, ls=":")
         ax.text(self.xe[0][0], ax.get_ylim()[1] * 0.9, f" our event {self.xe[0][0]:.3f}", color=COL_EVENT, fontsize=9)
@@ -1029,6 +1098,146 @@ class EnsembleScene(Scene):
         ax2.set_xlabel("% of the b quark's hadrons", fontsize=10)
         ax2.set_title("vector : pseudoscalar = 2.2 : 1, strange 0.217, baryons 0.081", fontsize=9, color=TEXT2)
         style_2d(ax2, 8)
+
+
+# --- narration --------------------------------------------------------------------------------------------
+HADRON_WORD = {"pi": "pi", "K": "K", "B": "B", "D": "D", "rho": "rho", "eta": "eta", "omega": "omega", "phi": "phi",
+               "Sigma": "Sigma", "Lambda": "Lambda", "Xi": "Xi", "Omega": "Omega", "Delta": "Delta", "n": "neutron", "p": "proton"}
+
+
+def say_hadron(name: str) -> str:
+    """A hadron name of the standalone script (B*bar0, pi0, K*_sbar0, eta', ...) in words."""
+    anti = "bar" in name
+    n = name.replace("bar", "")
+    star = "*" in n
+    n = n.replace("*", "")
+    sub = ""
+    if "_" in n:
+        n, sub = n.split("_", 1)
+    charge = ""
+    for c, w in (("+", "plus"), ("-", "minus"), ("0", "zero"), ("'", "prime")):
+        if n.endswith(c):
+            charge, n = w, n[:-1]
+    base = HADRON_WORD.get(n, n)
+    if base in ("neutron", "proton"):
+        charge = ""
+    return ("anti-" if anti else "") + base + (f"-{sub}" if sub else "") + (" star" if star else "") + (f" {charge}" if charge else "")
+
+
+def say_quark(name: str) -> str:
+    """A quark name of the standalone script (u, sbar, ...) in words, with its article."""
+    anti = name.endswith("bar")
+    word = {"u": "up", "d": "down", "s": "strange", "c": "charm", "b": "bottom"}.get(name[:-3] if anti else name, name)
+    return f"an anti-{word} quark" if anti else (f"an {word} quark" if word[0] in "aeiou" else f"a {word} quark")
+
+
+def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
+    """One line per phase, keyed <scene>_<phase>, plus the closing line; the numbers are the event's."""
+    ph, s, b = phys, phys.summary, phys.b
+    n_vert = len(SnapshotScene.VERTICES)
+    bs = ph.bstring
+    n_glu = len(bs["partons"]) - 2
+    chain = bs["system"].ordered()
+    n_chain = len(chain)
+    n_bary = sum(1 for _, _, info in chain if len(flavs(info["old"]) + flavs(info["new"])) == 3)
+    yo = ph.yoyo
+    q, qbar = core.pname(yo["system"].ids[0]), core.pname(yo["system"].ids[-1])
+    n_strings = len(ph.had.strings)
+    n_mini = sum(1 for x in ph.had.strings if x["kind"] == "mini")
+    n_partons = sum(len(rows) for x in ph.had.strings for _, _, _, rows in x["partons"])
+    bhad = say_hadron(b["hadron"])
+    lines = {
+        "guests_allowed": ("The guest list. A free particle must be a colour singlet: the colours of its quarks and the "
+                           "anticolours of its antiquarks must cancel. Mesons, a quark and an antiquark. Baryons, three quarks, "
+                           "and antibaryons. The rare tetraquarks and pentaquarks... and the glueballs, predicted, not yet certain."),
+        "guests_forbidden": ("Forbidden: anything with a net colour charge. A lone quark. A diquark, though it makes a fine end "
+                             "for a string. Two quarks with one antiquark. A lone gluon. The field each of them would drag behind "
+                             "it would stretch to infinity."),
+        "guests_rule": ("The rule: the number of quarks minus the number of antiquarks is a multiple of three, with any number "
+                        "of gluons. The Lund string makes only mesons and baryons, because a string end is a quark, an antiquark "
+                        "or a diquark."),
+        "wedding_rope": (f"The wedding. The mother's rope: a colour line from the b quark through {n_glu} gluons to an anti-up "
+                         f"quark from the rest of the event, {bs['w']:.0f} GeV of invariant mass. Every parton holds one end of a "
+                         "colour line, and nobody may leave alone."),
+        "wedding_snap": ("As the partons fly apart the rope snaps, in the order the script drew. Every break costs the rope's own "
+                         "energy, one GeV per fermi, and pays for a pair from the vacuum that holds the two new ends... "
+                         f"{n_chain - 1} breaks for this rope."),
+        "wedding_procession": (f"What walks out is a procession of {n_chain} hadrons, {n_chain - n_bary} mesons and {n_bary} baryons, each "
+                               f"with its quark content. The b in the first, the anti-up in the last; the {bhad} keeps "
+                               f"{100 * b['x_e']:.0f} percent of the mother's energy."),
+        "snapshots_stretch": ("Why light-cone coordinates? Picture a quark and an antiquark created at one point, flying apart at "
+                              "the speed of light. The rope between them stores one GeV per fermi, and fills with energy."),
+        "snapshots_breaks": ("Pairs appear at rest in the field, at the break-ups. On the world sheet every end moves on a "
+                             "light-like line, so the natural axes are x-plus and x-minus: t plus x, and t minus x. A break at "
+                             "proper time tau has x-plus times x-minus equal to tau squared."),
+        "snapshots_yoyo": ("The pieces between neighbouring breaks are short strings. Their ends run towards each other, cross, "
+                           "and run apart again, for ever... yo-yos. These are the hadrons."),
+        "snapshots_end": (f"{n_vert} breaks, {n_vert + 1} yo-yos. Every break sits on its own hyperbola of constant proper time, and the "
+                          "area law of the next scenes says how far from the origin it is likely to fall. Now the real thing."),
+        "ladder_first": ("The mother's rope break by break, as the log recorded it. At each break a pair comes out of the vacuum: "
+                         "the new quark joins the old end into a hadron, and the new antiquark becomes the end of what is left."),
+        "ladder_turns": ("The two ends take turns, in random order, and the remaining mass runs down with every hadron, until it "
+                         "falls below W-min and the final two share what is left."),
+        "ladder_chain": (f"The chain: {n_chain} hadrons along the rope, {n_chain - 1} vacuum pairs between neighbours. The b in the "
+                         "first, the original anti-up in the last; every other quark came out of the vacuum. Flavour, charge "
+                         "and baryon number are conserved at every step."),
+        "yoyo_fly": (f"A real string of the event: {say_quark(q)} and {say_quark(qbar)}, {yo['w']:.0f} GeV, in their own rest "
+                     "frame. They fly apart at the speed of light, and the string between them stores one GeV per fermi."),
+        "yoyo_break": (f"It breaks where the record's vertices are, one after the other in time. Every piece between two "
+                       f"neighbouring vertices is one of its {len(yo['hadrons'])} hadrons."),
+        "yoyo_area": ("On the right, the same vertices in light-cone coordinates. The area law gathers them near x-plus times "
+                      "x-minus of one to three GeV squared: a string lives about a fermi before it breaks."),
+        "bstring_string": (f"The b quark's string in the eta-phi plane: the b, {n_glu} gluons and the other end, {bs['w']:.0f} GeV of "
+                           "mass, with the colour line running through them."),
+        "bstring_produce": ("Hadrons are produced from the two ends in random order. Each takes a fraction z of the remaining "
+                            "light-cone momentum of its end, drawn from the Lund function... for the b, from the Lund-Bowler "
+                            f"form, which gave z = {b['z_drawn']:.2f}."),
+        "bstring_run": (f"The remaining mass runs down with every hadron, from {bs['w']:.0f} GeV towards W-min, where the last two "
+                        "share what is left."),
+        "bstring_done": (f"{len(bs['hadrons'])} hadrons, momentum conserved to a part in ten to the twelve. The {bhad} carries "
+                         f"{100 * b['x_e']:.0f} percent of the b quark's energy: a hard fragmentation, the signature of a heavy quark."),
+        "kinks_map": ("Gluons are kinks. The world sheet of the b string is a map of regions, one for every pair of a piece from "
+                      "the b side and a piece from the other side; the darker, the more mass in the region."),
+        "kinks_walk": ("Each hadron takes a fraction of its own piece and as much of the other side as its mass needs. When a "
+                       "region is used up, the end steps to the next one, swallowing the rest of the gluon half: that is how a "
+                       "hadron forms across a kink."),
+        "kinks_end": "The two paths meet in the middle, where the final two hadrons share what is left of the string.",
+        "event_intro": (f"The whole event. {n_partons} partons of stage three, grouped by their colour tags into {n_strings} "
+                        f"colour singlets, {n_mini} of them ministrings too light to break."),
+        "event_heavy": ("String by string, heaviest first, the partons go and the hadrons come. The mother's string, with the b "
+                        "quark, is the first to go."),
+        "event_rest": ("Then the strings of the cousins, the secondary interactions and the remnants, lighter and lighter, down to "
+                       "the ministrings that give just one or two hadrons each."),
+        "event_all": (f"{s['n_hadrons']} primary hadrons, {s['n_charged']} of them charged, and the momentum sum unchanged. The B "
+                      "hadrons of the two b quarks are the red and the blue dot."),
+        "ensemble_fill": ("The same partons, hadronised again and again, only the hadronisation redrawn. The energy fraction the B "
+                          "hadron keeps, x-E, scatters around its Lund-Bowler mean."),
+        "outro": "The children are married. Next stop: the grandchildren... the B hadrons decay.",
+    }
+    for sc in scenes:
+        if isinstance(sc, EnsembleScene):
+            xs = np.array([v for v, _ in sc.xe])
+            py = f"Pythia 8, on the very same partons, gives {sc.py_xe.mean():.2f}... They agree. " if sc.py_xe is not None else ""
+            lines["ensemble_mean"] = (f"After {len(xs)} hadronisations the mean settles at {xs.mean():.2f}. {py}Our event, seed one, "
+                                      f"sits at {sc.xe[0][0]:.2f}.")
+            counts: Dict[str, int] = {}
+            for _, nm in sc.xe:
+                counts[nm] = counts.get(nm, 0) + 1
+            top = sorted(counts.items(), key=lambda kv: -kv[1])[:2]
+            lines["ensemble_species"] = ("And which B hadron it was: the vector-to-pseudoscalar ratio, the strangeness suppression "
+                                         f"and the baryon fraction set the shares; the {say_hadron(top[0][0])} and the "
+                                         f"{say_hadron(top[1][0])} most often, about {100 * top[0][1] / len(xs):.0f} percent each."
+                                         if len(top) > 1 else "And which B hadron it was.")
+    keys = [f"{SCENE_NAMES[str(sc.number)]}_{key}" for sc in scenes for key, _, _ in sc.phases()] + ["outro"]
+    return {k: lines[k] for k in keys if k in lines}
+
+
+def score_spec(film: snd.Film) -> snd.ScoreSpec:
+    """The progression of the cover (D minor, B flat, F, C, G minor, B flat, A, D minor, G minor) over the nine
+    scenes, resolving under the outro; a thud at the first break of the mother's rope."""
+    t_snap = snd.voice_at_phase(film, "wedding_snap")
+    return snd.film_score(film, [snd.Dm, snd.Bb, snd.F, snd.C, snd.Gm, snd.Bb, snd.A, snd.Dm, snd.Gm],
+                          thuds=[t_snap + 1.0] if t_snap is not None else [])
 
 
 def build_scenes(names: List[str], phys: Physics, args) -> List[Scene]:
@@ -1055,37 +1264,17 @@ def build_scenes(names: List[str], phys: Physics, args) -> List[Scene]:
     return out
 
 
-def frame_list(scenes: List[Scene], step: int):
-    frames = []
-    for sc in scenes:
-        for k in range(0, sc.nframes, step):
-            frames.append((sc, k))
-    return frames
+def write_video(film: snd.Film, out: Path, fps: float, dpi: int, audio: Optional[Path], jobs: int):
+    snd.render_video(film, out, fps, dpi, audio, lambda fig, sc, k, t: sc.draw(fig, k), FIGSIZE, "b bbar event, standalone hadronisation", jobs=jobs)
+    print(f"wrote {out} ({film.duration:.1f} s)")
 
 
-def write_video(scenes, out: Path, fps: int, dpi: int, step: int):
-    fig = plt.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
-    if out.suffix.lower() == ".gif":
-        writer = animation.PillowWriter(fps=max(1, fps // step))
-    else:
-        writer = animation.FFMpegWriter(fps=max(1, fps // step), bitrate=3500)
-    with writer.saving(fig, str(out), dpi):
-        for i, (sc, k) in enumerate(frames):
-            sc.draw(fig, k)
-            writer.grab_frame(facecolor="white")
-            if i % 50 == 0:
-                print(f"  frame {i}/{len(frames)}")
-    plt.close(fig)
-    print(f"wrote {out} ({len(frames)} frames)")
-
-
-def write_frames(scenes, outdir: Path, dpi: int, step: int):
+def write_frames(film: snd.Film, outdir: Path, dpi: int, fps: float):
     outdir.mkdir(parents=True, exist_ok=True)
     fig = plt.figure(figsize=FIGSIZE)
-    for i, (sc, k) in enumerate(frame_list(scenes, step)):
+    for i, (sc, k) in enumerate(film.frames(fps)):
         sc.draw(fig, k)
-        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{k:03d}.png", dpi=dpi, facecolor="white")
+        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{int(round(k)):03d}.png", dpi=dpi, facecolor="white")
     plt.close(fig)
     print(f"wrote PNG frames to {outdir}")
 
@@ -1108,21 +1297,31 @@ def write_stills(scenes, out: Path, dpi: int):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_hadronisation.mp4")
+    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_hadronisation.mp4",
+                   help=".mp4 (needs ffmpeg) or .gif (silent)")
     p.add_argument("--scene", default="all", help="all, or a comma list of guests,wedding,snapshots,ladder,yoyo,bstring,kinks,event,ensemble (or 1..9)")
     p.add_argument("--fps", type=int, default=24)
-    p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
+    p.add_argument("--dpi", type=int, default=150, help="150 gives 1920x1080, 100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame")
-    p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60, fewer events in scene 5")
+    p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60, fewer events in scene 9")
     p.add_argument("--frames-dir", type=Path, default=None)
     p.add_argument("--stills", type=Path, default=None, help="one key frame per scene (.pdf or .png)")
     p.add_argument("--no-video", action="store_true")
+    p.add_argument("--jobs", type=int, default=4, help="render the frames in this many processes (joined losslessly)")
+    p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
+                   help="write just the soundtrack (narration + score) and exit, without rendering")
+    p.add_argument("--cache-dir", type=Path, default=HERE.parent.parent.parent / "build" / "narration" / "Had",
+                   help="the synthesised narration clips are kept here (make clean removes them)")
+    snd.add_narration_args(p)             # --engine --voice --rate --narration-dir --no-narration --print-script --music-db --no-music
     p.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "MPI" / "event_MPI.lhe")
     p.add_argument("--seed", type=int, default=1)
-    p.add_argument("--events", type=int, default=400, help="hadronisations shown in scene 5 (from the stats file when present)")
+    p.add_argument("--events", type=int, default=400, help="hadronisations shown in scene 9 (from the stats file when present)")
     args = p.parse_args()
     if args.fast:
         args.step, args.dpi, args.events = max(args.step, 4), min(args.dpi, 60), min(args.events, 40)
+    snd.narration_defaults(args)
+    fps = args.fps / args.step
+    args.fps = snd.NOMINAL_FPS            # the scenes are drawn at the nominal rate; the film clock renders at fps
     names = list(SCENE_NAMES.values()) if args.scene == "all" else [SCENE_NAMES.get(s.strip(), s.strip()) for s in args.scene.split(",")]
     bad = [n for n in names if n not in SCENE_NAMES.values()]
     if bad:
@@ -1132,13 +1331,37 @@ def main():
     print(f"event: seed {args.seed}: {len(phys.had.strings)} systems -> {s['n_hadrons']} hadrons; the b quark's {phys.b['hadron']} has x_E = {phys.b['x_e']:.3f}")
     scenes = build_scenes(names, phys, args)
     print("frames: " + ", ".join(f"{sc.number} {SCENE_NAMES[str(sc.number)]} {sc.nframes}" for sc in scenes)
-          + f"  ({sum(sc.nframes for sc in scenes) / args.fps:.1f} s at {args.fps} fps)")
+          + f"  ({sum(sc.nframes for sc in scenes) / snd.NOMINAL_FPS:.1f} s silent)")
+
+    lines = narration(phys, scenes)
+    if args.print_script:
+        snd.print_script(lines)
+        return
+    ffmpeg = shutil.which("ffmpeg")
+    if args.output.suffix.lower() != ".gif" and ffmpeg is None and not args.no_narration:
+        sys.exit("ffmpeg not found on PATH (needed for the narration clips)")
+    clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
+    film = snd.Film(scenes, snd.clip_lengths(clips), {int(n): name for n, name in SCENE_NAMES.items()}, slow_max=4.0)
+    print(f"film: {film.describe()}")
+    score = None if args.no_music else score_spec(film)
+    if args.audio_only:
+        snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, args.audio_only)
+        print(f"wrote {args.audio_only}")
+        return
+
     if args.stills is not None:
         write_stills(scenes, args.stills, args.dpi)
     if args.frames_dir is not None:
-        write_frames(scenes, args.frames_dir, args.dpi, args.step)
+        write_frames(film, args.frames_dir, args.dpi, fps)
     elif not args.no_video:
-        write_video(scenes, args.output, args.fps, args.dpi, args.step)
+        audio = None
+        tmp = tempfile.TemporaryDirectory(prefix="jitjet_had_")
+        if ffmpeg and args.output.suffix.lower() != ".gif" and (clips or score):
+            audio = Path(tmp.name) / "soundtrack.wav"
+            snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, audio)
+            if clips:
+                snd.write_srt(film.voice_at, clips, lines, args.output.with_suffix(".srt"))
+        write_video(film, args.output, fps, args.dpi, audio, args.jobs)
 
 
 if __name__ == "__main__":

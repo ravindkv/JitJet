@@ -189,9 +189,10 @@ keeps unchanged for this stage.
 
 The film first. \file{example/Had/Standalone/animate_standalone_hadronisation.py}
 imports the standalone script of \cref{sec:children_getting_married:standalone_code}
-and replays the seed-1 hadronisation in nine scenes of about eighty
-seconds in all, so that every number on the screen is produced by the
-classes that wrote the record. The first four scenes are the sketches of
+and replays the seed-1 hadronisation in nine narrated scenes of about seven
+minutes in all, so that every number on the screen, and every number the
+narrator says, is produced by the classes that wrote the record. The first
+four scenes are the sketches of
 this chapter set in motion, the picture before the numbers; the last five
 follow the record. It is on the JitJet playlist,
 \begin{center}
@@ -265,12 +266,17 @@ scene. Each scene names the section that explains it.
     hadron: a vector $B^*$ twice as often as a pseudoscalar $B$ (the same
     $b\bar q$, with the two spins parallel rather than opposite).
 \end{enumerate}
-Rendering needs matplotlib in addition to NumPy, and \code{ffmpeg} for an
-\code{.mp4}:
+Rendering needs matplotlib in addition to NumPy, \code{ffmpeg} for an
+\code{.mp4}, and \code{edge-tts} for the voice, as for the earlier films;
+the narration and the score come from the shared
+\file{example/soundtrack.py}, and \code{--no-narration} gives the silent
+cut of about eighty seconds:
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/Had/Standalone
-python3 animate_standalone_hadronisation.py            # the film, about a minute to render
+python3 animate_standalone_hadronisation.py            # the film and its .srt, over an hour to render
 python3 animate_standalone_hadronisation.py --fast     # low-resolution preview
+python3 animate_standalone_hadronisation.py --print-script   # the narration, to record it yourself
+python3 animate_standalone_hadronisation.py --no-narration   # music only, about 80 s
 python3 animate_standalone_hadronisation.py --scene bstring -o bstring.gif
 python3 animate_standalone_hadronisation.py --stills stills.pdf --no-video
 \end{minted}

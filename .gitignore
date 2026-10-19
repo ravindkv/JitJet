@@ -41,6 +41,10 @@ __pycache__/
 cover/animate_cover_timeline.srt
 cover/animate_short_cover_timeline.srt
 example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.srt
+example/PS/Standalone/animate_standalone_parton_showering.srt
+example/MnM/animate_whose_child.srt
+example/MPI/Standalone/animate_standalone_multiparton_interactions.srt
+example/Had/Standalone/animate_standalone_hadronisation.srt
 # the Les Houches input written for the MPI validation (copies of the hard event)
 example/MPI/Standalone/validate_mpi_with_pythia.lhe
 # the Les Houches input written for the hadronisation validation (copies of the hard event)

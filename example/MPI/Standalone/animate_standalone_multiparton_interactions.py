@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Animated companion to standalone_multiparton_interactions.py.
 
-Five scenes, about 50 s in total, show what happens to the showered b bbar
-event of chapter 2 when the rest of the two protons joins in. Every number on
-screen is computed with the classes of that script: the seed-1 event at the
-impact parameter of the CMSSW event (b = 0.3136 <b>, the record
+Five scenes, narrated, show what happens to the showered b bbar event of
+chapter 2 when the rest of the two protons joins in. Every number on screen and
+in the narration is computed with the classes of that script: the seed-1 event
+at the impact parameter of the CMSSW event (b = 0.3136 <b>, the record
 ../event_MPI.lhe) is replayed, once without and once with colour reconnection.
 
   1  overlap    Two protons, drawn as the CP5 double-Gaussian matter profile,
@@ -31,28 +31,48 @@ impact parameter of the CMSSW event (b = 0.3136 <b>, the record
   5  ensemble   The same hard event dressed again and again: the running
                 means of the number of interactions, the transverse
                 underlying-event density and the extra pT inside R = 0.4
-                around the b quark settle, against PYTHIA 8 (when the
+                around the b quark settle, against Pythia 8 (when the
                 validation file is present).
 
-Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
-  python3 animate_standalone_multiparton_interactions.py                  # -> .mp4 next to this file
-  python3 animate_standalone_multiparton_interactions.py --fast           # quick low-resolution preview
-  python3 animate_standalone_multiparton_interactions.py --scene chain -o chain.gif
-  python3 animate_standalone_multiparton_interactions.py --stills stills.pdf --no-video
+Narration and music
+  Each scene is a few phases (the protons approach, the chain runs down, the
+  remnants form, ...) and each phase has one line of narration (narration()
+  below), spoken by a neural voice through edge-tts (Microsoft's online voices;
+  `pip install --user edge-tts`, needs the network) or, with --engine say, by a
+  macOS voice; --narration-dir takes recorded clips named <key>.wav|mp3
+  (--print-script lists the keys and the text). A phase lasts at least as long
+  as its line: its motion is slowed down (up to 4x, so the sweeps keep moving
+  under the voice) and then held, so the narrated film is about 4.5 min and the
+  silent one (--no-narration) about 55 s. The score comes from
+  example/soundtrack.py: a drone, a pad with one chord per scene, a pulse that
+  gains a voice with every scene, a bell as each scene opens, a thud when the
+  protons meet. The clips are cached in build/narration/MPI/. An .srt is
+  written next to the .mp4.
 
-An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow. --frames-dir writes the
-individual frames as PNG files instead. --seed and --impact are those of the
-standalone script (default: seed 1 at b = 0.3136 <b>, the committed record).
+Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
+  python3 animate_standalone_multiparton_interactions.py                  # -> .mp4 + .srt next to this file
+  python3 animate_standalone_multiparton_interactions.py --fast           # quick low-resolution preview
+  python3 animate_standalone_multiparton_interactions.py --scene chain -o chain.gif   # silent
+  python3 animate_standalone_multiparton_interactions.py --stills stills.pdf --no-video
+  python3 animate_standalone_multiparton_interactions.py --print-script   # the narration, for recording it yourself
+  python3 animate_standalone_multiparton_interactions.py --audio-only x.wav   # the soundtrack alone
+
+An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow and is silent.
+--frames-dir writes the individual frames as PNG files instead. --seed and
+--impact are those of the standalone script (default: seed 1 at b = 0.3136 <b>,
+the committed record).
 """
 from __future__ import annotations
 
 import argparse
 import json
 import math
+import shutil
 import sys
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
-from typing import List
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -61,6 +81,9 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 import standalone_multiparton_interactions as core  # noqa: E402
 import plot_journey_MPI as journey  # noqa: E402
+
+sys.path.insert(0, str(HERE.parent.parent))
+import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the film clock)
 
 import matplotlib  # noqa: E402
 
@@ -87,7 +110,7 @@ def smooth(t: float) -> float:
     return t * t * (3.0 - 2.0 * t)
 
 
-def ramp(k: int, k0: int, k1: int) -> float:
+def ramp(k: float, k0: int, k1: int) -> float:
     if k1 <= k0:
         return 1.0
     return min(max((k - k0) / float(k1 - k0), 0.0), 1.0)
@@ -173,16 +196,22 @@ def draw_partons(ax, ev, rows, cat_of, size_scale=1.0, alpha=1.0, labels=True):
 
 
 class Scene:
+    """nframes frames at the nominal fps and a draw(fig, k) for frame k (a float between frames when the film
+    clock slows the motion down)."""
     number, title, nframes = 0, "", 1
 
     def __init__(self, phys: Physics, fps: int):
         self.phys, self.fps = phys, fps
 
-    def draw(self, fig, k: int):
+    def draw(self, fig, k: float):
         raise NotImplementedError
 
     def keyframe(self) -> int:
         return self.nframes - 1
+
+    def phases(self) -> List[Tuple[str, int, int]]:
+        """(key, first frame, frame after the last) of each phase; one line of narration per phase."""
+        return [("all", 0, self.nframes)]
 
 
 # --- scene 1: overlap ------------------------------------------------------------------------------------
@@ -192,13 +221,18 @@ class OverlapScene(Scene):
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
         self.nframes = int(10 * fps)
+        self.k_settle = int(0.65 * self.nframes)
         self.b_final = phys.gen.b / phys.ov.b_avg
+
+    def phases(self):
+        return [("approach", 0, self.k_settle), ("settled", self.k_settle, self.k_settle + 2 * self.fps),
+                ("count", self.k_settle + 2 * self.fps, self.nframes)]
 
     def draw(self, fig, k):
         ph, ov = self.phys, self.phys.ov
-        t_app = ramp(k, 0, int(0.65 * self.nframes))
+        t_app = ramp(k, 0, self.k_settle)
         b_now = 2.6 - (2.6 - self.b_final) * smooth(t_app)         # in units of <b>
-        settled = k >= int(0.65 * self.nframes)
+        settled = k >= self.k_settle
         chrome(fig, 1, self.title,
                "The matter of each proton is a double Gaussian (CP5: 63 % of it in a core of 0.76 of the radius). The chance of a parton-parton\n"
                "interaction is the overlap O(b) of the two profiles; the mean number of interactions is n(b) = f(b) <n> with <n> = sigma_int/sigma_ND = "
@@ -262,9 +296,17 @@ class ChainScene(Scene):
         self.pt_max, self.pt_min = gen.pt_max, core.PTMIN_MPI
         self.log0, self.log1 = math.log(self.pt_max), math.log(self.pt_min)
         self.orig = core.origins(phys.ev, gen)
+        self.k_start, self.k_end = int(0.5 * fps), self.nframes - int(1.5 * fps)
+        half = len(self.pts) // 2
+        self.k_half = next((k for k in range(self.nframes) if sum(1 for p in self.pts if p >= self.scale_at(k)) >= half),
+                           (self.k_start + self.k_end) // 2)
+
+    def phases(self):
+        return [("start", 0, self.k_start), ("sweep", self.k_start, self.k_half), ("soft", self.k_half, self.k_end),
+                ("done", self.k_end, self.nframes)]
 
     def scale_at(self, k):
-        t = smooth(ramp(k, int(0.5 * self.fps), self.nframes - int(1.5 * self.fps)))
+        t = smooth(ramp(k, self.k_start, self.k_end))
         return math.exp(self.log0 + (self.log1 - self.log0) * t)
 
     def draw(self, fig, k):
@@ -341,13 +383,17 @@ class RemnantScene(Scene):
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
         self.nframes = int(10 * fps)
+        self.k_done = int(0.7 * self.nframes)
+
+    def phases(self):
+        return [("eat", 0, self.k_done // 2), ("share", self.k_done // 2, self.k_done), ("remnant", self.k_done, self.nframes)]
 
     def draw(self, fig, k):
         ph, gen, ev = self.phys, self.phys.gen, self.phys.ev
         nsys = len(gen.systems)
-        t = smooth(ramp(k, int(0.3 * self.fps), int(0.7 * self.nframes)))
+        t = smooth(ramp(k, int(0.3 * self.fps), self.k_done))
         n_show = int(round(t * nsys))
-        done = k >= int(0.7 * self.nframes)
+        done = k >= self.k_done
         beams = gen.beams
         chrome(fig, 3, self.title,
                "Every interaction takes a momentum fraction x out of a proton; the PDFs are rescaled to what is left, a kicked-out valence quark is subtracted from the valence\n"
@@ -394,7 +440,7 @@ class RemnantScene(Scene):
         ax2.set_title("primordial kT of initiators (filled) and remnants (hollow)", fontsize=9.5)
         style_2d(ax2)
         if done:
-            tk = smooth(ramp(k, int(0.7 * self.nframes), int(0.9 * self.nframes)))
+            tk = smooth(ramp(k, self.k_done, int(0.9 * self.nframes)))
             for side, col in ((0, COL_A), (1, COL_BEAM)):
                 for i, r in enumerate(beams[side].resolved):
                     kx, ky = r.p[1] * tk, r.p[2] * tk
@@ -420,6 +466,10 @@ class StringScene(Scene):
         self.lam0 = phys.gen0.lambda_measure()
         self.lam1 = phys.gen.lambda_measure()
         self.orig = core.origins(phys.ev, phys.gen)
+        self.k0, self.k1 = int(0.3 * self.nframes), int(0.75 * self.nframes)
+
+    def phases(self):
+        return [("before", 0, self.k0), ("merge", self.k0, self.k1), ("after", self.k1, self.nframes)]
 
     def draw_strings(self, ax, ev, chains, alpha):
         for ch in chains:
@@ -446,11 +496,11 @@ class StringScene(Scene):
 
     def draw(self, fig, k):
         ph, ev = self.phys, self.phys.ev
-        t = smooth(ramp(k, int(0.3 * self.nframes), int(0.75 * self.nframes)))
+        t = smooth(ramp(k, self.k0, self.k1))
         n_dec = len(getattr(ph.gen, "cr_decisions", []))
         n_merged = ph.summary["n_reconnected"]
         chrome(fig, 4, self.title,
-               f"Before hadronisation PYTHIA may rearrange the colour lines. In the MPI-based model a system of scale pT is merged into a harder one with probability "
+               f"Before hadronisation Pythia may rearrange the colour lines. In the MPI-based model a system of scale pT is merged into a harder one with probability "
                f"P = (R pT0)^2/((R pT0)^2 + pT^2), R = {core.CR_RANGE}: soft systems almost always.\nIts gluons are inserted into the dipoles of the harder system where "
                f"they disturb it least, so the total string length lambda = sum ln(1 + m_ij^2/m0^2) drops: {self.lam0:.0f} -> {self.lam1:.0f} here, "
                f"{n_merged} of {n_dec} systems merged; the strings get shorter, not fewer: "
@@ -503,14 +553,27 @@ class EnsembleScene(Scene):
         self.n = len(self.n_mpi)
         self.py = json.loads(PY_FILE.read_text()) if PY_FILE.exists() else None
         self.nframes = int(8 * fps)
+        self.k_full = self.nframes - int(1.5 * fps)
+
+    def phases(self):
+        return [("scatter", 0, self.k_full // 2), ("settle", self.k_full // 2, self.k_full), ("pythia", self.k_full, self.nframes)]
+
+    def py_means(self) -> Optional[Tuple[float, float, float]]:
+        """Pythia's means of the three quantities (number of interactions, transverse UE density, cone pT)."""
+        if not self.py:
+            return None
+        fam = self.py["families"].get("b", {})
+        cone = fam.get("0.4", fam.get(0.4, {})).get("ue_scalar")
+        return (float(np.mean(self.py["counts"]["n_mpi"])), float(np.mean(self.py["counts"]["ue_transverse"])),
+                float(np.mean(cone)) if cone else float("nan"))
 
     def draw(self, fig, k):
         ph = self.phys
-        n_show = max(1, int(round(smooth(ramp(k, 0, self.nframes - int(1.5 * self.fps))) * self.n)))
+        n_show = max(1, int(round(smooth(ramp(k, 0, self.k_full)) * self.n)))
         chrome(fig, 5, self.title,
                f"Seeds {ph.seed}.. at b = {ph.impact} <b>: the number of interactions, the transverse underlying-event density (partons not from the hard system, |eta| < 2.5, "
                "60-120 degrees from the leading b)\nand the extra scalar pT inside R = 0.4 around the b quark fluctuate strongly from event to event; their means settle "
-               f"towards the values PYTHIA 8 gives for the same hard event ({self.source}).")
+               f"towards the values Pythia 8 gives for the same hard event ({self.source}).")
         series = [("number of interactions", self.n_mpi, "n_mpi", CMSSW_NMPI, "CMSSW event"),
                   ("transverse UE density  [GeV per unit eta-phi]", self.ue, "ue_transverse", None, None),
                   ("UE scalar pT inside R = 0.4 around the b  [GeV]", self.cone, None, None, None)]
@@ -528,7 +591,7 @@ class EnsembleScene(Scene):
                     pyv = fam.get("0.4", fam.get(0.4, {})).get("ue_scalar")
             if pyv:
                 w = np.ones(len(pyv)) * n_show / len(pyv)
-                ax.hist(pyv, bins=bins, histtype="step", color=COL_PY, lw=1.6, ls="--", weights=w, label=f"PYTHIA 8 ({len(pyv)} events, scaled)")
+                ax.hist(pyv, bins=bins, histtype="step", color=COL_PY, lw=1.6, ls="--", weights=w, label=f"Pythia 8 ({len(pyv)} events, scaled)")
             if ref is not None:
                 ax.axvline(ref, color=TEXT, lw=1.2, ls=":")
                 ax.text(ref, 0.95, reflab, transform=ax.get_xaxis_transform(), fontsize=8.5, ha="left", va="top")
@@ -540,7 +603,7 @@ class EnsembleScene(Scene):
             ax2.plot(np.arange(1, n_show + 1), run[:n_show], color=COL_MPI, lw=1.8)
             if pyv:
                 ax2.axhline(float(np.mean(pyv)), color=COL_PY, lw=1.2, ls="--")
-                ax2.text(self.n, float(np.mean(pyv)), f" PYTHIA {np.mean(pyv):.2f}", fontsize=8, color=COL_PY, va="bottom", ha="right")
+                ax2.text(self.n, float(np.mean(pyv)), f" Pythia {np.mean(pyv):.2f}", fontsize=8, color=COL_PY, va="bottom", ha="right")
             ax2.set_xlim(0, self.n)
             ax2.set_ylim(0, max(run.max(), float(np.mean(pyv)) if pyv else 0) * 1.3)
             ax2.set_xlabel("events", fontsize=8.5)
@@ -550,6 +613,110 @@ class EnsembleScene(Scene):
 
     def keyframe(self):
         return self.nframes - 1
+
+
+# --- narration --------------------------------------------------------------------------------------------
+def say_parton(name: str) -> str:
+    """A parton name of the standalone script (u, dbar, ud_1, ...) in words."""
+    base = name.split("_")[0]
+    anti = base.endswith("bar")
+    base = base[:-3] if anti else base
+    if len(base) == 2:                                   # a diquark
+        return f"a {base[0]}-{base[1]} diquark"
+    word = {"u": "up", "d": "down", "s": "strange", "c": "charm", "b": "bottom", "g": "gluon"}.get(base, base)
+    return f"an anti-{word}" if anti else ("a gluon" if word == "gluon" else f"an {word}" if word[0] in "aeiou" else f"a {word}")
+
+
+def say_list(words: List[str]) -> str:
+    return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1]
+
+
+def say_remnants(beam) -> str:
+    """The remnant partons of a beam in words: the diquark named, the rest counted by kind."""
+    names = [core.name(r.id) for r in beam.resolved[beam.n_init:]]
+    diq = [n for n in names if len(n.split("_")[0].replace("bar", "")) == 2]
+    rest = [n for n in names if n not in diq]
+    n_q = sum(1 for n in rest if not n.endswith("bar"))
+    n_a = len(rest) - n_q
+    parts = [say_parton(d) for d in diq]
+    if n_q:
+        parts.append(f"{n_q} quark{'s' if n_q > 1 else ''}")
+    if n_a:
+        parts.append(f"{n_a} antiquark{'s' if n_a > 1 else ''}")
+    return say_list(parts) if parts else "nothing"
+
+
+def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
+    """One line per phase, keyed <scene>_<phase>, plus the closing line; the numbers are the event's."""
+    ph, gen, s = phys, phys.gen, phys.summary
+    b_rel = gen.b / ph.ov.b_avg
+    n_avg = ph.si.total / ph.args.sigma_nd
+    beams = gen.beams
+    n_sec = s["n_mpi"] - 1
+    pts = [x["pt"] for x in gen.systems[1:]]
+    n_hard = len(gen.systems[0]["finals"])
+    n_new = sum(len(x["finals"]) for x in gen.systems[1:])
+    lines = {
+        "overlap_approach": ("Two protons meet. Each is a cloud of matter, a double Gaussian with most of it in a small core, "
+                             "and they approach in the transverse plane at an impact parameter b. The chance of a second "
+                             "parton-parton interaction is the overlap of the two clouds: central collisions interact many "
+                             "times, grazing ones hardly at all."),
+        "overlap_settled": (f"On average {n_avg:.0f} interactions happen in a collision that produces anything. But an event with "
+                            "a hard process is more central than average, and ours sits at "
+                            f"{b_rel:.2f} of the average impact parameter, where the enhancement is {gen.fb:.1f}."),
+        "overlap_count": (f"So {gen.fb * n_avg:.0f} interactions are expected... and {n_sec} secondary interactions happened in "
+                          "our event, on top of the hard one."),
+        "chain_start": (f"Below the hard scale, {gen.pt_max:.0f} GeV, the secondary scatterings are generated like shower emissions: "
+                        "a Sudakov veto algorithm, with the scale running down in transverse momentum."),
+        "chain_sweep": ("Each accepted scale gives two rapidities, two momentum fractions, two flavours and a process, drawn "
+                        "from the depleted densities of the two protons, and the new system is showered from its own p-T. "
+                        "The cyan partons spread across the event, among the partons of the hard system."),
+        "chain_soft": ("Lower in p-T the interactions come thick and fast, a gluon-gluon scattering at a few GeV almost at "
+                       "every step, until the regulator p-T-zero tames the divergence of the cross section."),
+        "chain_done": (f"At p-T-min the chain stops: {n_sec} secondary interactions, the hardest at {max(pts):.0f} GeV, "
+                       f"{n_new} new partons among the {n_hard} of the hard system."),
+        "remnants_eat": ("What is left of the protons? Every interaction takes a momentum fraction x out of its proton. The "
+                         "densities are rescaled to what remains; a kicked-out valence quark is struck from the valence content, "
+                         "and a kicked-out sea quark leaves a companion behind."),
+        "remnants_share": (f"Proton A gives away {beams[0].n_init} partons, proton B {beams[1].n_init}... but all together they "
+                           f"take only part of the momentum: {100 * beams[0].x_left():.0f} and {100 * beams[1].x_left():.0f} percent "
+                           "are still there when the chain stops."),
+        "remnants_remnant": ("The rest becomes the beam remnants: "
+                             f"{say_remnants(beams[0])} on side A, {say_remnants(beams[1])} on side B, flying down the "
+                             "beam pipe. Every parton gets a primordial k-T kick, and within each proton the kicks cancel."),
+        "strings_before": ("Before hadronisation, Pythia may rearrange the colour lines. These are the colour strings between "
+                           f"the partons of the event, in rapidity and azimuth: {len(ph.gen0.strings())} colour singlets, "
+                           f"with a total length lambda of {s['lambda_nocr']:.0f}."),
+        "strings_merge": ("In the MPI-based model a soft system is merged into a harder one, with a probability that falls "
+                          "with its p-T, so the softest almost always: its gluons are inserted into the dipoles of the harder "
+                          "system where they disturb it least."),
+        "strings_after": (f"The strings get shorter, not fewer: lambda drops from {s['lambda_nocr']:.0f} to {s['lambda_cr']:.0f}, "
+                          f"with {s['n_reconnected']} of {len(getattr(gen, 'cr_decisions', []))} systems merged. Fewer hadrons "
+                          "will come out of the same partons."),
+        "ensemble_scatter": ("The same hard event, dressed again and again. The number of interactions, the underlying-event "
+                             "density transverse to the b quark, and the extra p-T inside its cone all fluctuate strongly from "
+                             "event to event."),
+        "outro": "The cousins have arrived, uninvited. Next stop: the children get married... hadronisation.",
+    }
+    for sc in scenes:
+        if isinstance(sc, EnsembleScene):
+            m = (float(np.mean(sc.n_mpi)), float(np.mean(sc.ue)), float(np.mean(sc.cone)))
+            lines["ensemble_settle"] = (f"Their means settle: about {m[0]:.0f} interactions, {m[1]:.1f} GeV per unit of eta and phi "
+                                        f"in the transverse region, and {m[2]:.1f} GeV of extra p-T inside the cone around the b.")
+            py = sc.py_means()
+            lines["ensemble_pythia"] = ((f"Pythia 8, on the same hard event, gives {py[0]:.0f}, {py[1]:.1f} and {py[2]:.1f}. "
+                                         "The densities agree; the count of interactions runs about twenty percent low, "
+                                         "mostly because this script showers the systems one after the other instead of "
+                                         "interleaving them. " if py else "") +
+                                        f"The CMSSW event of the book had {CMSSW_NMPI} interactions.")
+    keys = [f"{SCENE_NAMES[str(sc.number)]}_{key}" for sc in scenes for key, _, _ in sc.phases()] + ["outro"]
+    return {k: lines[k] for k in keys if k in lines}
+
+
+def score_spec(film: snd.Film) -> snd.ScoreSpec:
+    """D minor, B flat, F, C, G minor for the five scenes, resolving under the outro; a thud when the protons meet."""
+    t_meet = snd.voice_at_phase(film, "overlap_settled")
+    return snd.film_score(film, [snd.Dm, snd.Bb, snd.F, snd.C, snd.Gm], thuds=[t_meet - 0.2] if t_meet else [])
 
 
 # --- driver -------------------------------------------------------------------------------------------------
@@ -569,42 +736,22 @@ def build_scenes(names: List[str], phys: Physics, args) -> List[Scene]:
     return out
 
 
-def frame_list(scenes: List[Scene], step: int):
-    frames = []
-    for sc in scenes:
-        for k in range(0, sc.nframes, step):
-            frames.append((sc, k))
-    return frames
-
-
-def render_frame(fig, sc: Scene, k: int):
+def render_frame(fig, sc: Scene, k: float):
     sc.draw(fig, k)
 
 
-def write_video(scenes, out: Path, fps: int, dpi: int, step: int):
-    fig = plt.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
-    if out.suffix.lower() == ".gif":
-        writer = animation.PillowWriter(fps=max(1, fps // step))
-    else:
-        writer = animation.FFMpegWriter(fps=max(1, fps // step), bitrate=3500)
-    with writer.saving(fig, str(out), dpi):
-        for i, (sc, k) in enumerate(frames):
-            render_frame(fig, sc, k)
-            writer.grab_frame(facecolor="white")
-            if i % 50 == 0:
-                print(f"  frame {i}/{len(frames)}")
-    plt.close(fig)
-    print(f"wrote {out} ({len(frames)} frames)")
+def write_video(film: snd.Film, out: Path, fps: float, dpi: int, audio: Optional[Path], jobs: int):
+    snd.render_video(film, out, fps, dpi, audio, lambda fig, sc, k, t: render_frame(fig, sc, k), FIGSIZE, "b bbar event, standalone multiparton interactions", jobs=jobs)
+    print(f"wrote {out} ({film.duration:.1f} s)")
 
 
-def write_frames(scenes, outdir: Path, dpi: int, step: int):
+def write_frames(film: snd.Film, outdir: Path, dpi: int, fps: float):
     outdir.mkdir(parents=True, exist_ok=True)
     fig = plt.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
+    frames = film.frames(fps)
     for i, (sc, k) in enumerate(frames):
         render_frame(fig, sc, k)
-        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{k:03d}.png", dpi=dpi, facecolor="white")
+        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{int(round(k)):03d}.png", dpi=dpi, facecolor="white")
     plt.close(fig)
     print(f"wrote {len(frames)} PNG frames to {outdir}")
 
@@ -625,11 +772,11 @@ def write_stills(scenes, out: Path, dpi: int):
     print(f"wrote stills to {out}")
 
 
-def show_interactive(scenes, fps: int, step: int):
+def show_interactive(film: snd.Film, fps: float):
     matplotlib.use("MacOSX" if sys.platform == "darwin" else "TkAgg", force=True)
     import matplotlib.pyplot as plt_i
     fig = plt_i.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
+    frames = film.frames(fps)
 
     def update(i):
         sc, k = frames[i]
@@ -642,16 +789,23 @@ def show_interactive(scenes, fps: int, step: int):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_multiparton_interactions.mp4")
+    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_multiparton_interactions.mp4",
+                   help=".mp4 (needs ffmpeg) or .gif (silent)")
     p.add_argument("--scene", default="all", help="all, or a comma list of overlap,chain,remnants,strings,ensemble (or 1..5)")
     p.add_argument("--fps", type=int, default=24)
-    p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
+    p.add_argument("--dpi", type=int, default=150, help="150 gives 1920x1080, 100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame")
     p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60, fewer events in scene 5")
     p.add_argument("--frames-dir", type=Path, default=None)
     p.add_argument("--stills", type=Path, default=None, help="one key frame per scene (.pdf or .png)")
     p.add_argument("--no-video", action="store_true")
     p.add_argument("--show", action="store_true")
+    p.add_argument("--jobs", type=int, default=4, help="render the frames in this many processes (joined losslessly)")
+    p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
+                   help="write just the soundtrack (narration + score) and exit, without rendering")
+    p.add_argument("--cache-dir", type=Path, default=HERE.parent.parent.parent / "build" / "narration" / "MPI",
+                   help="the synthesised narration clips are kept here (make clean removes them)")
+    snd.add_narration_args(p)             # --engine --voice --rate --narration-dir --no-narration --print-script --music-db --no-music
     p.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "PS" / "event_PS.lhe")
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--impact", type=float, default=CMSSW_B)
@@ -659,6 +813,9 @@ def main():
     args = p.parse_args()
     if args.fast:
         args.step, args.dpi, args.events = max(args.step, 4), min(args.dpi, 60), min(args.events, 24)
+    snd.narration_defaults(args)
+    fps = args.fps / args.step
+    args.fps = snd.NOMINAL_FPS            # the scenes are drawn at the nominal rate; the film clock renders at fps
     names = list(SCENE_NAMES.values()) if args.scene == "all" else [SCENE_NAMES.get(s.strip(), s.strip()) for s in args.scene.split(",")]
     bad = [n for n in names if n not in SCENE_NAMES.values()]
     if bad:
@@ -669,16 +826,40 @@ def main():
           f"{s['n_final']} final partons, lambda {s['lambda_nocr']:.0f} -> {s['lambda_cr']:.0f}")
     scenes = build_scenes(names, phys, args)
     print("frames: " + ", ".join(f"{sc.number} {SCENE_NAMES[str(sc.number)]} {sc.nframes}" for sc in scenes)
-          + f"  ({sum(sc.nframes for sc in scenes) / args.fps:.1f} s at {args.fps} fps)")
+          + f"  ({sum(sc.nframes for sc in scenes) / snd.NOMINAL_FPS:.1f} s silent)")
+
+    lines = narration(phys, scenes)
+    if args.print_script:
+        snd.print_script(lines)
+        return
+    ffmpeg = shutil.which("ffmpeg")
+    if args.output.suffix.lower() != ".gif" and ffmpeg is None and not args.no_narration:
+        sys.exit("ffmpeg not found on PATH (needed for the narration clips)")
+    clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
+    film = snd.Film(scenes, snd.clip_lengths(clips), {int(n): name for n, name in SCENE_NAMES.items()}, slow_max=4.0)
+    print(f"film: {film.describe()}")
+    score = None if args.no_music else score_spec(film)
+    if args.audio_only:
+        snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, args.audio_only)
+        print(f"wrote {args.audio_only}")
+        return
+
     if args.show:
-        show_interactive(scenes, args.fps, args.step)
+        show_interactive(film, fps)
         return
     if args.stills is not None:
         write_stills(scenes, args.stills, args.dpi)
     if args.frames_dir is not None:
-        write_frames(scenes, args.frames_dir, args.dpi, args.step)
+        write_frames(film, args.frames_dir, args.dpi, fps)
     elif not args.no_video:
-        write_video(scenes, args.output, args.fps, args.dpi, args.step)
+        audio = None
+        tmp = tempfile.TemporaryDirectory(prefix="jitjet_mpi_")
+        if ffmpeg and args.output.suffix.lower() != ".gif" and (clips or score):
+            audio = Path(tmp.name) / "soundtrack.wav"
+            snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, audio)
+            if clips:
+                snd.write_srt(film.voice_at, clips, lines, args.output.with_suffix(".srt"))
+        write_video(film, args.output, fps, args.dpi, audio, args.jobs)
 
 
 if __name__ == "__main__":

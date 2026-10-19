@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The ten-second film of chapter 3, "Whose Child Is It? Matching and Merging".
+"""The film of chapter 3, "Whose Child Is It? Matching and Merging": a narrated minute.
 
 Chapter 3 is a stop on the road at which our event does not get off. The clip shows the
 road of the book with its stops (chapter 1, the ancestral home; chapter 2, the mother
@@ -12,42 +12,64 @@ we do not: one leading-order 2->2 process, no second parent for any parton, noth
 match. The ledger row repeats the previous one, 100.45 GeV with Delta = 0, and the cart
 rolls on to stop 4. The numbers are the ones typed in the chapter's ledger.
 
-Three beats, ten seconds, one continuous camera pan:
+Three beats on one continuous camera pan, drawn against a 12.5-second script clock:
 
-  approach   0.0 - 3.0 s   the cart arrives at stop 3; the sign unfolds; the passengers
-                           of other samples gather on the platform
-  verdict    3.0 - 7.0 s   the card for our event with the stamp "not for us" and the
-                           unchanged ledger row
-  move on    7.0 - 10.0 s  the cart accelerates past the stop and the camera pans to
+  approach   0.0 - 4.7 s   the cart arrives at stop 3 and the sign unfolds (0-3 s); the
+                           passengers of other samples gather on the platform (3.5-4.7 s)
+  verdict    4.7 - 8.5 s   the card for our event (4.7 s), the unchanged ledger row
+                           (6.1 s) and the stamp "not for us" (7.3 s)
+  move on    8.5 - 12.5 s  the cart accelerates past the stop and the camera pans to
                            stop 4
 
+Narration and music
+  Each beat is a few phases (the cart arrives, the sign unfolds, the passengers get off,
+  ...) and each phase has one line of narration (narration() below), spoken by a neural
+  voice through edge-tts (Microsoft's online voices; `pip install --user edge-tts`, needs
+  the network) or, with --engine say, by a macOS voice; --narration-dir takes recorded
+  clips named <key>.wav|mp3 (--print-script lists the keys and the text). A phase lasts at
+  least as long as its line: its motion is slowed down (up to 2.5x) and then held, so the
+  narrated film is about two minutes and the silent one (--no-narration) the 12.5 s of
+  the script clock; the phases end where the picture rests (the cart stopped, the sign up,
+  the card shown, the end frame), so a hold never freezes a moving cart. The score comes from example/soundtrack.py: a drone, a pad with one
+  chord per beat, a pulse, a bell as each beat opens, a thud when the stamp lands. The
+  clips are cached in build/narration/MnM/. An .srt is written next to the .mp4.
+
 Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
-  python3 animate_whose_child.py                   # -> animate_whose_child.mp4 next to this file
+  python3 animate_whose_child.py                   # -> animate_whose_child.mp4 + .srt next to this file
   python3 animate_whose_child.py --fast            # quick low-resolution preview
   python3 animate_whose_child.py --stills animate_whose_child_stills.pdf --no-video
+  python3 animate_whose_child.py --print-script    # the narration, for recording it yourself
+  python3 animate_whose_child.py --audio-only x.wav   # the soundtrack alone
   python3 animate_whose_child.py --frames-dir frames --step 12 --dpi 40
 
-An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow.
+An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow and is silent.
 """
 from __future__ import annotations
 
 import argparse
 import math
+import shutil
 import sys
+import tempfile
 from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the film clock)
 
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import animation  # noqa: E402
 from matplotlib.patches import Circle, FancyBboxPatch, Polygon, Rectangle  # noqa: E402
 
-HERE = Path(__file__).resolve().parent
 FIGSIZE = (12.8, 7.2)
-DURATION = 10.0
+# the script clock (seconds): the beats below are drawn against it
+T_ARRIVE, T_PASS, T_CARD, T_LEDGER, T_STAMP, T_GO, DURATION = 3.0, 3.5, 4.7, 6.1, 7.3, 8.5, 12.5
+FPS = snd.NOMINAL_FPS             # one frame index per 1/24 s of the script clock
 
 # colours shared with the other films of the book
 COL_B, COL_BBAR = "#ff0000", "#0000ff"
@@ -91,18 +113,18 @@ def cart_x(t: float) -> float:
     """Road position of our event's cart against time (seconds)."""
     # roll in from stop 2's side, brake in front of the sign, pause, then accelerate past
     x_arrive = X3 - 3.4
-    if t < 3.0:
-        return 13.6 + (x_arrive - 13.6) * (1 - (1 - min(t / 3.0, 1.0)) ** 2.2)
-    if t < 7.0:
+    if t < T_ARRIVE:
+        return 13.6 + (x_arrive - 13.6) * (1 - (1 - min(t / T_ARRIVE, 1.0)) ** 2.2)
+    if t < T_GO:
         return x_arrive
-    return x_arrive + (X4 - 3.8 - x_arrive) * smooth((t - 7.0) / 3.0)
+    return x_arrive + (X4 - 3.8 - x_arrive) * smooth((t - T_GO) / 3.0)
 
 
 def camera_x(t: float) -> float:
     """Centre of the camera window."""
-    if t < 7.0:
+    if t < T_GO:
         return 10.5 + (X3 - 1.0 - 10.5) * ramp(t, 0.0, 2.6)
-    return (X3 - 1.0) + (X4 - 2.0 - (X3 - 1.0)) * ramp(t, 7.4, 10.0)
+    return (X3 - 1.0) + (X4 - 2.0 - (X3 - 1.0)) * ramp(t, T_GO + 0.4, T_GO + 3.0)
 
 
 # --- drawing --------------------------------------------------------------------------------------------
@@ -122,7 +144,7 @@ def draw_road(ax, t: float):
     for xs, num, title, sub in STOPS:
         here = abs(xs - X3) < 1e-6
         nxt = abs(xs - X4) < 1e-6
-        col = COL_NEXT if nxt and t > 7.4 else COL_STOP
+        col = COL_NEXT if nxt and t > T_GO + 0.4 else COL_STOP
         ax.add_patch(Circle((xs, 0), 0.55, facecolor="white", edgecolor=col, lw=3, zorder=3))
         ax.text(xs, 0, num, ha="center", va="center", fontsize=15, weight="bold", color=col, zorder=4)
         ax.plot([xs, xs], [0.55, 1.6], color=col, lw=2.5, zorder=3)
@@ -185,11 +207,11 @@ def draw_sign(ax, t: float):
 
 
 def draw_passengers(ax, t: float):
-    """The samples that do get off here walk onto the platform between 2.0 and 3.0 s and
-    into the station between 7.0 and 7.8 s, before our cart rolls past."""
-    gone = ramp(t, 7.0, 7.8)
+    """The samples that do get off here walk onto the platform from T_PASS on and into the
+    station as our cart starts to roll past."""
+    gone = ramp(t, T_GO, T_GO + 0.8)
     for i, (name, recipe) in enumerate(PASSENGERS):
-        a = ramp(t, 2.0 + 0.25 * i, 2.7 + 0.25 * i) * (1 - gone)
+        a = ramp(t, T_PASS + 0.25 * i, T_PASS + 0.7 + 0.25 * i) * (1 - gone)
         if a <= 0:
             continue
         x = X3 + 2.6 + 1.6 * i
@@ -198,16 +220,16 @@ def draw_passengers(ax, t: float):
         ax.add_patch(Rectangle((x - 0.3, y), 0.6, 0.6, facecolor=COL_ME, edgecolor="none", zorder=7, alpha=a))
         ax.text(x, y - 0.12, name, ha="center", va="top", fontsize=8.5, color=COL_ME, zorder=8, alpha=a)
         ax.text(x, y - 0.5, recipe, ha="center", va="top", fontsize=7.5, color=TEXT2, style="italic", zorder=8, alpha=a)
-    if t > 3.0 and gone < 1:
+    if t > T_PASS + 1.0 and gone < 1:
         ax.text(X3 + 4.2, 2.35, "they get off here", ha="center", va="bottom", fontsize=9.5, color=COL_ME, style="italic", zorder=8, alpha=1 - gone)
 
 
 def draw_verdict(ax, cx: float, t: float):
     """The card for our event: one 2->2 LO process, nothing to match; the ledger row repeats."""
-    a = ramp(t, 3.0, 3.6)
+    a = ramp(t, T_CARD, T_CARD + 0.6)
     if a <= 0:
         return
-    fade = 1.0 - ramp(t, 7.6, 8.4)
+    fade = 1.0 - ramp(t, T_GO + 0.6, T_GO + 1.4)
     if fade <= 0:
         return
     al = a * fade
@@ -224,19 +246,19 @@ def draw_verdict(ax, cx: float, t: float):
     for i, r in enumerate(rows):
         ax.text(x0 + 0.35, y0 + h - 1.0 - 0.6 * i, "• " + r, ha="left", va="top", fontsize=10.5, color=TEXT, zorder=11, alpha=al)
     # the ledger row, unchanged
-    b = ramp(t, 4.4, 5.0) * fade
+    b = ramp(t, T_LEDGER, T_LEDGER + 0.6) * fade
     if b > 0:
         ly = y0 + 0.55
         ax.plot([x0 + 0.35, x0 + w - 0.35], [ly + 1.05, ly + 1.05], color=GRID, lw=1, zorder=11, alpha=b)
         ax.text(x0 + 0.35, ly + 0.8, "ledger", ha="left", va="center", fontsize=9, color=TEXT2, zorder=11, alpha=b)
         ax.text(x0 + 0.35, ly + 0.35, r"$b$ family after the shower", ha="left", va="center", fontsize=10, color=TEXT, zorder=11, alpha=b)
         ax.text(x0 + w - 0.35, ly + 0.35, rf"{LEDGER_PT:.2f} GeV,  $m={LEDGER_M:.2f}$ GeV,  {LEDGER_N} partons", ha="right", va="center", fontsize=10, color=TEXT, zorder=11, alpha=b)
-        c = ramp(t, 5.0, 5.6) * fade
+        c = ramp(t, T_LEDGER + 0.6, T_LEDGER + 1.2) * fade
         if c > 0:
             ax.text(x0 + 0.35, ly - 0.1, "after matching and merging (none applied)", ha="left", va="center", fontsize=10, color=TEXT, zorder=11, alpha=c)
             ax.text(x0 + w - 0.35, ly - 0.1, rf"{LEDGER_PT:.2f} GeV,  $\Delta p_T = 0$", ha="right", va="center", fontsize=10, weight="bold", color=COL_NEXT, zorder=11, alpha=c)
     # the stamp
-    s = ramp(t, 5.7, 6.0)
+    s = ramp(t, T_STAMP, T_STAMP + 0.3)
     if s > 0:
         scale = 1.6 - 0.6 * s
         ax.text(x0 + w - 2.5, y0 + h - 2.0, "NOT FOR US", ha="center", va="center", rotation=-14, fontsize=19 * scale, weight="bold",
@@ -245,7 +267,7 @@ def draw_verdict(ax, cx: float, t: float):
 
 
 def draw_next(ax, cx: float, t: float):
-    a = ramp(t, 8.0, 8.8)
+    a = ramp(t, T_GO + 1.0, T_GO + 1.8)
     if a <= 0:
         return
     ax.text(cx + 6.0, 8.6, "no stop here; on to the next one", ha="center", va="center", fontsize=14, weight="bold", color=COL_NEXT, alpha=a, zorder=11)
@@ -253,14 +275,15 @@ def draw_next(ax, cx: float, t: float):
 
 
 def caption(t: float) -> str:
-    if t < 3.0:
+    if t < T_PASS:
         return "Chapter 3 is a stop on the road: the sign says who it is for."
-    if t < 7.0:
+    if t < T_GO:
         return "Our event has one parent for every parton. There is nothing to match here, and the ledger row repeats."
     return "So we roll on: chapter 4, the rest of the two protons."
 
 
-def draw_frame(fig, t: float):
+def draw_frame(fig, t: float, t_film: Optional[float] = None):
+    """The picture at script time t; the stamp in the corner shows t_film (the narrated clock) when given."""
     fig.clf()
     fig.patch.set_facecolor("white")
     ax = fig.add_axes([0, 0, 1, 1])
@@ -279,41 +302,84 @@ def draw_frame(fig, t: float):
     fig.text(0.02, 0.965, "Stop 3: Whose Child Is It? Matching and merging", fontsize=15, weight="bold", color=TEXT, va="center")
     fig.text(0.98, 0.965, "chapter_03_whose_child.tex", fontsize=9.5, color=TEXT2, ha="right", va="center")
     fig.text(0.02, 0.03, caption(t), fontsize=10.5, color=TEXT, va="bottom")
-    fig.text(0.98, 0.03, f"{t:4.1f} s", fontsize=9, color=TEXT2, ha="right", va="bottom")
+    fig.text(0.98, 0.03, f"{(t if t_film is None else t_film):4.1f} s", fontsize=9, color=TEXT2, ha="right", va="bottom")
 
 
-KEYFRAMES = [2.9, 6.5, 9.6]  # one per beat
+KEYFRAMES = [2.9, 8.0, 12.0]  # one per beat
+
+
+# --- the beats as scenes, their phases and the narration -------------------------------------------------
+class Beat:
+    """A beat of the script clock, seconds [t0, t1), as a scene of nframes frames for the film clock."""
+
+    def __init__(self, number: int, name: str, t0: float, t1: float, phase_times: List[Tuple[str, float]]):
+        self.number, self.name, self.t0 = number, name, t0
+        self.k0 = int(round(t0 * FPS))
+        self.nframes = int(round(t1 * FPS)) - self.k0
+        self._phases = phase_times                     # (key, script time at which the phase starts)
+
+    def phases(self) -> List[Tuple[str, int, int]]:
+        ks = [int(round(t * FPS)) - self.k0 for _, t in self._phases] + [self.nframes]
+        return [(key, ks[i], ks[i + 1]) for i, (key, _) in enumerate(self._phases)]
+
+    def draw(self, fig, k: float, t_film: Optional[float] = None):
+        draw_frame(fig, (self.k0 + k) / FPS, t_film)
+
+    def keyframe(self) -> float:
+        return next(t for t in KEYFRAMES if self.t0 <= t < self.t0 + self.nframes / FPS) * FPS - self.k0
+
+
+BEATS = [
+    Beat(1, "approach", 0.0, T_CARD, [("arrive", 0.0), ("sign", T_ARRIVE), ("passengers", T_PASS)]),
+    Beat(2, "verdict", T_CARD, T_GO, [("card", T_CARD), ("ledger", T_LEDGER), ("stamp", T_STAMP)]),
+    Beat(3, "moveon", T_GO, DURATION, [("roll", T_GO), ("next", T_GO + 3.0)]),
+]
+NAMES = {b.number: b.name for b in BEATS}
+
+
+def narration() -> Dict[str, str]:
+    """One line per phase, keyed <beat>_<phase>, plus the closing line; the numbers are the ledger's."""
+    return {
+        "approach_arrive": ("Stop three. Our event rolls up to the platform: an up quark and an anti-up quark that became "
+                            "a bottom pair, with the gluons of the shower on board."),
+        "approach_sign": ("The sign says who this stop is for. Events with a second parent for an extra parton... "
+                          "Merging, M L M or C K K W L, when the sample also has subprocesses with one or two more partons. "
+                          "Matching, M C at N L O or POWHEG, when the matrix element is next-to-leading order. "
+                          "F x F x, for both at once."),
+        "approach_passengers": ("Top pairs with jets. W and Z with jets. Single top... They get off here. Their samples "
+                                "have two ways of making the same parton, and someone has to decide whose child it is."),
+        "verdict_card": ("Our event stays on the cart. One leading-order two-to-two process, and no sample beside it with "
+                         "an extra parton from the matrix element. Every parton beyond the b and the anti-b has exactly "
+                         "one parent, the shower... Nothing to match. Nothing to merge."),
+        "verdict_ledger": (f"The ledger row repeats the previous one: the b family after the shower, {LEDGER_PT:.2f} GeV, "
+                           f"{LEDGER_N} partons... after matching and merging, the same, and a change of zero."),
+        "verdict_stamp": "Not for us.",
+        "moveon_roll": "So the cart rolls on, past the platform and past the passengers walking into the station.",
+        "moveon_next": ("Stop four. The cousins nobody invited... the rest of the two protons, which have been waiting all "
+                        "this time to join the party."),
+        "outro": "No stop here. Next stop: the underlying event.",
+    }
+
+
+def score_spec(film: snd.Film) -> snd.ScoreSpec:
+    """D minor, G minor and the dominant A for the three beats, resolving under the outro; a thud as the stamp lands."""
+    t_stamp = snd.voice_at_phase(film, "verdict_stamp")
+    return snd.film_score(film, [snd.Dm, snd.Gm, snd.A], thuds=[t_stamp + 0.3] if t_stamp is not None else [])
 
 
 # --- output ---------------------------------------------------------------------------------------------
-def times(fps: int, step: int):
-    n = int(round(DURATION * fps))
-    return [k / fps for k in range(0, n, step)]
+def write_video(film: snd.Film, out: Path, fps: float, dpi: int, audio: Optional[Path], jobs: int):
+    snd.render_video(film, out, fps, dpi, audio, lambda fig, beat, k, t: beat.draw(fig, k, t), FIGSIZE,
+                     "Whose child is it? Matching and merging", jobs=jobs)
+    print(f"wrote {out} ({film.duration:.1f} s)")
 
 
-def write_video(out: Path, fps: int, dpi: int, step: int):
-    fig = plt.figure(figsize=FIGSIZE)
-    if out.suffix.lower() == ".gif":
-        writer = animation.PillowWriter(fps=max(1, fps // step))
-    else:
-        writer = animation.FFMpegWriter(fps=max(1, fps // step), bitrate=3500)
-    ts = times(fps, step)
-    with writer.saving(fig, str(out), dpi):
-        for i, t in enumerate(ts):
-            draw_frame(fig, t)
-            writer.grab_frame(facecolor="white")
-            if i % 24 == 0:
-                print(f"\r  frame {i + 1}/{len(ts)}", end="", flush=True)
-    plt.close(fig)
-    print(f"\nwrote {out} ({len(ts)} frames, {len(ts) / max(1, fps // step):.1f} s)")
-
-
-def write_frames(outdir: Path, dpi: int, fps: int, step: int):
+def write_frames(film: snd.Film, outdir: Path, dpi: int, fps: float):
     outdir.mkdir(parents=True, exist_ok=True)
     fig = plt.figure(figsize=FIGSIZE)
-    for i, t in enumerate(times(fps, step)):
-        draw_frame(fig, t)
-        fig.savefig(outdir / f"frame_{i:04d}_t{t:04.1f}.png", dpi=dpi, facecolor="white")
+    for i, (beat, k) in enumerate(film.frames(fps)):
+        beat.draw(fig, k, i / fps)
+        fig.savefig(outdir / f"frame_{i:04d}_t{i / fps:05.1f}.png", dpi=dpi, facecolor="white")
     plt.close(fig)
     print(f"wrote PNG frames to {outdir}")
 
@@ -336,24 +402,56 @@ def write_stills(out: Path, dpi: int):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_whose_child.mp4")
+    p.add_argument("-o", "--output", type=Path, default=HERE / "animate_whose_child.mp4", help=".mp4 (needs ffmpeg) or .gif (silent)")
     p.add_argument("--fps", type=int, default=24)
-    p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
+    p.add_argument("--dpi", type=int, default=150, help="150 gives 1920x1080, 100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame")
     p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60")
     p.add_argument("--frames-dir", type=Path, default=None)
     p.add_argument("--stills", type=Path, default=None, help="one key frame per beat (.pdf or .png)")
     p.add_argument("--no-video", action="store_true")
+    p.add_argument("--jobs", type=int, default=4, help="render the frames in this many processes (joined losslessly)")
+    p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
+                   help="write just the soundtrack (narration + score) and exit, without rendering")
+    p.add_argument("--cache-dir", type=Path, default=HERE.parent.parent / "build" / "narration" / "MnM",
+                   help="the synthesised narration clips are kept here (make clean removes them)")
+    snd.add_narration_args(p)             # --engine --voice --rate --narration-dir --no-narration --print-script --music-db --no-music
     args = p.parse_args()
     if args.fast:
         args.step, args.dpi = max(args.step, 4), min(args.dpi, 60)
-    print(f"{DURATION:.0f} s at {args.fps} fps: cart from x = {cart_x(0):.1f} past stop 3 at x = {X3:.0f} to x = {cart_x(DURATION):.1f} at stop 4 (x = {X4:.0f})")
+    snd.narration_defaults(args)
+    fps = args.fps / args.step
+    print(f"{DURATION:g} s script clock at {FPS} fps: cart from x = {cart_x(0):.1f} past stop 3 at x = {X3:.0f} to x = {cart_x(DURATION):.1f} at stop 4 (x = {X4:.0f})")
+
+    lines = narration()
+    if args.print_script:
+        snd.print_script(lines)
+        return
+    ffmpeg = shutil.which("ffmpeg")
+    if args.output.suffix.lower() != ".gif" and ffmpeg is None and not args.no_narration:
+        sys.exit("ffmpeg not found on PATH (needed for the narration clips)")
+    clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
+    film = snd.Film(BEATS, snd.clip_lengths(clips), NAMES)
+    print(f"film: {film.describe()}")
+    score = None if args.no_music else score_spec(film)
+    if args.audio_only:
+        snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, args.audio_only)
+        print(f"wrote {args.audio_only}")
+        return
+
     if args.stills is not None:
         write_stills(args.stills, args.dpi)
     if args.frames_dir is not None:
-        write_frames(args.frames_dir, args.dpi, args.fps, args.step)
+        write_frames(film, args.frames_dir, args.dpi, fps)
     elif not args.no_video:
-        write_video(args.output, args.fps, args.dpi, args.step)
+        audio = None
+        tmp = tempfile.TemporaryDirectory(prefix="jitjet_mnm_")
+        if ffmpeg and args.output.suffix.lower() != ".gif" and (clips or score):
+            audio = Path(tmp.name) / "soundtrack.wav"
+            snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, audio)
+            if clips:
+                snd.write_srt(film.voice_at, clips, lines, args.output.with_suffix(".srt"))
+        write_video(film, args.output, fps, args.dpi, audio, args.jobs)
 
 
 if __name__ == "__main__":

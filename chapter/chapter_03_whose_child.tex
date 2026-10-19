@@ -26,13 +26,14 @@ shower emission, the merging scale, MLM jet matching and the
 in MC@NLO and POWHEG, FxFx merging, where CMS uses each and why our event
 uses none}
 
-\section{Watch the cart roll past: a ten-second film}
+\section{Watch the cart roll past: a short film}
 \label{sec:whose_child:animation}
 
 The film first, and it is a short one.
 \file{example/MnM/animate_whose_child.py} draws the road of this book with
-its stops and the cart that carries our event up to stop 3, in ten seconds
-and three beats: the sign at the stop says who it is for, events with a
+its stops and the cart that carries our event up to stop 3, in three beats
+on a script clock of twelve seconds, stretched to about two minutes by the
+narration: the sign at the stop says who it is for, events with a
 second parent for their extra parton, and the passengers of the $\ttbar$+jets,
 $W/Z$+jets and POWHEG samples get off; the card for our event says why we do
 not, one leading-order $2\to2$ process and nothing to match, and the ledger
@@ -43,12 +44,16 @@ the JitJet playlist,
 \end{center}
 and \cref{fig:whose_child:stills} shows one frame per beat. The numbers on
 the screen are the ones of the ledger in \cref{sec:whose_child:our_jet};
-there is no standalone script at this stop, so the film imports none.
-Rendering needs matplotlib and \code{ffmpeg}:
+there is no standalone script at this stop, so the film imports none but
+the shared \file{example/soundtrack.py} for the voice and the score (the
+\code{edge-tts} package, as in chapter~1). Rendering needs matplotlib and
+\code{ffmpeg}:
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/MnM
-python3 animate_whose_child.py                            # the film, 30 s to render
+python3 animate_whose_child.py                            # the film and its .srt, ten minutes to render
 python3 animate_whose_child.py --fast                     # low-resolution preview
+python3 animate_whose_child.py --print-script             # the narration, to record it yourself
+python3 animate_whose_child.py --no-narration             # music only, the 12.5 s script clock
 python3 animate_whose_child.py --stills stills.pdf --no-video
 \end{minted}
 
@@ -56,7 +61,7 @@ python3 animate_whose_child.py --stills stills.pdf --no-video
 \includegraphics[page=1,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
 \includegraphics[page=2,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
 \includegraphics[page=3,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}
-\caption[Three frames of the ten-second film: the sign, the verdict, the next stop]{One frame per beat of the ten-second film, drawn by \file{animate\_whose\_child.py} with \code{--stills}. Left: the cart with our event arrives at stop 3 and the sign unfolds, naming the events this stop is for; the passengers of merged and matched samples get off. Middle: the card for our event, one $2\to2$ process with one parent for every extra parton, the stamp, and the ledger row that repeats itself. Right: the cart rolls on to chapter 4.}
+\caption[Three frames of the film: the sign, the verdict, the next stop]{One frame per beat of the film, drawn by \file{animate\_whose\_child.py} with \code{--stills}. Left: the cart with our event arrives at stop 3 and the sign unfolds, naming the events this stop is for; the passengers of merged and matched samples get off. Middle: the card for our event, one $2\to2$ process with one parent for every extra parton, the stamp, and the ledger row that repeats itself. Right: the cart rolls on to chapter 4.}
 \label{fig:whose_child:stills}
 \end{figure}
 
@@ -93,7 +98,7 @@ against a seed-to-seed spread of $29\GeV$, and the official CMS QCD
 multijet samples made with \PYTHIA alone pay it too. It is \emph{not} small
 when the extra jets are the measurement, $\ttbar$+jets, $W/Z$+jets or the
 multijet background of a search, and that is where the recipes below are
-used. This stop therefore has no script; it has a ten-second film, two
+used. This stop therefore has no script; it has a short film, two
 pictures, the vocabulary, and the references to go further.
 
 \section{Who owns the extra gluon?}

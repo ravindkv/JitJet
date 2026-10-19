@@ -91,10 +91,10 @@ COL_U, COL_UBAR = "#2f8f5b", "#8e5bb5"          # incoming quark / antiquark
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 FLAVOUR_COLOURS = {"d": "#9a6b2f", "u": "#2a78d6", "s": "#2f8f5b", "c": "#eb6834", "b": "#8e5bb5"}
 CMAP = "viridis"
-PYTHIA_NB, PYTHIA_ERR_NB = 0.3451, 0.0061           # CMSSW step1_GEN_cfg.py GenXSecAnalyzer, pTHat>=100 GeV
+Pythia_NB, Pythia_ERR_NB = 0.3451, 0.0061           # CMSSW step1_GEN_cfg.py GenXSecAnalyzer, pTHat>=100 GeV
 REPEATS8_NB = 0.345324                              # qqbar_bbbar_xsec.py --output result.json (repeats=8)
 SOBOL1_NB = 0.345320                                # standalone_qqbar_bbbar_xsec.py, single 2^16-point Sobol pass
-FIGSIZE = (12.8, 7.2)                               # 16:9; dpi 100 -> 1280x720
+FIGSIZE = (12.8, 7.2)                               # 16:9; dpi 150 -> 1920x1080, dpi 100 -> 1280x720
 
 
 def smooth(t: float) -> float:
@@ -217,7 +217,7 @@ class Event:
 
 
 def read_event(path: Path) -> Optional[Event]:
-    """Parse a PYTHIA hard-process listing or an LHE <event> block (like plot_journey_ME.py)."""
+    """Parse a Pythia hard-process listing or an LHE <event> block (like plot_journey_ME.py)."""
     try:
         lines = path.read_text().splitlines()
     except OSError:
@@ -645,7 +645,7 @@ class SurfaceScene(Scene):
                    "($x_1 = 2.2\\times10^{-3}$, $x_2 = 0.39$, $Y = -2.6$) sits far out on that flank.")
         else:
             cap = (f"Volume under the surface on this grid: {self.sigma_nb:.4f} nb, tending to {SOBOL1_NB:.4f} nb as the grid is "
-                   f"refined. The Sobol pass of the standalone script gives {SOBOL1_NB:.5f} nb, PYTHIA {PYTHIA_NB} $\\pm$ {PYTHIA_ERR_NB} nb.")
+                   f"refined. The Sobol pass of the standalone script gives {SOBOL1_NB:.5f} nb, Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb.")
         chrome(fig, self.number, self.title, cap)
 
 
@@ -700,8 +700,8 @@ class ConvergeScene(Scene):
             a.tick_params(colors=TEXT2, labelsize=8)
             for side in ("top", "right"):
                 a.spines[side].set_visible(False)
-        ax_top.axhspan(PYTHIA_NB - PYTHIA_ERR_NB, PYTHIA_NB + PYTHIA_ERR_NB, color="#e6e4de", zorder=0)
-        ax_top.axhline(PYTHIA_NB, color=TEXT2, lw=0.8)
+        ax_top.axhspan(Pythia_NB - Pythia_ERR_NB, Pythia_NB + Pythia_ERR_NB, color="#e6e4de", zorder=0)
+        ax_top.axhline(Pythia_NB, color=TEXT2, lw=0.8)
         ax_top.axhline(REPEATS8_NB, color=TEXT, lw=0.8, ls="--")
         ax_top.plot(x, self.total[:n_now], color=TEXT, lw=1.8)
         ax_top.plot(x[-1:], self.total[n_now - 1:n_now], marker="o", ms=6, color=TEXT)
@@ -710,7 +710,7 @@ class ConvergeScene(Scene):
         ax_top.set_title(f"$N = {n_now}$:  estimate $= {self.total[n_now - 1]:.4f}$ nb", fontsize=10, color=TEXT, loc="left")
         ax_top.legend(handles=[Line2D([], [], color=TEXT, lw=1.8, label="this pass"),
                                Line2D([], [], color=TEXT, lw=0.8, ls="--", label=f"8 passes: {REPEATS8_NB} nb"),
-                               Line2D([], [], color="#c9c6bc", lw=6, label=f"PYTHIA {PYTHIA_NB} $\\pm$ {PYTHIA_ERR_NB} nb")],
+                               Line2D([], [], color="#c9c6bc", lw=6, label=f"Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb")],
                       fontsize=8, loc="lower right", frameon=False)
         for i, name in enumerate(core.FLAVOUR_NAMES):
             ax_bot.plot(x, self.running[i, :n_now], color=FLAVOUR_COLOURS[name], lw=1.4,
@@ -728,7 +728,7 @@ class ConvergeScene(Scene):
                    "the $1/\\sqrt{N}$ of random points; $u\\bar u$ and $d\\bar d$ dominate.")
         else:
             cap = (f"After $2^{{{st.power}}}$ points this pass gives {self.total[-1]:.4f} nb; eight scrambled passes give "
-                   f"{REPEATS8_NB} $\\pm$ 0.00005 nb, PYTHIA's own Monte Carlo {PYTHIA_NB} $\\pm$ {PYTHIA_ERR_NB} nb.")
+                   f"{REPEATS8_NB} $\\pm$ 0.00005 nb, Pythia's own Monte Carlo {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb.")
         chrome(fig, self.number, self.title, cap)
 
 
@@ -767,87 +767,24 @@ def narration(ev: Event, st: Setup, scenes: List[Scene]) -> Dict[str, str]:
         "converge_sobol": ("Sobol points fill the cube evenly, so the average settles faster than random throws... "
                            "Up and down quarks do most of the work."),
         "converge_result": (f"After {2 ** st.power // 1000} thousand points: {sigma:.3f} nanobarn. "
-                            f"PYTHIA's own Monte Carlo says {PYTHIA_NB}, plus or minus {PYTHIA_ERR_NB}... They agree."),
+                            f"Pythia's own Monte Carlo says {Pythia_NB}, plus or minus {Pythia_ERR_NB}... They agree."),
         "outro": "One event, one number... The family is born. Next stop: the parton shower.",
     }
     keys = [f"{name[sc.number]}_{key}" for sc in scenes for key, _, _ in sc.phases()] + ["outro"]
     return {k: lines[k] for k in keys if k in lines}
 
 
-# --- the clock ----------------------------------------------------------------------
-NOMINAL_FPS = 24                  # the scenes were drawn for this: one frame index per 1/24 s
+# --- the clock and the score -----------------------------------------------------------
+# The film clock (snd.Film) puts the phases of the scenes on the clock: each lasts at least its line of
+# narration, the motion slowed down (up to 2.5x) and then held; see example/soundtrack.py.
+NAMES = {1: "collision", 2: "cube", 3: "surface", 4: "converge"}
 
 
-@dataclass
-class Phase:
-    scene: Scene
-    key: str
-    k0: int
-    k1: int                       # frame after the last of the phase
-    t0: float
-    t1: float
-    motion: float                 # the frames k0 .. k1-1 play over this long, then the last one holds
-
-
-class Film:
-    """The phases on the clock: each lasts at least its narration (motion slowed up to 2.5x, then held)."""
-
-    def __init__(self, scenes: List[Scene], lengths: Dict[str, float], lead: float = 0.4, tail: float = 0.7,
-                 slow_max: float = 2.5, outro: float = 0.0):
-        name = {1: "collision", 2: "cube", 3: "surface", 4: "converge"}
-        self.phases: List[Phase] = []
-        self.voice_at: Dict[str, float] = {}
-        self.scene_start: Dict[int, float] = {}
-        t = 0.0
-        for sc in scenes:
-            self.scene_start[sc.number] = t
-            for key, k0, k1 in sc.phases():
-                full = f"{name.get(sc.number, 'scene')}_{key}"
-                nominal = (k1 - k0) / NOMINAL_FPS
-                dur = max(nominal, lead + lengths.get(full, 0.0) + tail)
-                self.phases.append(Phase(sc, full, k0, k1, t, t + dur, min(dur, slow_max * nominal)))
-                if full in lengths:
-                    self.voice_at[full] = t + lead
-                t += dur
-        self.t_outro = t
-        if "outro" in lengths:
-            self.voice_at["outro"] = t + 0.6
-            t += 0.6 + lengths["outro"] + 2.0
-        self.duration = t + outro
-        self.fade_out = 1.5
-
-    def frame_at(self, t: float) -> Tuple[Scene, float]:
-        for ph in self.phases:
-            if t < ph.t1 or ph is self.phases[-1]:
-                u = min(max((t - ph.t0) / ph.motion, 0.0), 1.0) if ph.motion > 0 else 1.0
-                return ph.scene, ph.k0 + (ph.k1 - 1 - ph.k0) * u
-        raise RuntimeError("no phases")
-
-    def frames(self, fps: float) -> List[Tuple[Scene, float]]:
-        n = int(math.ceil(self.duration * fps))
-        return [self.frame_at(i / fps) for i in range(n)]
-
-
-def score_spec(film: Film) -> snd.ScoreSpec:
+def score_spec(film: snd.Film) -> snd.ScoreSpec:
     """One chord per scene (resolving at the end), a bell as each scene opens, the pulse growing scene by scene,
-    a thud when the partons meet."""
-    progression = [snd.Dm, snd.Bb, snd.F, snd.Gm]
-    starts = sorted(film.scene_start.items())
-    spec = snd.ScoreSpec(film.duration, film.fade_out,
-                         chords=[(t, progression[i % 4]) for i, (_, t) in enumerate(starts)]
-                                + [(film.t_outro, snd.Dm_hi)],
-                         outro=(film.t_outro, [f * 2 for f in snd.Dm_hi]))
-    if spec.chords[0][0] > 0:
-        spec.chords.insert(0, (0.0, snd.Dm))
-    for i, (number, t) in enumerate(starts):
-        phases = [ph for ph in film.phases if ph.scene.number == number]
-        spec.pulses.append(snd.pulse_for(i, t, phases[0].t1, phases[-1].t1, progression[i % 4]))
-        if i > 0:
-            spec.bells.append(snd.Bell(t, progression[i % 4][0] * 4))
-        if isinstance(phases[0].scene, CollisionScene) and len(phases) > 1:
-            spec.thuds.append(phases[1].t0)           # the partons meet when the quarks start to fly out
-    spec.bells.append(snd.Bell(film.t_outro + 0.3, snd.D4, gain=0.55, seconds=6.0, spread=0.015))
-    return spec
+    a thud when the partons meet (the quarks start to fly out)."""
+    t_meet = snd.voice_at_phase(film, "collision_out")
+    return snd.film_score(film, [snd.Dm, snd.Bb, snd.F, snd.Gm], thuds=[t_meet] if t_meet is not None else [])
 
 
 # --- rendering ----------------------------------------------------------------------
@@ -874,36 +811,12 @@ def render_frame(fig, sc: Scene, k: float):
     sc.draw(fig, k)
 
 
-def write_video(film: Film, out: Path, fps: float, dpi: int, audio: Optional[Path]):
-    frames = film.frames(fps)
-    ext = out.suffix.lower()
-    if ext == ".gif":
-        writer = animation.PillowWriter(fps=fps)
-        audio = None
-    elif ext in (".mp4", ".m4v", ".mov", ".webm"):
-        if not animation.FFMpegWriter.isAvailable():
-            sys.exit("ffmpeg not found on PATH; write a .gif instead or install ffmpeg")
-        writer = animation.FFMpegWriter(fps=fps, codec="libx264", bitrate=3500,
-                                        extra_args=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
-                                        metadata={"title": "q qbar -> b bbar, standalone LO integration"})
-    else:
-        sys.exit(f"unknown output type {ext}; use .mp4 or .gif")
-    silent = out.with_name(out.stem + "_silent" + out.suffix) if audio else out
-    fig = plt.figure(figsize=FIGSIZE)
-    print(f"writing {len(frames)} frames at {fps:g} fps ({len(frames) / fps:.1f} s) to {out}", flush=True)
-    with writer.saving(fig, str(silent), dpi):
-        for i, (sc, k) in enumerate(frames):
-            render_frame(fig, sc, k)
-            writer.grab_frame(facecolor="white")
-            if i % 25 == 0 or i == len(frames) - 1:
-                print(f"  frame {i + 1}/{len(frames)}  (scene {sc.number}, k={k:.1f})", flush=True)
-    plt.close(fig)
-    if audio:
-        snd.mux(shutil.which("ffmpeg"), silent, audio, out)
-        silent.unlink()
+def write_video(film: snd.Film, out: Path, fps: float, dpi: int, audio: Optional[Path], jobs: int):
+    snd.render_video(film, out, fps, dpi, audio, lambda fig, sc, k, t: render_frame(fig, sc, k), FIGSIZE,
+                     "q qbar -> b bbar, standalone LO integration", jobs=jobs, every=25)
 
 
-def write_frames(film: Film, outdir: Path, dpi: int, fps: float):
+def write_frames(film: snd.Film, outdir: Path, dpi: int, fps: float):
     outdir.mkdir(parents=True, exist_ok=True)
     fig = plt.figure(figsize=FIGSIZE)
     frames = film.frames(fps)
@@ -931,7 +844,7 @@ def write_stills(scenes, out: Path, dpi: int):
     print(f"wrote stills to {out}")
 
 
-def show_interactive(film: Film, fps: float):
+def show_interactive(film: snd.Film, fps: float):
     matplotlib.use("MacOSX" if sys.platform == "darwin" else "TkAgg", force=True)
     import matplotlib.pyplot as plt_i
     fig = plt_i.figure(figsize=FIGSIZE)
@@ -953,13 +866,14 @@ def main():
     p.add_argument("--scene", default="all",
                    help="comma list of 1,2,3,4 or collision,cube,surface,converge (default: all)")
     p.add_argument("--fps", type=int, default=24)
-    p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
+    p.add_argument("--dpi", type=int, default=150, help="150 gives 1920x1080, 100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame (faster, choppier)")
     p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60")
     p.add_argument("--frames-dir", type=Path, default=None, help="write PNG frames here instead of a video")
     p.add_argument("--stills", type=Path, default=None, help="also write one key frame per scene (.pdf or .png)")
     p.add_argument("--no-video", action="store_true", help="skip the video (with --stills or --frames-dir)")
     p.add_argument("--show", action="store_true", help="play in an interactive window instead of writing a file")
+    p.add_argument("--jobs", type=int, default=4, help="render the frames in this many processes (joined losslessly)")
     p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
                    help="write just the soundtrack (narration + score) and exit, without rendering")
     p.add_argument("--cache-dir", type=Path, default=HERE.parent.parent.parent / "build" / "narration" / "ME",
@@ -1006,8 +920,8 @@ def main():
     if args.output.suffix.lower() != ".gif" and ffmpeg is None and not args.no_narration:
         sys.exit("ffmpeg not found on PATH (needed for the narration clips)")
     clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
-    film = Film(scenes, snd.clip_lengths(clips))
-    print(f"film: {film.duration:.1f} s, {len(film.phases)} phases" + (" (silent)" if not clips else ""))
+    film = snd.Film(scenes, snd.clip_lengths(clips), NAMES)
+    print(f"film: {film.describe()}")
     score = None if args.no_music else score_spec(film)
     if args.audio_only:
         snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, args.audio_only)
@@ -1029,7 +943,7 @@ def main():
             snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, audio)
             if clips:
                 snd.write_srt(film.voice_at, clips, lines, args.output.with_suffix(".srt"))
-        write_video(film, args.output, fps, args.dpi, audio)
+        write_video(film, args.output, fps, args.dpi, audio, args.jobs)
         print(f"wrote {args.output}")
 
 

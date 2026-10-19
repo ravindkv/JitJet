@@ -179,8 +179,11 @@ event is in `validate_mpi_with_pythia_event1.txt`.
   pT inside R = 0.4 and 0.8 and the ledger against the cone radius. It reads
   `standalone_mpi_stats_{sampled,fixedb}.stats.json` (written by `--repeat 400`)
   and `validate_mpi_with_pythia_{sampled,fixedb}.json`.
-* `animate_standalone_multiparton_interactions.py`: five scenes (overlap,
-  chain, remnants, strings, ensemble), same CLI as the chapter-2 film;
-  `make figures` writes the stills PDF only.
+* `animate_standalone_multiparton_interactions.py`: five narrated scenes
+  (overlap, chain, remnants, strings, ensemble), about 4.5 min with the
+  voice and 55 s silent (`--no-narration`); same CLI as the chapter-2 film,
+  the voice and the score from `../../soundtrack.py` (`--print-script` lists
+  the lines, clips cached in `build/narration/MPI/`); `make figures` writes
+  the stills PDF only.
 
 `make records` regenerates `../event_MPI.lhe`, `make figures` the three PDFs.

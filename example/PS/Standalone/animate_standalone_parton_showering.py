@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Animated companion to standalone_parton_showering.py.
 
-Four scenes, about 40 s in total, show what the standalone shower does to the
-b bbar event of chapter 1. Every number on screen is computed with the classes
-of that script (AlphaStrong, TablePDF, Shower, family): scene 1 replays the
-seed-1 shower that wrote ../event_PS.lhe branching by branching, the other
+Four scenes, narrated, show what the standalone shower does to the b bbar event
+of chapter 1. Every number on screen and in the narration is computed with the
+classes of that script (AlphaStrong, TablePDF, Shower, family): scene 1 replays
+the seed-1 shower that wrote ../event_PS.lhe branching by branching, the other
 scenes call the same trial-emission and shower functions again.
 
   1  shower    The evolution in pT. A scale runs down from pTmax = 113.3 GeV
@@ -31,30 +31,49 @@ scenes call the same trial-emission and shower functions again.
   4  ensemble  The same hard event showered again and again (seeds 1, 2, 3,
                ...): twelve outcomes side by side, and the running means of
                the branching counts and of the family pT of each b quark
-               settling towards the values that PYTHIA 8 gives for the same
+               settling towards the values that Pythia 8 gives for the same
                event (validate_shower_with_pythia.py, README.md).
 
+Narration and music
+  Each scene is a few phases (the two dipoles, the first branchings, the ISR
+  rungs, the soft tail, the families, ...) and each phase has one line of
+  narration (narration() below), spoken by a neural voice through edge-tts
+  (Microsoft's online voices; `pip install --user edge-tts`, needs the network)
+  or, with --engine say, by a macOS voice; --narration-dir takes recorded clips
+  named <key>.wav|mp3 (--print-script lists the keys and the text). A phase
+  lasts at least as long as its line: its motion is slowed down (up to 4x, so
+  the pT sweeps keep moving under the voice) and then held, so the narrated
+  film is about 4.5 min and the silent one (--no-narration) about 45 s. The
+  score comes from example/soundtrack.py: a drone, a pad with one chord per
+  scene, a pulse that gains a voice with every scene, a bell as each scene
+  opens, a thud at the first branching. The clips are cached in
+  build/narration/PS/. An .srt is written next to the .mp4.
+
 Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
-  python3 animate_standalone_parton_showering.py                  # -> .mp4 next to this file
+  python3 animate_standalone_parton_showering.py                  # -> .mp4 + .srt next to this file
   python3 animate_standalone_parton_showering.py --fast           # quick low-resolution preview
-  python3 animate_standalone_parton_showering.py --scene shower -o shower.gif
+  python3 animate_standalone_parton_showering.py --scene shower -o shower.gif   # silent
   python3 animate_standalone_parton_showering.py --stills stills.pdf --no-video
+  python3 animate_standalone_parton_showering.py --print-script   # the narration, for recording it yourself
+  python3 animate_standalone_parton_showering.py --audio-only x.wav   # the soundtrack alone
   python3 animate_standalone_parton_showering.py --show           # interactive window
 
-An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow. --frames-dir writes
-the individual frames as PNG files instead. The physics options (--seed,
---ptmin-fsr, --ptmin-isr, --pt0, --ptmax, --no-isr, --no-dampen, --radius) are
-those of the standalone script.
+An .mp4 needs ffmpeg on the PATH; a .gif needs only Pillow and is silent.
+--frames-dir writes the individual frames as PNG files instead. The physics
+options (--seed, --ptmin-fsr, --ptmin-isr, --pt0, --ptmax, --no-isr,
+--no-dampen, --radius) are those of the standalone script.
 """
 from __future__ import annotations
 
 import argparse
 import math
+import shutil
 import sys
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -63,6 +82,9 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent))
 import standalone_parton_showering as core  # noqa: E402  (same directory)
 import plot_journey_PS as journey  # noqa: E402  (../plot_journey_PS.py: colours, regions, marker area)
+
+sys.path.insert(0, str(HERE.parent.parent))
+import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the film clock)
 
 import matplotlib  # noqa: E402
 
@@ -80,8 +102,8 @@ COL_A, COL_BEAM = "#8e5bb5", "#2f8f5b"       # incoming parton from +z (side A) 
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 ETA_MAX = journey.ETA_MAX
 FIGSIZE = (12.8, 7.2)                        # 16:9; dpi 100 -> 1280x720
-# PYTHIA 8.315 averages for this hard event, 2000 showers (README.md, validate_shower_with_pythia.py)
-PYTHIA_REF = dict(n_isr=4.93, n_fsr=19.1, n_final=26.0, fam_pt={"b": 107.8, "bbar": 104.8})
+# Pythia 8.315 averages for this hard event, 2000 showers (README.md, validate_shower_with_pythia.py)
+Pythia_REF = dict(n_isr=4.93, n_fsr=19.1, n_final=26.0, fam_pt={"b": 107.8, "bbar": 104.8})
 STANDALONE_REF = dict(n_isr=4.88, n_fsr=20.9, n_final=27.7, fam_pt={"b": 108.4, "bbar": 103.4})
 
 
@@ -91,7 +113,7 @@ def smooth(t: float) -> float:
     return t * t * (3.0 - 2.0 * t)
 
 
-def ramp(k: int, k0: int, k1: int) -> float:
+def ramp(k: float, k0: int, k1: int) -> float:
     """Fraction of the way from frame k0 to frame k1 (clamped)."""
     if k1 <= k0:
         return 1.0
@@ -394,16 +416,21 @@ def describe(rec: dict) -> str:
 
 # --- scenes -----------------------------------------------------------------------
 class Scene:
-    """A scene is a number of frames and a draw(fig, k) method for frame k."""
+    """A scene is a number of frames and a draw(fig, k) method for frame k (a float between frames
+    when the film clock slows the motion down)."""
     number = 0
     title = ""
     nframes = 1
 
-    def draw(self, fig, k: int) -> None:
+    def draw(self, fig, k: float) -> None:
         raise NotImplementedError
 
     def keyframe(self) -> int:
         return self.nframes // 2
+
+    def phases(self) -> List[Tuple[str, int, int]]:
+        """(key, first frame, frame after the last) of each phase; one line of narration per phase."""
+        return [("all", 0, self.nframes)]
 
 
 class StepClock:
@@ -416,7 +443,7 @@ class StepClock:
         self.k_sweep_end = k_intro + per_step * self.nsteps
         self.nframes = self.k_sweep_end + k_tail + k_hold
 
-    def at(self, k: int):
+    def at(self, k: float):
         """(snapshot shown, scale pT_now, frames since the last branching)."""
         snaps, phys = self.phys.snaps, self.phys
         pTmin = min(phys.pTmin_fsr, phys.pTmin_isr if phys.sh.do_isr else phys.pTmin_fsr)
@@ -425,7 +452,7 @@ class StepClock:
         if k >= self.k_sweep_end:
             t = smooth(ramp(k, self.k_sweep_end, self.k_sweep_end + self.k_tail))
             return self.nsteps, math.exp(math.log(snaps[-1].pT) * (1 - t) + math.log(pTmin) * t), k - self.k_sweep_end
-        s = (k - self.k_intro) // self.per_step + 1          # branching about to happen / just happened
+        s = int((k - self.k_intro) // self.per_step) + 1     # branching about to happen / just happened
         j = (k - self.k_intro) % self.per_step
         fire = max(1, self.per_step - 3)                      # frame of the block at which the branching appears
         t = smooth(min(1.0, j / float(fire)))
@@ -447,6 +474,12 @@ class ShowerScene(Scene):
 
     def keyframe(self):
         return self.clock.k_intro + self.clock.per_step * (self.clock.nsteps * 2 // 3)
+
+    def phases(self):
+        c, n = self.clock, self.clock.nsteps
+        k_early, k_isr = c.k_intro + c.per_step * (n // 4), c.k_intro + c.per_step * (n // 2)
+        return [("intro", 0, c.k_intro), ("early", c.k_intro, k_early), ("isr", k_early, k_isr),
+                ("soft", k_isr, c.k_sweep_end), ("family", c.k_sweep_end, self.nframes)]
 
     def draw(self, fig, k):
         phys, snaps = self.phys, self.phys.snaps
@@ -577,6 +610,13 @@ class SudakovScene(Scene):
     def keyframe(self):
         return self.nframes - 30
 
+    def phases(self):
+        return [("veto", 0, 50), ("survival", 50, 120), ("winner", 120, self.nframes)]
+
+    def shares(self) -> List[Tuple[str, float]]:
+        """(end key, fraction of the trials in which it wins the first branching)."""
+        return [(key, float(np.mean(self.winner == i))) for i, key in enumerate(self.keys)]
+
     def survival(self, vals: np.ndarray, n: int) -> np.ndarray:
         v = vals[:n]
         v = np.where(np.isnan(v), -1.0, v)
@@ -584,7 +624,7 @@ class SudakovScene(Scene):
 
     def draw(self, fig, k):
         phys = self.phys
-        n = self.n_of_frame[k]
+        n = self.n_of_frame[min(int(round(k)), self.nframes - 1)]
         ax = fig.add_axes([0.06, 0.15, 0.42, 0.74])
         style_2d(ax)
         ax.set_xscale("log")
@@ -664,6 +704,12 @@ class RecoilScene(Scene):
 
     def keyframe(self):
         return self.clock.k_intro + self.clock.per_step * (self.clock.nsteps // 2)
+
+    def phases(self):
+        c, n = self.clock, self.clock.nsteps
+        k_half = c.k_intro + c.per_step * (n // 2)
+        return [("zero", 0, c.k_intro), ("drift", c.k_intro, k_half), ("backward", k_half, c.k_sweep_end),
+                ("balance", c.k_sweep_end, self.nframes)]
 
     def sums(self, snap: Snap):
         rows = snap.rows
@@ -769,7 +815,7 @@ class RecoilScene(Scene):
 
 
 class EnsembleScene(Scene):
-    number, title = 4, "The same hard event showered again and again: no two alike, the averages agree with PYTHIA"
+    number, title = 4, "The same hard event showered again and again: no two alike, the averages agree with Pythia"
 
     def __init__(self, phys: Physics, n_showers: int, seed0: int):
         self.phys = phys
@@ -792,8 +838,11 @@ class EnsembleScene(Scene):
     def keyframe(self):
         return self.k_conv - 15
 
+    def phases(self):
+        return [("thumbs", 0, self.k_thumbs), ("means", self.k_thumbs, self.k_conv - 20), ("agree", self.k_conv - 20, self.nframes)]
+
     def draw(self, fig, k):
-        shown = min(self.n_thumbs, k // 9 + 1)
+        shown = min(self.n_thumbs, int(k) // 9 + 1)
         n_now = 1 if k < self.k_thumbs else min(self.n, 1 + int(round((self.n - 1) * ramp(k, self.k_thumbs, self.k_conv))))
         n_now = max(n_now, shown)
         cols, rws = 4, 3
@@ -818,8 +867,8 @@ class EnsembleScene(Scene):
             a.set_xlim(1, self.n * 1.05)
         for key, col, lab in (("n_isr", COL_ISR, "ISR branchings"), ("n_fsr", TEXT, "FSR branchings")):
             ax_top.plot(x, self.series[key][:n_now], color=col, lw=1.8, label=f"{lab}: {self.series[key][n_now - 1]:.2f}")
-            ax_top.axhline(PYTHIA_REF[key], color=col, lw=0.8, ls="--")
-            ax_top.text(self.n * 1.04, PYTHIA_REF[key], f"PYTHIA {PYTHIA_REF[key]}", fontsize=7, color=col, va="bottom", ha="right")
+            ax_top.axhline(Pythia_REF[key], color=col, lw=0.8, ls="--")
+            ax_top.text(self.n * 1.04, Pythia_REF[key], f"Pythia {Pythia_REF[key]}", fontsize=7, color=col, va="bottom", ha="right")
         ax_top.set_ylim(0, 38)
         ax_top.set_ylabel("running mean of the count", color=TEXT, fontsize=9)
         ax_top.set_title(f"$N$ = {n_now} showers of the same hard event", fontsize=10, color=TEXT, loc="left")
@@ -829,8 +878,8 @@ class EnsembleScene(Scene):
             ax_bot.plot(x, self.series["fam_" + name][:n_now], color=col, lw=1.8,
                         label=f"{lab} family: {self.series['fam_' + name][n_now - 1]:.1f} GeV")
             ax_bot.scatter(x, self.series["raw_" + name][:n_now], s=6, color=col, alpha=0.35, lw=0)
-            ax_bot.axhline(PYTHIA_REF["fam_pt"][name], color=col, lw=0.8, ls="--")
-            ax_bot.text(self.n * 1.04, PYTHIA_REF["fam_pt"][name], f"PYTHIA {PYTHIA_REF['fam_pt'][name]}", fontsize=7,
+            ax_bot.axhline(Pythia_REF["fam_pt"][name], color=col, lw=0.8, ls="--")
+            ax_bot.text(self.n * 1.04, Pythia_REF["fam_pt"][name], f"Pythia {Pythia_REF['fam_pt'][name]}", fontsize=7,
                         color=col, va="bottom", ha="right")
         ax_bot.axhline(113.2, color=TEXT2, lw=0.8, ls=":")
         ax_bot.text(1.2, 114.5, "before the shower: 113.2 GeV", fontsize=7, color=TEXT2)
@@ -847,9 +896,96 @@ class EnsembleScene(Scene):
                    r"keeps about 105 of its 113 GeV within $\Delta R$ < 0.4; the rest leaks out of the cone.")
         else:
             cap = (rf"After {self.n} showers: {self.series['n_isr'][-1]:.1f} ISR, {self.series['n_fsr'][-1]:.1f} FSR branchings, family "
-                   rf"$p_T$ {self.series['fam_b'][-1]:.0f} / {self.series['fam_bbar'][-1]:.0f} GeV; PYTHIA 8 on the same event: "
-                   rf"{PYTHIA_REF['n_isr']} / {PYTHIA_REF['n_fsr']} and {PYTHIA_REF['fam_pt']['b']:.0f} / {PYTHIA_REF['fam_pt']['bbar']:.0f} GeV.")
+                   rf"$p_T$ {self.series['fam_b'][-1]:.0f} / {self.series['fam_bbar'][-1]:.0f} GeV; Pythia 8 on the same event: "
+                   rf"{Pythia_REF['n_isr']} / {Pythia_REF['n_fsr']} and {Pythia_REF['fam_pt']['b']:.0f} / {Pythia_REF['fam_pt']['bbar']:.0f} GeV.")
         chrome(fig, self.number, self.title, cap)
+
+
+# --- narration --------------------------------------------------------------------
+END_WORDS = {"b": "the b quark's dipole end", "bbar": "the anti-b's dipole end",
+             "A": "the incoming parton from plus z", "B": "the incoming parton from minus z"}
+
+
+def say_first(rec: Optional[dict]) -> str:
+    """The first branching of the record, in words."""
+    if rec is None:
+        return "nowhere"
+    if rec["kind"] == "ISR":
+        return f"the incoming parton on the {'plus' if rec['side'].startswith('A') else 'minus'} z side"
+    return f"the {'b' if rec['radiator'] == 'b' else 'anti-b' if rec['radiator'] == 'bbar' else rec['radiator']} end"
+
+
+def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
+    """One line per phase, keyed <scene>_<phase>, plus the closing line; the numbers are the event's."""
+    last = phys.snaps[-1]
+    n_isr = sum(1 for h in phys.history if h["kind"] == "ISR")
+    n_fsr = len(phys.history) - n_isr
+    ev = core.Event(last.rows, phys.ev.ebeam, last.inA, last.inB)
+    fam = {pid: core.family(ev, cur, phys.st.radius) for pid, cur in last.stars.items()}
+    first = phys.history[0] if phys.history else None
+    lines = {
+        "shower_intro": ("Chapter one left a bottom quark and its antiquark at 113 GeV, each colour-connected to an incoming "
+                         f"parton. Two dipoles, free to radiate... from {phys.pTmax:.0f} GeV downwards."),
+        "shower_early": ("A scale runs down in transverse momentum. Every dipole end and both beams propose their next "
+                         "emission; the hardest wins, and all of them restart from its p-T. The ladder fills rung by rung, "
+                         "and the partons appear in the eta-phi plane, sized by their p-T."),
+        "shower_isr": ("An initial-state branching, a square rung, replaces an incoming parton by one of larger momentum "
+                       "fraction and adds a parton to the final state. The whole event recoils against it, so every marker shifts."),
+        "shower_soft": ("Lower in p-T the emissions come softer and more often: alpha-s grows, and one over p-T squared takes "
+                        "over. The thin lines are the colour dipoles that do the radiating; every new parton splits one of them in two."),
+        "shower_family": (f"At the cut-off the shower stops: {len(last.final)} partons, from {n_isr} initial-state and {n_fsr} "
+                          f"final-state branchings. Within delta R of {phys.st.radius:g} of each b quark most of its radiation is "
+                          f"recovered, {fam[5]['pt']:.0f} GeV around the b and {fam[-5]['pt']:.0f} around the anti-b... "
+                          "the family a jet algorithm will collect."),
+        "sudakov_veto": ("Who radiates first? Each of the four ends samples its next emission from p-T-max by the veto "
+                         "algorithm: a simple overestimate of the splitting kernel proposes, and the exact kernel, with the "
+                         "parton-density ratio, the two-loop coupling and the dead cone, accepts or rejects."),
+        "sudakov_survival": ("The fraction of proposals still without an emission at a given p-T is that end's Sudakov form "
+                             "factor... the probability that nothing happens between p-T-max and p-T. The dashed line is the "
+                             "product of all four: the chance that the whole event stays quiet."),
+        "recoil_zero": ("Momentum bookkeeping. Before the shower the b and the anti-b are back to back with 113 GeV each, and "
+                        "the incoming partons carry no transverse momentum. The sum is zero... and it must stay zero."),
+        "recoil_drift": ("Final-state radiation shares the radiator's momentum with the new parton and a recoiler. Initial-state "
+                         "radiation kicks the whole final state: the b-b-bar system drifts off zero, and the sum over the "
+                         "initial-state partons balances it."),
+        "recoil_backward": ("On the right, backward evolution. Each initial-state branching replaces the incoming parton by its "
+                            "mother at larger x, a step up along the parton density, while the densities themselves change "
+                            "with the falling scale."),
+        "ensemble_thumbs": ("Now the same hard event, showered again and again with different random numbers. How many "
+                            "branchings, where the gluons go, how much p-T each b quark keeps... all of it varies. The shower "
+                            "predicts distributions, not events."),
+        "outro": "The mother has given birth, to a family of gluons. Next stop: whose child is it?",
+    }
+    for sc in scenes:
+        if isinstance(sc, SudakovScene):
+            key, frac = max(sc.shares(), key=lambda t: t[1])
+            why = ("the parton-density ratio is large at small x" if key in ("A", "B") else "its dipole has the largest mass")
+            lines["sudakov_winner"] = (f"The hardest proposal wins. Here {END_WORDS[key]} does, in {100 * frac:.0f} percent of the "
+                                       f"trials, because {why}. In the event of the book the first branching came from "
+                                       f"{say_first(first)}, at {first['pT']:.0f} GeV." if first else "")
+        if isinstance(sc, RecoilScene):
+            bb, isr, tot = sc.sums(last)
+            lines["recoil_balance"] = (f"At the end the b-b-bar pair carries {math.hypot(bb[1], bb[2]):.0f} GeV of net transverse "
+                                       f"momentum, the initial-state partons {math.hypot(isr[1], isr[2]):.0f} GeV the other way, "
+                                       f"the rest is final-state radiation. All {len(last.final)} partons sum to zero.")
+        if isinstance(sc, EnsembleScene):
+            se, ref = sc.series, Pythia_REF
+            lines["ensemble_means"] = (f"Averaged over many showers the counts settle, near {se['n_isr'][-1]:.0f} initial-state and "
+                                       f"{se['n_fsr'][-1]:.0f} final-state branchings, and each b family keeps about "
+                                       f"{0.5 * (se['fam_b'][-1] + se['fam_bbar'][-1]):.0f} of its 113 GeV within delta R of "
+                                       f"{phys.st.radius:g}. The rest leaks out of the cone.")
+            lines["ensemble_agree"] = (f"After {sc.n} showers: {se['n_isr'][-1]:.1f} and {se['n_fsr'][-1]:.1f} branchings, "
+                                       f"{se['fam_b'][-1]:.0f} and {se['fam_bbar'][-1]:.0f} GeV. Pythia 8, on the same hard event, "
+                                       f"gives {ref['n_isr']} and {ref['n_fsr']}, and {ref['fam_pt']['b']:.0f} and "
+                                       f"{ref['fam_pt']['bbar']:.0f} GeV... They agree.")
+    keys = [f"{SCENE_NAMES[str(sc.number)]}_{key}" for sc in scenes for key, _, _ in sc.phases()] + ["outro"]
+    return {k: lines[k] for k in keys if k in lines}
+
+
+def score_spec(film: snd.Film) -> snd.ScoreSpec:
+    """D minor, B flat, F, G minor for the four scenes, resolving under the outro; a thud at the first branching."""
+    t_first = snd.voice_at_phase(film, "shower_early")
+    return snd.film_score(film, [snd.Dm, snd.Bb, snd.F, snd.Gm], thuds=[t_first + 0.5] if t_first is not None else [])
 
 
 # --- rendering ----------------------------------------------------------------------
@@ -870,52 +1006,24 @@ def build_scenes(names: List[str], phys: Physics, args) -> List[Scene]:
     return out
 
 
-def frame_list(scenes: List[Scene], step: int):
-    frames = []
-    for sc in scenes:
-        frames += [(sc, k) for k in range(0, sc.nframes, step)]
-        if (sc.nframes - 1) % step:
-            frames.append((sc, sc.nframes - 1))
-    return frames
-
-
-def render_frame(fig, sc: Scene, k: int):
+def render_frame(fig, sc: Scene, k: float):
     fig.clf()
     fig.patch.set_facecolor("white")
     sc.draw(fig, k)
 
 
-def write_video(scenes, out: Path, fps: int, dpi: int, step: int):
-    frames = frame_list(scenes, step)
-    ext = out.suffix.lower()
-    if ext == ".gif":
-        writer = animation.PillowWriter(fps=fps)
-    elif ext in (".mp4", ".m4v", ".mov", ".webm"):
-        if not animation.FFMpegWriter.isAvailable():
-            sys.exit("ffmpeg not found on PATH; write a .gif instead or install ffmpeg")
-        writer = animation.FFMpegWriter(fps=fps, codec="libx264", bitrate=3500,
-                                        extra_args=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
-                                        metadata={"title": "b bbar event, standalone parton shower"})
-    else:
-        sys.exit(f"unknown output type {ext}; use .mp4 or .gif")
-    fig = plt.figure(figsize=FIGSIZE)
-    print(f"writing {len(frames)} frames at {fps} fps ({len(frames) / fps:.1f} s) to {out}", flush=True)
-    with writer.saving(fig, str(out), dpi):
-        for i, (sc, k) in enumerate(frames):
-            render_frame(fig, sc, k)
-            writer.grab_frame(facecolor="white")
-            if i % 25 == 0 or i == len(frames) - 1:
-                print(f"  frame {i + 1}/{len(frames)}  (scene {sc.number}, k={k})", flush=True)
-    plt.close(fig)
+def write_video(film: snd.Film, out: Path, fps: float, dpi: int, audio: Optional[Path], jobs: int):
+    snd.render_video(film, out, fps, dpi, audio, lambda fig, sc, k, t: render_frame(fig, sc, k), FIGSIZE, "b bbar event, standalone parton shower", jobs=jobs)
+    print(f"wrote {out} ({film.duration:.1f} s)")
 
 
-def write_frames(scenes, outdir: Path, dpi: int, step: int):
+def write_frames(film: snd.Film, outdir: Path, dpi: int, fps: float):
     outdir.mkdir(parents=True, exist_ok=True)
     fig = plt.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
+    frames = film.frames(fps)
     for i, (sc, k) in enumerate(frames):
         render_frame(fig, sc, k)
-        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{k:03d}.png", dpi=dpi, facecolor="white")
+        fig.savefig(outdir / f"frame_{i:04d}_s{sc.number}_k{int(round(k)):03d}.png", dpi=dpi, facecolor="white")
     plt.close(fig)
     print(f"wrote {len(frames)} PNG frames to {outdir}")
 
@@ -937,11 +1045,11 @@ def write_stills(scenes, out: Path, dpi: int):
     print(f"wrote stills to {out}")
 
 
-def show_interactive(scenes, fps: int, step: int):
+def show_interactive(film: snd.Film, fps: float):
     matplotlib.use("MacOSX" if sys.platform == "darwin" else "TkAgg", force=True)
     import matplotlib.pyplot as plt_i
     fig = plt_i.figure(figsize=FIGSIZE)
-    frames = frame_list(scenes, step)
+    frames = film.frames(fps)
 
     def update(i):
         sc, k = frames[i]
@@ -955,16 +1063,22 @@ def show_interactive(scenes, fps: int, step: int):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("-o", "--output", type=Path, default=HERE / "animate_standalone_parton_showering.mp4",
-                   help=".mp4 (needs ffmpeg) or .gif")
+                   help=".mp4 (needs ffmpeg) or .gif (silent)")
     p.add_argument("--scene", default="all", help="all, or a comma list of shower,sudakov,recoil,ensemble (or 1,2,3,4)")
     p.add_argument("--fps", type=int, default=24)
-    p.add_argument("--dpi", type=int, default=100, help="100 gives 1280x720")
+    p.add_argument("--dpi", type=int, default=150, help="150 gives 1920x1080, 100 gives 1280x720")
     p.add_argument("--step", type=int, default=1, help="render every step-th frame (faster, choppier)")
     p.add_argument("--fast", action="store_true", help="preview: --step 4 --dpi 60, fewer trials and showers")
     p.add_argument("--frames-dir", type=Path, default=None, help="write PNG frames here instead of a video")
     p.add_argument("--stills", type=Path, default=None, help="also write one key frame per scene (.pdf or .png)")
     p.add_argument("--no-video", action="store_true", help="skip the video (with --stills or --frames-dir)")
     p.add_argument("--show", action="store_true", help="play in an interactive window instead of writing a file")
+    p.add_argument("--jobs", type=int, default=4, help="render the frames in this many processes (joined losslessly)")
+    p.add_argument("--audio-only", type=Path, default=None, metavar="WAV",
+                   help="write just the soundtrack (narration + score) and exit, without rendering")
+    p.add_argument("--cache-dir", type=Path, default=HERE.parent.parent.parent / "build" / "narration" / "PS",
+                   help="the synthesised narration clips are kept here (make clean removes them)")
+    snd.add_narration_args(p)             # --engine --voice --rate --narration-dir --no-narration --print-script --music-db --no-music
     p.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "ME" / "event_ME.lhe",
                    help="hard-process record to shower")
     p.add_argument("--record", type=Path, default=HERE.parent / "event_PS.lhe",
@@ -985,6 +1099,8 @@ def main():
     if args.fast:
         args.step, args.dpi = max(args.step, 4), min(args.dpi, 60)
         args.trials, args.showers = min(args.trials, 300), min(args.showers, 24)
+    snd.narration_defaults(args)
+    fps = args.fps / args.step
 
     names = list(SCENE_NAMES.values()) if args.scene == "all" else \
         [SCENE_NAMES.get(s.strip(), s.strip()) for s in args.scene.split(",")]
@@ -1011,17 +1127,42 @@ def main():
             print(f"ensemble: {sc.n} showers, mean n_ISR = {sc.series['n_isr'][-1]:.2f}, n_FSR = {sc.series['n_fsr'][-1]:.2f}, "
                   f"family pT b = {sc.series['fam_b'][-1]:.1f}, bbar = {sc.series['fam_bbar'][-1]:.1f} GeV")
     print("frames: " + ", ".join(f"{sc.number} {SCENE_NAMES[str(sc.number)]} {sc.nframes}" for sc in scenes) +
-          f"  ({sum(sc.nframes for sc in scenes) / args.fps:.1f} s at {args.fps} fps)")
+          f"  ({sum(sc.nframes for sc in scenes) / snd.NOMINAL_FPS:.1f} s silent)")
+
+    lines = narration(phys, scenes)
+    if args.print_script:
+        snd.print_script(lines)
+        return
+    ffmpeg = shutil.which("ffmpeg")
+    if args.output.suffix.lower() != ".gif" and ffmpeg is None and not args.no_narration:
+        sys.exit("ffmpeg not found on PATH (needed for the narration clips)")
+    clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
+    names = {int(n): name for n, name in SCENE_NAMES.items()}
+    film = snd.Film(scenes, snd.clip_lengths(clips), names, slow_max=4.0)
+    print(f"film: {film.describe()}")
+    score = None if args.no_music else score_spec(film)
+    if args.audio_only:
+        snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, args.audio_only)
+        print(f"wrote {args.audio_only}")
+        return
 
     if args.show:
-        show_interactive(scenes, args.fps, args.step)
+        show_interactive(film, fps)
         return
     if args.stills is not None:
         write_stills(scenes, args.stills, args.dpi)
     if args.frames_dir is not None:
-        write_frames(scenes, args.frames_dir, args.dpi, args.step)
+        write_frames(film, args.frames_dir, args.dpi, fps)
     elif not args.no_video:
-        write_video(scenes, args.output, args.fps, args.dpi, args.step)
+        audio = None
+        tmp = tempfile.TemporaryDirectory(prefix="jitjet_ps_")
+        if ffmpeg and args.output.suffix.lower() != ".gif" and (clips or score):
+            audio = Path(tmp.name) / "soundtrack.wav"
+            snd.mix_audio(film.duration, film.voice_at, clips, score, args.music_db, audio)
+            if clips:
+                snd.write_srt(film.voice_at, clips, lines, args.output.with_suffix(".srt"))
+        write_video(film, args.output, fps, args.dpi, audio, args.jobs)
+        print(f"wrote {args.output}")
 
 
 if __name__ == "__main__":

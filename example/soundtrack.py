@@ -12,8 +12,19 @@ weight, bells at given times, a low thud at given times, and a plain hall.
 mix_audio() lays the clips on the clock, ducks the score under the voice and
 writes the stereo WAV; write_srt() writes the subtitles.
 
+Film clock: the chapter films (example/*/animate_*.py) are scenes made of frames
+at NOMINAL_FPS; each scene lists its phases (key, first frame, frame after the
+last), one line of narration per phase. Film puts the phases on the clock so that
+each lasts at least its line (the motion slowed down up to 2.5x, then held), and
+film_score() writes the score from that clock: a chord per scene, a bell as each
+scene opens, the pulse gaining a voice with every scene, the outro resolving.
+render_video() draws the frames of the clock (in several processes with jobs > 1,
+the segments joined losslessly) and muxes the soundtrack under them.
+
 The scripts add the options with add_narration_args() and resolve them with
-narration_defaults(); see cover/animate_short_cover_timeline.py for the use.
+narration_defaults(); see cover/animate_short_cover_timeline.py for the use of the
+narration alone and example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py
+for a film.
 """
 from __future__ import annotations
 
@@ -323,6 +334,96 @@ def make_score(spec: ScoreSpec, sr: int = SR) -> np.ndarray:
     return st[:int(spec.duration * sr)]
 
 
+# --- the film clock ----------------------------------------------------------------
+NOMINAL_FPS = 24                  # the scenes are drawn for this: one frame index per 1/24 s
+
+
+@dataclass
+class Phase:
+    scene: object
+    key: str                      # <scene name>_<phase key>: the narration key
+    k0: int
+    k1: int                       # frame after the last of the phase
+    t0: float
+    t1: float
+    motion: float                 # the frames k0 .. k1-1 play over this long, then the last one holds
+
+
+class Film:
+    """The phases of the scenes on the clock: each lasts at least its narration (motion slowed up to
+    slow_max, then held). Scenes have .number and .phases() -> [(key, k0, k1)]; names maps number -> name."""
+
+    def __init__(self, scenes: Sequence, lengths: Dict[str, float], names: Dict[int, str], lead: float = 0.4,
+                 tail: float = 0.7, slow_max: float = 2.5, outro_lead: float = 0.6, outro_tail: float = 2.0,
+                 fade_out: float = 1.5):
+        self.phases: List[Phase] = []
+        self.voice_at: Dict[str, float] = {}
+        self.scene_start: Dict[int, float] = {}
+        t = 0.0
+        for sc in scenes:
+            self.scene_start[sc.number] = t
+            for key, k0, k1 in sc.phases():
+                full = f"{names.get(sc.number, 'scene')}_{key}"
+                nominal = (k1 - k0) / NOMINAL_FPS
+                dur = max(nominal, lead + lengths.get(full, 0.0) + tail)
+                self.phases.append(Phase(sc, full, k0, k1, t, t + dur, min(dur, slow_max * nominal)))
+                if full in lengths:
+                    self.voice_at[full] = t + lead
+                t += dur
+        self.t_outro = t
+        if "outro" in lengths:
+            self.voice_at["outro"] = t + outro_lead
+            t += outro_lead + lengths["outro"] + outro_tail
+        self.duration = t
+        self.fade_out = fade_out
+
+    def frame_at(self, t: float) -> Tuple[object, float]:
+        """(scene, frame index, a float) at film time t."""
+        for ph in self.phases:
+            if t < ph.t1 or ph is self.phases[-1]:
+                u = min(max((t - ph.t0) / ph.motion, 0.0), 1.0) if ph.motion > 0 else 1.0
+                return ph.scene, ph.k0 + (ph.k1 - 1 - ph.k0) * u
+        raise RuntimeError("no phases")
+
+    def frames(self, fps: float) -> List[Tuple[object, float]]:
+        n = int(math.ceil(self.duration * fps))
+        return [self.frame_at(i / fps) for i in range(n)]
+
+    def scene_phases(self, number: int) -> List[Phase]:
+        return [ph for ph in self.phases if ph.scene.number == number]
+
+    def describe(self) -> str:
+        return (f"{self.duration:.1f} s, {len(self.phases)} phases" +
+                ("" if self.voice_at else " (silent)"))
+
+
+def film_score(film: Film, progression: Sequence[Sequence[float]], thuds: Sequence[float] = (),
+               max_voices: int = 6) -> ScoreSpec:
+    """The score of a film from its clock: one chord per scene cycling through `progression` (resolving to
+    Dm_hi at the outro), a bell as each scene after the first opens, the pulse gaining a voice with every
+    scene (up to max_voices), a thud at each time of `thuds`, the final bell under the outro."""
+    starts = sorted(film.scene_start.items())
+    spec = ScoreSpec(film.duration, film.fade_out,
+                     chords=[(t, progression[i % len(progression)]) for i, (_, t) in enumerate(starts)]
+                            + [(film.t_outro, Dm_hi)],
+                     thuds=list(thuds), outro=(film.t_outro, [f * 2 for f in Dm_hi]))
+    if spec.chords[0][0] > 0:
+        spec.chords.insert(0, (0.0, Dm))
+    for i, (number, t) in enumerate(starts):
+        chord = progression[i % len(progression)]
+        phases = film.scene_phases(number)
+        spec.pulses.append(pulse_for(min(i, max_voices), t, phases[0].t1, phases[-1].t1, chord))
+        if i > 0:
+            spec.bells.append(Bell(t, chord[0] * 4))
+    spec.bells.append(Bell(film.t_outro + 0.3, D4, gain=0.55, seconds=6.0, spread=0.015))
+    return spec
+
+
+def voice_at_phase(film: Film, key: str) -> Optional[float]:
+    """When the phase `key` starts (for a cue of the score), None if the film has no such phase."""
+    return next((ph.t0 for ph in film.phases if ph.key == key), None)
+
+
 # --- the mix and the subtitles ------------------------------------------------------
 def mix_audio(duration: float, voice_at: Dict[str, float], clips: Dict[str, np.ndarray],
               score: Optional[ScoreSpec], music_db: float, out: Path) -> None:
@@ -383,6 +484,78 @@ def write_srt(voice_at: Dict[str, float], clips: Dict[str, np.ndarray], lines: D
                 f.write(f"{k}\n{srt_time(t)} --> {srt_time(t + d - 0.05)}\n{p}\n\n")
                 t += d
                 k += 1
+
+
+# --- rendering a film ----------------------------------------------------------------
+VIDEO_ARGS = ["-pix_fmt", "yuv420p", "-crf", "18", "-preset", "slow", "-movflags", "+faststart"]
+
+
+def _writer(out: Path, fps: float, title: str):
+    from matplotlib import animation
+    if out.suffix.lower() == ".gif":
+        return animation.PillowWriter(fps=fps)
+    if not animation.FFMpegWriter.isAvailable():
+        sys.exit("ffmpeg not found on PATH; write a .gif instead or install ffmpeg")
+    return animation.FFMpegWriter(fps=fps, codec="libx264", extra_args=VIDEO_ARGS, metadata={"title": title})
+
+
+def render_video(film: Film, out: Path, fps: float, dpi: int, audio: Optional[Path], draw, figsize, title: str,
+                 jobs: int = 1, every: int = 50) -> None:
+    """Render film.frames(fps) with draw(fig, scene, k, t_film) to `out` (H.264, crf 18, or a silent .gif) and
+    mux `audio` (a WAV) under it. With jobs > 1 the frames are split into that many segments rendered by forked
+    worker processes and joined losslessly with ffmpeg's concat demuxer."""
+    frames = film.frames(fps)
+    ext = out.suffix.lower()
+    if ext not in (".gif", ".mp4", ".m4v", ".mov", ".webm"):
+        sys.exit(f"unknown output type {ext}; use .mp4 or .gif")
+    if ext == ".gif":
+        audio, jobs = None, 1
+    ffmpeg = shutil.which("ffmpeg")
+    silent = out.with_name(out.stem + "_silent" + out.suffix) if audio else out
+    n = len(frames)
+    jobs = max(1, min(jobs, n // 48 or 1))
+    print(f"writing {n} frames at {fps:g} fps ({n / fps:.1f} s) to {out}" + (f" with {jobs} processes" if jobs > 1 else ""),
+          flush=True)
+    if jobs == 1:
+        _run_segment(draw, frames, silent, fps, dpi, figsize, title, "", 0, n, every)
+    else:
+        import multiprocessing as mp
+        import tempfile as tf
+        ctx = mp.get_context("fork")
+        with tf.TemporaryDirectory(prefix="jitjet_segments_") as tmp:
+            bounds = [round(j * n / jobs) for j in range(jobs + 1)]
+            segs = [Path(tmp) / f"seg_{j:02d}{ext}" for j in range(jobs)]
+            procs = [ctx.Process(target=_run_segment, args=(draw, frames[bounds[j]:bounds[j + 1]], segs[j], fps, dpi, figsize,
+                                                             title, f"[{j + 1}/{jobs}] ", bounds[j], n, every))
+                     for j in range(jobs)]
+            for pr in procs:
+                pr.start()
+            for pr in procs:
+                pr.join()
+            if any(pr.exitcode for pr in procs):
+                sys.exit("a rendering process failed")
+            lst = Path(tmp) / "segments.txt"
+            lst.write_text("".join(f"file '{sg}'\n" for sg in segs))
+            subprocess.run([ffmpeg, "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy",
+                            "-movflags", "+faststart", str(silent)], check=True)
+    if audio:
+        mux(ffmpeg, silent, audio, out)
+        silent.unlink()
+
+
+def _run_segment(draw, frames, out: Path, fps: float, dpi: int, figsize, title: str, label: str,
+                 first: int, total: int, every: int) -> None:
+    """The frames of one segment, in this process."""
+    import matplotlib.pyplot as plt
+    fig = plt.figure(figsize=figsize)
+    writer = _writer(out, fps, title)
+    with writer.saving(fig, str(out), dpi):
+        for i, (sc, k) in enumerate(frames):
+            draw(fig, sc, k, (first + i) / fps)
+            writer.grab_frame(facecolor="white")
+            if i % every == 0 or i == len(frames) - 1:
+                print(f"  {label}frame {first + i + 1}/{total}  (scene {getattr(sc, 'number', '?')}, k={k:.1f})", flush=True)
+    plt.close(fig)
 
 
 def mux(ffmpeg: str, video: Path, audio: Path, out: Path) -> None:

@@ -178,8 +178,9 @@ chapter derives it.
 Out of the window first, as before. The script
 \file{example/PS/Standalone/animate_standalone_parton_showering.py}
 imports the standalone shower of \cref{sec:mother_gives_birth:standalone_code}
-and renders a four-scene film of about forty seconds, so that every number
-on the screen is computed by the same classes that wrote the record. It is
+and renders a narrated four-scene film of about four and a half minutes, so
+that every number on the screen, and every number the narrator says, is
+computed by the same classes that wrote the record. It is
 on the JitJet playlist,
 \begin{center}
   \url{https://www.youtube.com/playlist?list=PLFtvDH9g5Km0}
@@ -228,12 +229,18 @@ formulae catch up.
     branchings and $113$ and $106\GeV$, next to the \PYTHIA values of the
     README. Our event, the first frame, is one of the less lucky ones.
 \end{enumerate}
-To render it you need matplotlib in addition to NumPy and SciPy, and
-\code{ffmpeg} for an \code{.mp4}:
+To render it you need matplotlib in addition to NumPy and SciPy,
+\code{ffmpeg} for an \code{.mp4}, and for the voice the \code{edge-tts}
+package, as for the film of chapter~1; the narration and the score come from
+the shared \file{example/soundtrack.py}, and each phase of a scene lasts at
+least as long as its line, so \code{--no-narration} gives the silent cut of
+three quarters of a minute:
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/PS/Standalone
-python3 animate_standalone_parton_showering.py           # the film, about a minute
+python3 animate_standalone_parton_showering.py           # the film and its .srt, about an hour
 python3 animate_standalone_parton_showering.py --fast    # low-resolution preview
+python3 animate_standalone_parton_showering.py --print-script   # the narration, to record it yourself
+python3 animate_standalone_parton_showering.py --no-narration   # music only, about 45 s
 python3 animate_standalone_parton_showering.py --scene sudakov -o sudakov.gif
 python3 animate_standalone_parton_showering.py --stills stills.pdf --no-video
 \end{minted}

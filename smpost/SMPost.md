@@ -1,6 +1,12 @@
 # JitJet on social media: one post per video
 
 
+### ---------------------------------
+Channel Name: JitJet
+Channel Handle: JitJetLHC
+Channel Playlist: JitJet bTour, JitJet tTour, etc
+### ---------------------------------
+
 JitJet: Journey is the Jet
 Director: Ravindra Verma (University of Helsinki)
 Producer: Claude Fable, ChatGPT Astra

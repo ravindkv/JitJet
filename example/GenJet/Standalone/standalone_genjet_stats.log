@@ -1,0 +1,17 @@
+wrote /private/tmp/claude-501/-Users-ravindrakumar-rverma-JME-JitJet/c45b9dd5-b8d0-4dd6-b47d-c9e577197a2b/scratchpad/event_GenJet_repeat.lhe (2251 rows, 749 final particles, 114 jets in three collections)
+averages over 400 decays of the same primary hadrons (seeds 1..400), clustered each time:
+  ak4GenJets      : n_jets 40.01 +- 2.16, n_clustered 356.83 +- 16.49, n_jets_10 10.22 +- 0.64, n_jets_30 6.00 +- 0.00
+  ak4GenJetsNoNu  : n_jets 39.88 +- 2.17, n_clustered 354.07 +- 16.92, n_jets_10 10.22 +- 0.64, n_jets_30 6.00 +- 0.00
+  ak8GenJets      : n_jets 30.36 +- 1.43, n_clustered 608.33 +- 16.92, n_jets_10 16.07 +- 0.86, n_jets_30 5.75 +- 0.45
+  IFN neutralisations per event 0.66; ak4 jets with two or more b hadrons 1.00 per event
+  bbar quark (pT 72.50):
+    ak4GenJets      : found 100.0%, pT 93.86 +- 0.83, response 1.295 +- 0.011, dR 0.034, n 20.8, nu pT 7.75; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 92.42
+    ak4GenJetsNoNu  : found 100.0%, pT 86.12 +- 12.76, response 1.188 +- 0.176, dR 0.037, n 20.2, nu pT 0.00; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 84.68
+    ak8GenJets      : found 100.0%, pT 113.39 +- 20.35, response 1.564 +- 0.281, dR 0.143, n 38.3, nu pT 9.18; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 111.26
+    net b flavour of the anti-kT jet (heavy hadrons kept): -1: 79.2%, +1: 20.8%; IFN: -1: 79.2%, +1: 20.8%; flavour-kT: -1: 79.2%, +1: 20.8%, pT 93.75
+  b quark (pT 78.29):
+    ak4GenJets      : found 100.0%, pT 99.63 +- 0.49, response 1.273 +- 0.006, dR 0.060, n 25.7, nu pT 7.72; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 98.79
+    ak4GenJetsNoNu  : found 100.0%, pT 91.93 +- 12.12, response 1.174 +- 0.155, dR 0.067, n 25.2, nu pT 0.00; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 91.08
+    ak8GenJets      : found 100.0%, pT 104.61 +- 0.80, response 1.336 +- 0.010, dR 0.082, n 41.3, nu pT 7.73; hadronFlavour 5 in 100.0%, partonFlavour +-5 in 100.0%, cone of the same R 107.21
+    net b flavour of the anti-kT jet (heavy hadrons kept): -1: 16.8%, +1: 83.2%; IFN: -1: 16.8%, +1: 83.2%; flavour-kT: -1: 16.8%, +1: 83.2%, pT 100.97
+wrote standalone_genjet_stats.stats.json

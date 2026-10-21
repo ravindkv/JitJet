@@ -1,0 +1,40 @@
+% ---------------------------------------------------------------------------
+% The stage as a flow chart: the steps of standalone_genjets.py on the left,
+% the numbers of our event (the -v log, seed 1) on the right. Names of the
+% classes and functions in grey.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=10mm,text width=5.6cm},
+  stepbox/.style={box,fill=orange!12},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.6cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!45,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.4) {the recipe};
+\node[head,anchor=west] at (6.7,1.4) {our event (seed 1)};
+\node[stepbox] (S1) at (2.5,0) {\textbf{1\; who is in the picture}\\ every final particle (status $>0$) but the \code{ignoreParticleIDs}; without the neutrinos for the NoNu collection};
+\node[stepbox,below=7mm of S1] (S2) {\textbf{2\; the ghosts}\\ last $b$ and $c$ hadrons of each chain, the strings' partons (status 71--79), the status-23 partons, the leptons from heavy hadrons: momentum $\times10^{-18}$};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; the clustering}\\ $d_{ij}=\min(p_{T}^{2p})\Delta R^2/R^2$, $d_{iB}=p_T^{2p}$, $p=-1$, $\Delta R$ in $(y,\phi)$; the smallest wins; E-scheme sums; a jet when $d_{iB}$ wins};
+\node[stepbox,below=7mm of S3] (S4) {\textbf{4\; the threshold and the collections}\\ keep $p_T>3\,\mathrm{GeV}$; three times: $R=0.4$, $R=0.4$ without neutrinos, $R=0.8$};
+\node[stepbox,below=7mm of S4] (S5) {\textbf{5\; the labels}\\ hadronFlavour, partonFlavour, physics, $\Delta R<0.3$, net flavour from the ghosts in each jet};
+\node[stepbox,below=7mm of S5] (S6) {\textbf{6\; the safe labels}\\ heavy hadrons put back undecayed; anti-$k_T$ again with IFN replayed on its sequence; flavour-$k_T$ with its own distances};
+\node[stepbox,below=7mm of S6] (S7) {\textbf{7\; write}\\ the record of chapter 6, then the jet table (one row per jet and collection) and the constituent table (one row per particle)};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7} {\draw[flow] (\a) -- (\b);}
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {input\_rows};
+\node[fn,anchor=south east] at (S2.north east) {ghost\_rows, GHOST\_RESCALING};
+\node[fn,anchor=south east] at (S3.north east) {Clustering, \_row, \_run, jets};
+\node[fn,anchor=south east] at (S4.north east) {JetCollection, COLLECTIONS};
+\node[fn,anchor=south east] at (S5.north east) {JetCollection.flavours, composition};
+\node[fn,anchor=south east] at (S6.north east) {stable\_heavy\_particles, IFN, flavour\_kt};
+\node[fn,anchor=south east] at (S7.north east) {jet\_tables, read\_jet\_tables};
+\node[numbox,anchor=west] (N1) at (6.7,0) {749 final particles, 5 of them neutrinos; 744 for the NoNu collection; 43 beyond $|\eta|=6$; no $\eta$ or $p_T$ cut on the input};
+\node[numbox,anchor=west] (N2) at (6.7,0 |- S2) {4 $b$ hadrons ($\bar B^0$ 78.3, $\bar B^0$ 82.0 oscillated, $\bar\Lambda_b^0$ 35.5, $\bar B^0$ 24.9 GeV), 9 $c$ hadrons, 163 partons, 2 hard-process partons, 3 leptons: 181 ghosts in all};
+\node[numbox,anchor=west] (N3) at (6.7,0 |- S3) {930 pseudojets, 930 steps; our jet: 36 merges from $d_{ij}=1.7\times10^{-6}$ ($K^-\pi^-$ at $\Delta R=0.006$) to $9.2\times10^{-5}$, then $d_{iB}=1.0\times10^{-4}$: $99.83\,\mathrm{GeV}$, 31 particles, 0.062 from the quark};
+\node[numbox,anchor=west] (N4) at (6.7,0 |- S4) {ak4: 42 jets, 368 particles clustered, 11 above 10 GeV, 6 above 30; NoNu: 42 jets, 366 of 744; ak8: 30 jets, 600 particles; the $b$ jet $99.83$ / $99.83$ / $105.79\,\mathrm{GeV}$, the $\bar b$ jet $94.09$ / $94.09$ / $147.69$};
+\node[numbox,anchor=west] (N5) at (6.7,0 |- S5) {$b$ jet: $5$ / $+5$ / $0$ / $+5$ / $+1\,b$; $\bar b$ jet: $5$ / $-5$ / $0$ / $-5$ / $+1\,b$ (oscillated); jet [2]: $5$ / $-5$ / $0$ / $-5$ / $0$ (the gluon's pair); hadronFlavour 5 for 3 jets, 4 for 2};
+\node[numbox,anchor=west] (N6) at (6.7,0 |- S6) {no IFN neutralisation in the event (0.66 per decay in the ensemble, in the periphery); flavour-$k_T$: the $b$ jet $99.83\,\mathrm{GeV}$ in 17 constituents, the $\bar b$ jet $94.49$, both with their hadron's flavour};
+\node[numbox,anchor=west] (N7) at (6.7,0 |- S7) {\file{event_GenJet.lhe}: 2251 rows + 330 vertex rows + 114 jet rows + 749 constituent rows; FastJet and SlowJet reproduce every jet exactly};
+\end{tikzpicture}

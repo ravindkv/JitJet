@@ -1,0 +1,56 @@
+% ---------------------------------------------------------------------------
+% Infrared-safe flavour: (a) a soft g -> b bbar pair between two light jets
+% relabels both under the ghost and the net definitions; (b) IFN: before the
+% soft B joins its jet, its flavour is neutralised against the nearer
+% opposite flavour in the distance u_ik; (c) the three distances side by
+% side. Numbers: standalone_genjets.py --soft-pair 0.5 (jets [8] and [9]).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  oth/.style={circle,fill=black!40,inner sep=0pt},
+  ring/.style={black!55,line width=1.2pt},
+  bq/.style={star,star points=5,fill=red!80!black,inner sep=1.4pt},
+  bbq/.style={star,star points=5,fill=blue!70!black,inner sep=1.4pt},
+  glu/.style={decorate,decoration={coil,aspect=0.6,segment length=1.4mm,amplitude=0.7mm},green!50!black,thick},
+  neut/.style={green!50!black,line width=2pt},
+  box/.style={draw,rounded corners=3pt,thin,fill=gray!6,align=left,inner sep=4pt,text width=6.6cm,font=\scriptsize}]
+% ---------------- (a) the whisper -------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.4,4.3) {(a) a whisper relabels two jets};
+\draw[ring] (1.0,1.2) circle (1.2); \draw[ring] (3.4,1.3) circle (1.2);
+\foreach \p/\s in {(1.0,1.25)/4.5,(0.8,1.0)/3,(1.3,1.4)/2.6,(0.6,1.5)/2,(1.2,0.7)/1.8,(1.5,1.0)/1.5,(0.4,0.9)/1.3} {\node[oth,minimum size=\s pt] at \p {};}
+\foreach \p/\s in {(3.4,1.35)/4.2,(3.6,1.1)/2.8,(3.15,1.6)/2.4,(3.8,1.6)/1.9,(3.2,0.8)/1.6,(3.9,1.0)/1.4,(3.5,1.9)/1.2} {\node[oth,minimum size=\s pt] at \p {};}
+\node[lab,anchor=south] at (1.0,2.45) {jet [8], $12.0\,\mathrm{GeV}$};
+\node[lab,anchor=south] at (3.4,2.55) {jet [9], $10.6\,\mathrm{GeV}$};
+% the gluon splitting between them
+\draw[glu] (2.2,-0.6) -- (2.2,0.4);
+\node[lab,text=green!50!black,anchor=north] at (2.2,-0.65) {a soft gluon\\ $g\to b\bar b$};
+\node[bq] (b1) at (1.75,0.85) {}; \node[bbq] (b2) at (2.65,0.95) {};
+\draw[green!50!black,thin] (2.2,0.4) -- (b1); \draw[green!50!black,thin] (2.2,0.4) -- (b2);
+\node[lab,text=red!80!black,anchor=north east] at (1.75,0.75) {$\bar B^0$ ($b\bar d$)\\ $0.5\,\mathrm{GeV}$};
+\node[lab,text=blue!70!black,anchor=north west] at (2.65,0.85) {$B^0$ ($d\bar b$)\\ $0.5\,\mathrm{GeV}$};
+\node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {The pair is $0.5$ apart in $\Delta R$ and changes nothing in the event ($0.5\,\mathrm{GeV}$ in $12$). Yet: hadronFlavour $0\to5$ for both jets; net flavour $0\to+1\,b$ and $-1\,b$. The labels are not infrared safe: an emission of vanishing energy changed them.};
+\end{scope}
+% ---------------- (b) IFN -------------------------------------------------------------------------------
+\begin{scope}[xshift=7.2cm]
+\node[head,anchor=west] at (-0.4,4.3) {(b) IFN neutralises the pair first};
+\draw[ring] (1.0,1.2) circle (1.2); \draw[ring] (3.4,1.3) circle (1.2);
+\foreach \p/\s in {(1.0,1.25)/4.5,(0.8,1.0)/3,(1.3,1.4)/2.6,(0.6,1.5)/2,(1.2,0.7)/1.8} {\node[oth,minimum size=\s pt] at \p {};}
+\foreach \p/\s in {(3.4,1.35)/4.2,(3.6,1.1)/2.8,(3.15,1.6)/2.4,(3.8,1.6)/1.9,(3.2,0.8)/1.6} {\node[oth,minimum size=\s pt] at \p {};}
+\node[bq] (c1) at (1.75,0.85) {}; \node[bbq] (c2) at (2.65,0.95) {};
+\draw[neut] (c1) -- (c2);
+\node[lab,text=green!50!black,anchor=south] at (2.2,1.05) {$u_{ik}=0.064$};
+\draw[-{Stealth[length=1.6mm]},red!80!black,thick,dashed] (c1) -- (1.1,1.2);
+\node[lab,text=red!80!black,anchor=north] at (1.3,0.6) {$u_{ij}=0.21$: the\\ merge about to happen};
+\node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {Before the $\bar B^0$ ($i$) joins the core of jet [8] ($j$), IFN looks for a pseudojet $k$ of opposite flavour with $u_{ik}<u_{ij}$. The $B^0$ qualifies, $0.064<0.21$, the two flavours cancel, and both jets stay flavourless. At $1\,\mathrm{GeV}$ and above $u_{ik}$ exceeds $u_{ij}$ and the pair keeps its flavour: it is then hard enough to be real.};
+\end{scope}
+% ---------------- (c) the three distances -------------------------------------------------------------
+\begin{scope}[xshift=13.6cm]
+\node[head,anchor=west] at (-0.4,4.3) {(c) the distances};
+\node[box,anchor=north west] (D1) at (-0.4,3.8) {\textbf{anti-$k_T$} (the kinematics of the GenJets and of IFN)\\ $d_{ij}=\min(p_{T,i}^{-2},p_{T,j}^{-2})\,\Delta R_{ij}^2/R^2$, \quad $d_{iB}=p_{T,i}^{-2}$};
+\node[box,anchor=north west,below=3mm of D1.south west] (D2) {\textbf{flavour-$k_T$} (Banfi, Salam, Zanderighi)\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\max(k_{T,i},k_{T,j})^\alpha\min(k_{T,i},k_{T,j})^{2-\alpha}$ if the softer is flavoured,\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\min(k_{T,i},k_{T,j})^2$ otherwise;\\ $d_{iB}$ the same with $k_{T,B}(y_i)=\sum_j k_{T,j}[\Theta(y_j-y_i)+\Theta(y_i-y_j)e^{y_j-y_i}]$};
+\node[box,anchor=north west,below=3mm of D2.south west] (D3) {\textbf{IFN} (Caola, Grabarczyk, Hutt, Salam, Scyboz, Thaler)\\ $u_{ik}=\max(p_{T,i},p_{T,k})^\alpha\min(p_{T,i},p_{T,k})^{2-\alpha}\,\Omega_{ik}^2$\\ $\Omega_{ik}^2=2\big[(\cosh\omega\Delta y-1)/\omega^2-(\cos\Delta\phi-1)\big]$, \ $\alpha=2$, $\omega=1$};
+\end{scope}
+\end{tikzpicture}

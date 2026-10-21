@@ -1,0 +1,85 @@
+#--------------------------------------------------------------------------
+#                         FastJet release 3.5.2
+#                 M. Cacciari, G.P. Salam and G. Soyez                  
+#     A software package for jet finding and analysis at colliders      
+#                           https://fastjet.fr                           
+#	                                                                      
+# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package
+# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   
+#                                                                       
+# FastJet is provided without warranty under the GNU GPL v2 or higher.  
+# It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code,
+# CGAL and 3rd party plugin jet algorithms. See COPYING file for details.
+#--------------------------------------------------------------------------
+749 final particles of event_Decay.lhe; ghosts: 4 b hadrons, 9 c hadrons, 163 partons, 2 hard-process partons
+FastJet 3.5.2.0: Longitudinally invariant anti-kt algorithm with R = 0.4 and E scheme recombination
+#--------------------------------------------------------------------------
+#                     FastJet release 3.4.3 [fjcore]
+#                 M. Cacciari, G.P. Salam and G. Soyez                  
+#     A software package for jet finding and analysis at colliders      
+#                           http://fastjet.fr                           
+#	                                                                      
+# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package
+# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   
+#                                                                       
+# FastJet is provided without warranty under the GNU GPL v2 or higher.  
+# It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code
+# and 3rd party plugin jet algorithms. See COPYING file for details.
+#--------------------------------------------------------------------------
+
+ak4GenJets (antikt, R = 0.4, pT > 3):
+  jets: standalone 42, FastJet 42, SlowJet 42
+  FastJet vs standalone, jet by jet: max |dpT| = 0.00e+00 GeV, max |dm| = 0.00e+00 GeV, identical constituent lists 42/42, identical (hadron, parton, physics) flavours 42/42
+  SlowJet vs standalone: max |dpT| = 2.13e-14 GeV, identical constituent lists 42/42
+   jet  standalone pT  FastJet pT  SlowJet pT     eta     phi    n  had/part/phys  b hadrons (FastJet ghosts)
+     0        99.8301     99.8301     99.8301  -1.439  -2.712   31    5/+5/+0  Bbar0
+     1        94.0933     94.0933     94.0933  -3.446   0.594   18    5/-5/+0  Bbar0
+     2        60.4509     60.4509     60.4509  -3.394   1.431   29    5/-5/+0  Bbar0 Lambda_bbar0
+     3        48.1229     48.1229     48.1229   0.279  -0.767   17    0/+2/+0  
+     4        46.3963     46.3963     46.3963  -2.520  -2.529   25    0/-2/+0  
+     5        40.7356     40.7356     40.7356  -2.073  -1.268   13    0/+2/+0  
+     6        19.9399     19.9399     19.9399   0.617   1.381   14    0/+21/+0  
+     7        12.7907     12.7907     12.7907  -0.693   0.771    7    0/+21/+0  
+     8        12.0197     12.0197     12.0197   0.021   2.853    6    0/+2/+0  
+     9        10.6443     10.6443     10.6443   0.664   2.875    5    0/+21/+0  
+    10        10.2242     10.2242     10.2242   1.026  -0.464   15    0/+21/+0  
+    11         8.5788      8.5788      8.5788  -3.139  -2.983   11    0/+21/+0  
+
+ak4GenJetsNoNu (antikt, R = 0.4, pT > 3, no neutrinos):
+  jets: standalone 42, FastJet 42, SlowJet 42
+  FastJet vs standalone, jet by jet: max |dpT| = 0.00e+00 GeV, max |dm| = 0.00e+00 GeV, identical constituent lists 42/42, identical (hadron, parton, physics) flavours 42/42
+  SlowJet vs standalone: max |dpT| = 1.42e-14 GeV, identical constituent lists 42/42
+   jet  standalone pT  FastJet pT  SlowJet pT     eta     phi    n  had/part/phys  b hadrons (FastJet ghosts)
+     0        99.8301     99.8301     99.8301  -1.439  -2.712   31    5/+5/+0  Bbar0
+     1        94.0933     94.0933     94.0933  -3.446   0.594   18    5/-5/+0  Bbar0
+     2        52.3236     52.3236     52.3236  -3.393   1.422   28    5/-5/+0  Lambda_bbar0 Bbar0
+     3        48.1229     48.1229     48.1229   0.279  -0.767   17    0/+2/+0  
+     4        46.3963     46.3963     46.3963  -2.520  -2.529   25    0/-2/+0  
+     5        40.7356     40.7356     40.7356  -2.073  -1.268   13    0/+2/+0  
+     6        19.9399     19.9399     19.9399   0.617   1.381   14    0/+21/+0  
+     7        12.7907     12.7907     12.7907  -0.693   0.771    7    0/+21/+0  
+     8        12.0197     12.0197     12.0197   0.021   2.853    6    0/+2/+0  
+     9        10.6443     10.6443     10.6443   0.664   2.875    5    0/+21/+0  
+    10        10.2242     10.2242     10.2242   1.026  -0.464   15    0/+21/+0  
+    11         8.5788      8.5788      8.5788  -3.139  -2.983   11    0/+21/+0  
+
+ak8GenJets (antikt, R = 0.8, pT > 3):
+  jets: standalone 30, FastJet 30, SlowJet 30
+  FastJet vs standalone, jet by jet: max |dpT| = 0.00e+00 GeV, max |dm| = 0.00e+00 GeV, identical constituent lists 30/30, identical (hadron, parton, physics) flavours 30/30
+  SlowJet vs standalone: max |dpT| = 4.26e-14 GeV, identical constituent lists 30/30
+   jet  standalone pT  FastJet pT  SlowJet pT     eta     phi    n  had/part/phys  b hadrons (FastJet ghosts)
+     0       147.6883    147.6883    147.6883  -3.525   0.917   57    5/-5/-5  Lambda_bbar0 Bbar0 Bbar0
+     1       105.7862    105.7862    105.7862  -1.455  -2.711   47    5/+5/+5  Bbar0
+     2        63.9800     63.9800     63.9800   0.387  -0.670   47    0/+2/+0  
+     3        53.1682     53.1682     53.1682  -2.144  -1.221   36    0/+2/+0  
+     4        52.6787     52.6787     52.6787  -2.579  -2.516   38    0/-2/+0  
+     5        25.3180     25.3180     25.3180   0.612   1.439   27    0/+21/+0  
+     6        21.9818     21.9818     21.9818  -0.277   2.541   26    0/+2/+0  
+     7        19.7354     19.7354     19.7354  -0.664   0.783   23    0/+21/+0  
+     8        14.3801     14.3801     14.3801   5.870  -0.612   18    4/-4/+0  
+     9        14.1666     14.1666     14.1666   1.933  -0.289   28    0/+4/+0  
+    10        13.8931     13.8931     13.8931   3.524   2.525   25    0/+21/+0  
+    11        12.9728     12.9728     12.9728   0.723   2.806   12    0/+21/+0  
+
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/GenJet/Standalone/validate_genjets_with_fastjet_record.json and /Users/ravindrakumar/rverma/JME/JitJet/example/GenJet/Standalone/validate_genjets_with_fastjet_record_jets.txt
+record exit 0

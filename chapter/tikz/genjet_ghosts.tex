@@ -1,0 +1,69 @@
+% ---------------------------------------------------------------------------
+% Ghost association: (a) the Bbar0 has decayed; it is put back with its
+% momentum times 1e-18, follows the clustering and lands in the jet without
+% moving it; (b) the labels of CMSSW's JetFlavourClustering for the three
+% b jets of our event; (c) why the physics definition (the status-23 quark)
+% fails for the AK4 jet: ISR moved the hard system and the shower the family.
+% Numbers: event_GenJet.lhe and standalone_genjets.log (seed 1).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  fam/.style={circle,fill=red!75!black,inner sep=0pt},
+  oth/.style={circle,fill=black!40,inner sep=0pt},
+  ring/.style={red!80!black,line width=1.4pt},
+  ghost/.style={star,star points=5,draw=red!80!black,fill=white,thick,inner sep=1.4pt},
+  flow/.style={-{Stealth[length=2mm]},thick},
+  tbl/.style={font=\scriptsize,inner sep=2pt}]
+% ---------------- (a) the ghost -------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.4,4.3) {(a) the hadron comes back as a ghost};
+% before: the B hadron as a particle
+\node[lab,anchor=west] at (-0.4,3.7) {before the decays: the $\bar B^0$ is a particle of $78.3\,\mathrm{GeV}$};
+\node[fam,minimum size=9pt] (B) at (1.2,2.9) {};
+\node[lab,text=red!80!black,anchor=west] at (1.4,2.9) {$\bar B^0$ ($b\bar d$), row 1527};
+\draw[flow] (1.2,2.5) -- (1.2,1.6) node[midway,right,lab] {decays: $D_s^{*-}D^{*0}\rho^+$, 15 final particles};
+% after: the descendants and the ghost
+\draw[ring] (1.2,0.2) circle (1.25);
+\foreach \p/\s in {(1.25,0.3)/5,(1.1,0.1)/4,(1.35,0.05)/3.5,(1.0,0.45)/3,(1.5,0.4)/2.6,(0.85,-0.1)/2.4,(1.6,-0.2)/2.2,(0.7,0.55)/2,(1.3,0.75)/1.8,(0.6,-0.45)/1.6,(1.85,0.6)/1.5,(1.15,-0.6)/1.4,(1.95,-0.5)/1.3,(0.35,0.1)/1.2,(1.7,0.95)/1.1} {\node[fam,minimum size=\s pt] at \p {};}
+\foreach \p/\s in {(0.5,0.95)/1.6,(2.05,0.1)/1.4,(0.3,-0.7)/1.3,(1.9,-0.95)/1.2,(0.9,1.1)/1.1,(2.2,0.8)/1.0} {\node[oth,minimum size=\s pt] at \p {};}
+\node[ghost] at (1.2,0.2) {};
+\draw[flow,red!80!black] (3.2,2.9) -- (3.2,1.9) node[midway,right,lab,text=red!80!black] {$p\to10^{-18}\,p$};
+\node[lab,text=red!80!black,anchor=west,text width=3.3cm,align=left] at (2.6,0.3) {the ghost: same direction, no momentum; $d_{ij}=p_{T,j}^{-2}\Delta R^2/R^2$ with any real $j$, so anti-$k_T$ files it under the nearest hard pseudojet within $R$; $d_{iB}=10^{36}/p_T^2$ never wins};
+\node[lab,anchor=north west,text width=5.8cm,align=left,text=black!65] at (-0.4,-1.3) {In our event the $\bar B^0$'s ghost joins the pseudojet at merge 24 of 36, $\Delta R=0.031$ from the running axis, between a photon and the $b$ quark's own ghost; the jet momentum changes by one part in $10^{18}$, below double precision.};
+\end{scope}
+% ---------------- (b) the labels ------------------------------------------------------------------
+\begin{scope}[xshift=7.6cm]
+\node[head,anchor=west] at (-0.4,4.3) {(b) the labels of the three $b$ jets (ak4)};
+\foreach \x/\t in {0.1/jet,1.0/ghosts clustered,4.35/hadron,5.2/parton,6.05/physics,6.95/$\Delta R<0.3$,7.95/net} {\node[tbl,font=\scriptsize\bfseries,anchor=west] at (\x,3.6) {\t};}
+\foreach \y/\j/\g/\h/\p/\f/\d/\n in {3.15/{[0] $99.8$}/{$\bar B^0$, $D^0$, $D_s^-$; $b$, $g$, $g$}/5/$+5$/0/$+5$/$+1\,b$,
+                                     2.7/{[1] $94.1$}/{$\bar B^0$ (osc.), $\Xi_c^0$; $\bar b$, $g$, $g$, $g$}/5/$-5$/0/$-5$/$+1\,b$,
+                                     2.25/{[2] $60.5$}/{$\bar B^0$, $\bar\Lambda_b^0$, $D^+$, $\bar D^0$; $\bar b$, $b$, $g$}/5/$-5$/0/$-5$/$0$} {
+  \node[tbl,anchor=west] at (0.1,\y) {\j};
+  \node[tbl,anchor=west,font=\tiny] at (1.0,\y) {\g};
+  \node[tbl,fill=red!15] at (4.6,\y) {\h};
+  \node[tbl] at (5.45,\y) {\p};
+  \node[tbl,fill=black!8] at (6.3,\y) {\f};
+  \node[tbl] at (7.3,\y) {\d};
+  \node[tbl] at (8.1,\y) {\n};}
+\node[lab,anchor=north west,text width=7.6cm,align=left] at (-0.4,1.55) {\textbf{hadronFlavour}: 5 if a $b$-hadron ghost is in the jet, else 4 for a $c$ hadron, else 0.\\[2pt]
+ \textbf{partonFlavour}: the id of the hardest $b$-parton ghost (status 71--79), else the hardest $c$, else the hardest parton: $+5$, $-5$, or $21$, $\pm1$, $\pm2$, $\pm3$.\\[2pt]
+ \textbf{physics}: the same rule with the status-23 partons as ghosts.\\[2pt]
+ \textbf{net}: the sum of $\pm1$ over the $b$ hadrons, $+1$ for a $b$ quark inside ($\bar B^0$, $\Lambda_b^0$), $-1$ for a $\bar b$ ($B^0$, $B^+$, $\bar\Lambda_b^0$).};
+\node[lab,anchor=north west,text width=7.6cm,align=left,text=black!65] at (-0.4,-1.3) {Jet [1] reads $+1\,b$ although it is the $\bar b$ quark's: its $B^0$ oscillated. Jet [2] holds the gluon's pair, $b$ and $\bar b$: hadronFlavour 5, net 0.};
+\end{scope}
+% ---------------- (c) the physics definition fails ------------------------------------------------
+\begin{scope}[xshift=16.4cm]
+\node[head,anchor=west] at (-0.4,4.3) {(c) where the status-23 quark points};
+\draw[ring] (1.0,1.0) circle (1.2);
+\node[star,star points=5,fill=red!80!black,inner sep=1.2pt] at (1.0,1.0) {};
+\node[lab,text=red!80!black,anchor=north] at (1.0,0.8) {jet [0]\\ $(-1.44,-2.71)$};
+\node[star,star points=5,draw=black,fill=white,inner sep=1.3pt] at (0.75,0.95) {};
+\node[lab,anchor=south east] at (0.7,1.1) {$b$, status 62\\ $(-1.38,-2.73)$};
+\draw[green!50!black,thick] (0.88,2.56) -- (1.12,2.80) (0.88,2.80) -- (1.12,2.56);
+\node[lab,text=green!50!black,anchor=west] at (1.15,2.75) {$b$, status 23\\ $(-1.44,-2.15)$: $\Delta R=0.56$};
+\draw[black!60,thin,-{Stealth[length=1.6mm]}] (1.0,2.5) -- (1.0,1.2);
+\node[lab,anchor=north west,text width=4.0cm,align=left,text=black!65] at (-0.4,-0.5) {ISR gave the hard system a recoil and the shower moved the family: the hard-process quark sits outside the AK4 jet and inside the AK8 one. The CMS ``physics definition'' of Run~1 matched the status-3 parton within $\Delta R<0.3$ and would have found nothing here.};
+\end{scope}
+\end{tikzpicture}

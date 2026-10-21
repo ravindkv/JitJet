@@ -117,7 +117,12 @@ FIGURES := example/ME/journey_ME.pdf \
            example/Had/Standalone/theory_hadronisation.pdf \
            example/Decay/journey_Decay.pdf \
            example/Decay/Standalone/animate_standalone_hadron_decays_stills.pdf \
-           example/Decay/Standalone/theory_hadron_decays.pdf
+           example/Decay/Standalone/theory_hadron_decays.pdf \
+           example/GenJet/journey_GenJet.pdf \
+           example/GenJet/journey_GenJet_nonu.pdf \
+           example/GenJet/journey_GenJet_ak8.pdf \
+           example/GenJet/Standalone/animate_standalone_genjets_stills.pdf \
+           example/GenJet/Standalone/theory_genjets.pdf
 
 figures: $(FIGURES)
 
@@ -139,6 +144,17 @@ example/Had/journey_Had.pdf: example/Had/plot_journey_Had.py example/PS/plot_jou
 example/Decay/journey_Decay.pdf: example/Decay/plot_journey_Decay.py example/PS/plot_journey_PS.py example/Had/plot_journey_Had.py \
 		example/Decay/event_Decay.lhe
 	$(PYTHON) example/Decay/plot_journey_Decay.py -i example/Decay/event_Decay.lhe -o $@
+
+# Stage 6: the generator-level jets (the three CMSSW collections, one page each).
+example/GenJet/journey_GenJet.pdf: example/GenJet/plot_journey_GenJet.py example/PS/plot_journey_PS.py example/Had/plot_journey_Had.py \
+		example/GenJet/Standalone/standalone_genjets.py example/GenJet/event_GenJet.lhe
+	$(PYTHON) example/GenJet/plot_journey_GenJet.py -i example/GenJet/event_GenJet.lhe -o $@ --collection ak4
+
+example/GenJet/journey_GenJet_nonu.pdf: example/GenJet/plot_journey_GenJet.py example/GenJet/event_GenJet.lhe
+	$(PYTHON) example/GenJet/plot_journey_GenJet.py -i example/GenJet/event_GenJet.lhe -o $@ --collection ak4nonu
+
+example/GenJet/journey_GenJet_ak8.pdf: example/GenJet/plot_journey_GenJet.py example/GenJet/event_GenJet.lhe
+	$(PYTHON) example/GenJet/plot_journey_GenJet.py -i example/GenJet/event_GenJet.lhe -o $@ --collection ak8
 
 # Key frames of the 3D animation (one page per scene). The film itself takes
 # minutes to render and is not a build product: run the script without
@@ -211,6 +227,18 @@ example/Decay/Standalone/animate_standalone_hadron_decays_stills.pdf: \
 		example/Decay/Standalone/standalone_hadron_decays.py example/Decay/Standalone/decay_tables.json example/Had/event_Had.lhe
 	$(PYTHON) example/Decay/Standalone/animate_standalone_hadron_decays.py --stills $@ --no-video
 
+# The plots behind the theory sections of chapter 7: the seed-1 record clustered again with the script's
+# classes (an R scan and a soft-pair scan), the --repeat statistics and the FastJet/PYTHIA validation when present (about a minute).
+example/GenJet/Standalone/theory_genjets.pdf: example/GenJet/Standalone/plot_theory_GenJet.py \
+		example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
+	$(PYTHON) example/GenJet/Standalone/plot_theory_GenJet.py -o $@
+
+# Key frames of the GenJet animation (one page per scene; the film is not a build product).
+example/GenJet/Standalone/animate_standalone_genjets_stills.pdf: \
+		example/GenJet/Standalone/animate_standalone_genjets.py \
+		example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
+	$(PYTHON) example/GenJet/Standalone/animate_standalone_genjets.py --stills $@ --no-video
+
 # Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
 example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
 	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
@@ -223,7 +251,7 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
-RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe
+RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe example/GenJet/event_GenJet.lhe
 
 records: $(RECORDS)
 
@@ -243,6 +271,10 @@ example/Had/event_Had.lhe: example/Had/Standalone/standalone_hadronisation.py ex
 # Chapter 6 decays the primary hadrons of chapter 5 (seed 1; the decay tables are in decay_tables.json, no PYTHIA needed).
 example/Decay/event_Decay.lhe: example/Decay/Standalone/standalone_hadron_decays.py example/Decay/Standalone/decay_tables.json example/Had/event_Had.lhe
 	$(PYTHON) example/Decay/Standalone/standalone_hadron_decays.py -i example/Had/event_Had.lhe -o $@
+
+# Chapter 7 clusters the final state of chapter 6 into the three GenJet collections (anti-kT written out, no FastJet needed; about 15 s).
+example/GenJet/event_GenJet.lhe: example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
+	$(PYTHON) example/GenJet/Standalone/standalone_genjets.py -i example/Decay/event_Decay.lhe -o $@
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

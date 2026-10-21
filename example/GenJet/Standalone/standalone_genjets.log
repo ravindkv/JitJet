@@ -1,0 +1,178 @@
+
+==== set-up ==========================================================================================
+  input /Users/ravindrakumar/rverma/JME/JitJet/example/Decay/event_Decay.lhe: 2251 rows, 749 with a positive status (CMSSW: genParticles with status 1)
+  antikt: d_ij = min(pT_i^2p, pT_j^2p) dR^2/R^2 with p = -1, d_iB = pT_i^2p, dR^2 = dy^2 + dphi^2 (rapidity), E-scheme sums
+  collections: ak4GenJets R = 0.4 (749 particles); ak4GenJetsNoNu R = 0.4, no neutrinos (744 particles); ak8GenJets R = 0.8 (749 particles); jets kept above pT = 3 GeV
+  ghosts (momentum x 1e-18): b hadrons Lambda_bbar0 [1005] pT 35.52 eta -3.41 phi 1.49, Bbar0 [1527] pT 78.26 eta -1.38 phi -2.73, Bbar0 [1584] pT 24.93 eta -3.36 phi 1.34, Bbar0 [1590] pT 81.97 eta -3.43 phi 0.58
+          c hadrons D- [1337] 1.28, D_s+ [1708] 0.92, D+ [1727] 0.11, Dbar0 [1797] 0.83, Dbar0 [1965] 14.95, Xi_c0 [2001] 71.43, D_s- [2177] 27.28, D0 [2179] 26.98, D+ [2189] 10.07
+          163 partons with status 71-79 (the strings' partons), 2 hard-process partons: bbar [5] pT 113.22, b [6] pT 113.22; 3 leptons from heavy hadrons
+
+==== the b quark's ak4 jet, merge by merge ===========================================================
+  the jet is pseudojet 1006; 36 merges built it (of 930 steps of the whole event); step = position in the event's sequence
+   step         merge        d_ij     dR     pT_i     pT_j     pT_k  what joined
+     12   715 +   742   1.736e-06  0.006   10.567    4.451   15.018  pi-[2241] 4.45 GeV joins K-[2211] 10.57 GeV
+     16   697 +   941    2.73e-06  0.010    3.059   15.018   18.077  gamma[2178] 3.06 GeV joins pseudojet 941
+     20   760 +   945   5.953e-06  0.018    0.000   18.077   18.077  ghost chad D0[2179] joins pseudojet 945
+     23   698 +   949   7.429e-06  0.020    4.084   18.077   22.160  gamma[2180] 4.08 GeV joins pseudojet 949
+     24   750 +   952   1.238e-05  0.031    0.000   22.160   22.160  ghost bhad Bbar0[1527] joins pseudojet 952
+     27   781 +   953   1.685e-05  0.036    0.000   22.160   22.160  ghost parton b[1006] joins pseudojet 953
+     28   717 +   956   1.827e-05  0.038    1.113   22.160   23.273  gamma[2214] 1.11 GeV joins pseudojet 956
+     29   699 +   740   1.907e-05  0.025   14.269    5.414   19.683  pi-[2239] 5.41 GeV joins pi+[2181] 14.27 GeV
+     30   744 +   958   7.788e-06  0.022    8.987   19.683   28.669  K_S0[2245] 8.99 GeV joins pseudojet 958
+     31   759 +   959   5.433e-06  0.027    0.000   28.669   28.669  ghost chad D_s-[2177] joins pseudojet 959
+     32   746 +   960    1.24e-05  0.040    3.424   28.669   32.093  gamma[2247] 3.42 GeV joins pseudojet 960
+     33   957 +   961   1.843e-05  0.055   23.273   32.093   55.354  pseudojet 957 joins pseudojet 961
+     34   745 +   962   1.252e-05  0.078    2.927   55.354   58.275  gamma[2246] 2.93 GeV joins pseudojet 962
+     35   739 +   963   1.051e-05  0.076    8.546   58.275   66.820  K+[2238] 8.55 GeV joins pseudojet 963
+     36   738 +   964   1.228e-05  0.094    4.335   66.820   71.154  pi-[2237] 4.34 GeV joins pseudojet 964
+     37   741 +   965   1.596e-05  0.114    2.257   71.154   73.409  pi+[2240] 2.26 GeV joins pseudojet 965
+     38   716 +   966   1.685e-05  0.121    3.383   73.409   76.768  pi+[2213] 3.38 GeV joins pseudojet 966
+     39   166 +   967   1.586e-05  0.122    0.301   76.768   77.070  gamma[1528] 0.30 GeV joins pseudojet 967
+     40   718 +   968   1.693e-05  0.127    1.499   77.070   78.563  gamma[2215] 1.50 GeV joins pseudojet 968
+     44   154 +   969     3.4e-05  0.183    0.172   78.563   78.734  pi-[1506] 0.17 GeV joins pseudojet 969
+     48    49 +   973   4.514e-05  0.212    0.364   78.734   79.097  pi+[1183] 0.36 GeV joins pseudojet 973
+     49   224 +   977   4.578e-05  0.214    0.132   79.097   79.228  pi-[1603] 0.13 GeV joins pseudojet 977
+     50   701 +   978   4.554e-05  0.214    0.606   79.228   79.828  gamma[2184] 0.61 GeV joins pseudojet 978
+     51   168 +   979   4.583e-05  0.216    3.061   79.828   82.869  pi-[1530] 3.06 GeV joins pseudojet 979
+     53   505 +   980   5.105e-05  0.237    4.491   82.869   87.324  pi-[1973] 4.49 GeV joins pseudojet 980
+     54   172 +   982   4.712e-05  0.240    3.306   87.324   90.570  pi+[1536] 3.31 GeV joins pseudojet 982
+     55   504 +   983   4.974e-05  0.256    1.821   90.570   92.387  pi+[1972] 1.82 GeV joins pseudojet 983
+     56   783 +   984   4.701e-05  0.253    0.000   92.387   92.387  ghost parton g[1008] joins pseudojet 984
+     58   174 +   985   5.479e-05  0.274    1.896   92.387   94.278  gamma[1539] 1.90 GeV joins pseudojet 985
+     59   509 +   987   5.872e-05  0.289    0.309   94.278   94.586  gamma[1978] 0.31 GeV joins pseudojet 987
+     65   167 +   988   6.267e-05  0.300    1.025   94.586   95.599  pi+[1529] 1.03 GeV joins pseudojet 988
+     66   782 +   994   6.291e-05  0.303    0.000   95.599   95.599  ghost parton g[1007] joins pseudojet 994
+     67   700 +   995   6.671e-05  0.312    0.969   95.599   96.563  gamma[2183] 0.97 GeV joins pseudojet 995
+     72   173 +   996   7.283e-05  0.330    1.857   96.563   98.416  gamma[1538] 1.86 GeV joins pseudojet 996
+     76   508 +  1001   7.886e-05  0.350    0.765   98.416   99.157  gamma[1977] 0.76 GeV joins pseudojet 1001
+     77    58 +  1005   9.211e-05  0.381    0.680   99.157   99.830  pi+[1217] 0.68 GeV joins pseudojet 1005
+  then d_iB = 1/pT^2 = 0.0001003 is the smallest distance left for it: the jet is declared, pT = 99.830 GeV, eta = -1.439, phi = -2.712, m = 14.83, 31 constituents
+  the cone of R = 0.4 around the quark holds 99.43 GeV in 31 particles; the jet's axis is 0.062 from the quark (dR in eta, phi);
+    in the cone but not in the jet: pi+[1678] 0.15 GeV, gamma[2134] 0.26 GeV
+    in the jet but not in the cone: pi+[1217] 0.68 GeV, pi-[1603] 0.13 GeV
+
+==== the flavour of the two b jets ===================================================================
+  bbar jet [1]: ghosts clustered: b hadrons Bbar0; c hadrons Xi_c0; partons bbar g g g
+    hadronFlavour = 5 (a b-hadron ghost is in the jet)
+    partonFlavour = -5 (the hardest b parton among the status-71 ghosts, else c, else the hardest)
+    physics flavour = 0 (the status-23 partons as ghosts); dR < 0.3 matching: -5
+    net flavour of the b/c hadrons in the jet, as recorded: +1 b, +1 c
+    with the heavy hadrons undecayed: net +1 b, IFN +1 b; flavoured constituents Bbar0[1590]
+  b jet [0]: ghosts clustered: b hadrons Bbar0; c hadrons D0 D_s-; partons b g g
+    hadronFlavour = 5 (a b-hadron ghost is in the jet)
+    partonFlavour = 5 (the hardest b parton among the status-71 ghosts, else c, else the hardest)
+    physics flavour = 0 (the status-23 partons as ghosts); dR < 0.3 matching: 5
+    net flavour of the b/c hadrons in the jet, as recorded: +1 b
+    with the heavy hadrons undecayed: net +1 b, IFN +1 b; flavoured constituents Bbar0[1527]
+
+==== IFN over the whole event (heavy hadrons kept, anti-kT R = 0.4) ==================================
+  u_ik = max(pT_i, pT_k)^2 min(pT_i, pT_k)^0 Omega_ik^2, Omega^2 = 2[(cosh(omega dy) - 1)/omega^2 - (cos dphi - 1)], omega = 1
+  no flavoured pseudojet found a partner with u_ik < u_ij: no neutralisation in this event
+
+==== flavour-kT over the whole event =================================================================
+      flavour-kT: 551 (none, pT 0.12) + 577 (+1 c, pT 0.92) -> 772 (+1 c), d_ij = 0.00087, dR = 0.102
+      flavour-kT: 164 (-1 b, pT 35.52) + 209 (none, pT 0.23) -> 895 (-1 b), d_ij = 0.007923, dR = 0.152
+      flavour-kT: 94 (none, pT 0.30) + 772 (+1 c, pT 1.03) -> 939 (+1 c), d_ij = 0.0169, dR = 0.173
+      flavour-kT: 682 (+1 b, pT 78.26) + 841 (none, pT 0.47) -> 960 (+1 b), d_ij = 0.02597, dR = 0.136
+      flavour-kT: 62 (none, pT 0.72) + 624 (-1 c, pT 0.83) -> 974 (-1 c), d_ij = 0.03279, dR = 0.101
+      flavour-kT: 520 (+1 b, pT 81.97) + 923 (none, pT 1.45) -> 1036 (+1 b), d_ij = 0.08946, dR = 0.083
+      flavour-kT: 316 (none, pT 1.48) + 974 (-1 c, pT 1.55) -> 1105 (-1 c), d_ij = 0.3405, dR = 0.158
+      flavour-kT: 928 (none, pT 0.75) + 1036 (+1 b, pT 83.41) -> 1118 (+1 b), d_ij = 0.4603, dR = 0.362
+      flavour-kT: 211 (none, pT 5.20) + 1118 (+1 b, pT 84.13) -> 1146 (+1 b), d_ij = 1.211, dR = 0.085
+      flavour-kT: 375 (-1 c, pT 1.28) + 1085 (none, pT 2.03) -> 1170 (-1 c), d_ij = 3.449, dR = 0.365
+      flavour-kT: 1146 (+1 b, pT 89.33) + 1168 (none, pT 5.30) -> 1182 (+1 b), d_ij = 9.839, dR = 0.237
+      flavour-kT: 1105 (-1 c, pT 3.03) + 1142 (none, pT 4.13) -> 1186 (-1 c), d_ij = 16.85, dR = 0.397
+      flavour-kT: 960 (+1 b, pT 78.73) + 1185 (none, pT 21.19) -> 1192 (+1 b), d_ij = 198, dR = 0.266
+      flavour-kT: 519 (+1 b, pT 24.93) + 895 (-1 b, pT 35.75) -> 1193 (none), d_ij = 208.6, dR = 0.162
+
+==== summary =========================================================================================
+749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 163 partons (status 71-79), 2 hard-process partons, 3 leptons from heavy hadrons
+ak4GenJets (antikt, R = 0.4, pT > 3 GeV): 42 jets, 368 of 749 particles clustered; 11 jets above 10 GeV, 6 above 30; hadronFlavour 5: 3, 4: 2
+   jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
+     0    99.83   -1.44   -2.71   14.83   31   17    5    +5     0    +5  Bbar0 D0 D_s- | b g g
+     1    94.09   -3.45    0.59   17.83   18    8    5    -5     0    -5  Bbar0 Xi_c0 | bbar g g g
+     2    60.45   -3.39    1.43   11.79   29   14    5    -5     0    -5  Bbar0 Lambda_bbar0 D+ Dbar0 | bbar b g
+     3    48.12    0.28   -0.77    9.75   17    7    0    +2     0    +2   | u ubar g
+     4    46.40   -2.52   -2.53   11.59   25    9    0    -2     0    -2   | ubar u g g
+     5    40.74   -2.07   -1.27    7.71   13    6    0    +2     0    +2   | u d g
+     6    19.94    0.62    1.38    6.67   14    8    0   +21     0   +21   | g g u sbar
+     7    12.79   -0.69    0.77    3.32    7    4    0   +21     0   +21   | g ubar
+     8    12.02    0.02    2.85    2.78    6    5    0    +2     0    +2   | u g g g
+     9    10.64    0.66    2.87    2.19    5    3    0   +21     0   +21   | g
+  ... and 32 more
+ak4GenJetsNoNu (antikt, R = 0.4, pT > 3 GeV, no neutrinos): 42 jets, 366 of 744 particles clustered; 11 jets above 10 GeV, 6 above 30; hadronFlavour 5: 3, 4: 2
+   jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
+     0    99.83   -1.44   -2.71   14.83   31   17    5    +5     0    +5  Bbar0 D0 D_s- | b g g
+     1    94.09   -3.45    0.59   17.83   18    8    5    -5     0    -5  Bbar0 Xi_c0 | bbar g g g
+     2    52.32   -3.39    1.42   10.88   28   14    5    -5     0    -5  Lambda_bbar0 Bbar0 D+ Dbar0 | bbar b g
+     3    48.12    0.28   -0.77    9.75   17    7    0    +2     0    +2   | u ubar g
+     4    46.40   -2.52   -2.53   11.59   25    9    0    -2     0    -2   | ubar u g g
+     5    40.74   -2.07   -1.27    7.71   13    6    0    +2     0    +2   | u d g
+     6    19.94    0.62    1.38    6.67   14    8    0   +21     0   +21   | g g u sbar
+     7    12.79   -0.69    0.77    3.32    7    4    0   +21     0   +21   | g ubar
+     8    12.02    0.02    2.85    2.78    6    5    0    +2     0    +2   | u g g g
+     9    10.64    0.66    2.87    2.19    5    3    0   +21     0   +21   | g
+  ... and 32 more
+ak8GenJets (antikt, R = 0.8, pT > 3 GeV): 30 jets, 600 of 749 particles clustered; 16 jets above 10 GeV, 5 above 30; hadronFlavour 5: 2, 4: 3
+   jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
+     0   147.69   -3.53    0.92   75.40   57   28    5    -5    -5   +21  Lambda_bbar0 Bbar0 Bbar0 Dbar0 D+ Xi_c0 | bbar bbar b g
+     1   105.79   -1.46   -2.71   27.43   47   25    5    +5    +5    +5  Bbar0 D0 D_s- | b g g g
+     2    63.98    0.39   -0.67   27.40   47   19    0    +2     0    +2   | u ubar g g
+     3    53.17   -2.14   -1.22   27.97   36   17    0    +2     0    +2   | u d g g
+     4    52.68   -2.58   -2.52   19.50   38   14    0    -2     0    -2   | ubar u g g
+     5    25.32    0.61    1.44   11.46   27   14    0   +21     0   +21   | g g g u
+     6    21.98   -0.28    2.54   17.03   26   16    0    +2     0   +21   | u sbar ubar g
+     7    19.74   -0.66    0.78   11.32   23   11    0   +21     0   +21   | g g g dbar
+     8    14.38    5.87   -0.61   11.55   18    8    4    -4     0   +21  D+ Dbar0 | g g cbar u
+     9    14.17    1.93   -0.29   11.41   28    9    0    +4     0   +21   | g g g g
+  ... and 20 more
+bbar quark (row 708): pT = 72.50 GeV, eta = -3.42, phi = 0.57; its Bbar0 (row 1590) pT = 81.97
+  ak4GenJets      : jet [1] pT = 94.09 GeV, eta = -3.45, phi = 0.59, m = 17.83, n = 18 (8 charged); dR(jet, quark) = 0.035, pT(jet)/pT(quark) = 1.298; cone of the same R: 93.02 GeV (18), 2 in the cone but not the jet, 2 in the jet but not the cone
+                    the Bbar0's descendants in it: 9 with 81.97 GeV (0 outside), dR(jet, hadron) = 0.023; neutrinos 0 with 0.00 GeV; charged hadrons 50.86, photons 6.69, neutral hadrons 36.65, leptons 0.00 GeV
+                    hadronFlavour 5, partonFlavour -5, physics 0, dR<0.3 -5, net +1 b, +1 c; b hadrons: Bbar0; c hadrons: Xi_c0
+  ak4GenJetsNoNu  : jet [1] pT = 94.09 GeV, eta = -3.45, phi = 0.59, m = 17.83, n = 18 (8 charged); dR(jet, quark) = 0.035, pT(jet)/pT(quark) = 1.298; cone of the same R: 93.02 GeV (18), 2 in the cone but not the jet, 2 in the jet but not the cone
+                    the Bbar0's descendants in it: 9 with 81.97 GeV (0 outside), dR(jet, hadron) = 0.023; neutrinos 0 with 0.00 GeV; charged hadrons 50.86, photons 6.69, neutral hadrons 36.65, leptons 0.00 GeV
+                    hadronFlavour 5, partonFlavour -5, physics 0, dR<0.3 -5, net +1 b, +1 c; b hadrons: Bbar0; c hadrons: Xi_c0
+  ak8GenJets      : jet [0] pT = 147.69 GeV, eta = -3.53, phi = 0.92, m = 75.40, n = 57 (28 charged); dR(jet, quark) = 0.361, pT(jet)/pT(quark) = 2.037; cone of the same R: 111.19 GeV (37), 4 in the cone but not the jet, 24 in the jet but not the cone
+                    the Bbar0's descendants in it: 9 with 81.97 GeV (0 outside), dR(jet, hadron) = 0.352; neutrinos 1 with 8.14 GeV; charged hadrons 77.64, photons 16.11, neutral hadrons 47.04, leptons 0.80 GeV
+                    hadronFlavour 5, partonFlavour -5, physics -5, dR<0.3 21, net +1 b, +1 c; b hadrons: Lambda_bbar0 Bbar0 Bbar0; c hadrons: Dbar0 D+ Xi_c0
+  heavy hadrons kept : anti-kT jet [1] pT = 94.06: net flavour +1 b, IFN flavour +1 b (flavoured constituents: Bbar0[1590])
+  flavour-kT         : jet pT = 94.49, eta = -3.45, phi = 0.59, n = 12, dR = 0.035: flavour +1 b (Bbar0[1590])
+b quark (row 719): pT = 78.29 GeV, eta = -1.38, phi = -2.73; its Bbar0 (row 1527) pT = 78.26
+  ak4GenJets      : jet [0] pT = 99.83 GeV, eta = -1.44, phi = -2.71, m = 14.83, n = 31 (17 charged); dR(jet, quark) = 0.062, pT(jet)/pT(quark) = 1.275; cone of the same R: 99.43 GeV (31), 2 in the cone but not the jet, 2 in the jet but not the cone
+                    the Bbar0's descendants in it: 15 with 78.26 GeV (0 outside), dR(jet, hadron) = 0.063; neutrinos 0 with 0.00 GeV; charged hadrons 68.09, photons 22.75, neutral hadrons 8.99, leptons 0.00 GeV
+                    hadronFlavour 5, partonFlavour 5, physics 0, dR<0.3 5, net +1 b; b hadrons: Bbar0; c hadrons: D0 D_s-
+  ak4GenJetsNoNu  : jet [0] pT = 99.83 GeV, eta = -1.44, phi = -2.71, m = 14.83, n = 31 (17 charged); dR(jet, quark) = 0.062, pT(jet)/pT(quark) = 1.275; cone of the same R: 99.43 GeV (31), 2 in the cone but not the jet, 2 in the jet but not the cone
+                    the Bbar0's descendants in it: 15 with 78.26 GeV (0 outside), dR(jet, hadron) = 0.063; neutrinos 0 with 0.00 GeV; charged hadrons 68.09, photons 22.75, neutral hadrons 8.99, leptons 0.00 GeV
+                    hadronFlavour 5, partonFlavour 5, physics 0, dR<0.3 5, net +1 b; b hadrons: Bbar0; c hadrons: D0 D_s-
+  ak8GenJets      : jet [1] pT = 105.79 GeV, eta = -1.46, phi = -2.71, m = 27.43, n = 47 (25 charged); dR(jet, quark) = 0.078, pT(jet)/pT(quark) = 1.351; cone of the same R: 108.73 GeV (51), 5 in the cone but not the jet, 1 in the jet but not the cone
+                    the Bbar0's descendants in it: 15 with 78.26 GeV (0 outside), dR(jet, hadron) = 0.079; neutrinos 0 with 0.00 GeV; charged hadrons 70.84, photons 25.17, neutral hadrons 9.81, leptons 0.00 GeV
+                    hadronFlavour 5, partonFlavour 5, physics 5, dR<0.3 5, net +1 b; b hadrons: Bbar0; c hadrons: D0 D_s-
+  heavy hadrons kept : anti-kT jet [0] pT = 99.83: net flavour +1 b, IFN flavour +1 b (flavoured constituents: Bbar0[1527])
+  flavour-kT         : jet pT = 99.83, eta = -1.44, phi = -2.71, n = 17, dR = 0.062: flavour +1 b (Bbar0[1527])
+ak4GenJets: b jet + bbar jet: |pT(b) + pT(bbar)| = 16.89 GeV, Sigma|pT| = 193.92, dphi = 2.98, m = 302.9 GeV
+ak4GenJetsNoNu: b jet + bbar jet: |pT(b) + pT(bbar)| = 16.89 GeV, Sigma|pT| = 193.92, dphi = 2.98, m = 302.9 GeV
+ak8GenJets: b jet + bbar jet: |pT(b) + pT(bbar)| = 73.41 GeV, Sigma|pT| = 253.47, dphi = 2.65, m = 410.2 GeV
+IFN: no neutralisation in this event (every flavoured hadron keeps its flavour)
+anti-kT jets with the heavy hadrons kept, net and IFN flavour (pT > 10 GeV or flavoured):
+  [0] pT = 99.83, eta = -1.44, phi = -2.71: net +1 b, IFN +1 b  (Bbar0[1527])
+  [1] pT = 94.06, eta = -3.45, phi = 0.59: net +1 b, IFN +1 b  (Bbar0[1590])
+  [2] pT = 60.59, eta = -3.40, phi = 1.43: net none, IFN none  (Bbar0[1584] Lambda_bbar0[1005])
+  [3] pT = 48.12, eta = 0.28, phi = -0.77: net none, IFN none
+  [4] pT = 46.40, eta = -2.52, phi = -2.53: net none, IFN none
+  [5] pT = 40.74, eta = -2.07, phi = -1.27: net none, IFN none
+  [6] pT = 19.94, eta = 0.62, phi = 1.38: net none, IFN none
+  [7] pT = 12.79, eta = -0.69, phi = 0.77: net none, IFN none
+  [8] pT = 12.02, eta = 0.02, phi = 2.85: net none, IFN none
+  [9] pT = 10.64, eta = 0.66, phi = 2.87: net none, IFN none
+flavour-kT jets (pT > 10 GeV or flavoured):
+  pT = 99.83, eta = -1.44, phi = -2.71, n = 17: flavour +1 b  (Bbar0[1527])
+  pT = 94.49, eta = -3.45, phi = 0.59, n = 12: flavour +1 b  (Bbar0[1590])
+  pT = 60.52, eta = -3.40, phi = 1.43, n = 3: flavour none  (Bbar0[1584] Lambda_bbar0[1005])
+  pT = 50.91, eta = 0.30, phi = -0.76, n = 24: flavour none
+  pT = 49.06, eta = -2.51, phi = -2.54, n = 29: flavour none
+  pT = 40.74, eta = -2.07, phi = -1.27, n = 13: flavour none
+  pT = 22.38, eta = 0.59, phi = 1.38, n = 23: flavour none
+  pT = 14.53, eta = -0.64, phi = 0.78, n = 9: flavour none
+  pT = 11.72, eta = 0.03, phi = 2.85, n = 5: flavour none
+wrote ../event_GenJet.lhe (2251 rows, 749 final particles, 114 jets in three collections)

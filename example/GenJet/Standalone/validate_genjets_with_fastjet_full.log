@@ -1,0 +1,120 @@
+#--------------------------------------------------------------------------
+#                         FastJet release 3.5.2
+#                 M. Cacciari, G.P. Salam and G. Soyez                  
+#     A software package for jet finding and analysis at colliders      
+#                           https://fastjet.fr                           
+#	                                                                      
+# Please cite EPJC72(2012)1896 [arXiv:1111.6097] if you use this package
+# for scientific work and optionally PLB641(2006)57 [hep-ph/0512210].   
+#                                                                       
+# FastJet is provided without warranty under the GNU GPL v2 or higher.  
+# It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code,
+# CGAL and 3rd party plugin jet algorithms. See COPYING file for details.
+#--------------------------------------------------------------------------
+  200 events
+  400 events
+  600 events
+  800 events
+  1000 events
+  1200 events
+  1400 events
+  1600 events
+  1800 events
+  2000 events
+
+2000 events analysed
+quantity                                  PYTHIA+FastJet       std
+ak4 n_jets                                        18.174    11.462
+ak4 n_clustered                                  152.195    88.008
+ak4 n_jets_10                                      3.867     1.654
+ak4 n_jets_30                                      2.407     0.667
+ak4 n_double_b                                     0.009     0.094
+ak4nonu n_jets                                    18.142    11.445
+ak4nonu n_clustered                              150.923    87.850
+ak4nonu n_jets_10                                  3.861     1.651
+ak4nonu n_jets_30                                  2.400     0.661
+ak4nonu n_double_b                                 0.009     0.094
+ak8 n_jets                                        20.247     9.521
+ak8 n_clustered                                  320.547   173.064
+ak8 n_jets_10                                      6.298     3.677
+ak8 n_jets_30                                      2.505     0.763
+ak8 n_double_b                                     0.017     0.135
+bbar ak4 pt                                      106.494    20.899
+bbar ak4 response                                  1.225     0.612
+bbar ak4 dr                                        0.026     0.039
+bbar ak4 n                                        20.729     6.245
+bbar ak4 n_charged                                 9.079     3.417
+bbar ak4 m                                        12.379     4.198
+bbar ak4 pt_nu                                     7.194    12.890
+bbar ak4 pt_cone                                 106.429    19.899
+bbar ak4 pt_from_hadron                           85.268    22.831
+bbar ak4 n_hadron_outside                          0.325     0.999
+bbar ak4 dr_hadron                                 0.023     0.037
+bbar ak4 hadronFlavour 5 / partonFlavour 5 [%]    99.2    99.4
+bbar ak4 found [%]                                  99.9
+bbar ak4nonu pt                                   99.430    23.092
+bbar ak4nonu response                              1.149     0.625
+bbar ak4nonu dr                                    0.029     0.041
+bbar ak4nonu n                                    20.255     6.345
+bbar ak4nonu n_charged                             9.099     3.413
+bbar ak4nonu m                                    11.816     4.216
+bbar ak4nonu pt_nu                                 0.000     0.000
+bbar ak4nonu pt_cone                              99.314    22.355
+bbar ak4nonu pt_from_hadron                       78.178    24.374
+bbar ak4nonu n_hadron_outside                      0.824     1.146
+bbar ak4nonu dr_hadron                             0.026     0.038
+bbar ak4nonu hadronFlavour 5 / partonFlavour 5 [%]    99.2    99.4
+bbar ak4nonu found [%]                              99.8
+bbar ak8 pt                                      115.271    16.982
+bbar ak8 response                                  1.408     1.099
+bbar ak8 dr                                        0.053     0.076
+bbar ak8 n                                        31.984     9.719
+bbar ak8 n_charged                                14.251     5.051
+bbar ak8 m                                        24.574     8.823
+bbar ak8 pt_nu                                     7.214    12.876
+bbar ak8 pt_cone                                 114.979    16.421
+bbar ak8 pt_from_hadron                           85.310    22.621
+bbar ak8 n_hadron_outside                          0.106     0.566
+bbar ak8 dr_hadron                                 0.050     0.072
+bbar ak8 hadronFlavour 5 / partonFlavour 5 [%]    99.9    99.9
+bbar ak8 found [%]                                 100.0
+b ak4 pt                                         109.888    27.568
+b ak4 response                                     1.223     0.506
+b ak4 dr                                           0.028     0.039
+b ak4 n                                           21.314     6.587
+b ak4 n_charged                                    9.343     3.507
+b ak4 m                                           12.796     4.717
+b ak4 pt_nu                                        7.911    14.252
+b ak4 pt_cone                                    109.688    26.534
+b ak4 pt_from_hadron                              87.851    26.651
+b ak4 n_hadron_outside                             0.313     0.968
+b ak4 dr_hadron                                    0.025     0.037
+b ak4 hadronFlavour 5 / partonFlavour 5 [%]    99.2    99.3
+b ak4 found [%]                                     99.8
+b ak4nonu pt                                     102.055    28.901
+b ak4nonu response                                 1.139     0.519
+b ak4nonu dr                                       0.030     0.040
+b ak4nonu n                                       20.779     6.728
+b ak4nonu n_charged                                9.343     3.510
+b ak4nonu m                                       12.141     4.702
+b ak4nonu pt_nu                                    0.000     0.000
+b ak4nonu pt_cone                                101.873    27.922
+b ak4nonu pt_from_hadron                          80.035    27.891
+b ak4nonu n_hadron_outside                         0.831     1.140
+b ak4nonu dr_hadron                                0.028     0.038
+b ak4nonu hadronFlavour 5 / partonFlavour 5 [%]    99.1    99.2
+b ak4nonu found [%]                                 99.7
+b ak8 pt                                         119.960    24.638
+b ak8 response                                     1.414     0.846
+b ak8 dr                                           0.064     0.085
+b ak8 n                                           34.312    10.781
+b ak8 n_charged                                   15.205     5.452
+b ak8 m                                           26.678     9.739
+b ak8 pt_nu                                        7.931    14.250
+b ak8 pt_cone                                    119.526    23.776
+b ak8 pt_from_hadron                              87.884    26.535
+b ak8 n_hadron_outside                             0.119     0.660
+b ak8 dr_hadron                                    0.062     0.082
+b ak8 hadronFlavour 5 / partonFlavour 5 [%]    99.5    99.4
+b ak8 found [%]                                     99.9
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/GenJet/Standalone/validate_genjets_with_fastjet_full.json

@@ -1,0 +1,63 @@
+% ---------------------------------------------------------------------------
+% How anti-kT takes the picture: (a) the distance d_ij = min(1/pT_i^2, 1/pT_j^2)
+% dR^2/R^2 between a hard particle and a soft one is set by the hard one, so
+% the hard core collects everything within R before anything else happens;
+% (b) the ladder of our event's jet [0]: the 36 merges in order with their dR
+% and the running pT (the -v log of standalone_genjets.py); (c) d_iB wins.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  hard/.style={circle,fill=red!75!black,inner sep=0pt,minimum size=7pt},
+  soft/.style={circle,fill=black!45,inner sep=0pt,minimum size=3pt},
+  dist/.style={-{Stealth[length=1.6mm]},black!60,thin},
+  ring/.style={red!80!black,line width=1.2pt,dashed}]
+% ---------------- (a) the distance ------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,4.2) {(a) the hard one sets the distance};
+\draw[ring] (1.6,1.4) circle (1.5);
+\node[hard] (H) at (1.6,1.4) {};
+\node[lab,text=red!80!black,anchor=south] at (1.6,1.65) {$i$: $p_T=15\,\mathrm{GeV}$};
+\node[soft] (S1) at (2.5,2.2) {}; \node[soft] (S2) at (0.7,0.6) {}; \node[soft] (S3) at (2.2,0.4) {}; \node[soft] (S4) at (3.6,2.7) {};
+\draw[dist] (H) -- (S1) node[midway,lab,above,sloped] {$\Delta R=0.3$};
+\draw[dist] (H) -- (S2); \draw[dist] (H) -- (S3);
+\draw[dist,dotted] (H) -- (S4) node[midway,lab,above,sloped] {$\Delta R=0.6$};
+\node[lab,anchor=west] at (2.6,2.2) {$j$: $0.5\,\mathrm{GeV}$};
+\node[lab,anchor=east] at (0.6,0.6) {$k$: $3\,\mathrm{GeV}$};
+\node[lab,anchor=west] at (3.7,2.7) {$l$: outside $R$};
+\node[lab,anchor=north west,text width=5.4cm,align=left] at (-0.3,-0.6) {$d_{ij}=\min\!\big(p_{T,i}^{-2},p_{T,j}^{-2}\big)\,\Delta R_{ij}^2/R^2
+  =\dfrac{1}{15^2}\dfrac{0.3^2}{0.4^2}=2.5\times10^{-3}$\\[2pt]
+  the same for $k$: the soft one's $p_T$ never enters; $d_{iB}=1/15^2=4.4\times10^{-3}$ is larger than every $d_{ij}$ inside $R$ and smaller than the one to $l$ ($10^{-2}$): $i$ collects $j$ and $k$, then becomes a jet without $l$};
+\end{scope}
+% ---------------- (b) the ladder of jet [0] ----------------------------------------------------------
+\begin{scope}[xshift=7.4cm]
+\node[head,anchor=west] at (-0.6,4.2) {(b) the 36 merges of our jet [0], in order};
+\draw[-{Stealth}] (0,0) -- (6.3,0) node[below left,lab] {merge number};
+\draw[-{Stealth}] (0,0) -- (0,3.8) node[left,lab] {$p_T$ of the pseudojet [GeV]};
+\foreach \x/\t in {0.83/5,1.67/10,2.5/15,3.33/20,4.17/25,5.0/30,5.83/35} {\draw (\x,-0.05) -- (\x,0.05); \node[lab,anchor=north] at (\x,-0.08) {\t};}
+\foreach \y/\t in {0.7/20,1.4/40,2.1/60,2.8/80,3.5/100} {\draw (-0.05,\y) -- (0.05,\y); \node[lab,anchor=east] at (-0.08,\y) {\t};}
+% pT after each merge (from the -v log), scaled 0.035 cm per GeV, x = 0.1667 per merge
+\draw[red!80!black,thick] plot[mark=*,mark size=0.9pt] coordinates {
+ (0.167,0.526)(0.333,0.633)(0.5,0.633)(0.667,0.776)(0.833,0.776)(1.0,0.776)(1.167,0.815)(1.333,0.689)(1.5,1.003)(1.667,1.003)
+ (1.833,1.123)(2.0,1.937)(2.167,2.040)(2.333,2.339)(2.5,2.490)(2.667,2.569)(2.833,2.687)(3.0,2.697)(3.167,2.750)(3.333,2.756)
+ (3.5,2.768)(3.667,2.773)(3.833,2.794)(4.0,2.900)(4.167,3.056)(4.333,3.170)(4.5,3.234)(4.667,3.234)(4.833,3.300)(5.0,3.310)
+ (5.167,3.346)(5.333,3.346)(5.5,3.380)(5.667,3.445)(5.833,3.470)(6.0,3.494)};
+\node[lab,text=red!80!black,anchor=south west] at (3.4,3.55) {$99.83\,\mathrm{GeV}$, then $d_{iB}$ wins};
+\node[lab,anchor=north west,text=black!65,text width=3.2cm,align=left] at (0.15,3.75) {the core: $K^-$, $\pi^-$, photons of the $\bar B^0$ at $\Delta R<0.04$};
+\node[lab,anchor=south,text=black!65,text width=3.2cm,align=center] at (2.6,0.15) {merge 12 joins a second core, the $\pi^+\pi^-$ pair with the $K_S^0$, to the first};
+\draw[dist] (4.6,1.2) -- (5.5,0.75);
+\node[lab,anchor=east,text=black!65,text width=3.4cm,align=left] at (4.7,1.3) {the periphery: $0.1$ to $0.7\,\mathrm{GeV}$ each, at $\Delta R$ from $0.18$ to $0.38$};
+\foreach \x in {0.5,0.833,1.0,1.667,4.667,5.333} {\draw[blue!60!black,thin] (\x,-0.02) -- (\x,0.12);}
+\node[lab,text=blue!60!black,anchor=north] at (3.2,-0.45) {blue ticks: a ghost joins (merges 3, 5, 6, 10, 28, 32: $D^0$, $\bar B^0$, $b$, $D_s^-$, $g$, $g$)};
+\end{scope}
+% ---------------- (c) the rule in one line ------------------------------------------------------------
+\begin{scope}[xshift=14.6cm]
+\node[head,anchor=west] at (-0.4,4.2) {(c) when is it a jet?};
+\node[lab,anchor=north west,text width=4.2cm,align=left] at (-0.4,3.7) {At every step the smallest of all $d_{ij}$ and $d_{iB}$ wins.\\[3pt]
+ $d_{ij}$ smallest: $i+j\to k$, four-momenta added (E scheme), $k$ takes $i$'s and $j$'s place.\\[3pt]
+ $d_{iB}$ smallest: $i$ is a jet; it is set aside.\\[3pt]
+ For our jet: 36 merges, the last at $d_{ij}=9.2\times10^{-5}$, then $d_{iB}=1/99.83^2=1.0\times10^{-4}$.\\[3pt]
+ Kept if $p_T>3\,\mathrm{GeV}$: 42 of the 930 pseudojets of the ak4 clustering (749 particles + 181 ghosts) end as jets above the threshold.};
+\end{scope}
+\end{tikzpicture}

@@ -198,9 +198,13 @@ machinery of the previous stop applied to the quarks the $W$ leaves behind.
 The film first. \file{example/Decay/Standalone/animate_standalone_hadron_decays.py}
 imports the standalone script of
 \cref{sec:children_producing_grandchildren:standalone_code} and replays the
-seed-1 decays in seven scenes of about seventy seconds in all, so that
-every number on the screen is produced by the classes that wrote the
-record. It is on the JitJet playlist,
+seed-1 decays in seven narrated scenes of about seven minutes in all
+(seventy seconds without the voice), so that every number on the screen
+and in the narration is produced by the classes that wrote the record.
+The voice picks up where the film of \cref{ch:children_getting_married}
+stopped, ``the children are married'', and ends at the door of the inn of
+\cref{ch:the_inn}, where the anti-$k_T$ algorithm gathers the
+grandchildren. It is on the JitJet playlist,
 \begin{center}
   \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}
 \end{center}
@@ -245,18 +249,22 @@ per scene. Each scene names the section that explains it.
     to the primary-hadron \pt of the cone stays at one in four decays out of
     five and drops by $10$ to $50\%$ when a neutrino leaves.
 \end{enumerate}
-Rendering needs matplotlib in addition to NumPy, and \code{ffmpeg} for an
-\code{.mp4}:
+Rendering needs matplotlib in addition to NumPy, \code{ffmpeg} for an
+\code{.mp4}, and \code{edge-tts} for the voice (the shared
+\file{example/soundtrack.py} synthesises the lines, caches the clips and
+writes the score and the subtitles):
 \begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
 cd example/Decay/Standalone
-python3 animate_standalone_hadron_decays.py            # the film, about a minute to render
+python3 animate_standalone_hadron_decays.py            # the narrated film, 1080p, ~40 min with --jobs 4
 python3 animate_standalone_hadron_decays.py --fast     # low-resolution preview
-python3 animate_standalone_hadron_decays.py --scene walk,cascade -o walk.gif
+python3 animate_standalone_hadron_decays.py --print-script   # the narration, one line per phase
+python3 animate_standalone_hadron_decays.py --scene walk,cascade -o walk.gif   # silent
 python3 animate_standalone_hadron_decays.py --stills stills.pdf --no-video
 \end{minted}
 The physics options are those of the standalone script: \code{--seed 4}
 films the semileptonic decay of scene~5 as the event, \code{--no-mix}
-switches the oscillations off, \code{--stable-b} keeps the B~hadrons.
+switches the oscillations off, \code{--stable-b} keeps the B~hadrons;
+\code{--no-narration} gives the silent cut.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=1,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
@@ -614,12 +622,54 @@ something a newcomer does not expect: \dzero does not grow with the jet's
 energy. A harder B walks further, $\Lxy\propto\gamma\beta$, but its
 decay products are thrown forward into a cone whose opening angle shrinks
 by the same factor, $\theta\propto1/\gamma\beta$, and the product stays of
-the order of $c\tauz$, a few hundred microns, at any \pt. That is why the
-B~hadron is found by a tracker with a resolution of tens of microns and
-not by a calorimeter, and why the $b$ tag of \cref{ch:footprints} works
-from $20\GeV$ to a TeV: the birthmark is the same size on every child.
-The weak charm decay that follows adds a third vertex a few millimetres
-further on, and the tracks from it carry impact parameters of their own.
+the order of $c\tauz$, a few hundred microns, at any \pt.
+\Cref{fig:children_producing_grandchildren:boost_sketch} draws the
+cancellation: three B~hadrons with the same proper time and the boosts
+$\gamma\beta$, $3\gamma\beta$ and $9\gamma\beta$ decay along the same
+axis, each walk is three times the last, each cone three times narrower,
+and the back-extrapolation of every track is tangent to the same circle
+of radius \dzero around the primary vertex. Written out, with
+$L=\beta\gamma c\tau$ for a decay at the proper time $\tau$ and
+$\sin\theta=p^*_\perp/p$ for a product whose rest-frame momentum has the
+components $p^*_\perp$ and $p^*_\parallel$ and the energy $E^*$,
+\begin{equation}
+  \dzero=L\sin\theta
+  =\beta\gamma c\tau\,\frac{p^*_\perp}{\gamma\,(\beta E^*+p^*_\parallel)}
+  \;\xrightarrow{\;\beta\to1\;}\;
+  c\tau\,\frac{p^*_\perp}{E^*+p^*_\parallel},
+  \label{eq:children_producing_grandchildren:d0boost}
+\end{equation}
+every $\gamma$ has cancelled, and what remains is the proper time and the
+kinematics of the decay in the rest frame, the same for a B of $20\GeV$
+and one of $2\TeV$. For a product of $1\GeV$ at right angles in the rest
+frame it is $c\tau$ itself, and the ensemble's median of $166\um$ and
+mean of $362\um$ below are that number folded with the decay kinematics.
+That is why the B~hadron is found by a tracker with a resolution of tens
+of microns and not by a calorimeter, and why the $b$ tag of
+\cref{ch:footprints} works from $20\GeV$ to a TeV: the birthmark is the
+same size on every child. Where the argument ends is the detector and
+not the geometry. The walk itself does grow, $1.7\mm$ at $20\GeV$, $17$
+at $200$ and $87$ at a TeV on average, so past half a TeV most B~hadrons
+decay beyond the first pixel layer, a few centimetres from the beam, and
+the tracks of a cone a milliradian wide begin to share pixel hits; the
+tag loses its inner hits there, not its birthmark. The weak charm decay
+that follows adds a third vertex a few millimetres further on, and the
+tracks from it carry impact parameters of their own.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/decay_boost}}
+\caption[Why the impact parameter does not grow with the boost]{Why the
+$b$ tag works from $20\GeV$ to a TeV. Left: three B~hadrons with the same
+proper time and the boosts $\gamma\beta$, $3\gamma\beta$ and
+$9\gamma\beta$; the walk grows and the cone shrinks by the same factor,
+and the dotted back-extrapolations of the three tracks are tangent to one
+circle of radius \dzero,
+\cref{eq:children_producing_grandchildren:d0boost}. Right: the same
+against \pt on log scales, $\Lxy$ rising, the opening angle falling,
+\dzero flat at a few hundred microns, and the first pixel layer, which
+the mean walk crosses near $300\GeV$.}
+\label{fig:children_producing_grandchildren:boost_sketch}
+\end{figure}
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/decay_vertex}}
@@ -699,11 +749,43 @@ with $\Delta m$ the mass difference of the two eigenstates and $\chi$ the
 fraction that has oscillated by the time it decays. The tables carry
 $x_d=0.776$ for the $B^0$, hence $\chi_d=0.188$, and $x_s=26.05$ for the
 $B_s^0$ ($s\bar b$), hence $\chi_s=0.499$: a $B_s^0$ swings twenty-six
-times in a lifetime and decays as either with equal probability. The
-discovery of the first by ARGUS~\cite{ARGUS:1987xtv} was the first sign
-that the top quark is heavy, and LHCb has measured
+times in a lifetime and decays as either with equal probability. What
+sets $x$ is the box. Its two internal quarks can be $u$, $c$ or $t$, the
+GIM cancellation suppresses the light ones, and the loop with two top
+quarks gives~\cite{Inami:1980fz,Buras:1990fn}
+\begin{equation}
+  \Delta m_q=\frac{G_F^2}{6\pi^2}\,m_W^2\,m_{B_q}\,f_{B_q}^2\hat B_{B_q}\,
+  \eta_B\,S_0(x_t)\,|V_{tq}V_{tb}^*|^2,\qquad
+  x_t=\frac{m_t^2}{m_W^2},\qquad S_0(x_t)\simeq0.78\,x_t^{0.76},
+  \label{eq:children_producing_grandchildren:boxdm}
+\end{equation}
+with $f_{B_q}^2\hat B_{B_q}$ the hadronic matrix element, $\eta_B$ the
+QCD correction and $S_0$ the Inami--Lim function, which grows almost as
+fast as $m_t^2$: the heavier the top, the faster the mesons swing. That
+is the connection with the top quark. In 1987 ARGUS~\cite{ARGUS:1987xtv}
+found, in $\Upsilon(4S)$ decays, one event with two fully reconstructed
+$B^0$ of the same flavour and an excess of like-sign lepton pairs, and
+measured $x_d=0.73\pm0.18$, a mixing of order one where a small one had
+been expected. In \cref{eq:children_producing_grandchildren:boxdm} the
+only factors not pinned down were $m_t$ and $|V_{td}|$, and unitarity
+bounds the second, so $x_d\sim1$ needed a top heavier than about
+$50\GeV$~\cite{Ellis:1987bmixing} at a time when the expectation had been
+a few tens of GeV: the first sign that the top quark is heavy. The
+Tevatron found it eight years later at
+$175\GeV$~\cite{CDF:1995wbb,D0:1995jca}, where $S_0=2.5$, more than ten
+times its value for a top of $40\GeV$, and LHCb has since measured
 $\Delta m_s$ to four significant figures~\cite{LHCb:2021moh}; the theory
-is reviewed in \cite{Artuso:2015swg}. \PYTHIA's \code{ParticleDecays}
+is reviewed in \cite{Artuso:2015swg}. The right panel of
+\cref{fig:children_producing_grandchildren:mixing_sketch} shows what $x$
+does to the probability. The $B^0$ curve rises slowly, its first maximum
+is at $t=\pi\tauz/x_d=4.05\,\tauz$, and the exponential clock drawn
+underneath has by then left $e^{-4.05}=1.7\%$ of the mesons: most $B^0$
+decay on the rising flank, which is why $\chi_d$ is only $0.19$ although
+the curve reaches one. The $B_s^0$ curve completes a swing every
+$2\pi\tauz/x_s=0.24\,\tauz$, faster than the clock can resolve, and
+averages to one half. The two dots are the B~hadrons of our event at the
+proper times their clocks gave them, and the paragraph after the figure
+reads off their draws. \PYTHIA's \code{ParticleDecays}
 implements exactly \cref{eq:children_producing_grandchildren:mixing}, time
 dependent, with the lifetime already drawn, and the script does the same:
 if the draw says yes the identity of the row is flipped and the products
@@ -956,15 +1038,37 @@ treated as the quark, the squared amplitude is
   \label{eq:children_producing_grandchildren:va}
 \end{equation}
 with $X$ the charm hadron, the form \PYTHIA's mode~22 applies as a weight
-on the phase-space draw. The ordering in the table encodes the pairing: the
-\emph{first} product of the channel is the one contracted with the mother,
-the neutrino in a $B$ table and the charged lepton in a $D$ table, because
-in $c\to s\ell^+\nu$ it is the lepton that plays the neutrino's role; a
-port that ignores the ordering gets a soft lepton spectrum for every
-charm decay. The effect of \cref{eq:children_producing_grandchildren:va} is
-to push the lepton and the neutrino to the end point of the spectrum,
-$(m_B^2-m_X^2)/2m_B=2.26\GeV$ for a $D^*$: the lepton is hard in the
-B~rest frame, and the neutrino harder. The proper description of the decay
+on the phase-space draw. The two factors are not interchangeable. The
+first pairs the mother with one member of the lepton pair and gives it
+the weight $m_B E$, the second pairs the other member with the hadron,
+and the rule for who is who is the rule of muon decay,
+$\mu^-\to\nu_\mu e^-\bar\nu_e$ with
+$|\mathcal M|^2\propto(p_\mu\cdot p_{\bar\nu_e})(p_{\nu_\mu}\cdot p_e)$:
+the decaying fermion is contracted with the \emph{anti}fermion of the
+lepton pair (\cref{fig:children_producing_grandchildren:ordering_sketch},
+left). For $b\to c\ell^-\bar\nu$ that is the antineutrino, for
+$c\to s\ell^+\nu$ the charged lepton, and the ordering in the table
+encodes the pairing: the \emph{first} product of the channel is the one
+contracted with the mother, the neutrino in a $B$ table
+(\code{12 -11 -413}) and the charged lepton in a $D$ table
+(\code{-11 12 311}). The mother's partner is the \emph{soft} one. The
+factor $(p_2\cdot p_3)$ asks for a large invariant mass of the other two
+products, which starves the first, and its own factor $E_1$ does not make
+up for it; in muon decay the $\bar\nu_e$ spectrum is $x^2(1-x)$ and the
+electron's $x^2(3-2x)$. So \cref{eq:children_producing_grandchildren:va}
+pushes the charged lepton of a $B$ decay towards the end point of the
+spectrum, $(m_B^2-m_X^2)/2m_B=2.26\GeV$ for a $D^*$, and the neutrino
+away from it: in the B~rest frame the lepton is hard and the neutrino
+softer, $1.40$ against $1.27\GeV$. In a $D$ decay the roles are exchanged
+and the lepton is the soft one, $0.50\GeV$ against $0.57$ for the
+neutrino in $D^+\to\bar K^0e^+\nu_e$ at rest, below the flat phase-space
+mean of $0.53$. A port that ignores the ordering and pairs the mother
+with the neutrino in every table gets the $B$ right and every charm decay
+backwards, a hard lepton of $0.57\GeV$ where the physics wants a soft one
+of $0.50$, the middle panel of the figure; \PYTHIA itself, fed the $D^+$
+channel with its two leptons swapped, moves from $0.499$ to $0.567$, and
+the $B^0$ channel the other way, from $1.404$ to $1.265$. The proper
+description of the decay
 is in terms of form factors that heavy-quark symmetry
 constrains~\cite{Isgur:1989vq,Neubert:1993mb,Caprini:1997mu,Boyd:1995sq},
 and the inclusive spectrum has been computed in the heavy-quark expansion
@@ -983,6 +1087,23 @@ Middle: the nine doors of the $W$ and what the tables say. Right: the
 lepton energy spectrum of \cref{eq:children_producing_grandchildren:va}
 against flat phase space.}
 \label{fig:children_producing_grandchildren:feynman_sketch}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/decay_ordering}}
+\caption[The pairing rule of the V$-$A weight and the ordering trap]{The
+ordering trap of mode~22. Left: the decaying fermion is contracted with
+the antifermion of the lepton pair, as in muon decay, the antineutrino
+for $b\to c\ell^-\bar\nu$ and the charged lepton for $c\to s\ell^+\nu$;
+the table lists that product first, and it is the soft one. Middle: the
+positron energy in $D^+\to\bar K^0e^+\nu_e$ at rest for flat phase space,
+for the table's pairing and for the swapped pairing, three million
+phase-space draws weighted with
+\cref{eq:children_producing_grandchildren:va} by
+\file{sketch_ordering_trap.py} and, in brackets, \PYTHIA at rest fed the
+channel in either order. Right: the same for
+$\bar B^0\to D^{*+}\ell^-\bar\nu_\ell$, where the roles are exchanged.}
+\label{fig:children_producing_grandchildren:ordering_sketch}
 \end{figure}
 
 \paragraph{The numbers.} Our \Bbar went through a quark door, so the
@@ -1470,8 +1591,12 @@ the muon-in-jet correction of \cite{CMS:2018nsn}.
     sum of $1.32$ and a semileptonic fraction a quarter too low.
   \item \textbf{The first product is the one contracted with the mother.}
     In the V$-$A weight of mode 22 it is the neutrino for a $B$ and the
-    charged lepton for a $D$; swap them and every charm decay gives a soft
-    lepton.
+    charged lepton for a $D$, because the mother pairs with the
+    antifermion of the lepton pair, and that partner is the soft one.
+    Swap them and every charm lepton comes out hard, $0.57$ instead of
+    $0.50\GeV$ in the $D$ rest frame, and every $B$ lepton soft, $1.27$
+    instead of $1.40$
+    (\cref{fig:children_producing_grandchildren:ordering_sketch}).
   \item \textbf{The spectator makes one hadron.} In the weak partonic
     channels of modes 22 and 23 only the $W$ pair gets the Poisson
     multiplicity; give it to both singlets and the $D^-/\bar D^0$ ratio
@@ -1572,7 +1697,9 @@ the muon-in-jet correction of \cite{CMS:2018nsn}.
   generate $B^0\to D^{*-}\mu^+\nu_\mu$ at rest with and without the weight
   of \cref{eq:children_producing_grandchildren:va}, and reproduce the
   means $1.34$ and $1.40\GeV$ of the lepton energy. Where is the end point
-  and why is it below $m_B/2$?
+  and why is it below $m_B/2$? Then generate $D^+\to\bar K^0e^+\nu_e$
+  with the lepton first and with the neutrino first in the weight and
+  reproduce $0.50$ and $0.57\GeV$.
 \item \textbf{The emigrants.} From \file{standalone_decay_stats.stats.json}
   compute the fraction of the mother's decays with a neutrino among the
   descendants, the mean of $f_\nu$ over all decays and over those with a

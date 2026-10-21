@@ -1,0 +1,69 @@
+% ---------------------------------------------------------------------------
+% Why the b tag works from 20 GeV to a TeV. (a) Three B hadrons of the same
+% proper time and the boosts gamma*beta, 3 gamma*beta and 9 gamma*beta decay
+% along the same axis: the walk L grows by three at each step, the opening
+% angle theta of the decay cone shrinks by three, and the back-extrapolation
+% of every track is tangent to the same circle of radius d0 around the
+% primary vertex (the geometry is exact for the drawn L: sin theta = d0/L).
+% (b) The same statement against pT on log scales: L_xy rises as gamma*beta,
+% theta falls as 1/(gamma*beta), d0 = L sin(theta) stays a few hundred
+% microns; where the walk passes the first pixel layer the tag starts to lose
+% hits, which is the detector's limit and not the birthmark's.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  trk/.style={red!75!black,thick},
+  walk/.style={red!80!black,line width=1.2pt,dashed}]
+% ---------------- (a) the same circle at every boost ----------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-1.4,2.0) {(a) three boosts, one birthmark: every track is tangent to the same circle};
+\pgfmathsetmacro{\dz}{0.5}
+\draw[black!40,-{Stealth}] (-1.2,0) -- (15.4,0) node[below left,lab,text=black!60] {direction of the B};
+\foreach \L/\gb/\th/\colr in {1.4/{$\gamma\beta$}/{$\theta$}/red!80!black, 4.2/{$3\gamma\beta$}/{$\theta/3$}/red!60!black, 12.6/{$9\gamma\beta$}/{$\theta/9$}/red!40!black} {
+  \pgfmathsetmacro{\ang}{asin(\dz/\L)}
+  \pgfmathsetmacro{\back}{\L*cos(\ang)+1.0}
+  % the decay cone (half-angle 1.4 theta) and the walk
+  \fill[\colr,opacity=0.10] (\L,0) -- ++({1.4*\ang}:2.2) arc ({1.4*\ang}:{-1.4*\ang}:2.2) -- cycle;
+  \draw[walk,draw=\colr] (0,0) -- (\L,0);
+  \fill[\colr] (\L,0) circle (0.9mm);
+  % one track, thrown forward at -theta, and its back-extrapolation, tangent to the circle
+  \draw[trk,draw=\colr] (\L,0) -- ++({-\ang}:2.3);
+  \draw[trk,draw=\colr,dotted] (\L,0) -- ++({180-\ang}:\back);
+  \node[lab,text=\colr,anchor=north] at (\L,-1.2) {$L=$ \gb\,$c\tau$\\ cone \th};
+}
+\node[star,star points=5,fill=magenta,inner sep=1.6pt] (pv) at (0,0) {};
+\draw[blue!70!black,thick] (0,0) circle (\dz);
+\draw[blue!70!black,thick,{Stealth}-{Stealth}] (0,0) -- (0,\dz) node[midway,left,lab,text=blue!70!black] {$d_0$};
+\node[lab,anchor=north east] at (-0.15,-0.45) {primary\\ vertex};
+\node[lab,anchor=north,text=red!80!black] at (0.7,-0.25) {walk $L$};
+\node[lab,anchor=south west,text=blue!70!black] at (4.6,0.5) {$d_0=L\sin\theta$: the three dotted back-extrapolations miss the primary vertex by the same $d_0$};
+\node[lab,anchor=north west,text width=16.4cm,align=left,text=black!65] at (-1.4,-2.05) {the walk $L=\beta\gamma c\tau$ grows with the boost and the angle $\sin\theta=p^*_\perp/p$ of a decay product shrinks with it, $p\simeq\gamma(E^*+\beta p^*_\parallel)$ in the laboratory; the product $d_0=c\tau\,p^*_\perp/(E^*+p^*_\parallel)$ has no $\gamma$ left in it. Only the proper time $\tau$ and the rest-frame kinematics of the decay remain, the same for a B of $20\GeV$ and one of $2\TeV$};
+\end{scope}
+% ---------------- (b) against pT -------------------------------------------------------------------
+\begin{scope}[yshift=-9.2cm]
+\node[head,anchor=west] at (-1.4,5.0) {(b) from $20\GeV$ to a TeV, log scales};
+\draw[-{Stealth}] (0,0) -- (6.6,0) node[right,lab] {\pt of the B};
+\draw[-{Stealth}] (0,0) -- (0,4.2) node[above,lab] {log scale};
+\foreach \u/\t in {0/20 GeV,1/200 GeV,2/2 TeV} {\draw ({1+2*\u},-0.06) -- ({1+2*\u},0.06); \node[lab,anchor=north] at ({1+2*\u},-0.08) {\t};}
+% first pixel layer, at L = 29 mm on the scale of the L line
+\draw[black!45,dash dot] (0.3,2.82) -- (6.3,2.82); \node[lab,anchor=west,text=black!55] at (6.35,2.82) {first pixel\\ layer, $r\approx3\,$cm};
+% L_xy rising
+\draw[red!80!black,thick] (1,1.6) -- (5,3.6) node[anchor=south west,lab,text=red!80!black,xshift=1pt] {$L_{xy}=\gamma\beta\,c\tau_0$,\\ $\gamma\beta=\pt/m_B$};
+\foreach \u/\t in {0/{1.7 mm},2/{174 mm}} {\fill[red!80!black] ({1+2*\u},{1.6+\u}) circle (0.8mm); \node[lab,text=red!80!black,anchor=north west] at ({1+2*\u+0.05},{1.6+\u-0.05}) {\t};}
+\fill[red!80!black] (3,2.6) circle (0.8mm); \node[lab,text=red!80!black,anchor=north] at (3,2.38) {17 mm};
+% theta falling
+\draw[orange!80!black,thick] (1,3.6) -- (5,1.6) node[anchor=north west,lab,text=orange!80!black,xshift=1pt,yshift=-1pt] {opening angle\\ $\theta\approx1/\gamma\beta$};
+\foreach \u/\t in {0/{0.26 rad},2/{0.0026}} {\fill[orange!80!black] ({1+2*\u},{3.6-\u}) circle (0.8mm); \node[lab,text=orange!80!black,anchor=south east] at ({1+2*\u-0.05},{3.6-\u+0.05}) {\t};}
+\node[lab,text=orange!80!black,anchor=south] at (3,2.9) {0.026 rad};
+% d0 flat
+\fill[blue!70!black,opacity=0.12] (0.3,2.44) rectangle (6.3,2.76);
+\draw[blue!70!black,very thick] (0.3,2.6) -- (6.3,2.6);
+\node[lab,text=blue!70!black,anchor=west,fill=white,inner sep=1pt] at (0.35,2.6) {$d_0=L\sin\theta$};
+\fill[black!45] (3.44,2.82) circle (0.8mm);
+% the words
+\node[lab,anchor=north west,text width=6.8cm,align=left] at (9.4,4.6) {\textbf{the birthmark is flat.} The walk grows by ten and the cone shrinks by ten at each step; $d_0$ stays a few hundred microns, our ensemble's median $166$ and mean $362\,\mu$m, and the tracker measures it to tens of microns, ten times below the line. That is the $b$ tag, the same at $20\GeV$ and at a TeV.\\[5pt]
+\textbf{where it ends} is the detector, not the geometry: the mean walk passes the first pixel layer near $\pt\approx300\GeV$ (the grey dot), at a TeV ($\bar L=87\,$mm) $72\%$ of the B's decay beyond it, and the tracks of the cone, a milliradian apart, begin to share pixel hits. The tag loses its inner hits there, not its birthmark};
+\end{scope}
+\end{tikzpicture}

@@ -3,4 +3,7 @@ cover/animate_short_cover_timeline.mp4
 [1.00 to 1.03] # remove Arrival word
 
 example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.mp4
-[ 0.05 to 0.14] [2.19 to 2.29]
+[ 0.05 to 0.14] # the mention of fraction
+
+example/Decay/Standalone/animate_standalone_hadron_decays.mp4
+[0.53.10 to 0.56.03] # some glitch

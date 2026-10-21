@@ -171,12 +171,28 @@ in `..._full_event1.txt`, both in the standalone format with the vertex table.
   through the stages, the response after the neutrinos, multiplicity and
   mass. It replays the seed-1 decays and reads the `--repeat` statistics and
   the validation files when present.
-* `animate_standalone_hadron_decays.py`: seven scenes, about 70 s (the
-  exponential clock, the walk of the B in the transverse plane and along the
-  beam, the roll of the dice on the decay table, the cascade generation by
+* `animate_standalone_hadron_decays.py`: seven scenes, narrated, about 7 min
+  (the exponential clock, the walk of the B in the transverse plane and along
+  the beam, the roll of the dice on the decay table, the cascade generation by
   generation, a semileptonic decay from the ensemble with its neutrino, the
   whole event decaying in laboratory time, the ensemble); same CLI as the
-  chapter-5 film, `--scene clock,walk,...` or `1..7`; `make figures` writes
-  the stills PDF only.
+  chapter-5 film, `--scene clock,walk,...` or `1..7`, 1920x1080 by default,
+  `--jobs 4` parallel rendering, `--fast` for a preview, `--no-narration` for
+  the 72 s silent cut. Each phase of a scene has one line of narration
+  (`--print-script`), spoken by edge-tts (`en-GB-RyanNeural`; `--engine say`
+  offline) over the score of `example/soundtrack.py`; the clips are cached in
+  `build/narration/Decay/`, an `.srt` is written next to the `.mp4`. The film
+  opens where the chapter-5 film ended, "the children are married", and ends
+  at the door of the inn of chapter 15, where the anti-kT algorithm gathers the
+  grandchildren. `make figures` writes the stills PDF only.
+* `sketch_ordering_trap.py` -> `../../../chapter/tikz/decay_ordering.tex`: the
+  ordering trap of the V-A weight. In the rest frame of the hadron, the
+  charged-lepton energy of D+ -> K0bar e+ nu and of B0bar -> D*+ l- nubar for
+  flat phase space, for the table's pairing (the first product contracted with
+  the mother) and for the swapped pairing: the mother's partner is the soft
+  one, so the lepton is hard from a B (1.40 GeV against 1.27 swapped) and soft
+  from a D (0.50 against 0.57). `--pythia` (the venv of `example/ME/Standalone`)
+  decays both channels in PYTHIA at rest in either order and prints the same
+  means (1.404/1.265 and 0.499/0.567).
 
 `make records` regenerates `../event_Decay.lhe`, `make figures` the three PDFs.

@@ -38,7 +38,8 @@ What is implemented (the physics of chapter 6, following PYTHIA 8's ParticleDeca
   two-body momenta); matrix elements as in PYTHIA's meMode: the V-A weight
         |M|^2 ~ (p_B . p_nu) (p_X . p_l)
   for semileptonic decays (meMode 22, 23), which makes the lepton hard and the neutrino
-  harder than phase space; |p_1 x p_2|^2 for omega, phi -> 3 pi (meMode 1); cos^2 theta
+  softer than phase space (the mother is contracted with the antifermion of the lepton pair, the
+  soft one); |p_1 x p_2|^2 for omega, phi -> 3 pi (meMode 1); cos^2 theta
   for a vector meson from a pseudoscalar decaying to two pseudoscalars (meMode 2); the
   Kroll-Wada spectrum of the lepton pair in Dalitz decays pi0, eta -> gamma l+ l-
   (meMode 11); a soft damping exp(-p^2/sigma^2), sigma = 0.5 GeV, of the extra hadrons

@@ -45,6 +45,7 @@ example/PS/Standalone/animate_standalone_parton_showering.srt
 example/MnM/animate_whose_child.srt
 example/MPI/Standalone/animate_standalone_multiparton_interactions.srt
 example/Had/Standalone/animate_standalone_hadronisation.srt
+example/Decay/Standalone/animate_standalone_hadron_decays.srt
 # the Les Houches input written for the MPI validation (copies of the hard event)
 example/MPI/Standalone/validate_mpi_with_pythia.lhe
 # the Les Houches input written for the hadronisation validation (copies of the hard event)

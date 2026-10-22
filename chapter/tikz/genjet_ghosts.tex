@@ -36,25 +36,26 @@
 % ---------------- (b) the labels ------------------------------------------------------------------
 \begin{scope}[xshift=7.6cm]
 \node[head,anchor=west] at (-0.4,4.3) {(b) the labels of the three $b$ jets (ak4)};
-\foreach \x/\t in {0.1/jet,1.0/ghosts clustered,4.35/hadron,5.2/parton,6.05/physics,6.95/$\Delta R<0.3$,7.95/net} {\node[tbl,font=\scriptsize\bfseries,anchor=west] at (\x,3.6) {\t};}
+\foreach \x/\t in {0.1/jet,1.0/ghosts clustered} {\node[tbl,font=\scriptsize\bfseries,anchor=west] at (\x,3.6) {\t};}
+\foreach \x/\t in {4.6/hadron,5.6/parton,6.6/physics,7.7/$\Delta R<0.3$,8.6/net} {\node[tbl,font=\tiny\bfseries] at (\x,3.6) {\t};}
 \foreach \y/\j/\g/\h/\p/\f/\d/\n in {3.15/{[0] $99.8$}/{$\bar B^0$, $D^0$, $D_s^-$; $b$, $g$, $g$}/5/$+5$/0/$+5$/$+1\,b$,
                                      2.7/{[1] $94.1$}/{$\bar B^0$ (osc.), $\Xi_c^0$; $\bar b$, $g$, $g$, $g$}/5/$-5$/0/$-5$/$+1\,b$,
                                      2.25/{[2] $60.5$}/{$\bar B^0$, $\bar\Lambda_b^0$, $D^+$, $\bar D^0$; $\bar b$, $b$, $g$}/5/$-5$/0/$-5$/$0$} {
   \node[tbl,anchor=west] at (0.1,\y) {\j};
   \node[tbl,anchor=west,font=\tiny] at (1.0,\y) {\g};
   \node[tbl,fill=red!15] at (4.6,\y) {\h};
-  \node[tbl] at (5.45,\y) {\p};
-  \node[tbl,fill=black!8] at (6.3,\y) {\f};
-  \node[tbl] at (7.3,\y) {\d};
-  \node[tbl] at (8.1,\y) {\n};}
+  \node[tbl] at (5.6,\y) {\p};
+  \node[tbl,fill=black!8] at (6.6,\y) {\f};
+  \node[tbl] at (7.7,\y) {\d};
+  \node[tbl] at (8.6,\y) {\n};}
 \node[lab,anchor=north west,text width=7.6cm,align=left] at (-0.4,1.55) {\textbf{hadronFlavour}: 5 if a $b$-hadron ghost is in the jet, else 4 for a $c$ hadron, else 0.\\[2pt]
  \textbf{partonFlavour}: the id of the hardest $b$-parton ghost (status 71--79), else the hardest $c$, else the hardest parton: $+5$, $-5$, or $21$, $\pm1$, $\pm2$, $\pm3$.\\[2pt]
  \textbf{physics}: the same rule with the status-23 partons as ghosts.\\[2pt]
  \textbf{net}: the sum of $\pm1$ over the $b$ hadrons, $+1$ for a $b$ quark inside ($\bar B^0$, $\Lambda_b^0$), $-1$ for a $\bar b$ ($B^0$, $B^+$, $\bar\Lambda_b^0$).};
-\node[lab,anchor=north west,text width=7.6cm,align=left,text=black!65] at (-0.4,-1.3) {Jet [1] reads $+1\,b$ although it is the $\bar b$ quark's: its $B^0$ oscillated. Jet [2] holds the gluon's pair, $b$ and $\bar b$: hadronFlavour 5, net 0.};
+\node[lab,anchor=north west,text width=7.6cm,align=left,text=black!65] at (-0.4,-2.4) {Jet [1] reads $+1\,b$ although it is the $\bar b$ quark's: its $B^0$ oscillated. Jet [2] holds the gluon's pair, $b$ and $\bar b$: hadronFlavour 5, net 0.};
 \end{scope}
 % ---------------- (c) the physics definition fails ------------------------------------------------
-\begin{scope}[xshift=16.4cm]
+\begin{scope}[yshift=-8.6cm]
 \node[head,anchor=west] at (-0.4,4.3) {(c) where the status-23 quark points};
 \draw[ring] (1.0,1.0) circle (1.2);
 \node[star,star points=5,fill=red!80!black,inner sep=1.2pt] at (1.0,1.0) {};
@@ -64,6 +65,8 @@
 \draw[green!50!black,thick] (0.88,2.56) -- (1.12,2.80) (0.88,2.80) -- (1.12,2.56);
 \node[lab,text=green!50!black,anchor=west] at (1.15,2.75) {$b$, status 23\\ $(-1.44,-2.15)$: $\Delta R=0.56$};
 \draw[black!60,thin,-{Stealth[length=1.6mm]}] (1.0,2.5) -- (1.0,1.2);
-\node[lab,anchor=north west,text width=4.0cm,align=left,text=black!65] at (-0.4,-0.5) {ISR gave the hard system a recoil and the shower moved the family: the hard-process quark sits outside the AK4 jet and inside the AK8 one. The CMS ``physics definition'' of Run~1 matched the status-3 parton within $\Delta R<0.3$ and would have found nothing here.};
+\node[lab,anchor=north west,text width=9.6cm,align=left] at (4.4,3.8) {\textbf{The physics definition asks the hard process, not the hadrons.} The status-23 $b$ quark of the matrix element points $0.56$ from the axis of jet [0] and is caught only by the AK8 jet, whose radius reaches it. What moved: ISR gave the hard system a recoil (\cref{ch:mother_gives_birth}), and the shower that followed, the two gluon emissions of the $b$ and the recoils of the dipoles, carried the family to $(-1.38,-2.73)$, where the last copy of the quark (status 62) and the $\bar B^0$ sit. The ghost of the last copy is in the jet; the ghost of the first is not.\\[3pt]
+ The CMS ``physics definition'' of Run~1 matched the status-3 parton within $\Delta R<0.3$ of the axis and would have found nothing here either: physics flavour 0 for a jet that holds the $b$ quark's whole family. That is why \CMSSW's labels of choice are the hadron and the parton flavour, read from the ghosts of the \emph{last} copies.};
+\node[lab,anchor=north west,text width=4.6cm,align=left,text=black!65] at (-0.4,-0.5) {red: AK4 jet [0], $R=0.4$; white star: the last $b$ quark; green cross: the status-23 $b$; $\Delta R$ in $(\eta,\phi)$.};
 \end{scope}
 \end{tikzpicture}

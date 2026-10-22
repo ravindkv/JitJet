@@ -446,34 +446,254 @@ python3 example/GenJet/plot_journey_GenJet.py --collection ak8 --png # -> journe
 
 A photograph is a rule, and the rule has a distance, a radius, a list of
 who may be in the picture and a threshold. The distance first, because it
-is the part the newcomer least expects to matter.
+is the part the newcomer least expects to matter, and because three
+different distances are in use at the LHC, each taking a different
+picture of the same family. I take nine particles of our event and let
+each of the three photographers cluster them in front of you, step by
+step; then the real jet of thirty-one; then the whole event under the
+three rules, which is where you will see why the experiments chose
+\antikt for the photograph of every chapter to come.
 
-\subsection{The photographer: \antikt and why the hard core comes first}
-\label{sec:family_photograph:antikt}
+\subsection{Three photographers, nine particles: the clustering step by step}
+\label{sec:family_photograph:nine_particles}
 
-Guess first. Thirty-one particles within $0.4$ of the mother, fifteen of
-them the \Bbar's own; in which order does an algorithm that merges the
-``closest'' pair first gather them? If closest meant the smallest angle
-the answer would be a soft pair somewhere, and the jet would grow from
-wherever two soft particles happened to sit, a different place for every
-fluctuation of the periphery. The sequential recombination algorithms of
-the $k_T$ family~\cite{Catani:1993hr,Ellis:1993tq,Dokshitzer:1997in,Wobisch:1998wt,Cacciari:2008gp}
-weight the angle with the momenta,
+Guess first. Here are nine particles of the record, \cref{tab:family_photograph:nine}:
+the four hardest of our $b$ jet, two pairs that happen to be very close,
+three soft particles at its border, and the leading particle of each of
+the two nearest other jets. Which of the nine end up together, and in
+which order are they gathered? Three scripts in
+\file{example/GenJet/Standalone/} answer with every distance printed,
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+cd example/GenJet/Standalone
+python3 antiKt.py                       # anti-kT, R = 0.4: every pair and beam distance, every merge, the picture
+python3 caKt.py                         # the same nine particles under Cambridge/Aachen
+python3 hotVR.py                        # ... and under HOTVR (variable R, mass jump, grooming)
+python3 antiKt.py --no-show -o antiKt.pdf   # the picture as a file (make figures); --radius 0.8 to play
+\end{minted}
+and all three treat the particles as massless, so that rapidity and
+pseudorapidity coincide, and add four-momenta when they merge (the
+E~scheme). Every sequential recombination algorithm has the same shape:
+a distance \dij between any two of the objects alive, a distance \diB of
+each object to the beam, and the rule that at every step the smallest of
+them all wins, a pair being merged into one object, or an object being
+declared a jet and set aside, until nothing is left. The generalised-$k_T$
+family~\cite{Catani:1993hr,Ellis:1993tq,Dokshitzer:1997in,Wobisch:1998wt,Cacciari:2008gp}
+writes
 \begin{equation}
   \dij=\min\!\big(p_{T,i}^{2p},\,p_{T,j}^{2p}\big)\,\frac{\dR_{ij}^2}{R^2},\qquad
   \diB=p_{T,i}^{2p},\qquad
   \dR_{ij}^2=(y_i-y_j)^2+(\phi_i-\phi_j)^2,
+  \label{eq:family_photograph:genkt}
+\end{equation}
+and the power $p$ is the whole difference between its members: $p=-1$ is
+\antikt, $p=0$ Cambridge/Aachen, $p=1$ the original $k_T$ algorithm,
+which \cref{ch:the_inn} takes up. HOTVR keeps the Cambridge/Aachen
+ordering and changes the beam distance and the merge.
+
+\begin{table}[htbp]\centering\small
+\caption[The nine particles of the clustering example]{The nine particles
+of \file{antiKt.py}, \file{caKt.py} and \file{hotVR.py}: rows of the
+record with their \pt, $\eta$ and $\phi$, and where each sits in the
+event. $\dR$ to the core is measured from the \pt-weighted centre of
+A--D, $(-1.362,-2.741)$.}
+\label{tab:family_photograph:nine}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrll}\toprule
+ & particle & \pt [GeV] & $\eta$ & $\phi$ & $\dR$ to the core & where \\\midrule
+A & $\pi^+$ [2181] & 14.27 & $-1.336$ & $-2.721$ & 0.03 & the hardest particle of the $b$ jet \\
+B & $\pi^-$ [2239] & 5.41 & $-1.359$ & $-2.712$ & 0.03 & $0.025$ from A \\
+C & $K^-$ ($s\bar u$) [2211] & 10.57 & $-1.389$ & $-2.770$ & 0.04 & the $D^0$'s kaon \\
+D & $\pi^-$ [2241] & 4.45 & $-1.383$ & $-2.770$ & 0.04 & $0.006$ from C: the first merge of the whole event \\
+E & $\pi^+$ [1217] & 0.68 & $-1.801$ & $-2.849$ & 0.45 & the last particle \antikt added to our real jet \\
+F & $\gamma$ [1538] & 1.86 & $-1.741$ & $-2.641$ & 0.39 & at the border \\
+G & $\gamma$ [2183] & 0.97 & $-1.713$ & $-2.616$ & 0.37 & $0.037$ from F; E is $0.23$ from the pair \\
+H & $\Lambda^0$ ($uds$) [1546] & 8.28 & $-2.417$ & $-2.496$ & 1.08 & the leading particle of the gluon jet [4] \\
+I & $\pi^+$ [1592] & 24.57 & $-2.043$ & $-1.304$ & 1.59 & the leading particle of jet [5] \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsubsection{Anti-$k_T$: the hard one sets every distance}
+
+With $p=-1$ the minimum in \cref{eq:family_photograph:genkt} picks the
+\emph{larger} momentum, $\dij=\max(\pt)^{-2}\,\dR^2/R^2$, and
+$\diB=\pt^{-2}$: a hard particle is close to everything within $R$ of
+itself, at a distance that does not know the other particle's momentum,
+and it is far from the beam only while something is still inside its
+circle. The script prints, for the nine,
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+step 1: d(C, D) = 2.085e-06 (dR = 0.006) wins: merge -> CD with pT = 15.02 GeV
+step 2: d(A, B) = 1.935e-05 (dR = 0.025) wins: merge -> AB with pT = 19.68 GeV
+step 3: d((C+D), (A+B)) = 7.557e-05 (dR = 0.068) wins: merge -> ABCD with pT = 34.69 GeV
+step 4: d(G, ((C+D)+(A+B))) = 7.218e-04 (dR = 0.373) wins: merge -> ABCDG with pT = 35.65 GeV
+step 5: d(F, (G+((C+D)+(A+B)))) = 7.166e-04 (dR = 0.382) wins: merge -> ABCDFG with pT = 37.50 GeV
+step 6: d((F+(G+((C+D)+(A+B)))), beam) = 7.111e-04 wins: jet ABCDFG with pT = 37.50 GeV
+step 7: d(I, beam) = 1.656e-03 wins: jet I with pT = 24.57 GeV
+step 8: d(H, beam) = 1.458e-02 wins: jet H with pT = 8.28 GeV
+step 9: d(E, beam) = 2.163e+00 wins: jet E with pT = 0.68 GeV
+\end{minted}
+Read the first line with the formula: $K^-$ and $\pi^-$ are $0.006$
+apart and the kaon has $10.57\GeV$, so
+$\dij=10.57^{-2}\times(0.006/0.4)^2=2.1\times10^{-6}$, while the hardest
+pair in the event, A and B at $0.025$, has
+$14.27^{-2}\times(0.025/0.4)^2=1.9\times10^{-5}$: the closer pair wins
+although it is softer, because $0.006^2$ beats $0.025^2$ by more than
+$10.57^2$ loses to $14.27^2$. Once the two cores are one object of
+$34.69\GeV$ its beam distance is $34.69^{-2}=8.3\times10^{-4}$, and every
+particle within $R$ of it is closer than that: G at $0.373$ gives
+$8.3\times10^{-4}\times(0.373/0.4)^2=7.2\times10^{-4}$, F at $0.382$ the
+same to two digits, and neither $0.97$ nor $1.86\GeV$ appears anywhere in
+those numbers. E does not come: it is $0.43$ from the axis after F has
+moved it, so $\dij$ to the core exceeds the core's \diB, the core is
+declared a jet at step~6 with six particles and $37.50\GeV$, and E is
+left to be a jet of its own at step~9, which the $3\GeV$ threshold of
+\cref{sec:family_photograph:choices} would drop. I and H are declared
+in order of their own $\pt^{-2}$, each alone.
+
+\subsubsection{Cambridge/Aachen: the angle alone}
+
+With $p=0$ the momenta vanish from \cref{eq:family_photograph:genkt},
+$\dij=\dR^2/R^2$ and $\diB=1$: the closest pair in angle is merged first
+whatever its momenta, and an object is a jet once nothing is left within
+$R$ of it.
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+step 1: d(C, D) = 0.000 (dR = 0.006) wins: merge -> CD with pT = 15.02 GeV
+step 2: d(A, B) = 0.004 (dR = 0.025) wins: merge -> AB with pT = 19.68 GeV
+step 3: d(F, G) = 0.009 (dR = 0.037) wins: merge -> FG with pT = 2.83 GeV
+step 4: d((C+D), (A+B)) = 0.029 (dR = 0.068) wins: merge -> ABCD with pT = 34.69 GeV
+step 5: d(E, (F+G)) = 0.324 (dR = 0.228) wins: merge -> EFG with pT = 3.49 GeV
+step 6: d(((C+D)+(A+B)), (E+(F+G))) = 0.944 (dR = 0.389) wins: merge -> ABCDEFG with pT = 38.18 GeV
+step 7: d(H, beam) = 1 wins: jet H with pT = 8.28 GeV
+step 8: d(I, beam) = 1 wins: jet I with pT = 24.57 GeV
+step 9: d((((C+D)+(A+B))+(E+(F+G))), beam) = 1 wins: jet ABCDEFG with pT = 38.18 GeV
+\end{minted}
+The two photons, $0.037$ apart, pair up at step~3 before the two cores
+have found each other, E joins their blob at $0.228$ (step~5), and the
+blob of $3.49\GeV$, whose centre is $0.389$ from the core, is merged
+whole at step~6: E, which \antikt left out, is in the jet, carried in by
+two photons it was close to. The hard jets are the same, the border is
+not: it follows the soft particles, and a soft particle on the far side
+of a soft neighbour can enter, or a soft particle inside can be pulled
+out by one further away. This angle-ordered sequence is exactly what
+makes Cambridge/Aachen the tool of jet \emph{substructure}, where one
+reclusters the constituents of a jet to find the structure inside, and
+its weakness as the photograph of the family.
+
+\subsubsection{HOTVR: a radius that shrinks with momentum, and a mass test}
+
+The Heavy Object Tagger with Variable~R~\cite{Lapsien:2016zor}, built on
+the variable-$R$ idea of \cite{Krohn:2009zg}, keeps the Cambridge/Aachen
+ordering, $\dij=\dR_{ij}^2$, and lets the beam distance depend on the
+object,
+\begin{equation}
+  \diB=R_{\mathrm{eff}}(\pt)^2,\qquad
+  R_{\mathrm{eff}}=\mathrm{clip}\!\big(\rho/\pt,\;R_{\min},\;R_{\max}\big),
+  \label{eq:family_photograph:hotvr}
+\end{equation}
+so that a boosted object of large \pt is photographed in a small circle
+and a slow one in a large one; and before every merge whose combined
+mass exceeds $\mu$ it asks whether the merge is a real \emph{mass jump},
+$\theta\,m_{ij}>\max(m_i,m_j)$, with both branches above $p_{T,\mathrm{sub}}$:
+if the jump fails the lighter branch is thrown away, if a branch is too
+soft it is thrown away, and only a jump between two hard branches is
+merged, the two branches remembered as subjets. The paper's values are
+for top quarks, $\rho=600\GeV$, $R_{\mathrm{eff}}\in[0.1,1.5]$,
+$\mu=30\GeV$, $\theta=0.7$, $p_{T,\mathrm{sub}}=30\GeV$, and for our
+nine particles, none above $400\GeV$, every $R_{\mathrm{eff}}$ is $1.5$:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
+[01] merge_below_mu  d= 0.0000  Pair C + D (dR=0.006): m_ij=0.0 <= mu=30.0; merge ...
+[02] merge_below_mu  d= 0.0006  Pair A + B (dR=0.025): m_ij=0.2 <= mu=30.0; merge ...
+[03] merge_below_mu  d= 0.0014  Pair F + G (dR=0.037): m_ij=0.0 <= mu=30.0; merge ...
+[04] merge_below_mu  d= 0.0047  Pair (C+D) + (A+B) (dR=0.068): m_ij=1.2 <= mu=30.0; merge ...
+[05] merge_below_mu  d= 0.0519  Pair E + (F+G) (dR=0.228): m_ij=0.3 <= mu=30.0; merge ...
+[06] merge_below_mu  d= 0.1511  Pair ((C+D)+(A+B)) + (E+(F+G)) (dR=0.389): m_ij=4.6 <= mu=30.0; merge ...
+[07] merge_below_mu  d= 1.0954  Pair H + (...) (dR=1.047): m_ij=20.1 <= mu=30.0; merge ...
+[08] discard_soft    d= 2.1285  Pair I + (...) (dR=1.459): mass jump passes (m_ij=52.2 > mu, theta*m_ij=36.5 > 20.1),
+                                but I has pT <= pT,sub=30.0; discard the soft branch.
+[09] finalize_jet    d= 2.2500  d_iB = R_eff^2 smallest for (...): finalize jet (pT=46.3, m=20.1, R_eff=1.500).
+\end{minted}
+The first six steps are Cambridge/Aachen's, every pair mass far below
+$\mu$. Then the circle of $1.5$ reaches the gluon jet's $\Lambda^0$ at
+$1.05$, and since the pair mass is $20.1\GeV$, still below $\mu$, H is
+merged like any other particle: the photograph now holds a piece of the
+neighbouring family. Jet [5]'s pion at $1.46$ is next, and this time
+$m_{ij}=52.2\GeV$ passes $\mu$, the jump $0.7\times52.2=36.5$ exceeds the
+$20.1$ of the heavier branch, but the pion's $24.6\GeV$ is below
+$p_{T,\mathrm{sub}}$: I is thrown away, not merged and not left alone,
+and the jet is declared with $46.3\GeV$ in eight particles. That is the
+grooming HOTVR does in the clustering itself, where the top tagger wants
+it; for a $100\GeV$ $b$ family it is the wrong lens.
+
+\paragraph{What each of them clusters in the end.}
+\Cref{tab:family_photograph:three_results} and
+\cref{fig:family_photograph:three_trees} put the three sequences side by
+side; \cref{fig:family_photograph:nine_pictures} shows the pictures the
+scripts draw.
+\begin{table}[htbp]\centering\small
+\caption[The three algorithms on the nine particles: the result]{What
+the three photographers make of the nine particles. The steps are the
+scripts' logs; jets below the $3\GeV$ threshold of \CMSSW are in
+brackets.}
+\label{tab:family_photograph:three_results}
+\begin{tabular}{p{3.9cm}p{3.9cm}p{4.4cm}}\toprule
+\antikt, $R=0.4$ & Cambridge/Aachen, $R=0.4$ & HOTVR (paper's parameters) \\\midrule
+C+D, A+B, cores, then G and F at the core's distance; E stays out &
+C+D, A+B, F+G, cores, E joins F+G, the blob joins the core &
+as Cambridge/Aachen, then H at $1.05$ ($m=20<\mu$), I at $1.46$ groomed away ($m=52>\mu$, $\pt<p_{T,\mathrm{sub}}$) \\[2pt]
+\textbf{ABCDFG} $37.50\GeV$ \newline I $24.57$, H $8.28$, (E $0.68$) &
+\textbf{ABCDEFG} $38.18\GeV$ \newline I $24.57$, H $8.28$ &
+\textbf{ABCDEFGH} $46.3\GeV$, $R_{\mathrm{eff}}=1.5$, $m=20\GeV$ \newline I thrown away \\[2pt]
+round, the border set by the hard core & the border follows the soft particles & one fat jet of two families, groomed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/genjet_three_algorithms}}
+\caption[The nine particles under the three algorithms, as trees]{The
+order of the merges for the nine particles of
+\cref{tab:family_photograph:nine}, bottom to top, with the winning
+distance at every step (the logs of \file{antiKt.py}, \file{caKt.py} and
+\file{hotVR.py}). Top: \antikt, the core first, then its neighbours at
+the core's distance, E left out. Middle: Cambridge/Aachen, the closest
+pair first whatever its momentum; F and G pair up, E joins them and is
+carried into the jet. Bottom: HOTVR, the same order with $R_{\mathrm{eff}}=1.5$
+and the mass test: H merged, I groomed away.}
+\label{fig:family_photograph:three_trees}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.46\textwidth]{GenJet/Standalone/antiKt.pdf}\hfill
+\includegraphics[width=0.46\textwidth]{GenJet/Standalone/caKt.pdf}\\[1mm]
+\includegraphics[width=0.9\textwidth]{GenJet/Standalone/hotVR.pdf}
+\caption[The pictures drawn by the three scripts]{The pictures the three
+scripts draw. Top: \antikt (left) and Cambridge/Aachen (right), a circle
+of $R=0.4$ around every jet axis; E is a jet of its own on the left and a
+constituent on the right. Bottom: \file{hotVR.py}, the variable-radius
+rule, the decision logic of the paper's Section~2, and the nine particles
+with their single HOTVR jet of $R_{\mathrm{eff}}=1.5$ and the groomed
+pion.}
+\label{fig:family_photograph:nine_pictures}
+\end{figure}
+
+\subsection{The photographer: \antikt and why the hard core comes first}
+\label{sec:family_photograph:antikt}
+
+Now the real jet. Thirty-one particles within $0.4$ of the mother, fifteen
+of them the \Bbar's own; the nine of the previous section were four of
+its core, three of its border and two neighbours, and the full family
+gathers in the same order, the core first. If closest meant the smallest
+angle, as it does for Cambridge/Aachen, the jet would grow from wherever
+two soft particles happened to sit, a different place for every
+fluctuation of the periphery. The distance of
+\cref{eq:family_photograph:genkt} with $p=-1$,
+\begin{equation}
+  \dij=\min\!\big(p_{T,i}^{-2},\,p_{T,j}^{-2}\big)\,\frac{\dR_{ij}^2}{R^2}
+      =\frac{1}{\max(p_{T,i},p_{T,j})^2}\,\frac{\dR_{ij}^2}{R^2},\qquad
+  \diB=\frac{1}{p_{T,i}^2},
   \label{eq:family_photograph:dij}
 \end{equation}
-and at every step the smallest of all \dij and \diB wins: a pair is
-merged by adding its four-momenta, or, if a beam distance wins, the
-pseudojet is declared a jet and set aside, until nothing is left. The
-power $p$ is the whole difference between the members of the family,
-$p=1$ for $k_T$, $0$ for Cambridge/Aachen and $-1$ for \antikt, and
-\cref{ch:the_inn} compares them; here only the last matters, because it
-is what the experiments use, and with $p=-1$ the minimum in
-\cref{eq:family_photograph:dij} picks the \emph{harder} particle's inverse
-momentum. Between a particle of $15\GeV$ and one of $0.5$ at $\dR=0.3$ the
+picks the \emph{harder} particle's inverse momentum. Between a particle of $15\GeV$ and one of $0.5$ at $\dR=0.3$ the
 distance is $15^{-2}\times(0.3/0.4)^2=2.5\times10^{-3}$, and it would be
 the same with the soft one at $3\GeV$ or at $0.05$: the soft particle's
 momentum never enters. So every soft particle within $R$ of a hard one is
@@ -543,6 +763,73 @@ cone does not. The $\bar b$'s jet, $94.09\GeV$ in 18 particles at
 $\eta=-3.45$, exceeds its cone by $1.07$. Page~1 of
 \file{theory_genjets.pdf} (\cref{fig:family_photograph:truejet_plot})
 draws the ladder with the \dR of each merge.
+
+\subsection{The whole event under the three rules, and why the experiments chose \antikt}
+\label{sec:family_photograph:three_rules}
+
+Nine particles show the rules; the event shows the consequences.
+\file{plot_algorithms_GenJet.py} runs the three on the $749$ final
+particles, \antikt and Cambridge/Aachen with the \code{Clustering} class
+of the main script at $R=0.4$ and HOTVR with a NumPy copy of
+\file{hotVR.py}'s decisions, checked against it on the nine, and draws
+them side by side, \cref{fig:family_photograph:three_event}:
+\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
+python3 example/GenJet/Standalone/plot_algorithms_GenJet.py        # -> algorithms_genjets.pdf, the three panels
+python3 example/GenJet/Standalone/plot_algorithms_GenJet.py --rho 40 --mu 10 --ptsub 5   # HOTVR scaled to our scale
+\end{minted}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{GenJet/Standalone/algorithms_genjets.pdf}
+\caption[The same event under anti-$k_T$, Cambridge/Aachen and HOTVR]{The
+same $749$ particles under the three rules, in the frame of
+\cref{fig:family_photograph:journey}: a circle of the jet's radius
+around every jet above $3\GeV$, the $b$ jet red, the $\bar b$ jet blue,
+the next six in colour, the rest grey, particles in no jet hollow, the
+particles HOTVR groomed away as crosses and its subjet axes as diamonds.
+(a) \antikt, $R=0.4$: the \akfour of the record. (b) Cambridge/Aachen,
+$R=0.4$. (c) HOTVR with the paper's parameters.}
+\label{fig:family_photograph:three_event}
+\end{figure}
+
+\paragraph{The numbers.} \antikt makes $42$ jets above $3\GeV$ holding
+$368$ particles, Cambridge/Aachen $39$ holding $356$, and the six hard
+jets are the same six: our $b$ jet is the identical object under both,
+$99.83\GeV$ in $31$ particles, because nothing soft sits on its border
+with a soft neighbour outside. The $\bar b$ jet is not: $94.45\GeV$ in
+$20$ particles under Cambridge/Aachen against $94.09$ in $18$, two soft
+particles carried in as E was; the gluon jet [4] gains two as well,
+$48.07$ in $27$ against $46.40$ in $25$, and jet [6] three. A third of a
+GeV here, a GeV and a half there, each time from particles that have
+nothing to do with the family, each time in a direction that depends on
+where the soft periphery happened to be. HOTVR with the top-tagging
+parameters takes a different photograph altogether: $16$ jets, $525$
+particles in them and $196$ thrown away, the $b$ family inside a jet of
+$170.59\GeV$, $105$ particles and a mass of $160\GeV$ whose three subjets
+are \antikt's jets [0], [4] and [5], the $\bar b$ family inside one of
+$151.86\GeV$ with [1] and [2] as its two subjets. It is the picture a top
+quark would want, its three prongs in one circle with the soft dirt
+removed; for two $b$ quarks it merges families that the matrix element
+produced separately.
+
+\paragraph{Why \antikt.} The experiments chose \antikt for their
+standard jets in 2008~\cite{Cacciari:2008gp}, and the reason is in the
+three panels. Its boundary is drawn by the hard core and does not move
+when a soft particle is added, removed or shifted: so the underlying
+event of \cref{ch:uninvited_cousins} and the pile-up of
+\cref{ch:crowd_on_the_road} add momentum to a circle of known area
+without redrawing it, which is what the subtraction of
+\cref{ch:paying_for_uninvited} needs, and the detector's response to a
+jet becomes a function of one radius, which is what the calibration of
+\cref{ch:fair_price} needs. It is infrared and collinear safe like its two
+siblings, so the cross section of a jet is a prediction of perturbative
+QCD; and it is a sequential algorithm with the same $N\ln N$ bookkeeping,
+so it costs nothing more~\cite{Cacciari:2011ma,Salam:2009jx}. What it
+gives up, the angular ordering inside the jet, is recovered when it is
+wanted: Cambridge/Aachen and $k_T$ recluster the constituents of an
+\antikt jet to read its substructure, and HOTVR and its relatives are run
+beside the standard collections for the boosted objects they were built
+for. The photograph of the family is the \antikt one, and it stays so for
+the rest of the journey.
 
 \subsection{The choices: the radius, the neutrinos and the threshold}
 \label{sec:family_photograph:choices}
@@ -678,12 +965,13 @@ happens to them in our event.
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/genjet_ghosts}}
 \caption[The ghost, the labels of the three $b$ jets and the physics
-definition]{The ghosts. Left: the \Bbar has decayed; it is put back with
-its momentum times $10^{-18}$, \cref{eq:family_photograph:ghost}, follows
-the clustering and lands in the jet without moving it. Middle: the labels
-of \cref{eq:family_photograph:labels} for the three $b$-flavoured \akfour
-jets of our event, with the ghosts behind each. Right: where the
-status-23 $b$ quark points, $0.56$ from the jet, and why.}
+definition]{The ghosts. Top left: the \Bbar has decayed; it is put back
+with its momentum times $10^{-18}$, \cref{eq:family_photograph:ghost},
+follows the clustering and lands in the jet without moving it. Top right:
+the labels of \cref{eq:family_photograph:labels} for the three
+$b$-flavoured \akfour jets of our event, with the ghosts behind each.
+Bottom: where the status-23 $b$ quark points, $0.56$ from the jet, and
+why.}
 \label{fig:family_photograph:ghosts_sketch}
 \end{figure}
 

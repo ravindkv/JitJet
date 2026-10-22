@@ -1,0 +1,107 @@
+% ---------------------------------------------------------------------------
+% Nine particles of our event (antiKt.py, caKt.py, hotVR.py) clustered by the
+% three rules: the order of the merges as a tree, bottom to top, with the
+% winning distance at every step. A: pi+ 14.3 GeV, B: pi- 5.4 (0.025 from A),
+% C: K- 10.6, D: pi- 4.5 (0.006 from C), E: pi+ 0.7, F: gamma 1.9, G: gamma 1.0
+% (F, G 0.037 apart at the border; E 0.23 from them), H: Lambda0 8.3 (the gluon
+% jet [4], 1.1 away), I: pi+ 24.6 (jet [5], 1.6 away). Numbers: the three logs.
+% Three panels stacked; y = 0.45 x step.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  dval/.style={font=\tiny,text=black!70,anchor=west,inner sep=1pt,text width=6.6cm,align=left},
+  expl/.style={font=\scriptsize,anchor=north west,text width=3.1cm,align=left},
+  head/.style={font=\small\bfseries,anchor=west},
+  leaf/.style={font=\scriptsize\bfseries,anchor=north},
+  hard/.style={circle,fill=red!75!black,inner sep=0pt},
+  soft/.style={circle,fill=black!45,inner sep=0pt},
+  oth/.style={circle,fill=blue!60!black,inner sep=0pt},
+  tree/.style={red!80!black,thick},
+  treeb/.style={blue!60!black,thick},
+  jet/.style={star,star points=5,fill=black,inner sep=1.4pt},
+  groom/.style={black!60,thick,dashed}]
+% leaves: C D A B G F E H I at x = 0, 0.7, ..., with a marker scaled by pT
+\newcommand{\leaves}{%
+  \node[hard,minimum size=6.5pt] at (0,0) {}; \node[leaf] at (0,-0.12) {C};
+  \node[hard,minimum size=4.2pt] at (0.7,0) {}; \node[leaf] at (0.7,-0.12) {D};
+  \node[hard,minimum size=7.5pt] at (1.4,0) {}; \node[leaf] at (1.4,-0.12) {A};
+  \node[hard,minimum size=4.6pt] at (2.1,0) {}; \node[leaf] at (2.1,-0.12) {B};
+  \node[soft,minimum size=2.0pt] at (2.8,0) {}; \node[leaf] at (2.8,-0.12) {G};
+  \node[soft,minimum size=2.8pt] at (3.5,0) {}; \node[leaf] at (3.5,-0.12) {F};
+  \node[soft,minimum size=1.7pt] at (4.2,0) {}; \node[leaf] at (4.2,-0.12) {E};
+  \node[oth,minimum size=5.8pt] at (5.2,0) {}; \node[leaf] at (5.2,-0.12) {H};
+  \node[oth,minimum size=10pt] at (6.2,0) {}; \node[leaf] at (6.2,-0.12) {I};
+  \node[lab,anchor=north,text=black!60] at (3.1,-0.42) {$\underbrace{\hspace{2.0cm}}_{\text{the core, within }0.07}$\hspace{2mm}$\underbrace{\hspace{1.5cm}}_{\text{the border}}$\hspace{3mm}$\underbrace{\hspace{1.2cm}}_{\text{jets [4], [5]}}$};
+  \draw[-{Stealth[length=1.6mm]},black!50] (-0.6,0.15) -- (-0.6,4.8) node[lab,anchor=south,text=black!60] {step};
+  \foreach \k in {1,...,9} {\node[font=\tiny,text=black!50,anchor=east] at (-0.65,0.5*\k) {\k};}}
+% ---------------- (a) anti-kT ---------------------------------------------------------------------
+\begin{scope}
+\node[head] at (-0.6,5.25) {(a) anti-$k_T$, $R=0.4$: \ \normalfont\footnotesize $d_{ij}=\min(p_{T,i}^{-2},p_{T,j}^{-2})\,\Delta R_{ij}^2/R^2$, \ $d_{iB}=p_{T,i}^{-2}$};
+\leaves
+\draw[tree] (0,0.15) -- (0,0.5) -- (0.7,0.5) -- (0.7,0.15);
+\draw[tree] (1.4,0.15) -- (1.4,1) -- (2.1,1) -- (2.1,0.15);
+\draw[tree] (0.35,0.5) -- (0.35,1.5) -- (1.75,1.5) -- (1.75,1);
+\draw[tree] (1.05,1.5) -- (1.05,2) -- (2.8,2) -- (2.8,0.15);
+\draw[tree] (1.9,2) -- (1.9,2.5) -- (3.5,2.5) -- (3.5,0.15);
+\draw[tree] (2.7,2.5) -- (2.7,3); \node[jet,red!80!black] at (2.7,3.05) {};
+\draw[treeb] (6.2,0.15) -- (6.2,3.5); \node[jet,blue!60!black] at (6.2,3.55) {};
+\draw[treeb] (5.2,0.15) -- (5.2,4); \node[jet,blue!60!black] at (5.2,4.05) {};
+\draw[black!50,thick] (4.2,0.15) -- (4.2,4.5); \node[jet,black!50] at (4.2,4.55) {};
+\node[dval] at (6.7,0.5) {1: C+D at $\Delta R=0.006$: $d=10.57^{-2}(0.006/0.4)^2=2.1\cdot10^{-6}$};
+\node[dval] at (6.7,1) {2: A+B at $0.025$: $d=14.27^{-2}(0.025/0.4)^2=1.9\cdot10^{-5}$};
+\node[dval] at (6.7,1.5) {3: the two cores at $0.07$: $d=7.6\times10^{-5}$};
+\node[dval] at (6.7,2) {4: G joins at $0.37$: $d=34.69^{-2}(0.37/0.4)^2=7.2\cdot10^{-4}$};
+\node[dval] at (6.7,2.5) {5: F joins at $0.38$: $d=7.2\cdot10^{-4}$; F's $p_T$ never enters};
+\node[dval] at (6.7,3) {6: $d_{iB}=1/37.5^2=7.1\times10^{-4}$: \textbf{jet ABCDFG}, $37.5$ GeV};
+\node[dval] at (6.7,3.5) {7: $d_{iB}=1/24.6^2$: jet I};
+\node[dval] at (6.7,4) {8: $d_{iB}=1/8.3^2$: jet H};
+\node[dval] at (6.7,4.5) {9: $d_{iB}=1/0.68^2=2.2$: E alone, below $3$ GeV};
+\node[expl] at (13.6,4.6) {The hard core sets every distance: G and F join at $d=p_{T,\mathrm{core}}^{-2}(\Delta R/R)^2$ whatever their own $p_T$; E, $0.43$ from the axis, does not. A round jet, the border decided by the core.};
+\end{scope}
+% ---------------- (b) Cambridge/Aachen ------------------------------------------------------------
+\begin{scope}[yshift=-6.9cm]
+\node[head] at (-0.6,5.25) {(b) Cambridge/Aachen, $R=0.4$: \ \normalfont\footnotesize $d_{ij}=\Delta R_{ij}^2/R^2$, \ $d_{iB}=1$};
+\leaves
+\draw[tree] (0,0.15) -- (0,0.5) -- (0.7,0.5) -- (0.7,0.15);
+\draw[tree] (1.4,0.15) -- (1.4,1) -- (2.1,1) -- (2.1,0.15);
+\draw[tree] (2.8,0.15) -- (2.8,1.5) -- (3.5,1.5) -- (3.5,0.15);
+\draw[tree] (0.35,0.5) -- (0.35,2) -- (1.75,2) -- (1.75,1);
+\draw[tree] (3.15,1.5) -- (3.15,2.5) -- (4.2,2.5) -- (4.2,0.15);
+\draw[tree] (1.05,2) -- (1.05,3) -- (3.68,3) -- (3.68,2.5);
+\draw[treeb] (5.2,0.15) -- (5.2,3.5); \node[jet,blue!60!black] at (5.2,3.55) {};
+\draw[treeb] (6.2,0.15) -- (6.2,4); \node[jet,blue!60!black] at (6.2,4.05) {};
+\draw[tree] (2.36,3) -- (2.36,4.5); \node[jet,red!80!black] at (2.36,4.55) {};
+\node[dval] at (6.7,0.5) {1: C+D at $0.006$: $d=(0.006/0.4)^2=0.0002$};
+\node[dval] at (6.7,1) {2: A+B at $0.025$: $d=0.004$};
+\node[dval] at (6.7,1.5) {3: F+G at $0.037$: $d=0.009$: the photons pair up};
+\node[dval] at (6.7,2) {4: the two cores at $0.07$: $d=0.029$};
+\node[dval] at (6.7,2.5) {5: E joins F+G at $0.23$: $d=0.32$};
+\node[dval] at (6.7,3) {6: the blob ($3.5$ GeV) joins the core at $0.39$: $d=0.94<1$};
+\node[dval] at (6.7,3.5) {7: $d_{iB}=1$: jet H};
+\node[dval] at (6.7,4) {8: $d_{iB}=1$: jet I};
+\node[dval] at (6.7,4.5) {9: $d_{iB}=1$: \textbf{jet ABCDEFG}, $38.2$ GeV};
+\node[expl] at (13.6,4.6) {Angle only: F and G pair up before the core is finished, E joins their blob, and the blob carries E into the jet. The same hard jets, a border that follows the soft particles.};
+\end{scope}
+% ---------------- (c) HOTVR -----------------------------------------------------------------------
+\begin{scope}[yshift=-13.8cm]
+\node[head] at (-0.6,5.25) {(c) HOTVR: \ \normalfont\footnotesize $d_{ij}=\Delta R_{ij}^2$, \ $d_{iB}=R_{\mathrm{eff}}^2$, \ $R_{\mathrm{eff}}=\mathrm{clip}(600\,\mathrm{GeV}/p_T,\,0.1,\,1.5)=1.5$ for all nine};
+\leaves
+\draw[tree] (0,0.15) -- (0,0.5) -- (0.7,0.5) -- (0.7,0.15);
+\draw[tree] (1.4,0.15) -- (1.4,1) -- (2.1,1) -- (2.1,0.15);
+\draw[tree] (2.8,0.15) -- (2.8,1.5) -- (3.5,1.5) -- (3.5,0.15);
+\draw[tree] (0.35,0.5) -- (0.35,2) -- (1.75,2) -- (1.75,1);
+\draw[tree] (3.15,1.5) -- (3.15,2.5) -- (4.2,2.5) -- (4.2,0.15);
+\draw[tree] (1.05,2) -- (1.05,3) -- (3.68,3) -- (3.68,2.5);
+\draw[tree] (2.36,3) -- (2.36,3.5) -- (5.2,3.5) -- (5.2,0.15);
+\draw[groom] (6.2,0.15) -- (6.2,4) -- (3.78,4) -- (3.78,3.5);
+\draw[black!60,thick] (6.05,3.85) -- (6.35,4.15) (6.05,4.15) -- (6.35,3.85);
+\draw[tree] (3.78,4) -- (3.78,4.5); \node[jet,red!80!black] at (3.78,4.55) {};
+\node[dval] at (6.7,0.5) {1--5: as Cambridge/Aachen, every pair mass far below $\mu=30$ GeV};
+\node[dval] at (6.7,3) {6: the core takes E, F, G: $m=4.6$ GeV, a plain merge};
+\node[dval] at (6.7,3.5) {7: H at $1.05<R_{\mathrm{eff}}$: $m_{ij}=20.1\le\mu$, \textbf{H merged}};
+\node[dval] at (6.7,4) {8: I at $1.46$: $m_{ij}=52>\mu$, $\theta m_{ij}=36.5>20.1$, $p_T<p_{T,\mathrm{sub}}$: \textbf{I groomed}};
+\node[dval] at (6.7,4.5) {9: $d_{iB}=1.5^2$: \textbf{jet ABCDEFGH}, $46.3$ GeV};
+\node[expl] at (13.6,4.6) {With $\rho=600$ GeV everything below $400$ GeV has $R_{\mathrm{eff}}=1.5$: the gluon jet's $\Lambda^0$ is swallowed as an ordinary particle, and jet [5]'s pion, a mass jump, is thrown away as too soft. A photograph of a different object.};
+\end{scope}
+\end{tikzpicture}

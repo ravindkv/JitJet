@@ -41,16 +41,21 @@
 \foreach \p/\s in {(3.4,1.35)/4.2,(3.6,1.1)/2.8,(3.15,1.6)/2.4,(3.8,1.6)/1.9,(3.2,0.8)/1.6} {\node[oth,minimum size=\s pt] at \p {};}
 \node[bq] (c1) at (1.75,0.85) {}; \node[bbq] (c2) at (2.65,0.95) {};
 \draw[neut] (c1) -- (c2);
-\node[lab,text=green!50!black,anchor=south] at (2.2,1.05) {$u_{ik}=0.064$};
-\draw[-{Stealth[length=1.6mm]},red!80!black,thick,dashed] (c1) -- (1.1,1.2);
-\node[lab,text=red!80!black,anchor=north] at (1.3,0.6) {$u_{ij}=0.21$: the\\ merge about to happen};
-\node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {Before the $\bar B^0$ ($i$) joins the core of jet [8] ($j$), IFN looks for a pseudojet $k$ of opposite flavour with $u_{ik}<u_{ij}$. The $B^0$ qualifies, $0.064<0.21$, the two flavours cancel, and both jets stay flavourless. At $1\,\mathrm{GeV}$ and above $u_{ik}$ exceeds $u_{ij}$ and the pair keeps its flavour: it is then hard enough to be real.};
+\node[lab,text=green!50!black,anchor=south] at (2.2,1.05) {$u_{ik}=0.5^2\times0.255=0.064$};
+\node[oth,minimum size=3.2pt] (nb) at (1.95,0.75) {};
+\node[lab,anchor=north,text=black!65] at (1.95,0.68) {$\bar n^0$, $7.4\,\mathrm{GeV}$};
+\draw[-{Stealth[length=1.6mm]},red!80!black,thick,dashed] (c1) -- (nb);
+\node[lab,text=red!80!black,anchor=north east] at (1.75,0.45) {$u_{ij}=7.4^2\times0.0038=0.21$:\\ the merge about to happen};
+\node[lab,anchor=north west,text width=5.2cm,align=left] at (-0.4,-1.5) {Before the $\bar B^0$ ($i$, $0.5\,\mathrm{GeV}$) joins the $\bar n^0$ of $7.4\,\mathrm{GeV}$ in jet [9] ($j$, $\Delta R=0.06$), IFN looks for a pseudojet $k$ of opposite flavour with $u_{ik}<u_{ij}$, where with $\alpha=2$ $u=\max(p_{T,i},p_{T,k})^2\,\Omega^2$ and $\Omega^2=2[(\cosh\Delta y-1)-(\cos\Delta\phi-1)]$. The $B^0$: $\Delta y=0.50$, $\Delta\phi=0.02$, $\Omega^2=2[0.1276+0.0001]=0.255$, $u_{ik}=0.25\times0.255=0.064$. The merge: $\Delta y=0.04$, $\Delta\phi=0.04$, $\Omega^2=0.0038$, $u_{ij}=7.42^2\times0.0038=0.21$. $0.064<0.21$: the two flavours cancel and both jets stay flavourless. $u_{ik}$ grows as the pair's $p_T^2$ while $u_{ij}$ is set by the $7.4\,\mathrm{GeV}$ partner: above $0.9\,\mathrm{GeV}$ the pair keeps its flavour, it is then hard enough to be real.};
 \end{scope}
 % ---------------- (c) the three distances -------------------------------------------------------------
 \begin{scope}[xshift=13.6cm]
 \node[head,anchor=west] at (-0.4,4.3) {(c) the distances};
-\node[box,anchor=north west] (D1) at (-0.4,3.8) {\textbf{anti-$k_T$} (the kinematics of the GenJets and of IFN)\\ $d_{ij}=\min(p_{T,i}^{-2},p_{T,j}^{-2})\,\Delta R_{ij}^2/R^2$, \quad $d_{iB}=p_{T,i}^{-2}$};
-\node[box,anchor=north west,below=3mm of D1.south west] (D2) {\textbf{flavour-$k_T$} (Banfi, Salam, Zanderighi)\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\max(k_{T,i},k_{T,j})^\alpha\min(k_{T,i},k_{T,j})^{2-\alpha}$ if the softer is flavoured,\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\min(k_{T,i},k_{T,j})^2$ otherwise;\\ $d_{iB}$ the same with $k_{T,B}(y_i)=\sum_j k_{T,j}[\Theta(y_j-y_i)+\Theta(y_i-y_j)e^{y_j-y_i}]$};
-\node[box,anchor=north west,below=3mm of D2.south west] (D3) {\textbf{IFN} (Caola, Grabarczyk, Hutt, Salam, Scyboz, Thaler)\\ $u_{ik}=\max(p_{T,i},p_{T,k})^\alpha\min(p_{T,i},p_{T,k})^{2-\alpha}\,\Omega_{ik}^2$\\ $\Omega_{ik}^2=2\big[(\cosh\omega\Delta y-1)/\omega^2-(\cos\Delta\phi-1)\big]$, \ $\alpha=2$, $\omega=1$};
+\node[box,anchor=north west] (D1) at (-0.4,3.8) {\textbf{anti-$k_T$} (the kinematics of the GenJets and of IFN)\\ $d_{ij}=\min(p_{T,i}^{-2},p_{T,j}^{-2})\,\Delta R_{ij}^2/R^2$, \quad $d_{iB}=p_{T,i}^{-2}$\\[2pt]
+ \textit{our jet's first merge, $K^-$ $10.57$ GeV + $\pi^-$ $4.45$ GeV at $\Delta R=0.0056$:} $d_{ij}=10.57^{-2}\,(0.0056/0.4)^2=1.7\times10^{-6}$; $d_{iB}=10.57^{-2}=9.0\times10^{-3}$, so the pair goes first};
+\node[box,below=3mm of D1.south west,anchor=north west] (D2) {\textbf{flavour-$k_T$} (Banfi, Salam, Zanderighi)\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\max(k_{T,i},k_{T,j})^\alpha\min(k_{T,i},k_{T,j})^{2-\alpha}$ if the softer is flavoured,\\ $d_{ij}=\Delta R_{ij}^2/R^2\times\min(k_{T,i},k_{T,j})^2$ otherwise;\\ $d_{iB}$ the same with $k_{T,B}(y_i)=\sum_j k_{T,j}[\Theta(y_j-y_i)+\Theta(y_i-y_j)e^{y_j-y_i}]$\\[2pt]
+ \textit{from the log ($\alpha=2$):} $\bar B^0$ $81.97$ GeV ($+1\,b$) + an unflavoured $1.45$ GeV at $\Delta R=0.083$, the softer unflavoured: $d_{ij}=(0.083/0.4)^2\times1.45^2=0.090$; $\bar\Lambda_b^0$ $35.75$ GeV ($-1\,b$) + $\bar B^0$ $24.93$ GeV ($+1\,b$) at $0.162$, the softer flavoured: $d_{ij}=(0.162/0.4)^2\times35.75^2=209$, a flavoured soft particle is kept apart until the end};
+\node[box,below=3mm of D2.south west,anchor=north west] (D3) {\textbf{IFN} (Caola, Grabarczyk, Hutt, Salam, Scyboz, Thaler)\\ $u_{ik}=\max(p_{T,i},p_{T,k})^\alpha\min(p_{T,i},p_{T,k})^{2-\alpha}\,\Omega_{ik}^2$\\ $\Omega_{ik}^2=2\big[(\cosh\omega\Delta y-1)/\omega^2-(\cos\Delta\phi-1)\big]$, \ $\alpha=2$, $\omega=1$\\[2pt]
+ \textit{the soft pair of (b):} $u_{ik}=\max(0.5,0.5)^2\times2[(\cosh0.50-1)-(\cos0.02-1)]=0.25\times0.255=0.064$; against the $\bar n^0$: $u_{ij}=7.42^2\times2[(\cosh0.04-1)-(\cos0.04-1)]=55.1\times0.0038=0.21$};
 \end{scope}
 \end{tikzpicture}

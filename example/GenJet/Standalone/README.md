@@ -95,6 +95,36 @@ the CMSSW ghost "leptons" are collected but used for no label. The IFN candidate
 an assumption of this port: the FastJet contrib IFNPlugin is the reference, and the
 python wheel of FastJet carries no contrib.
 
+## The three photographers on nine particles, and on the whole event
+
+`antiKt.py`, `caKt.py` and `hotVR.py` run one algorithm each on the same nine particles of the
+record (massless, pT/eta/phi of the rows): the two cores of the b jet (A = pi+[2181] 14.3 GeV,
+B = pi-[2239] 5.4, C = K-[2211] 10.6, D = pi-[2241] 4.5), three soft particles at its border
+(E = pi+[1217] 0.7, F = gamma[1538] 1.9, G = gamma[2183] 1.0; F and G 0.037 apart, E 0.23 from
+them), the leading particle of the gluon jet [4] (H = Lambda0[1546] 8.3 GeV, 1.1 away) and of
+jet [5] (I = pi+[1592] 24.6 GeV, 1.6 away). Every step prints the smallest distances and the
+decision; `--no-show -o file.pdf` saves the picture (`make figures`).
+
+```bash
+python3 antiKt.py            # p = -1: C+D, A+B, cores, G, F join at the core's d; E (0.43 from the axis) stays out
+python3 caKt.py              # p = 0:  F+G pair up first, E joins them, the blob carries E into the jet (7 particles)
+python3 hotVR.py             # Cambridge/Aachen order, d_iB = R_eff^2 = 1.5^2: H merged (m = 20 < mu), I groomed away
+python3 hotVR.py --rho 40 --mu 10 --ptsub 5     # the HOTVR parameters are options
+```
+
+Final jets: anti-kT ABCDFG 37.5 GeV + I + H (+ E alone, below 3 GeV); Cambridge/Aachen ABCDEFG 38.2 GeV
++ H + I; HOTVR (rho = 600 GeV, R_min 0.1, R_max 1.5, mu = 30 GeV, theta = 0.7, pT_sub = 30 GeV)
+one jet ABCDEFGH of 46.3 GeV with R_eff = 1.5 and I thrown away by the pT_sub test after a mass
+jump (m_ij = 52 > mu, theta m_ij = 36.5 > 20.1, pT(I) = 24.6 < 30).
+
+`plot_algorithms_GenJet.py` runs the three rules on the 749 particles (anti-kT and Cambridge/Aachen
+with the `Clustering` class, HOTVR with a numpy copy of `hotVR.py`'s decisions, checked against it on
+the nine) and draws them side by side in `algorithms_genjets.pdf`: anti-kT 42 jets (368 particles),
+Cambridge/Aachen 39 jets (356; the b jet identical, 99.83 GeV / 31, the bbar jet 94.45 / 20 instead
+of 94.09 / 18, jet [4] 48.07 / 27 instead of 46.40 / 25), HOTVR 16 jets holding 525 particles with
+196 groomed away: the b family becomes a 170.6 GeV jet of 105 particles and mass 160 GeV with three
+subjets (anti-kT's jets [0], [4] and [5]), the bbar family a 151.9 GeV jet with two.
+
 ## Validation against FastJet 3 and PYTHIA 8 (`validate_genjets_with_fastjet.py`)
 
 ```bash

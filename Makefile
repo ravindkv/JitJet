@@ -131,7 +131,11 @@ FIGURES := example/ME/journey_ME.pdf \
            example/GenJet/journey_GenJet_nonu.pdf \
            example/GenJet/journey_GenJet_ak8.pdf \
            example/GenJet/Standalone/animate_standalone_genjets_stills.pdf \
-           example/GenJet/Standalone/theory_genjets.pdf
+           example/GenJet/Standalone/theory_genjets.pdf \
+           example/GenJet/Standalone/antiKt.pdf \
+           example/GenJet/Standalone/caKt.pdf \
+           example/GenJet/Standalone/hotVR.pdf \
+           example/GenJet/Standalone/algorithms_genjets.pdf
 
 figures: $(FIGURES)
 
@@ -241,6 +245,21 @@ example/Decay/Standalone/animate_standalone_hadron_decays_stills.pdf: \
 example/GenJet/Standalone/theory_genjets.pdf: example/GenJet/Standalone/plot_theory_GenJet.py \
 		example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
 	$(PYTHON) example/GenJet/Standalone/plot_theory_GenJet.py -o $@
+
+# Chapter 7, the three photographers on nine particles of the event (antiKt.py, caKt.py, hotVR.py)
+# and on the whole final state (plot_algorithms_GenJet.py: anti-kT, Cambridge/Aachen, HOTVR side by side).
+example/GenJet/Standalone/antiKt.pdf: example/GenJet/Standalone/antiKt.py
+	cd example/GenJet/Standalone && $(PYTHON) antiKt.py --no-show -o antiKt.pdf > /dev/null
+
+example/GenJet/Standalone/caKt.pdf: example/GenJet/Standalone/caKt.py
+	cd example/GenJet/Standalone && $(PYTHON) caKt.py --no-show -o caKt.pdf > /dev/null
+
+example/GenJet/Standalone/hotVR.pdf: example/GenJet/Standalone/hotVR.py
+	cd example/GenJet/Standalone && $(PYTHON) hotVR.py --no-show --quiet --output hotVR.pdf
+
+example/GenJet/Standalone/algorithms_genjets.pdf: example/GenJet/Standalone/plot_algorithms_GenJet.py \
+		example/GenJet/Standalone/standalone_genjets.py example/GenJet/Standalone/hotVR.py example/Decay/event_Decay.lhe
+	$(PYTHON) example/GenJet/Standalone/plot_algorithms_GenJet.py -o $@
 
 # Key frames of the GenJet animation (one page per scene; the film is not a build product).
 example/GenJet/Standalone/animate_standalone_genjets_stills.pdf: \

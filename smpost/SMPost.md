@@ -139,3 +139,23 @@ Path:
 example/Decay/Standalone/animate_standalone_hadron_decays.mp4
 chapter/chapter_06_children_producing_grandchildren.tex
 
+
+
+### --------------------------------------
+(Part I trailer) JitJet | Part I | The Family Is Born: Chapters 1-7 in Two Minutes
+
+One simulated event, followed through the first seven chapters on eight pages of
+the CMSSW genJetAnalyzer stack. A counter counts what each stage produced: 2
+particles after the hard scattering, 57 after the parton shower, 169 with the
+multiparton interactions and the beam remnants, 320 hadrons, 634 stable
+particles after the decays, and then 239 of the 634 inside 27 anti-kT jets of
+R = 0.4, 80 GeV of the 118 once the neutrino is left out, 488 inside the wide
+R = 0.8 jets. One question per stop asks what the chapter answers: where do two
+quarks of 113 GeV come from, why does a colour charge radiate, who invited the
+other 112, how does a string break, when does a B meson decay, why does the b
+jet carry more than the b quark, which jet is the true one. Every stage has its
+chapter, and every chapter has its film: watch Part I.
+
+Path:
+example/trailer/animate_trailer_part1_ch01_07.mp4
+example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf

@@ -6,6 +6,7 @@
 #   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
 #   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the narrated cone-growth trailer (~80 s)
+#   make trailer-part1 -> example/trailer/animate_trailer_part1_ch01_07.mp4, the narrated Part I trailer (~2 min)
 #   make cover-youtube -> smpost/cover_photo_youtube.png, the 2560x1440 YouTube channel banner
 #   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
 #   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos
@@ -64,6 +65,14 @@ cover-video: cover/cover_timeline.pdf
 # build/short_cover_frames, where the narration clips are cached as well.
 cover-video-short: cover/cover_timeline.tex
 	$(PYTHON) cover/animate_short_cover_timeline.py
+
+# The Part I trailer (about 2 min): the eight pages of the CMSSW genJetAnalyzer
+# stack one after the other, the particle count of each stage counted up, one
+# chapter card and one question per stop, the same voice and score as the
+# chapter films (edge-tts, needs the network). The pages are rendered with gs
+# into build/trailer_frames and the narration clips cached in build/narration/trailer.
+trailer-part1: example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf
+	$(PYTHON) example/trailer/animate_trailer_part1_ch01_07.py
 
 # The YouTube channel banner: the timeline cone laid out for YouTube's safe
 # areas, compiled with pdflatex and rasterised with gs to exactly 2560x1440.
@@ -289,4 +298,4 @@ clean:
 distclean: clean
 	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
 
-.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short cover-youtube profile-youtube thumbnails-youtube figures records clean distclean
+.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean

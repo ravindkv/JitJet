@@ -47,6 +47,7 @@ example/MPI/Standalone/animate_standalone_multiparton_interactions.srt
 example/Had/Standalone/animate_standalone_hadronisation.srt
 example/Decay/Standalone/animate_standalone_hadron_decays.srt
 example/GenJet/Standalone/animate_standalone_genjets.srt
+example/trailer/animate_trailer_part1_ch01_07.srt
 # the Les Houches input written for the GenJet validation (copies of the hard event)
 example/GenJet/Standalone/validate_genjets_with_fastjet.lhe
 # the Les Houches input written for the MPI validation (copies of the hard event)
@@ -65,6 +66,7 @@ example/Decay/animate_standalone_hadron_decays.mp4
 example/GenJet/Standalone/*.json
 example/GenJet/Standalone/*.mp4
 
+example/trailer/*.mp4
 
 smpost/*.aux
 smpost/*.png

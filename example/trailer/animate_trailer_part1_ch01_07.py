@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""The Part I trailer (chapters 1-7): the eight pages of the CMSSW stack in a row, narrated.
+"""The Part I trailer (chapters 1-7): six pages of the CMSSW stack in a row, narrated.
 
 One simulated event, followed through the first seven chapters of the book. The
-film shows the eight pages of
+film shows the first six pages of
 example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf one after
 the other: the eta-phi plane after the hard process, after the parton shower,
 after MPI and the beam remnants, after hadronisation, after the hadron decays,
-and then the three GenJet collections (anti-kT R = 0.4, the same without
-neutrinos, R = 0.8). Each page fills the height of the frame, whole, and a
+and then the anti-kT jets (R = 0.4). The two further pages of the PDF (the
+same jets without neutrinos, R = 0.8) are left out, for length. Each page fills
+the height of the frame, whole, and a
 counter in the sidebar counts the particles the stage produced:
 2, 57, 169, 320, 634, and then 239 of the 634 inside the jets. A card names the
 chapter (and so the film) that explains the stage, and one question per stop
-asks what that chapter answers. A ruler at the bottom lights the chapters as
-they pass; the end card points at the playlist.
+asks what that chapter answers; the narration does not spell the chapter
+numbers, the card does. A ruler at the bottom lights the chapters as they pass.
 
 Narration and music
   One line per stop (NARRATION below), spoken by the same neural voice as the
   chapter films through example/soundtrack.py (edge-tts, needs the network;
   --engine say for the macOS voice; --narration-dir for recordings; keys:
-  title, s1 ... s8, end; see --print-script). Each stop lasts as long as its
-  line, so the film is about two minutes narrated and about 70 s with
+  title, s1 ... s6, end; see --print-script). Each stop lasts as long as its
+  line, so the film is about 100 s narrated and about 55 s with
   --no-narration. The score follows the cues: the pad changes chord with every
   page, the pulse gains a voice with every stop (as the event gains particles),
   a bell rings as each page settles, a thud marks the collision. It ducks under
@@ -62,8 +63,6 @@ sys.path.insert(0, str(ROOT / "example"))
 import soundtrack as snd  # noqa: E402  (example/soundtrack.py: the voice, the score, the mix)
 
 PDF = ROOT / "example" / "GenJet" / "CMSSW" / "genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf"
-PLAYLIST = "youtube.com/@JitJetTour"
-REPO = "github.com/ravindkv/JitJet"
 
 
 # --- the stops: one page of the PDF each --------------------------------------------
@@ -108,34 +107,28 @@ STOPS = [
     Stop("s6", 6, 239, "of the 634 are inside the 27 anti-kT jets (R = 0.4)",
          "CHAPTER 7", "The Family Photograph", "anti-kT R = 0.4  ·  the b jet: 118 GeV from a 92 GeV quark",
          "Why does the b jet carry more than the b quark?", (7,), STILL),
-    Stop("s7", 7, 80, "GeV in the same b jet without its neutrino (118 with it)",
-         "CHAPTER 7", "The Family Photograph", "ak4GenJetsNoNu  ·  38 GeV walked out with one particle",
-         "Which jet is the true one?", (7,), STILL),
-    Stop("s8", 8, 488, "of the 634 are inside the 28 wide jets (R = 0.8)",
-         "CHAPTER 7", "The Family Photograph", "anti-kT R = 0.8  ·  the b jet: 141 GeV",
-         "What is a jet, before any detector has seen it?", (7,), STILL),
 ]
+# Pages 7 and 8 of the PDF (ak4GenJetsNoNu: 80 GeV in the same b jet without its neutrino; ak8GenJets: 488 of
+# the 634 inside the 28 wide jets) are not shown: they cost twenty seconds and the chapter 7 film has them.
 CHAIN = [2, 57, 169, 320, 634]          # the breadcrumb under the counter
 N_CHAPTERS = 7
 
 # The narration, one line per stop ("..." is a pause). The clip of a line sets how long its stop lasts.
+# The chapter numbers are not spoken: the card in the sidebar names the chapter.
 NARRATION = {
     "title": "One collision, one simulated event, seven chapters... How many particles does it take to make a jet?",
     "s1": "It begins with two: a bottom quark and her antiquark, back to back, one hundred and thirteen GeV each... "
-          "Where do they come from? Chapter one.",
+          "Where do they come from?",
     "s2": "Then fifty-seven. The quarks radiate and the gluons split... "
-          "Why does a colour charge shower, and whose child is each gluon? Chapters two and three.",
+          "Why does a colour charge shower, and whose child is each gluon?",
     "s3": "One hundred and sixty-nine. The rest of the protons joins in: extra scatterings, beam remnants... "
-          "Who invited the other hundred and twelve? Chapter four.",
+          "Who invited the other hundred and twelve?",
     "s4": "Three hundred and twenty. Not one quark or gluon is left: every parton has married into a hadron... "
-          "How does a string break? Chapter five.",
+          "How does a string break?",
     "s5": "Six hundred and thirty-four. The hadrons decay; the B meson leaves nine grandchildren, and a neutrino "
-          "walks away for good... When, and how far? Chapter six.",
+          "walks away for good... When, and how far?",
     "s6": "Then the family photograph: anti-k-T draws twenty-seven circles, and only two hundred and thirty-nine "
           "of the six hundred and thirty-four are inside. The b jet carries more than the b quark... Why more?",
-    "s7": "Leave the neutrinos out, and the same jet carries eighty... Which jet is the true one?",
-    "s8": "Widen the cone, and four hundred and eighty-eight particles are in... "
-          "Chapter seven decides what a jet is, before any detector has seen it.",
     "end": "From two to six hundred and thirty-four, and into twenty-seven jets. Every stage has its film... "
            "JitJet: Journey Is The Jet. Watch part one.",
 }
@@ -343,7 +336,7 @@ class Cards:
         d = ImageDraw.Draw(im)
         d.rectangle((0, 0, self.W, self.H), fill=(*NAVY, 225))
         f_big, f_mid, f_it = self.f.get("bold", 140), self.f.get("regular", 46), self.f.get("italic", 32)
-        f_chain, f_small = self.f.get("medium", 30), self.f.get("regular", 24)
+        f_chain = self.f.get("medium", 30)
         cx, cy = self.W // 2, int(self.H * 0.40)
         wj, wjet = f_big.getlength("Jit"), f_big.getlength("Jet")
         x = cx - (wj + wjet) / 2
@@ -356,8 +349,6 @@ class Cards:
         draw_chain(d, (cx - chain_width(items, f_chain, 10 * s) / 2, cy + int(126 * s)), items, f_chain, GOLD, 10 * s)
         d.text((cx, cy + int(182 * s)), "Part I, chapters 1 to 7: one film and one chapter per stage", font=f_it,
                fill=PALE, anchor="ma")
-        d.text((cx, self.H - int(150 * s)), f"films:  {PLAYLIST}", font=f_small, fill=WHITE, anchor="ma")
-        d.text((cx, self.H - int(112 * s)), f"book and code:  {REPO}", font=f_small, fill=PALE, anchor="ma")
         return im
 
 
@@ -489,7 +480,7 @@ def write_video(rend: Renderer, duration: float, audio: Optional[Path], out: Pat
 
 
 def write_stills(rend: Renderer, tl: Timeline, out: Path) -> None:
-    """One frame per stop (title, s1 ... s8, end): a PDF stack or numbered PNGs."""
+    """One frame per stop (title, s1 ... s6, end): a PDF stack or numbered PNGs."""
     times = [(0.6 * tl.t_first, "title")] + [(c.t_hold + 3.2, c.stop.key) for c in tl.cues] + \
             [(tl.duration - tl.fade_out - 0.5, "end")]
     ims = [rend.frame(t) for t, _ in times]
@@ -503,7 +494,7 @@ def write_stills(rend: Renderer, tl: Timeline, out: Path) -> None:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("-o", "--output", type=Path, default=HERE / "animate_trailer_part1_ch01_07.mp4")
-    p.add_argument("--pdf", type=Path, default=PDF, help="the eight-page CMSSW stack to show")
+    p.add_argument("--pdf", type=Path, default=PDF, help="the CMSSW stack; its first six pages are shown")
     p.add_argument("--size", default="1920x1080")
     p.add_argument("--fps", type=int, default=30)
     p.add_argument("--dpi", type=float, default=300, help="resolution of the rendered pages")

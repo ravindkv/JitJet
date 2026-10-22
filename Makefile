@@ -6,7 +6,7 @@
 #   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
 #   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the narrated cone-growth trailer (~80 s)
-#   make trailer-part1 -> example/trailer/animate_trailer_part1_ch01_07.mp4, the narrated Part I trailer (~2 min)
+#   make trailer-part1 -> example/trailer/animate_trailer_part1_ch01_07.mp4, the narrated Part I trailer (~100 s)
 #   make cover-youtube -> smpost/cover_photo_youtube.png, the 2560x1440 YouTube channel banner
 #   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
 #   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos

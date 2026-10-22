@@ -52,6 +52,16 @@ def display_text(text: str) -> str:
     return re.sub(r"\s*\.\.\.\s*", "… ", text).strip()
 
 
+# Written -> spoken: words the voices read as initials or mangle. Subtitles and --print-script keep the written form.
+SPOKEN = {"JitJet": "Jit Jet"}       # "JitJet" comes out as "J-I-T Jet"
+
+
+def spoken_text(text: str) -> str:
+    for written, spoken in SPOKEN.items():
+        text = text.replace(written, spoken)
+    return text
+
+
 def spoken_for_say(text: str) -> str:
     return re.sub(r"\s*\.\.\.\s*", " [[slnc 450]] ", text)
 
@@ -135,11 +145,12 @@ def load_narration(lines: Dict[str, str], args, cache_dir: Path, ffmpeg: str) ->
                 sys.exit(f"--narration-dir: no clip named {key}.* in {args.narration_dir}")
             path = hits[0]
         else:
-            tag = hashlib.sha1(f"{args.engine}|{args.voice}|{args.rate}|{text}".encode()).hexdigest()[:10]
+            spoken = spoken_text(text)
+            tag = hashlib.sha1(f"{args.engine}|{args.voice}|{args.rate}|{spoken}".encode()).hexdigest()[:10]
             path = cache_dir / f"{key}_{tag}.{'mp3' if args.engine == 'edge' else 'wav'}"
             if not path.exists():
                 print(f"  narration: {key} ({args.engine}, {args.voice})", flush=True)
-                (synth_edge if args.engine == "edge" else synth_say)(text, args.voice, args.rate, path)
+                (synth_edge if args.engine == "edge" else synth_say)(spoken, args.voice, args.rate, path)
         clip = trim_silence(read_audio(path, ffmpeg))
         peak = float(np.max(np.abs(clip))) if clip.size else 1.0
         clips[key] = clip * (0.85 / peak if peak > 0 else 1.0)

@@ -27,13 +27,13 @@
 
 \mainmatter
 \part{Before the Journey: The Family Is Born}
-%\include{chapter/chapter_01_ME}
-%\include{chapter/chapter_02_PS}
-%\include{chapter/chapter_03_MnM}
-%\include{chapter/chapter_04_MPI}
-%\include{chapter/chapter_05_Had}
+\include{chapter/chapter_01_ME}
+\include{chapter/chapter_02_PS}
+\include{chapter/chapter_03_MnM}
+\include{chapter/chapter_04_MPI}
+\include{chapter/chapter_05_Had}
 \include{chapter/chapter_06_Decay}
-%\include{chapter/chapter_07_family_photograph}
+\include{chapter/chapter_07_GenJet}
 %\part{On the Road: Crowds, Borders and Checkpoints}
 %\include{chapter/chapter_08_crowd_on_the_road}
 %\include{chapter/chapter_09_crossing_the_border}
@@ -70,6 +70,9 @@
 %\include{chapter/appendix_E_exercises}
 
 \backmatter
+% the bibliography gets a table-of-contents entry; tools/chapter_pages.py also
+% uses it to know where the last chapter ends
+\cleardoublepage\phantomsection\addcontentsline{toc}{chapter}{\bibname}
 \bibliographystyle{unsrt}
 \bibliography{reference/JitJet}
 

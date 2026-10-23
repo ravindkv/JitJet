@@ -1,8 +1,9 @@
 % ---------------------------------------------------------------------------
 % Chapter 7: The Family Photograph: Generator-Level Jets and Truth Definitions
-% The scripts, records and figures discussed here live in example/GenJet/ of
-% https://github.com/ravindkv/JitJet . The book gives the physics and the
-% instructions; the code itself is read on GitHub, not printed here.
+% The scripts, records, logs and films of this stop live in example/GenJet/,
+% and the technical companion of the chapter is chapter/chapter_07_GenJet.md:
+% how to run the scripts, how to read the records and logs, how the official
+% numbers were obtained, and the full tables. The book gives the physics.
 % ---------------------------------------------------------------------------
 %% chapter-local shorthands
 \providecommand{\Bbar}{\ensuremath{\bar B^0}\xspace}
@@ -16,6 +17,7 @@
 \providecommand{\dij}{\ensuremath{d_{ij}}\xspace}
 \providecommand{\diB}{\ensuremath{d_{iB}}\xspace}
 \providecommand{\uik}{\ensuremath{u_{ik}}\xspace}
+\providecommand{\mm}{\ensuremath{\,\mathrm{mm}}\xspace}   % also defined in chapter 6; needed when this chapter is built alone
 \chapter{The Family Photograph: Generator-Level Jets and Truth Definitions}
 \chaptermark{The Family Photograph}
 \label{ch:family_photograph}
@@ -32,9 +34,12 @@ three choices of radius, neutrinos and threshold, ghost association and
 the hadron and parton flavour labels of \CMSSW, the physics and the
 $\Delta R$ definitions and where they fail, the net flavour and its
 infrared problem, flavour-$k_T$ and interleaved flavour neutralisation,
-the reference GenJet of our $b$ jet}
+the reference GenJet of our $b$ jet. The one number to take away: the
+\antikt jet of $R=0.4$ around the mother holds $99.83\GeV$ in $31$
+particles, and that photograph is what every reconstructed jet of the
+journey will be compared against.}
 
-\section{Welcome back: what we will see at this sixth stop}
+\section{What we will see at this stop}
 \label{sec:family_photograph:what_we_compute}
 
 At the end of \cref{ch:children_producing_grandchildren} the record held
@@ -80,35 +85,112 @@ recoil, and a definition that asks the hard-process parton finds nothing.
 And a $b\bar b$ pair of half a GeV, placed between two light jets, changes
 both their labels under the experiment's definition and leaves them
 unchanged under the safe ones. As at the previous stops we meet the
-numbers four times, from the top down:
-\begin{enumerate}[nosep]
-  \item \textbf{Watch it.} A film shows the 749 particles becoming 42 jets,
-    the \antikt algorithm building our jet merge by merge from the hard
-    core outward, the radius growing and the neutrino leaving, the
-    B~hadron shrinking to a ghost and still landing in the jet, a soft
-    $b\bar b$ pair relabelling two jets and being neutralised, and the
-    same family photographed four hundred times
-    (\cref{sec:family_photograph:animation}).
-  \item \textbf{Run it.} A Python file, needing only NumPy, clusters the
-    record of \cref{ch:children_producing_grandchildren} into the three
-    \CMSSW collections, assigns every label and writes the jet tables, in
-    fifteen seconds (\cref{sec:family_photograph:standalone_code}).
-  \item \textbf{Derive it.} Why the hard particle sets the distance and the
-    jet is built from the inside out, what the radius, the neutrinos and
-    the threshold do, how a ghost follows the clustering without moving it
-    and what \hadflav and \partflav mean, why the physics definition fails
-    in our event, why the net flavour is not infrared safe and how the two
-    safe definitions repair it
-    (\crefrange{sec:family_photograph:what_we_mean_by_the_true_jet_choices_and}{sec:family_photograph:infrared_safe_flavour_flavour_k_t_and_in}).
-  \item \textbf{Check it against the official packages.} \FASTJET, the
-    library every experiment calls, and \PYTHIA's own \code{SlowJet}
-    cluster exactly our 749 particles and reproduce every jet, every
-    constituent list and every label; \FASTJET runs on two thousand events
-    of \PYTHIA's full chain; and the CMS generator job of
-    \cref{ch:ancestral_home} drew its sixth, seventh and eighth figures at
-    this stage (\cref{sec:family_photograph:validation}).
-\end{enumerate}
+numbers four times, from the top down: a film shows the $749$ particles
+becoming $42$ jets, the \antikt algorithm building our jet merge by merge
+from the hard core outward, the B~hadron shrinking to a ghost and still
+landing in the jet, and a soft $b\bar b$ pair relabelling two jets and
+being neutralised; a Python file, needing only NumPy, clusters the record
+of \cref{ch:children_producing_grandchildren} into the three \CMSSW
+collections and assigns every label in fifteen seconds; the theory
+derives why the hard particle sets the distance and the jet is built from
+the inside out, what the radius, the neutrinos and the threshold do, how a
+ghost follows the clustering without moving it, why the physics
+definition fails in our event, and why the net flavour is not infrared
+safe and how the two safe definitions repair it; and the official
+packages, \FASTJET and \PYTHIA's own \code{SlowJet} on exactly our $749$
+particles and the CMS generator job of \cref{ch:ancestral_home}, get the
+last word.
 
+\paragraph{The film.}
+\label{sec:family_photograph:animation}
+The film first: the seventh on the playlist of \jitjetworld clusters the
+seed-1 record in six narrated scenes, so that every number on the screen
+and in the narration is produced by the classes that wrote the jet
+tables. The voice picks up where the film of
+\cref{ch:children_producing_grandchildren} stopped, the grandchildren are
+born, and ends at the next stop, the crowd on the road of
+\cref{ch:crowd_on_the_road}. The $749$ particles appear in the
+$(\eta,\phi)$ plane, hardest first, and the $42$ circles of the \antikt
+jets settle over them, the mother's family jet [0] with $99.8\GeV$; a
+zoom on the $b$ jet shows its $36$ merges in order, the $K^-$ and $\pi^-$
+of the \Bbar at $\dR=0.006$ first, the ghosts slipping in, the soft
+periphery last, and the circle drawn when the beam distance wins; the
+radius grows from $0.05$ to $0.9$ around the same axis, decay seed~4 of
+the same hadrons shows the jet without neutrinos at $90.2\GeV$ instead of
+$99.6$, and the threshold counts $42$, $11$ and $6$ jets; the \Bbar
+shrinks to a ghost of $10^{-18}$ of its momentum and still lands in jet
+[0] while the status-23 quark sits outside; a $B^0\bar B^0$ pair of half a
+GeV appears between two light jets, the ghost labels flip and the IFN
+distance cancels the pair; and the same primary hadrons decayed and
+clustered four hundred times fill the response histograms of the three
+collections. \Cref{fig:family_photograph:stills} shows one key frame per scene. Watch
+first, and let the formulae catch up.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
+\includegraphics[page=2,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
+\includegraphics[page=3,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\\[1.5mm]
+\includegraphics[page=4,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
+\includegraphics[page=5,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
+\includegraphics[page=6,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}
+\caption[Key frames of the animated standalone GenJet stage]{Key frames of
+the six scenes of the animated standalone GenJet stage, drawn by
+\file{animate_standalone_genjets.py} with \code{--stills}, in reading
+order. The 749 particles and the 42 jets; \antikt building our jet merge
+by merge; the radius, the neutrinos and the threshold; the ghosts and the
+labels of the three $b$ jets; the soft $b\bar b$ pair and its
+neutralisation; the response over four hundred decays. The film itself is the
+seventh on the playlist of \jitjetworld.}
+\label{fig:family_photograph:stills}
+\end{figure}
+
+\paragraph{The picture to carry: the photograph.}
+The family of
+\cref{fig:family_photograph:photograph_sketch} is what the decays left:
+fifteen particles from the \Bbar within a tenth of a unit of each other,
+sixteen more from the gluons and the underlying event within $0.4$, and a
+scatter of soft particles everywhere. The photograph is a rule for
+drawing a circle around them. \antikt draws it from the inside out, the
+hardest particle first and everything within $R$ of it next, so that the
+circle is round and centred on the hard core, and a soft particle at the
+edge belongs or does not belong by its distance to that core alone. Two
+things in the picture matter for everything that follows. The circle is
+a choice three times over: its radius, $0.4$ for the small jets of this
+book and $0.8$ for the boosted ones of \cref{ch:three_families}; whether
+the neutrino inside it is counted, which CMS does not, because the
+detector will not see it and a calibration against a photograph with
+neutrinos would ask the detector to measure what it cannot; and the
+threshold below which a circle is not a jet at all, $3\GeV$ for the
+generator and $30$ or more for an analysis. And the label on the picture,
+``$b$ jet'', is a second rule, laid on top of the first, which the
+experiment answers with the B~hadron's ghost and the theory with a
+definition that a soft gluon cannot change. The rules are the \antikt
+paper~\cite{Cacciari:2008gp} and the \FASTJET manual~\cite{Cacciari:2011ma},
+the \CMSSW producers \code{GenJetParticles}, \code{FastjetJetProducer}
+and \code{JetFlavourClustering}, and, for the last section, the
+flavour-$k_T$ of Banfi, Salam and Zanderighi~\cite{Banfi:2006hf} and the
+interleaved flavour neutralisation of Caola, Grabarczyk, Hutt, Salam,
+Scyboz and Thaler~\cite{Caletti:2022glq}. The algorithms themselves, their
+history and the choice of $R$, are the business of \cref{ch:the_inn}; this
+stop uses \antikt as the experiment's photographer and asks what the
+photograph shows.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/genjet_photograph}}
+\caption[The family photograph: the $b$ family and the pictures anti-$k_T$
+takes of it]{The family photograph. Left: the $b$ family of our event at
+stage~5, the fifteen descendants of the \Bbar ($b\bar d$) in red and the
+rest of the event in grey around the jet axis, with the two circles that
+\antikt draws, $R=0.4$ and $0.8$, and the neutrino of decay seed~4 of the
+ensemble, which sits inside the ring and outside the detector. Right: the
+three choices that change the picture but not the family, with the
+numbers of our event, of four hundred decays and of the \CMSSW event.}
+\label{fig:family_photograph:photograph_sketch}
+\end{figure}
+
+\paragraph{The number, four ways.}
+\label{sec:family_photograph:validation}
+\label{sec:family_photograph:standalone_code}
 \Cref{tab:family_photograph:numbers} gives away the ending. The sharpest
 column pair is, once more, a comparison on identical input: the 749
 particles of \file{event_Decay.lhe} clustered by \FASTJET~3.5.2 and by the
@@ -117,6 +199,64 @@ every jet momentum and to the last constituent, which is what a port of a
 deterministic algorithm must do; the interesting columns are the ones
 that vary, the four hundred decays of the same hadrons clustered each
 time, \PYTHIA's full chain with \FASTJET, and the \CMSSW event.
+
+The standalone script writes out what the \code{GenJet} producers of
+\CMSSW do with \FASTJET, what the \code{JetFlavourClustering} module does
+afterwards, and adds the two infrared-safe flavour definitions of the
+literature; it imports the decay script of
+\cref{ch:children_producing_grandchildren} for the record and the
+particle names. Its learning mode, \code{-v}, prints the ghosts with their
+rows and momenta, then the $36$ merges that built the $b$ quark's \akfour
+jet in the order the algorithm made them, each with its distance, its
+\dR, the two momenta and the merged one, the labels of the two $b$ jets
+with the ghosts behind each, the IFN pass over the event and the
+flavoured merges of flavour-$k_T$; \code{-vv} adds every one of the $930$
+steps of the clustering. The \code{-v} log for seed~1 is committed, and
+every number quoted in the theory of this chapter is taken from it.
+\label{sec:family_photograph:fastjet}
+
+The first official check is not statistical. \FASTJET, the library every
+experiment calls, is driven from a script on the $749$ particles of
+\file{event_Decay.lhe} with the same $181$ ghosts as \code{PseudoJet}s and
+the E~scheme for the three collections, and \PYTHIA's own \code{SlowJet},
+with the \code{fjcore} of \FASTJET inside, clusters the same particles
+from a filled event record. Not a single jet, constituent or label
+differs: $42$, $42$ and $30$ jets in the three collections, the momenta
+identical to the last digit, the constituent lists identical, the three
+labels identical, and the same for $k_T$ and Cambridge/Aachen; \code{SlowJet}
+agrees to the rounding of a double. This is the first stop of the journey
+at which the agreement is exact rather than statistical, and it should
+be: the algorithm is deterministic and leaves nothing to tune. The second
+official source is \PYTHIA's full chain, two thousand events with the
+shower, the secondary scatterings and the decays all varying, clustered
+by \FASTJET with the ghosts and the status-71 copy of each quark as the
+axis, the choice of the \CMSSW analyser: $18.2\pm11.5$ \akfour jets above
+$3\GeV$ against the $40.0$ of the fixed hadrons of the ensemble, because
+the number of secondary scatterings varies and our event has many; the
+mother's jet at $109.9\pm27.6\GeV$ for a quark of $95.5\pm30$, the
+response $1.22\pm0.51$ with a median of $1.06$, wide because the
+status-71 quark itself is soft whenever a hard gluon left it so;
+$7.9\GeV$ of neutrinos in the jet on average and none in $58\%$ of the
+events; \hadflav $5$ in $99.2\%$. The structure is that of the ensemble,
+and the numbers that the ensemble holds fixed, the shower and the
+underlying event, are what the full chain spreads.
+\label{sec:family_photograph:cmssw}
+
+The third official check costs nothing to generate: the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} runs the \code{genJetParticles} and
+\code{recoGenJets} sequences after the hadron level, so that every GEN
+file carries \akfour, \akfournonu and \akeight already, made by
+\code{FastjetJetProducer} with \FASTJET's \antikt, the E scheme and
+\code{jetPtMin = 3}; the flavour producers run later, in the \code{PAT}
+step, and are not in the GEN output. Its event is the last column of the
+table, and \cref{sec:family_photograph:our_jet_at_this_stage_the_reference_genj} reads
+its three pages next to the standalone ones. How each column was
+produced, the commands, the modes and the logs, is in the companion of
+this chapter,
+\begin{center}
+  \companion{chapter_07_GenJet}
+\end{center}
+together with the full tables behind every number quoted below.
 
 \begin{table}[htbp]\centering\small
 \caption[Generator-level jets obtained four ways]{Generator-level jets
@@ -162,286 +302,10 @@ IFN neutralisations per event & $0$ & $0$ & $0.66$ & -- & -- \\
 \end{tabular}}
 \end{table}
 
-\begin{figure}[htbp]\centering
-\resizebox{\textwidth}{!}{\input{chapter/tikz/genjet_photograph}}
-\caption[The family photograph: the $b$ family and the pictures anti-$k_T$
-takes of it]{The family photograph. Left: the $b$ family of our event at
-stage~5, the fifteen descendants of the \Bbar ($b\bar d$) in red and the
-rest of the event in grey around the jet axis, with the two circles that
-\antikt draws, $R=0.4$ and $0.8$, and the neutrino of decay seed~4 of the
-ensemble, which sits inside the ring and outside the detector. Right: the
-three choices that change the picture but not the family, with the
-numbers of our event, of four hundred decays and of the \CMSSW event.}
-\label{fig:family_photograph:photograph_sketch}
-\end{figure}
+\section{Let us dive into the details: the theory}
+\label{sec:family_photograph:theory}
 
-\paragraph{A picture to carry: the photograph.} The family of
-\cref{fig:family_photograph:photograph_sketch} is what the decays left:
-fifteen particles from the \Bbar within a tenth of a unit of each other,
-sixteen more from the gluons and the underlying event within $0.4$, and a
-scatter of soft particles everywhere. The photograph is a rule for
-drawing a circle around them. \antikt draws it from the inside out, the
-hardest particle first and everything within $R$ of it next, so that the
-circle is round and centred on the hard core, and a soft particle at the
-edge belongs or does not belong by its distance to that core alone. Two
-things in the picture matter for everything that follows. The circle is
-a choice three times over: its radius, $0.4$ for the small jets of this
-book and $0.8$ for the boosted ones of \cref{ch:three_families}; whether
-the neutrino inside it is counted, which CMS does not, because the
-detector will not see it and a calibration against a photograph with
-neutrinos would ask the detector to measure what it cannot; and the
-threshold below which a circle is not a jet at all, $3\GeV$ for the
-generator and $30$ or more for an analysis. And the label on the picture,
-``$b$ jet'', is a second rule, laid on top of the first, which the
-experiment answers with the B~hadron's ghost and the theory with a
-definition that a soft gluon cannot change. The rules are the \antikt
-paper~\cite{Cacciari:2008gp} and the \FASTJET manual~\cite{Cacciari:2011ma},
-the \CMSSW producers \code{GenJetParticles}, \code{FastjetJetProducer}
-and \code{JetFlavourClustering}, and, for the last section, the
-flavour-$k_T$ of Banfi, Salam and Zanderighi~\cite{Banfi:2006hf} and the
-interleaved flavour neutralisation of Caola, Grabarczyk, Hutt, Salam,
-Scyboz and Thaler~\cite{Caletti:2022glq}. The algorithms themselves, their
-history and the choice of $R$, are the business of \cref{ch:the_inn}; this
-stop uses \antikt as the experiment's photographer and asks what the
-photograph shows.
-
-\section{Watch the photograph being taken: the animated journey}
-\label{sec:family_photograph:animation}
-
-The film first. \file{example/GenJet/Standalone/animate_standalone_genjets.py}
-imports the standalone script of \cref{sec:family_photograph:standalone_code}
-and clusters the seed-1 record in six narrated scenes of about five
-minutes in all (eighty seconds without the voice), so that every number
-on the screen and in the narration is produced by the classes that wrote
-the jet tables. The voice picks up where the film of
-\cref{ch:children_producing_grandchildren} stopped, the grandchildren are
-born, and ends at the next stop, the crowd on the road of
-\cref{ch:crowd_on_the_road}. It is on the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}
-\end{center}
-and \cref{fig:family_photograph:stills} shows one key frame per scene.
-Each scene names the section that explains it.
-\begin{enumerate}
-  \item \textbf{The photograph} (\cref{sec:family_photograph:our_jet_at_this_stage_the_reference_genj}).
-    The 749 particles appear in the $(\eta,\phi)$ plane, hardest first,
-    then the 42 circles of the \antikt jets settle over them, the leading
-    eight in colour: the mother's family is jet [0] with $99.8\GeV$, the
-    $\bar b$'s jet [1] with $94.1$.
-  \item \textbf{Anti-$k_T$ gathers the family, hardest first} (\cref{sec:family_photograph:antikt}).
-    Zoom on the $b$ jet: the 36 merges in their order, the $K^-$ and
-    $\pi^-$ of the \Bbar at $\dR=0.006$ first, the photons, the ghosts
-    slipping in, the soft periphery last at $\dR$ up to $0.38$, the
-    running \pt and the ladder of distances, and the circle drawn when
-    \diB wins.
-  \item \textbf{The choices} (\cref{sec:family_photograph:choices}).
-    The radius grows from $0.05$ to $0.9$ around the same axis and the \pt
-    inside it with it, $99.8$ at $0.4$, $105.8$ at $0.8$; decay seed~4 of
-    the same hadrons, in which the B went semileptonic, shows the jet
-    without neutrinos at $90.2\GeV$ instead of $99.6$; the threshold
-    counts $42$, $11$ and $6$ jets.
-  \item \textbf{The ghosts} (\cref{sec:family_photograph:ghosts}).
-    The \Bbar shrinks to a ghost of $10^{-18}$ of its momentum and still
-    lands in jet [0]: \hadflav $5$; the $b$ quark's ghost gives \partflav
-    $+5$; the status-23 quark sits outside. At the other end of the event
-    the gluon's pair shares one jet and the oscillated \Bz gives the
-    $\bar b$ jet a $b$.
-  \item \textbf{The whisper} (\cref{sec:family_photograph:infrared_safe_flavour_flavour_k_t_and_in}).
-    A $B^0\bar B^0$ pair of half a GeV appears between two light jets; the
-    ghost and the net labels flip, the IFN distance cancels the pair, and
-    the scan in the pair's \pt shows which definitions survive.
-  \item \textbf{Again and again} (\cref{sec:family_photograph:our_jet_at_this_stage_the_reference_genj}).
-    The same primary hadrons decayed and clustered four hundred times: the
-    response of the \akfour, \akfournonu and \akeight jets to the quark
-    fill their histograms, $1.273$, $1.174$ with a tail, $1.336$.
-\end{enumerate}
-Rendering needs matplotlib in addition to NumPy, \code{ffmpeg} for an
-\code{.mp4}, and \code{edge-tts} for the voice (the shared
-\file{example/soundtrack.py} synthesises the lines, caches the clips and
-writes the score and the subtitles):
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/GenJet/Standalone
-python3 animate_standalone_genjets.py            # the narrated film, 1080p, ~1 h with --jobs 4
-python3 animate_standalone_genjets.py --fast     # low-resolution preview
-python3 animate_standalone_genjets.py --print-script   # the narration, one line per phase
-python3 animate_standalone_genjets.py --scene gather,ghosts -o g.gif   # silent
-python3 animate_standalone_genjets.py --stills stills.pdf --no-video
-\end{minted}
-\code{--no-narration} gives the silent cut; the ensemble of scene~6 is read
-from the statistics file of \cref{sec:family_photograph:standalone_code}
-when it exists.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
-\includegraphics[page=2,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
-\includegraphics[page=3,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\\[1.5mm]
-\includegraphics[page=4,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
-\includegraphics[page=5,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}\hfill
-\includegraphics[page=6,width=0.325\textwidth]{GenJet/Standalone/animate_standalone_genjets_stills.pdf}
-\caption[Key frames of the animated standalone GenJet stage]{Key frames of
-the six scenes of the animated standalone GenJet stage, drawn by
-\file{animate_standalone_genjets.py} with \code{--stills}, in reading
-order. The 749 particles and the 42 jets; \antikt building our jet merge
-by merge; the radius, the neutrinos and the threshold; the ghosts and the
-labels of the three $b$ jets; the soft $b\bar b$ pair and its
-neutralisation; the response over four hundred decays. The film is on the
-JitJet YouTube playlist.}
-\label{fig:family_photograph:stills}
-\end{figure}
-
-\section{Press the button: the standalone GenJet stage}
-\label{sec:family_photograph:standalone_code}
-
-Now take the photograph yourself. The material of this chapter is in
-\file{example/GenJet/} of the JitJet repository,
-\begin{center}
-  \url{https://github.com/ravindkv/JitJet}
-\end{center}
-with the script, its log, its validation and its plots under
-\file{example/GenJet/Standalone/}, the event record and the plotting
-script one level up, and the \CMSSW figures under
-\file{example/GenJet/CMSSW/}. As before the code is not printed; each
-script gets a description, the command and the output to expect.
-
-\subsection{The standalone script}
-
-The script, \file{standalone_genjets.py}, is a thousand lines of Python
-that need NumPy and nothing else. It writes out what the \code{GenJet}
-producers of \CMSSW do with \FASTJET, what the \code{JetFlavourClustering}
-module does afterwards, and adds the two infrared-safe flavour
-definitions of the literature. It imports the decay script of
-\cref{ch:children_producing_grandchildren} for the event record and the
-particle names. A map of the file: \code{input\_rows}, the particles
-that go in (\cref{sec:family_photograph:choices}); the \code{Clustering}
-class, the generalised-$k_T$ sequential recombination with the
-nearest-neighbour bookkeeping of \FASTJET's $N^2$ scheme
-(\cref{sec:family_photograph:antikt}); \code{ghost\_rows} and
-\code{JetCollection} with its \code{flavours}, the ghosts and the \CMSSW
-labels (\cref{sec:family_photograph:ghosts}); \code{stable\_heavy\_particles},
-the \code{IFN} class and \code{flavour\_kt}, the safe definitions
-(\cref{sec:family_photograph:infrared_safe_flavour_flavour_k_t_and_in});
-\code{soft\_pair}, the infrared test; and \code{stage\_summary}, which
-follows the two $b$ quarks into their jets in each collection, measures
-the cone of the same radius for comparison, the neutrinos inside, the
-share of the B~hadron and the composition of the jet by particle type.
-From the repository root:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/GenJet/Standalone
-python3 standalone_genjets.py                       # -> ../event_GenJet.lhe (the book's record)
-python3 standalone_genjets.py -v                    # learning mode: the b jet merge by merge, the labels, IFN
-python3 standalone_genjets.py -vv                   # ... every merge of the ak4 clustering
-python3 standalone_genjets.py --algorithm kt        # kT jets instead of anti-kT (also ca); --ptmin 10
-python3 standalone_genjets.py --soft-pair 0.5       # the infrared test: a soft B0 Bbar0 pair between two light jets
-python3 standalone_genjets.py --repeat 400 --jobs 4 --quiet --history standalone_genjet_stats.json
-\end{minted}
-The first command clusters the record in fifteen seconds and prints
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 163 partons (status 71-79),
-  2 hard-process partons, 3 leptons from heavy hadrons
-ak4GenJets (antikt, R = 0.4, pT > 3 GeV): 42 jets, 368 of 749 particles clustered; 11 jets above 10 GeV,
-  6 above 30; hadronFlavour 5: 3, 4: 2
-   jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
-     0    99.83   -1.44   -2.71   14.83   31   17    5    +5     0    +5  Bbar0 D0 D_s- | b g g
-     1    94.09   -3.45    0.59   17.83   18    8    5    -5     0    -5  Bbar0 Xi_c0 | bbar g g g
-     2    60.45   -3.39    1.43   11.79   29   14    5    -5     0    -5  Lambda_bbar0 Bbar0 D+ Dbar0 | bbar b g
-     3    48.12    0.28   -0.77    9.75   17    7    0    +2     0    +2   | u ubar g
-  ...
-b quark (row 719): pT = 78.29 GeV, eta = -1.38, phi = -2.73; its Bbar0 (row 1527) pT = 78.26
-  ak4GenJets      : jet [0] pT = 99.83 GeV, eta = -1.44, phi = -2.71, m = 14.83, n = 31 (17 charged);
-    dR(jet, quark) = 0.062, pT(jet)/pT(quark) = 1.275; cone of the same R: 99.43 GeV (31),
-    2 in the cone but not the jet, 2 in the jet but not the cone
-    the Bbar0's descendants in it: 15 with 78.26 GeV (0 outside), dR(jet, hadron) = 0.063; neutrinos 0
-    with 0.00 GeV; charged hadrons 68.09, photons 22.75, neutral hadrons 8.99, leptons 0.00 GeV
-    hadronFlavour 5, partonFlavour 5, physics 0, dR<0.3 5, net +1 b; b hadrons: Bbar0; c hadrons: D0 D_s-
-  ak8GenJets      : jet [1] pT = 105.79 GeV, eta = -1.46, phi = -2.71, m = 27.43, n = 47 (25 charged); ...
-  heavy hadrons kept : anti-kT jet [0] pT = 99.83: net flavour +1 b, IFN flavour +1 b
-  flavour-kT         : jet pT = 99.83, eta = -1.44, phi = -2.71, n = 17, dR = 0.054: flavour +1 b
-ak4GenJets: b jet + bbar jet: |pT(b) + pT(bbar)| = 16.89 GeV, Sigma|pT| = 193.92, dphi = 2.98, m = 302.9 GeV
-IFN: no neutralisation in this event (every flavoured hadron keeps its flavour)
-\end{minted}
-and writes the record to \file{example/GenJet/event_GenJet.lhe}. With
-\code{--history} the summary goes to a JSON file as well; with
-\code{--repeat N} the script decays the primary hadrons of
-\cref{ch:children_getting_married} $N$ times with the script of
-\cref{ch:children_producing_grandchildren}, seeds $1\ldots N$, clusters
-each result and writes the per-event quantities of
-\cref{tab:family_photograph:numbers} to a \file{.stats.json} file, half an
-hour for $400$ with four workers. The physics options are
-\code{--algorithm} and \code{--radius} (\cref{sec:family_photograph:antikt}),
-\code{--ptmin} (\cref{sec:family_photograph:choices}), \code{--soft-pair}
-and \code{--soft-sep} (\cref{sec:family_photograph:infrared_safe_flavour_flavour_k_t_and_in}),
-and \code{--no-flavour-kt} to skip the slowest step. The output with the
-defaults is byte-for-byte the committed record.
-
-The two learning modes work as before. \code{-v} prints, before the
-summary, the setting of the scene: the input, the distance, the three
-collections and the ghosts with their rows and momenta; then the 36
-merges that built the $b$ quark's \akfour jet in the order the algorithm
-made them, each with its \dij, its \dR, the two momenta and the merged
-one, and what joined; the declaration of the jet and the two particles
-that differ between the jet and the cone; the labels of the two $b$ jets
-with the ghosts behind each; the IFN pass over the event with the
-neutralisation distance of every candidate; and the flavoured merges of
-flavour-$k_T$. \code{-vv} adds every one of the 930 steps of the \akfour
-clustering. The \code{-v} log for seed~1 is committed as
-\file{example/GenJet/Standalone/standalone_genjets.log}, and every number
-quoted in the theory sections is taken from that file. The plots of the
-theory sections come from a sibling script,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/GenJet/Standalone/plot_theory_GenJet.py   # -> theory_genjets.pdf, one page per section
-\end{minted}
-which clusters the record again with the classes of the script, scans the
-radius and the soft pair, and reads the \code{--repeat} statistics and the
-\FASTJET validation files when they are present; \code{make figures}
-regenerates it.
-
-\subsection{Reading the record}
-\label{sec:family_photograph:record_format}
-
-Nothing happens to the particles at this stop, so the record keeps every
-row of \cref{sec:children_producing_grandchildren:record_format}, the
-listing with its sums and the vertex table, and adds two tables after
-them. The first is the \emph{jet listing}, one row per jet and
-collection: the collection, the index of the jet in \pt order, its \pt,
-rapidity, pseudorapidity, azimuth, mass and energy, the number of
-constituents and of charged ones, and its five labels, \hadflav,
-\partflav, the physics flavour, the $\dR<0.3$ flavour and the net $b$
-flavour of its heavy hadrons; then, as text, the heavy hadrons and the
-hardest partons whose ghosts it caught, with their rows in the listing.
-\filelistinglines[\widelisting]{text}{example/GenJet/event_GenJet.lhe}{2595}{2598}{the columns and the three $b$-flavoured \akfour jets}
-\filelistinglines[\widelisting]{text}{example/GenJet/event_GenJet.lhe}{2682}{2683}{the two leading \akeight jets: the $\bar b$'s now holds three B~hadrons and the hard-process $\bar b$}
-The second is the \emph{constituent listing}, one row per final particle
-with the index of the jet that holds it in each collection, $-1$ where it
-ended in no jet or in one below the threshold:
-\filelistinglines[\widelisting]{text}{example/GenJet/event_GenJet.lhe}{2717}{2717}{its columns}
-\filelistinglines[\widelisting]{text}{example/GenJet/event_GenJet.lhe}{3433}{3433}{the $K^-$ of row 2211, the first particle of our jet's core: jet 0 of \akfour, 0 of \akfournonu, 1 of \akeight}
-A jet row begins with the name of its collection and a constituent row
-has four fields, so the readers of the previous chapters skip both; the
-function \code{read\_jet\_tables} of the script parses them, and
-\file{plot_journey_GenJet.py} draws them.
-
-\subsection{Drawing the event}
-
-\file{example/GenJet/plot_journey_GenJet.py} draws one collection of the
-record in the $(\eta,\phi)$ plane in the layout of the \CMSSW analyser of
-\cref{sec:family_photograph:cmssw}
-(\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}),
-reusing the reader and the frame of the previous stages. Every jet above
-the threshold is a circle of radius $R$ around its axis, drawn as a star;
-the leading eight are in colour with their constituents in the same
-colour, the $b$ jet red and the $\bar b$ jet blue, the other jets and
-their constituents grey, and the particles that ended in no jet hollow;
-the last copy of each $b$ quark is a black star. The header gives the
-quark-to-jet lines with \dR and the response, the system of the two $b$
-jets, and the heavy hadrons behind each \hadflav label; the margin lists
-the leading jets with their two \CMSSW labels.
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/GenJet/plot_journey_GenJet.py                        # ak4GenJets -> example/GenJet/journey_GenJet.pdf
-python3 example/GenJet/plot_journey_GenJet.py --collection ak4nonu   # -> journey_GenJet_nonu.pdf
-python3 example/GenJet/plot_journey_GenJet.py --collection ak8 --png # -> journey_GenJet_ak8.pdf
-\end{minted}
-
-\section{What we mean by ``the true jet'': choices and their consequences}
+\subsection{What we mean by ``the true jet'': choices and their consequences}
 \label{sec:family_photograph:what_we_mean_by_the_true_jet_choices_and}
 
 A photograph is a rule, and the rule has a distance, a radius, a list of
@@ -454,7 +318,7 @@ step; then the real jet of thirty-one; then the whole event under the
 three rules, which is where you will see why the experiments chose
 \antikt for the photograph of every chapter to come.
 
-\subsection{Three photographers, nine particles: the clustering step by step}
+\subsubsection{Three photographers, nine particles: the clustering step by step}
 \label{sec:family_photograph:nine_particles}
 
 Guess first. Here are nine particles of the record, \cref{tab:family_photograph:nine}:
@@ -462,15 +326,8 @@ the four hardest of our $b$ jet, two pairs that happen to be very close,
 three soft particles at its border, and the leading particle of each of
 the two nearest other jets. Which of the nine end up together, and in
 which order are they gathered? Three scripts in
-\file{example/GenJet/Standalone/} answer with every distance printed,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/GenJet/Standalone
-python3 antiKt.py                       # anti-kT, R = 0.4: every pair and beam distance, every merge, the picture
-python3 caKt.py                         # the same nine particles under Cambridge/Aachen
-python3 hotVR.py                        # ... and under HOTVR (variable R, mass jump, grooming)
-python3 antiKt.py --no-show -o antiKt.pdf   # the picture as a file (make figures); --radius 0.8 to play
-\end{minted}
-and all three treat the particles as massless, so that rapidity and
+\file{example/GenJet/Standalone/} answer with every distance printed (the
+companion gives the commands and the full logs), and all three treat the particles as massless, so that rapidity and
 pseudorapidity coincide, and add four-momenta when they merge (the
 E~scheme). Every sequential recombination algorithm has the same shape:
 a distance \dij between any two of the objects alive, a distance \diB of
@@ -513,25 +370,20 @@ I & $\pi^+$ [1592] & 24.57 & $-2.043$ & $-1.304$ & 1.59 & the leading particle o
 \end{tabular}}
 \end{table}
 
-\subsubsection{Anti-$k_T$: the hard one sets every distance}
+\paragraph{Anti-$k_T$: the hard one sets every distance}
 
 With $p=-1$ the minimum in \cref{eq:family_photograph:genkt} picks the
 \emph{larger} momentum, $\dij=\max(\pt)^{-2}\,\dR^2/R^2$, and
 $\diB=\pt^{-2}$: a hard particle is close to everything within $R$ of
 itself, at a distance that does not know the other particle's momentum,
 and it is far from the beam only while something is still inside its
-circle. The script prints, for the nine,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-step 1: d(C, D) = 2.085e-06 (dR = 0.006) wins: merge -> CD with pT = 15.02 GeV
-step 2: d(A, B) = 1.935e-05 (dR = 0.025) wins: merge -> AB with pT = 19.68 GeV
-step 3: d((C+D), (A+B)) = 7.557e-05 (dR = 0.068) wins: merge -> ABCD with pT = 34.69 GeV
-step 4: d(G, ((C+D)+(A+B))) = 7.218e-04 (dR = 0.373) wins: merge -> ABCDG with pT = 35.65 GeV
-step 5: d(F, (G+((C+D)+(A+B)))) = 7.166e-04 (dR = 0.382) wins: merge -> ABCDFG with pT = 37.50 GeV
-step 6: d((F+(G+((C+D)+(A+B)))), beam) = 7.111e-04 wins: jet ABCDFG with pT = 37.50 GeV
-step 7: d(I, beam) = 1.656e-03 wins: jet I with pT = 24.57 GeV
-step 8: d(H, beam) = 1.458e-02 wins: jet H with pT = 8.28 GeV
-step 9: d(E, beam) = 2.163e+00 wins: jet E with pT = 0.68 GeV
-\end{minted}
+circle. The script prints every distance for the nine.
+The nine steps of the script, every distance of which the companion
+prints, are: $C+D$, then $A+B$, then the two cores into one object of
+$34.69\GeV$ (steps~1 to~3); G at $\dR=0.373$ and F at $0.382$ at the
+core's distance (steps~4 and~5); the core declared a jet of six particles
+and $37.50\GeV$ when its beam distance wins (step~6); and I, H and E
+declared alone, in that order (steps~7 to~9).
 Read the first line with the formula: $K^-$ and $\pi^-$ are $0.006$
 apart and the kaon has $10.57\GeV$, so
 $\dij=10.57^{-2}\times(0.006/0.4)^2=2.1\times10^{-6}$, while the hardest
@@ -550,23 +402,17 @@ left to be a jet of its own at step~9, which the $3\GeV$ threshold of
 \cref{sec:family_photograph:choices} would drop. I and H are declared
 in order of their own $\pt^{-2}$, each alone.
 
-\subsubsection{Cambridge/Aachen: the angle alone}
+\paragraph{Cambridge/Aachen: the angle alone}
 
 With $p=0$ the momenta vanish from \cref{eq:family_photograph:genkt},
 $\dij=\dR^2/R^2$ and $\diB=1$: the closest pair in angle is merged first
 whatever its momenta, and an object is a jet once nothing is left within
 $R$ of it.
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-step 1: d(C, D) = 0.000 (dR = 0.006) wins: merge -> CD with pT = 15.02 GeV
-step 2: d(A, B) = 0.004 (dR = 0.025) wins: merge -> AB with pT = 19.68 GeV
-step 3: d(F, G) = 0.009 (dR = 0.037) wins: merge -> FG with pT = 2.83 GeV
-step 4: d((C+D), (A+B)) = 0.029 (dR = 0.068) wins: merge -> ABCD with pT = 34.69 GeV
-step 5: d(E, (F+G)) = 0.324 (dR = 0.228) wins: merge -> EFG with pT = 3.49 GeV
-step 6: d(((C+D)+(A+B)), (E+(F+G))) = 0.944 (dR = 0.389) wins: merge -> ABCDEFG with pT = 38.18 GeV
-step 7: d(H, beam) = 1 wins: jet H with pT = 8.28 GeV
-step 8: d(I, beam) = 1 wins: jet I with pT = 24.57 GeV
-step 9: d((((C+D)+(A+B))+(E+(F+G))), beam) = 1 wins: jet ABCDEFG with pT = 38.18 GeV
-\end{minted}
+The nine steps are now: $C+D$, $A+B$, then $F+G$ at $0.037$ before
+the two cores have found each other (steps~1 to~3); the cores (step~4);
+E joins the photon pair at $0.228$ (step~5); the blob of $3.49\GeV$ joins
+the core at $0.389$ (step~6); and H, I and the jet ABCDEFG of $38.18\GeV$
+are declared (steps~7 to~9).
 The two photons, $0.037$ apart, pair up at step~3 before the two cores
 have found each other, E joins their blob at $0.228$ (step~5), and the
 blob of $3.49\GeV$, whose centre is $0.389$ from the core, is merged
@@ -579,7 +425,7 @@ makes Cambridge/Aachen the tool of jet \emph{substructure}, where one
 reclusters the constituents of a jet to find the structure inside, and
 its weakness as the photograph of the family.
 
-\subsubsection{HOTVR: a radius that shrinks with momentum, and a mass test}
+\paragraph{HOTVR: a radius that shrinks with momentum, and a mass test}
 
 The Heavy Object Tagger with Variable~R~\cite{Lapsien:2016zor}, built on
 the variable-$R$ idea of \cite{Krohn:2009zg}, keeps the Cambridge/Aachen
@@ -600,18 +446,13 @@ merged, the two branches remembered as subjets. The paper's values are
 for top quarks, $\rho=600\GeV$, $R_{\mathrm{eff}}\in[0.1,1.5]$,
 $\mu=30\GeV$, $\theta=0.7$, $p_{T,\mathrm{sub}}=30\GeV$, and for our
 nine particles, none above $400\GeV$, every $R_{\mathrm{eff}}$ is $1.5$:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-[01] merge_below_mu  d= 0.0000  Pair C + D (dR=0.006): m_ij=0.0 <= mu=30.0; merge ...
-[02] merge_below_mu  d= 0.0006  Pair A + B (dR=0.025): m_ij=0.2 <= mu=30.0; merge ...
-[03] merge_below_mu  d= 0.0014  Pair F + G (dR=0.037): m_ij=0.0 <= mu=30.0; merge ...
-[04] merge_below_mu  d= 0.0047  Pair (C+D) + (A+B) (dR=0.068): m_ij=1.2 <= mu=30.0; merge ...
-[05] merge_below_mu  d= 0.0519  Pair E + (F+G) (dR=0.228): m_ij=0.3 <= mu=30.0; merge ...
-[06] merge_below_mu  d= 0.1511  Pair ((C+D)+(A+B)) + (E+(F+G)) (dR=0.389): m_ij=4.6 <= mu=30.0; merge ...
-[07] merge_below_mu  d= 1.0954  Pair H + (...) (dR=1.047): m_ij=20.1 <= mu=30.0; merge ...
-[08] discard_soft    d= 2.1285  Pair I + (...) (dR=1.459): mass jump passes (m_ij=52.2 > mu, theta*m_ij=36.5 > 20.1),
-                                but I has pT <= pT,sub=30.0; discard the soft branch.
-[09] finalize_jet    d= 2.2500  d_iB = R_eff^2 smallest for (...): finalize jet (pT=46.3, m=20.1, R_eff=1.500).
-\end{minted}
+The script's nine steps are the six merges of Cambridge/Aachen with
+every pair mass below $\mu$; then H merged at $\dR=1.047$ with
+$m_{ij}=20.1\GeV$, still below $\mu$ (step~7); then I at $1.459$, where
+the mass jump passes, $m_{ij}=52.2>\mu$ and $0.7\times52.2=36.5>20.1$, but
+I has $\pt=24.6<p_{T,\mathrm{sub}}$ and the soft branch is discarded
+(step~8); and the jet finalised at $46.3\GeV$ with $m=20.1$ and
+$R_{\mathrm{eff}}=1.5$ (step~9).
 The first six steps are Cambridge/Aachen's, every pair mass far below
 $\mu$. Then the circle of $1.5$ reaches the gluon jet's $\Lambda^0$ at
 $1.05$, and since the pair mass is $20.1\GeV$, still below $\mu$, H is
@@ -676,7 +517,7 @@ pion.}
 \label{fig:family_photograph:nine_pictures}
 \end{figure}
 
-\subsection{The photographer: \antikt and why the hard core comes first}
+\subsubsection{The photographer: \antikt and why the hard core comes first}
 \label{sec:family_photograph:antikt}
 
 Now the real jet. Thirty-one particles within $0.4$ of the mother, fifteen
@@ -764,7 +605,7 @@ $\eta=-3.45$, exceeds its cone by $1.07$. Page~1 of
 \file{theory_genjets.pdf} (\cref{fig:family_photograph:truejet_plot})
 draws the ladder with the \dR of each merge.
 
-\subsection{The whole event under the three rules, and why the experiments chose \antikt}
+\subsubsection{The whole event under the three rules, and why the experiments chose \antikt}
 \label{sec:family_photograph:three_rules}
 
 Nine particles show the rules; the event shows the consequences.
@@ -772,11 +613,8 @@ Nine particles show the rules; the event shows the consequences.
 particles, \antikt and Cambridge/Aachen with the \code{Clustering} class
 of the main script at $R=0.4$ and HOTVR with a NumPy copy of
 \file{hotVR.py}'s decisions, checked against it on the nine, and draws
-them side by side, \cref{fig:family_photograph:three_event}:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/GenJet/Standalone/plot_algorithms_GenJet.py        # -> algorithms_genjets.pdf, the three panels
-python3 example/GenJet/Standalone/plot_algorithms_GenJet.py --rho 40 --mu 10 --ptsub 5   # HOTVR scaled to our scale
-\end{minted}
+them side by side, \cref{fig:family_photograph:three_event}; the companion gives the
+command and the HOTVR parameters.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\textwidth]{GenJet/Standalone/algorithms_genjets.pdf}
@@ -831,7 +669,7 @@ beside the standard collections for the boosted objects they were built
 for. The photograph of the family is the \antikt one, and it stays so for
 the rest of the journey.
 
-\subsection{The choices: the radius, the neutrinos and the threshold}
+\subsubsection{The choices: the radius, the neutrinos and the threshold}
 \label{sec:family_photograph:choices}
 
 Guess first: if the same family is photographed with $R=0.8$, how much
@@ -907,12 +745,12 @@ for the three collections.}
 \label{fig:family_photograph:truejet_plot}
 \end{figure}
 
-\section{Ghost-associated hadron flavour vs parton flavour}
+\subsection{Ghost-associated hadron flavour vs parton flavour}
 \label{sec:family_photograph:ghost_associated_hadron_flavour_vs_parto}
 
 The picture is taken; now the label.
 
-\subsection{The ghosts and the \CMSSW labels}
+\subsubsection{The ghosts and the \CMSSW labels}
 \label{sec:family_photograph:ghosts}
 
 Guess first: the \Bbar decayed $21\mm$ from the vertex and is nowhere
@@ -1029,7 +867,7 @@ jet and the share of the jet's \pt that its descendants carry.}
 \label{fig:family_photograph:flavour_plot}
 \end{figure}
 
-\section{Infrared-safe flavour: flavour-$k_T$ and interleaved flavour neutralisation}
+\subsection{Infrared-safe flavour: flavour-$k_T$ and interleaved flavour neutralisation}
 \label{sec:family_photograph:infrared_safe_flavour_flavour_k_t_and_in}
 
 Guess first: a gluon in the periphery of the event splits into a $b\bar b$
@@ -1150,7 +988,7 @@ with $\dR^2$ dotted. (c) The \pt of the flavour-$k_T$ jet nearest to each
 \label{fig:family_photograph:irsafety_plot}
 \end{figure}
 
-\subsection{The recipe, step by step}
+\subsubsection{The recipe, step by step}
 \label{sec:family_photograph:step_by_step}
 
 \Cref{fig:family_photograph:flow} is the whole stage as the script runs
@@ -1177,146 +1015,32 @@ idea and its $N\ln N$ strategy a cleverer one~\cite{Cacciari:2011ma}.
 \label{fig:family_photograph:flow}
 \end{figure}
 
-\section{Validation from official packages}
-\label{sec:family_photograph:validation}
-
-Two official sources again, and this time the first comparison is not
-statistical. \FASTJET, driven from a script on the same particles, must
-reproduce every jet exactly; \PYTHIA's own clustering must do the same;
-and the CMS generator job of \cref{ch:ancestral_home} drew the three
-collections of this chapter.
-
-\subsection{The same particles with \FASTJET and \code{SlowJet}: the validation script}
-\label{sec:family_photograph:fastjet}
-
-\file{validate_genjets_with_fastjet.py} has two modes. In mode
-\code{record} it builds the 749 particles of \file{event_Decay.lhe} and
-the same $181$ ghosts as \FASTJET \code{PseudoJet}s, clusters them with
-\code{JetDefinition(antikt\_algorithm, R)} and the E scheme for the three
-collections, and compares jet by jet with the standalone classes: the
-momenta, the constituent lists and the three labels. It then fills a
-\PYTHIA event record with the same particles and runs \code{SlowJet},
-\PYTHIA's own \antikt with the \code{fjcore} of \FASTJET inside, with
-\code{select = 2} for the collection without neutrinos. In mode
-\code{full} the hard event of \cref{ch:ancestral_home} is written to a
-Les Houches file $N$ times, \PYTHIA runs the whole chain with the CP5
-settings and decays on, as in
-\cref{sec:children_producing_grandchildren:pythia}, and \FASTJET clusters
-every event with the ghosts, taking the status-71 copy of each quark as
-the axis, the choice of the \CMSSW analyser. Both modes record what
-\cref{tab:family_photograph:numbers} lists, in the JSON layout of the
-standalone statistics. The environment is the one of
-\file{example/ME/Standalone/}, with \FASTJET added by \code{pip install
-fastjet}:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{bash}
-cd example/GenJet/Standalone
-PY=../../ME/Standalone/.venv/bin/python
-$PY validate_genjets_with_fastjet.py                           # mode record; also --algorithm kt, ca
-$PY validate_genjets_with_fastjet.py --mode full -n 2000 --standalone-stats standalone_genjet_stats.stats.json
-\end{minted}
-The first run takes a minute, the full chain four. The record mode
-prints, for each collection,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-ak4GenJets (antikt, R = 0.4, pT > 3):
-  jets: standalone 42, FastJet 42, SlowJet 42
-  FastJet vs standalone, jet by jet: max |dpT| = 0.00e+00 GeV, max |dm| = 0.00e+00 GeV, identical
-    constituent lists 42/42, identical (hadron, parton, physics) flavours 42/42
-  SlowJet vs standalone: max |dpT| = 2.13e-14 GeV, identical constituent lists 42/42
-\end{minted}
-and the same for \akfournonu, for \akeight ($30$, $30$, $30$) and, with
-\code{--algorithm}, for $k_T$ ($36$ jets at $R=0.8$) and Cambridge/Aachen
-($35$): not a single jet, constituent or label differs, and \code{SlowJet}
-agrees to the rounding of a double. This is the first stop of the journey
-at which the agreement is exact rather than statistical, and it should
-be: the algorithm is deterministic and
-\cref{eq:family_photograph:dij,eq:family_photograph:ghost} leave nothing
-to tune. The full chain, two thousand events with the shower, the
-secondary scatterings and the decays all varying, is the last column but
-one of \cref{tab:family_photograph:numbers}: $18.2\pm11.5$ \akfour jets
-above $3\GeV$ against the $40.0$ of the fixed hadrons of the ensemble,
-because the number of secondary scatterings varies and our event has
-many; the mother's jet at $109.9\pm27.6\GeV$ for a quark of $95.5\pm30$,
-the response $1.22\pm0.51$ with a median of $1.06$, wide because the
-status-71 quark itself is soft whenever a hard gluon left it so; $7.9\GeV$
-of neutrinos in the jet on average and none in $58\%$ of the events;
-\hadflav $5$ in $99.2\%$. The structure is that of the ensemble, and the
-numbers that the ensemble holds fixed, the shower and the underlying
-event, are what the full chain spreads. The \FASTJET jets of our record
-with their constituent rows are in
-\file{validate_genjets_with_fastjet_record_jets.txt}.
-
-\subsection{How CMS does it in practice: the GenJet step}
-\label{sec:family_photograph:cmssw}
-
-Nothing new has to be generated. The \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} runs the \code{genJetParticles} and
-\code{recoGenJets} sequences after the hadron level, so that every GEN
-file carries \akfour, \akfournonu and \akeight already, made by
-\code{FastjetJetProducer} with \FASTJET's \antikt, the E scheme and
-\code{jetPtMin = 3}; the flavour producers run later, in the
-\code{PAT} step, and are not in the GEN output. \code{JitJetSW}'s
-\code{genJetAnalyzer} drew the three collections as the sixth, seventh
-and eighth figures of the job. From the setup of
-\cref{sec:mother_gives_birth:cmssw},
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genJetAnalyzer, one page per collection
-\end{minted}
-produces \file{genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}, whose
-pages 6 to 8 are \cref{fig:family_photograph:cmssw}; the copy in
-\file{example/GenJet/CMSSW/} is the one used here.
-
-\subsubsection{Reading the figures}
-
-Page~6 is \akfour: $27$ jets, $239$ of the $634$ stable particles
-clustered, the $b$ quark of status 71 at $\pt=91.74\GeV$,
-$(\eta,\phi)=(-1.57,-2.08)$, matched to jet [0] of $117.79\GeV$ with $24$
-constituents, $\dR=0.019$ from the quark and a response of $1.284$; the
-$\bar b$ at $116.36\GeV$ and $\eta=-3.75$ matched to jet [1] of $115.94$,
-$18$ constituents, response $0.996$. Page~7 is the same event without the
-neutrinos: the $\bar b$'s jet is unchanged and the $b$'s has become jet
-[1] of $79.82\GeV$ with $22$ constituents and a response of $0.870$, the
-$37.5\GeV$ of the electron antineutrino of
-\cref{sec:children_producing_grandchildren:cmssw} gone, and the two
-leading jets have swapped places. Page~8 is \akeight: $28$ jets, $488$
-particles clustered, the $b$'s jet at $141.10\GeV$ with $55$ constituents
-and the $\bar b$'s at $121.01$ with $32$. The responses of $1.28$ and
-$1.54$ for the $b$ quark are what ours are, $1.275$ and $1.351$: the
-status-71 quark is the last copy before the hadronisation, soft because
-the shower took its share, and the jet holds the shower's gluons back
-plus the underlying event. Set the pages next to
-\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}.
-The two are different showers of the same hard event, so the comparison
-to make is \cref{tab:family_photograph:numbers}; what the pictures share
-is the structure, two hard circles on the two B~hadrons, four to six
-circles on the gluon and quark jets of the shower, and a scatter of
-circles of a few GeV on the underlying event, $27$ in one event and $42$
-in the other, with hollow particles everywhere between them that no
-circle above $3\GeV$ reached.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=6,width=\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\\[2mm]
-\includegraphics[page=7,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\hfill
-\includegraphics[page=8,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}
-\caption[The generator-level jets of the event in \CMSSW]{Stage~6 of our
-event in \CMSSW, drawn by the \code{genJetAnalyzer} of \code{JitJetSW}:
-\akfour (top), \akfournonu (bottom left) and \akeight (bottom right).
-Every jet above $3\GeV$ is a circle of radius $R$, the $b$ jet red and
-the $\bar b$ jet blue with their constituents, the leading other jets in
-colour, the stable particles in no jet hollow, and the status-71 $b$
-quarks as stars; the header gives the quark-to-jet matching with \dR and
-the response. The same stage of the standalone record is
-\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}.}
-\label{fig:family_photograph:cmssw}
-\end{figure}
-
-\section{Our jet at this stage: the reference GenJet we will compare to forever}
+\section{The energy ledger: our jet at this stage}
 \label{sec:family_photograph:our_jet_at_this_stage_the_reference_genj}
 
 The photograph is taken: jet [0] of \akfour, $99.83\GeV$, $31$ particles,
 $\hadflav=5$. Every reconstructed jet from \cref{ch:the_inn} on will be
 matched to it within $\dR<0.2$ and its response measured against it, and
 the ledger of this stop records what it holds.
+\label{sec:family_photograph:record_format}
+Nothing happens to the particles at this stop, so the record,
+\file{example/GenJet/event_GenJet.lhe}, keeps every row of
+\cref{sec:children_producing_grandchildren:record_format}, the listing
+with its sums and the vertex table, and adds two tables after them, which
+the companion prints with a guide to their columns. The first is the
+\emph{jet listing}, one row per jet and collection: the collection, the
+index of the jet in \pt order, its \pt, rapidity, pseudorapidity,
+azimuth, mass and energy, the number of constituents and of charged ones,
+and its five labels, \hadflav, \partflav, the physics flavour, the
+$\dR<0.3$ flavour and the net $b$ flavour of its heavy hadrons; then, as
+text, the heavy hadrons and the hardest partons whose ghosts it caught,
+with their rows in the listing. The second is the \emph{constituent
+listing}, one row per final particle with the index of the jet that
+holds it in each collection, $-1$ where it ended in no jet or in one
+below the threshold: the $K^-$ of row~2211, the first particle of our
+jet's core, reads jet~0 of \akfour, 0 of \akfournonu and 1 of \akeight.
+A jet row begins with the name of its collection and a constituent row
+has four fields, so the readers of the previous chapters skip both.
 
 \begin{table}[htbp]\centering\small
 \caption[Kinematics of the two $b$ quarks, their jets and their cones]{Kinematics
@@ -1394,15 +1118,38 @@ over the \PYTHIA chain, with our event and the \CMSSW event marked.}
 \label{fig:family_photograph:our_jet_plot}
 \end{figure}
 
+The ledger gets the photograph, and \cref{fig:family_photograph:journey} puts it next
+to the \akfour display of the standalone stage. The first row is the last
+one of \cref{ch:children_producing_grandchildren}; the three jets are new,
+and the \akfournonu row is the one every later stage is corrected towards.
+
 \begin{figure}[htbp]\centering
-\includegraphics[width=\textwidth]{GenJet/journey_GenJet.pdf}
-\caption[The \akfour jets of the event in the $(\eta,\phi)$ plane]{The
-\akfour collection of our event, drawn by
-\file{example/GenJet/plot_journey_GenJet.py} from
+\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
+Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
+ & [GeV] & [GeV] & & [GeV] \\ \midrule
+\ledgerrow{$b$ family after the decays ($\dR<0.4$, final)}{99.43}{14.59}{31}{--}
+\ledgerrow{\akfour jet [0], the photograph}{99.83}{14.83}{31}{$+0.40$}
+\ledgerrow{\quad \akfournonu jet [0], the reference}{99.83}{14.83}{31}{$0.00$}
+\ledgerrow{\quad of which charged hadrons}{68.09}{--}{17}{--}
+\ledgerrow{\quad of which the \Bbar's descendants}{78.26}{5.28}{15}{--}
+\ledgerrow{\quad mean of 400 decays, with neutrinos}{99.63}{14.11}{25.7}{--}
+\ledgerrow{\quad mean of 400 decays, without}{91.93}{13.29}{25.2}{$-7.70$}
+\ledgerrow{\akeight jet [1], the same family at $R=0.8$}{105.79}{27.43}{47}{$+5.96$}
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.58\textwidth}\centering
+\includegraphics[width=\linewidth]{GenJet/journey_GenJet.pdf}
+\end{minipage}
+\caption[The energy ledger and the \akfour jets of the event in the $(\eta,\phi)$ plane]{The
+energy ledger at the stage ``The Family Photograph'' (left; $\Delta\pt$ is
+relative to the previous row) and the \akfour collection of our event
+(right), drawn by \file{example/GenJet/plot_journey_GenJet.py} from
 \file{example/GenJet/event_GenJet.lhe} in the layout of
-\cref{fig:family_photograph:cmssw}. The 42 jets above $3\GeV$ are circles
-of radius $0.4$, the $b$ jet red at $(-1.44,-2.71)$ and the $\bar b$ jet
-blue at $(-3.45,0.59)$, the next six in colour, the rest grey with their
+\cref{fig:family_photograph:cmssw}. The 42 jets above $3\GeV$ are circles of radius
+$0.4$, the $b$ jet red at $(-1.44,-2.71)$ and the $\bar b$ jet blue at
+$(-3.45,0.59)$, the next six in colour, the rest grey with their
 constituents; the 381 particles in no jet are hollow and the last copies
 of the quarks black stars. The header gives the quark-to-jet lines with
 \dR and the response, the two-jet system, and the heavy hadrons behind
@@ -1423,22 +1170,50 @@ $\dR=0.36$ from the quark, and the $b$'s grows to $105.79$.}
 \label{fig:family_photograph:journey_more}
 \end{figure}
 
-The ledger gets the photograph. The first row is the last one of
-\cref{ch:children_producing_grandchildren}; the three jets are new, and
-the \akfournonu row is the one every later stage is corrected towards.
+\paragraph{The same event in \CMSSW.} \code{JitJetSW}'s \code{genJetAnalyzer}
+drew the three collections of the GEN file as the sixth, seventh and
+eighth pages of its output. Page~6 is \akfour: $27$ jets, $239$ of the
+$634$ stable particles clustered, the $b$ quark of status 71 at
+$\pt=91.74\GeV$, $(\eta,\phi)=(-1.57,-2.08)$, matched to jet [0] of
+$117.79\GeV$ with $24$ constituents, $\dR=0.019$ from the quark and a
+response of $1.284$; the $\bar b$ at $116.36\GeV$ and $\eta=-3.75$
+matched to jet [1] of $115.94$, $18$ constituents, response $0.996$.
+Page~7 is the same event without the neutrinos: the $\bar b$'s jet is
+unchanged and the $b$'s has become jet [1] of $79.82\GeV$ with $22$
+constituents and a response of $0.870$, the $37.5\GeV$ of the electron
+antineutrino of \cref{sec:children_producing_grandchildren:cmssw} gone,
+and the two leading jets have swapped places. Page~8 is \akeight: $28$
+jets, $488$ particles clustered, the $b$'s jet at $141.10\GeV$ with $55$
+constituents and the $\bar b$'s at $121.01$ with $32$. The responses of
+$1.28$ and $1.54$ for the $b$ quark are what ours are, $1.275$ and
+$1.351$: the status-71 quark is the last copy before the hadronisation,
+soft because the shower took its share, and the jet holds the shower's
+gluons back plus the underlying event. Set the pages next to
+\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}. The two are different
+showers of the same hard event, so the comparison to make is
+\cref{tab:family_photograph:numbers}; what the pictures share is the structure, two
+hard circles on the two B~hadrons, four to six circles on the gluon and
+quark jets of the shower, and a scatter of circles of a few GeV on the
+underlying event, $27$ in one event and $42$ in the other, with hollow
+particles everywhere between them that no circle above $3\GeV$ reached.
 
-\begin{ledger}{The Family Photograph}
-  \ledgerrow{$b$ family after the decays ($\dR<0.4$, final)}{99.43}{14.59}{31}{--}
-  \ledgerrow{\akfour jet [0], the photograph}{99.83}{14.83}{31}{$+0.40$}
-  \ledgerrow{\quad \akfournonu jet [0], the reference}{99.83}{14.83}{31}{$0.00$}
-  \ledgerrow{\quad of which charged hadrons}{68.09}{--}{17}{--}
-  \ledgerrow{\quad of which the \Bbar's descendants}{78.26}{5.28}{15}{--}
-  \ledgerrow{\quad mean of 400 decays, with neutrinos}{99.63}{14.11}{25.7}{--}
-  \ledgerrow{\quad mean of 400 decays, without}{91.93}{13.29}{25.2}{$-7.70$}
-  \ledgerrow{\akeight jet [1], the same family at $R=0.8$}{105.79}{27.43}{47}{$+5.96$}
-\end{ledger}
+\begin{figure}[htbp]\centering
+\includegraphics[page=6,width=\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\\[2mm]
+\includegraphics[page=7,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\hfill
+\includegraphics[page=8,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}
+\caption[The generator-level jets of the event in \CMSSW]{Stage~6 of our
+event in \CMSSW, drawn by the \code{genJetAnalyzer} of \code{JitJetSW}:
+\akfour (top), \akfournonu (bottom left) and \akeight (bottom right).
+Every jet above $3\GeV$ is a circle of radius $R$, the $b$ jet red and
+the $\bar b$ jet blue with their constituents, the leading other jets in
+colour, the stable particles in no jet hollow, and the status-71 $b$
+quarks as stars; the header gives the quark-to-jet matching with \dR and
+the response. The same stage of the standalone record is
+\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}.}
+\label{fig:family_photograph:cmssw}
+\end{figure}
 
-\section{What this stage is, and what it is not}
+\subsection{What this stop is, and what it is not}
 \label{sec:family_photograph:caveats}
 
 The agreement in \cref{tab:family_photograph:numbers} with \FASTJET is

@@ -1,8 +1,9 @@
 % ---------------------------------------------------------------------------
 % Chapter 6: The Children Produce Grandchildren: B-Hadron Decays
-% The scripts, records and figures discussed here live in example/Decay/ of
-% https://github.com/ravindkv/JitJet . The book gives the physics and the
-% instructions; the code itself is read on GitHub, not printed here.
+% The scripts, records, logs and films of this stop live in example/Decay/,
+% and the technical companion of the chapter is chapter/chapter_06_Decay.md:
+% how to run the scripts, how to read the records and logs, how the official
+% numbers were obtained, and the full tables. The book gives the physics.
 % ---------------------------------------------------------------------------
 %% chapter-local shorthands
 \providecommand{\Bstarbar}{\ensuremath{\bar B^{*0}}\xspace}
@@ -32,9 +33,12 @@ $L=\gamma\beta c\tau$ and the 10~mm rule of the generator, the decay vertex
 and the impact parameter, $B^0$--$\bar B^0$ oscillations, the decay tables
 and their partonic channels, two-body and $M$-generator phase space with the
 matrix elements, $b\to cW$ and the V$-$A lepton spectrum, the neutrino's
-share of the jet, the soft lepton, the visible cone}
+share of the jet, the soft lepton, the visible cone. The one number to take
+away: over four hundred decays of the same hadrons the visible \pt of the
+mother's cone is $91.1\pm12.2\GeV$ against $99.2$ of primary hadrons, a
+mean loss of $8\%$ with a tail to $40\%$; our own event loses nothing.}
 
-\section{Welcome back: what we will see at this fifth stop}
+\section{What we will see at this stop}
 \label{sec:children_producing_grandchildren:what_we_compute}
 
 At the end of \cref{ch:children_getting_married} the record held 365 primary
@@ -63,37 +67,119 @@ primary hadrons, a mean loss of $8\%$ with a tail to $40\%$. Our own event
 is lucky, its \Bbar decays hadronically into $D_s^{*-}D^{*0}\rho^+$ and
 loses nothing, $99.23\to99.43\GeV$; the \CMSSW event is not, its $B^-$
 ($b\bar u$) decayed to $\bar\nu_e e^-D_0^{*0}$ and the neutrino took
-$37.5\GeV$ of transverse momentum away. As at the previous stops we meet the
-numbers four times, from the top down:
-\begin{enumerate}[nosep]
-  \item \textbf{Watch it.} A film shows a hundred B~mesons decaying on the
-    exponential clock, the B~hadron walking a centimetre per picosecond,
-    the roll of the dice on its decay table, the cascade generation by
-    generation, a semileptonic decay with its neutrino leaving the cone, the
-    whole event decaying in laboratory time, and the same hadrons decayed
-    again and again (\cref{sec:children_producing_grandchildren:animation}).
-  \item \textbf{Run it.} A Python file, needing only NumPy and a JSON dump of
-    \PYTHIA's decay tables, takes the record of
-    \cref{ch:children_getting_married} and decays it in a second and a half
-    (\cref{sec:children_producing_grandchildren:standalone_code}).
-  \item \textbf{Derive it.} Why the clock has no memory and how far the walk
-    is, what the impact parameter measures and why it does not grow with
-    the boost, how a $B^0$ changes its name on the way, what the tables
-    hold and how a channel written at quark level becomes hadrons, where
-    the grandchildren go in phase space, and why the neutrino is hard
-    (\crefrange{sec:children_producing_grandchildren:b_hadron_lifetimes_and_displaced_vertice}{sec:children_producing_grandchildren:semileptonic_decays_neutrinos_and_soft_m}).
-  \item \textbf{Check it against the official packages.} A validation script
-    lets \PYTHIA decay exactly our 365 hadrons four hundred times and a
-    $B^0$ at rest twenty thousand times, runs its full chain two thousand
-    times, and the CMS generator job of \cref{ch:ancestral_home} drew its
-    fifth figure at this stage
-    (\cref{sec:children_producing_grandchildren:validation}).
-\end{enumerate}
+$37.5\GeV$ of transverse momentum away. As at the previous stops we meet
+the numbers four times, from the top down: a film shows a hundred B~mesons
+decaying on the exponential clock, the B~hadron walking a centimetre per
+picosecond, the roll of the dice on its decay table, the cascade generation
+by generation, a semileptonic decay with its neutrino leaving the cone, and
+the same hadrons decayed again and again; a Python file, needing only NumPy
+and a JSON dump of \PYTHIA's decay tables, takes the record of
+\cref{ch:children_getting_married} and decays it in a second and a half;
+the theory derives why the clock has no memory and how far the walk is,
+what the impact parameter measures and why it does not grow with the boost,
+how a $B^0$ changes its name on the way, what the tables hold, where the
+grandchildren go in phase space, and why the neutrino is hard; and the
+official packages, \PYTHIA decaying exactly our $365$ hadrons four hundred
+times and a $B^0$ at rest twenty thousand times, and the CMS generator job
+of \cref{ch:ancestral_home}, get the last word.
+
 EvtGen~\cite{Lange:2001uf}, the decay package that CMS production hands its
 $b$ and $c$ hadrons to, does not appear: the \CMSSW job of
 \cref{ch:ancestral_home} decayed its hadrons with \PYTHIA's own tables, and
 so does the script, with the same tables dumped to a file.
 
+\paragraph{The film.}
+\label{sec:children_producing_grandchildren:animation}
+The film first: the sixth on the playlist of \jitjetworld replays the
+seed-1 decays in seven narrated scenes, so that every number on the screen
+and in the narration is produced by the classes that wrote the record. The
+voice picks up where the film of \cref{ch:children_getting_married}
+stopped, ``the children are married'', and ends at the door of the inn of
+\cref{ch:the_inn}, where the \antikt algorithm gathers the grandchildren.
+A hundred $B^0$ mesons born at once decay one by one on the exponential
+clock, the lifetime drawn for our event's \Bbar marked on the curve; the
+$b$ quark's \Bbar leaves the primary vertex at $\gamma\beta=31$, decays
+after $21.0\mm$, and the tracks of the charged grandchildren fan out from
+two displaced vertices; the $870$ channels of a \Bbar are a cumulative bar
+of branching ratios down which the random number slides to the channel of
+our event; the decay tree of the mother's hadron grows generation by
+generation in the $(\eta,\phi)$ plane; the V$-$A lepton spectrum fills up
+against phase space, and then the semileptonic decay of seed~4 lets a
+neutrino take $19.8\GeV$ out of the cone; the $365$ primary hadrons decay
+in the order of their laboratory decay times until $749$ particles are
+left; and the same hadrons decayed with seeds $1,2,3,\ldots$ fill the
+exponential of the flight distance and the response of the cone, one in
+four decays out of five and $10$ to $50\%$ lower when a neutrino leaves.
+\Cref{fig:children_producing_grandchildren:stills} shows one key frame per scene. Watch first, and let
+the formulae catch up.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
+\includegraphics[page=2,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
+\includegraphics[page=3,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\\[1.5mm]
+\includegraphics[page=4,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
+\includegraphics[page=5,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
+\includegraphics[page=6,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\\[1.5mm]
+\includegraphics[page=7,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}
+\caption[Key frames of the animated standalone hadron-decay stage]{Key
+frames of the seven scenes of the animated standalone hadron-decay stage,
+drawn by \file{animate_standalone_hadron_decays.py} with \code{--stills},
+in reading order. A hundred $B^0$ mesons on the exponential clock; the
+walk of the $b$ quark's \Bbar in the transverse plane and along the beam;
+the decay table as a bar and the roll of the dice; the cascade generation
+by generation; the V$-$A lepton spectrum and the neutrino of seed~4
+leaving the cone; the whole event decaying in laboratory time; and four
+hundred decays of the same hadrons, the flight distance and the visible
+share of the cone. The film itself is the sixth on the playlist of \jitjetworld.}
+\label{fig:children_producing_grandchildren:stills}
+\end{figure}
+
+\paragraph{The picture to carry: the grandchildren.}
+At the wedding of
+\cref{ch:children_getting_married} every quark left the house in a couple
+or a triple. Most of those couples do not last. Some fall apart at once,
+the $\rho$, the $K^*$, the $\omega$, the $\Delta$, the $B^*$: strong or
+electromagnetic decays, at the point where they were born. A few last long
+enough to walk, the B~hadrons and the charm hadrons, about a picosecond,
+which the boost of a jet stretches to a centimetre, and the weak force that
+ends them is the same one that lets a neutron live a quarter of an hour.
+Their children have children of their own, and so on, until only the
+particles that the detector will treat as stable are left
+(\cref{fig:children_producing_grandchildren:family_sketch}). Three things in
+the picture matter for everything that follows. The weak decays start from
+a displaced point, and the tracks of the grandchildren miss the collision
+point by a few hundred microns: the birthmark. The number of grandchildren
+is large, sixteen from one hadron here, eleven on average, so that the
+detector sees a crowd where the generator had one object. And in one decay
+out of five the $W$ inside the hadron becomes a lepton and a neutrino: the
+lepton walks out through the calorimeter and the neutrino emigrates, and
+the jet is poorer by a tenth of its energy on average, by $40\%$ in the
+unlucky cases. The rules are a table of branching ratios measured over
+forty years~\cite{ParticleDataGroup:2024cfk,HeavyFlavorAveragingGroupHFLAV:2024ctg},
+a few matrix elements, and, for half of the B~hadron's table, the string
+machinery of the previous stop applied to the quarks the $W$ leaves behind.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/decay_family}}
+\caption[The grandchildren: the decay tree of the mother's hadron and the
+emigrant]{The grandchildren. Top: the decay tree of the mother's hadron in
+our event, rows 1012 to 2247 of the record, generation by generation from
+left to right: the \Bstarbar ($b\bar d$) radiates its photon at the
+origin, the \Bbar ($b\bar d$) walks $21.0\mm$ and decays through
+$b\to cW^-$, $W^-\to s\bar c$ into a $D_s^{*-}$ ($\bar cs$), a $D^{*0}$
+($c\bar u$) and a $\rho^+$ ($u\bar d$), the two charm hadrons walk on, and
+after six generations sixteen particles are left that the detector can
+see. Bottom: the emigrant, a semileptonic decay of the same hadron from
+the ensemble, $\bar B^0\to D^{*+}\mu^-\bar\nu_\mu$, in which the neutrino
+leaves the cone for good and the muon walks out through the calorimeter.
+Every hadron carries its quark content in brackets at its first mention,
+the convention of this book.}
+\label{fig:children_producing_grandchildren:family_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:children_producing_grandchildren:validation}
+\label{sec:children_producing_grandchildren:standalone_code}
 \Cref{tab:children_producing_grandchildren:numbers} gives away the ending.
 As in \cref{ch:children_getting_married} the sharpest column pair is a
 comparison on identical input, this time the 365 primary hadrons of
@@ -104,6 +190,69 @@ flight distances, the neutrino energy, the impact parameters, the cone
 momenta to $0.1\GeV$ before the neutrinos and $1\GeV$ after them. The other
 columns are \PYTHIA's full chain from the hard event with decays on, our
 single seed-1 decay, and the \CMSSW event.
+
+The standalone script is a port of \PYTHIA~8's \code{ParticleDecays} class
+into Python that needs NumPy and nothing else; it imports the
+hadronisation script of \cref{ch:children_getting_married} for the record,
+the Lorentz frames and the flavour selection, and reads its decay tables,
+$161$ particles and $3114$ channels with their branching ratios,
+matrix-element modes and \code{onMode} flags, from a file dumped once from
+\PYTHIA's own particle data. Its learning mode, \code{-v}, prints the rule
+for who decays with the lifetimes and the mixing parameters, the
+composition of the tables by class, and then, for the chains of the two
+B~hadrons, every decay in full: the lifetime draw with its random number,
+the vertex, the mixing probability and its draw, the channel with its
+branching ratio, the parton pairing and the Poisson draw, the masses, the
+phase-space tries and the matrix-element weight, and the products with the
+conservation check; \code{-vv} does the same for every decay. The $3200$
+lines of \code{-v} for seed~1 are committed, and every number quoted in
+the theory of this chapter is taken from that log.
+\label{sec:children_producing_grandchildren:pythia}
+
+The first official check is again on identical input: \PYTHIA with its
+process level switched off, its record filled by hand with the $365$
+primary hadrons of \file{event_Had.lhe}, decaying them four hundred times
+with \code{ParticleDecays:limitTau0 = on} and \code{tau0Max = 10}, and a
+$B^0$ at rest twenty thousand times, which removes the boost and the rest
+of the event and tests the tables, the matrix elements and the mixing
+alone. Read the first two columns of the table together. \PYTHIA makes
+$739.2\pm11.9$ final particles from our hadrons where the script makes
+$740.3\pm11.7$, $331.1$ against $331.2$ charged, $328.8$ against $330.0$
+photons, and the species agree to a tenth of a percent of the final state.
+For the mother's hadron the two agree on the flight distance, $13.2$
+against $14.5\mm$ with a width of $13$, on the number of its final
+particles, $11.05$ against $11.08$, on its neutrino energy, on the impact
+parameters of its tracks, on the final \pt of the cone to $0.01\GeV$ and
+on the visible \pt to $1.2\GeV$ with a width of $12$. The $B^0$ at rest
+resolves two small differences: the script makes $2\%$ more particles,
+almost all of them photons from the $\pi^0$ of its partonic channels, and
+it splits the charm hadrons slightly differently, $30\%$ $D^-$ and $28\%$
+$\bar D^0$ where \PYTHIA has $35$ and $27$, a detail of how the spectator
+hadron is picked in the weak partonic channels; the semileptonic fraction,
+$20.51$ against $20.70\%$, and the lepton spectrum, $1.396$ against
+$1.383\GeV$, agree. The one entry of the table that differs by many
+standard deviations, the oscillated fraction, is the bookkeeping of
+\cref{sec:children_producing_grandchildren:mixing}. The full chain, with the B~hadron species mixed and
+the hadrons harder, gives the same semileptonic fractions and neutrino
+shares as the same-hadron columns and a wider everything else.
+\label{sec:children_producing_grandchildren:cmssw}
+
+The second official check costs nothing to run: the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} decayed the event, since
+\code{HadronLevel:all} covers the decays and
+\code{ParticleDecays:limitTau0 = on} with \code{tau0Max = 10} is in every
+CMS configuration. This job decayed its $b$ and $c$ hadrons with \PYTHIA's
+own tables, the ones the script embeds; the production configurations of
+CMS hand them to EvtGen~\cite{Lange:2001uf} through the external-decayer
+interface instead, with PHOTOS for the radiative corrections and TAUOLA for
+the $\tau$, and \cref{sec:children_producing_grandchildren:caveats} says what changes. Its event is the
+last column of the table, and \cref{sec:children_producing_grandchildren:our_jet_at_this_stage} follows
+the mother through its record. How each column was produced, the commands,
+the modes and the logs, is in the companion of this chapter,
+\begin{center}
+  \companion{chapter_06_Decay}
+\end{center}
+together with the full tables behind every number quoted below.
 
 \begin{table}[htbp]\centering\small
 \caption[Hadron decays obtained three ways]{Hadron decays obtained three
@@ -150,317 +299,16 @@ $B^0$ at rest: $D^-$ / $\bar D^0$ / $D^0$ / $D^+$ [\%] & $35$ / $27$ / $11$ / $1
 \end{tabular}}
 \end{table}
 
-\begin{figure}[htbp]\centering
-\resizebox{\textwidth}{!}{\input{chapter/tikz/decay_family}}
-\caption[The grandchildren: the decay tree of the mother's hadron and the
-emigrant]{The grandchildren. Top: the decay tree of the mother's hadron in
-our event, rows 1012 to 2247 of the record, generation by generation from
-left to right: the \Bstarbar ($b\bar d$) radiates its photon at the
-origin, the \Bbar ($b\bar d$) walks $21.0\mm$ and decays through
-$b\to cW^-$, $W^-\to s\bar c$ into a $D_s^{*-}$ ($\bar cs$), a $D^{*0}$
-($c\bar u$) and a $\rho^+$ ($u\bar d$), the two charm hadrons walk on, and
-after six generations sixteen particles are left that the detector can
-see. Bottom: the emigrant, a semileptonic decay of the same hadron from
-the ensemble, $\bar B^0\to D^{*+}\mu^-\bar\nu_\mu$, in which the neutrino
-leaves the cone for good and the muon walks out through the calorimeter.
-Every hadron carries its quark content in brackets at its first mention,
-the convention of this book.}
-\label{fig:children_producing_grandchildren:family_sketch}
-\end{figure}
+\section{Let us dive into the details: the theory}
+\label{sec:children_producing_grandchildren:theory}
 
-\paragraph{A picture to carry: the grandchildren.} At the wedding of
-\cref{ch:children_getting_married} every quark left the house in a couple
-or a triple. Most of those couples do not last. Some fall apart at once,
-the $\rho$, the $K^*$, the $\omega$, the $\Delta$, the $B^*$: strong or
-electromagnetic decays, at the point where they were born. A few last long
-enough to walk, the B~hadrons and the charm hadrons, about a picosecond,
-which the boost of a jet stretches to a centimetre, and the weak force that
-ends them is the same one that lets a neutron live a quarter of an hour.
-Their children have children of their own, and so on, until only the
-particles that the detector will treat as stable are left
-(\cref{fig:children_producing_grandchildren:family_sketch}). Three things in
-the picture matter for everything that follows. The weak decays start from
-a displaced point, and the tracks of the grandchildren miss the collision
-point by a few hundred microns: the birthmark. The number of grandchildren
-is large, sixteen from one hadron here, eleven on average, so that the
-detector sees a crowd where the generator had one object. And in one decay
-out of five the $W$ inside the hadron becomes a lepton and a neutrino: the
-lepton walks out through the calorimeter and the neutrino emigrates, and
-the jet is poorer by a tenth of its energy on average, by $40\%$ in the
-unlucky cases. The rules are a table of branching ratios measured over
-forty years~\cite{ParticleDataGroup:2024cfk,HeavyFlavorAveragingGroupHFLAV:2024ctg},
-a few matrix elements, and, for half of the B~hadron's table, the string
-machinery of the previous stop applied to the quarks the $W$ leaves behind.
-
-\section{Watch the family grow: the animated journey}
-\label{sec:children_producing_grandchildren:animation}
-
-The film first. \file{example/Decay/Standalone/animate_standalone_hadron_decays.py}
-imports the standalone script of
-\cref{sec:children_producing_grandchildren:standalone_code} and replays the
-seed-1 decays in seven narrated scenes of about seven minutes in all
-(seventy seconds without the voice), so that every number on the screen
-and in the narration is produced by the classes that wrote the record.
-The voice picks up where the film of \cref{ch:children_getting_married}
-stopped, ``the children are married'', and ends at the door of the inn of
-\cref{ch:the_inn}, where the anti-$k_T$ algorithm gathers the
-grandchildren. It is on the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}
-\end{center}
-and \cref{fig:children_producing_grandchildren:stills} shows one key frame
-per scene. Each scene names the section that explains it.
-\begin{enumerate}
-  \item \textbf{The clock without memory} (\cref{sec:children_producing_grandchildren:lifetime}).
-    A hundred $B^0$ mesons born at once decay one by one; the survivors
-    follow $e^{-t/\tauz}$, the chance to decay in the next picosecond is
-    the same at $t=0$ and at $t=5\ps$, and the lifetime drawn for our
-    event's \Bbar, $2.24\ps$, is marked on the curve.
-  \item \textbf{The walk: a centimetre per picosecond} (\cref{sec:children_producing_grandchildren:lifetime,sec:children_producing_grandchildren:vertices}).
-    The $b$ quark's \Bbar leaves the primary vertex in the transverse plane
-    at $\gamma\beta=31$, decays after $21.0\mm$, its $D^0$ walks on another
-    $11.0\mm$, and the tracks of the charged grandchildren fan out from the
-    two displaced vertices; on the right the same along the beam.
-  \item \textbf{The decay table and the roll of the dice} (\cref{sec:children_producing_grandchildren:tables}).
-    The 870 channels of a \Bbar as a cumulative bar of branching ratios,
-    coloured by class; the random number slides down the bar to the
-    channel of our event, $\bar c s\,c\bar d$, and the partons turn into
-    hadrons with chapter~5's flavour machinery.
-  \item \textbf{The cascade} (\cref{sec:children_producing_grandchildren:kinematics}).
-    The decay tree of the mother's hadron grows generation by generation in
-    the $(\eta,\phi)$ plane around it, $\bar B^{*0}\to\bar B^0\gamma$, the
-    \Bbar's products, their products, down to the sixteen stable particles,
-    with the mothers fading.
-  \item \textbf{The emigrant} (\cref{sec:children_producing_grandchildren:va,sec:children_producing_grandchildren:emigrant}).
-    The lepton energy spectrum of the V$-$A matrix element fills up
-    against phase space, four thousand decays; then the semileptonic decay
-    of seed~4, $\bar B^0\to D^{*+}\mu^-\bar\nu_\mu$, in which the neutrino
-    takes $19.8\GeV$ out of the cone and the visible \pt drops from $99.2$
-    to $89.7\GeV$.
-  \item \textbf{The whole event} (\cref{sec:children_producing_grandchildren:our_jet_at_this_stage}).
-    The 365 primary hadrons decay in the order of their laboratory decay
-    times, the strong and electromagnetic ones first and at the origin, the
-    charm and bottom hadrons millimetres and centimetres away, until 749
-    particles are left, with the counters.
-  \item \textbf{Again and again} (\cref{sec:children_producing_grandchildren:emigrant}).
-    The same primary hadrons decayed with seeds $1,2,3,\ldots$: the flight
-    distance of the $b$ quark's hadron fills the exponential of scene~1
-    stretched by $\gamma\beta$, mean $14.5\mm$, and the ratio of the visible
-    to the primary-hadron \pt of the cone stays at one in four decays out of
-    five and drops by $10$ to $50\%$ when a neutrino leaves.
-\end{enumerate}
-Rendering needs matplotlib in addition to NumPy, \code{ffmpeg} for an
-\code{.mp4}, and \code{edge-tts} for the voice (the shared
-\file{example/soundtrack.py} synthesises the lines, caches the clips and
-writes the score and the subtitles):
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/Decay/Standalone
-python3 animate_standalone_hadron_decays.py            # the narrated film, 1080p, ~40 min with --jobs 4
-python3 animate_standalone_hadron_decays.py --fast     # low-resolution preview
-python3 animate_standalone_hadron_decays.py --print-script   # the narration, one line per phase
-python3 animate_standalone_hadron_decays.py --scene walk,cascade -o walk.gif   # silent
-python3 animate_standalone_hadron_decays.py --stills stills.pdf --no-video
-\end{minted}
-The physics options are those of the standalone script: \code{--seed 4}
-films the semileptonic decay of scene~5 as the event, \code{--no-mix}
-switches the oscillations off, \code{--stable-b} keeps the B~hadrons;
-\code{--no-narration} gives the silent cut.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
-\includegraphics[page=2,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
-\includegraphics[page=3,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\\[1.5mm]
-\includegraphics[page=4,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
-\includegraphics[page=5,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\hfill
-\includegraphics[page=6,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}\\[1.5mm]
-\includegraphics[page=7,width=0.325\textwidth]{Decay/Standalone/animate_standalone_hadron_decays_stills.pdf}
-\caption[Key frames of the animated standalone hadron-decay stage]{Key
-frames of the seven scenes of the animated standalone hadron-decay stage,
-drawn by \file{animate_standalone_hadron_decays.py} with \code{--stills},
-in reading order. A hundred $B^0$ mesons on the exponential clock; the
-walk of the $b$ quark's \Bbar in the transverse plane and along the beam;
-the decay table as a bar and the roll of the dice; the cascade generation
-by generation; the V$-$A lepton spectrum and the neutrino of seed~4
-leaving the cone; the whole event decaying in laboratory time; and four
-hundred decays of the same hadrons, the flight distance and the visible
-share of the cone. The film is on the JitJet YouTube playlist.}
-\label{fig:children_producing_grandchildren:stills}
-\end{figure}
-
-\section{Press the button: the standalone hadron-decay stage}
-\label{sec:children_producing_grandchildren:standalone_code}
-
-Now decay them yourself. The material of this chapter is in
-\file{example/Decay/} of the JitJet repository,
-\begin{center}
-  \url{https://github.com/ravindkv/JitJet}
-\end{center}
-with the script, its decay tables, its log, its validation and its plots
-under \file{example/Decay/Standalone/}, the event record and the plotting
-script one level up, and the \CMSSW figure under \file{example/Decay/CMSSW/}.
-As before the code is not printed; each script gets a description, the
-command and the output to expect.
-
-\subsection{The standalone script}
-
-The script, \file{standalone_hadron_decays.py}, is a port of
-\PYTHIA~8's \code{ParticleDecays} class into thirteen hundred lines of Python that
-need NumPy and nothing else. It imports the hadronisation script of
-\cref{ch:children_getting_married} for the event record, the Lorentz frames
-and the flavour selection, and reads its decay tables from
-\file{decay_tables.json} in the same directory: 161 particles and 3114
-channels with their branching ratios, matrix-element modes and
-\code{onMode} flags, dumped from \PYTHIA's \code{ParticleData} by
-\file{dump_decay_tables.py}, the one step that needs \PYTHIA and runs in
-the environment of \file{example/ME/Standalone/}. A map of the file:
-\code{open\_channels} and \code{can\_decay} (who decays,
-\cref{sec:children_producing_grandchildren:lifetime}); the \code{Decayer}
-class with \code{draw\_lifetime} and \code{decay\_vertex}
-(\cref{sec:children_producing_grandchildren:lifetime,sec:children_producing_grandchildren:vertices}),
-the mixing step inside \code{decay} (\cref{sec:children_producing_grandchildren:mixing}),
-\code{pick\_channel}, \code{mass\_sel} and \code{pick\_hadrons}
-(\cref{sec:children_producing_grandchildren:tables}), \code{two\_body},
-\code{mgenerator}, \code{me\_weight} and \code{dalitz}
-(\cref{sec:children_producing_grandchildren:kinematics,sec:children_producing_grandchildren:va});
-\code{run} and \code{verify}, which work through the queue of unstable
-particles and check the sums; and \code{summarise}, which follows the two
-B~hadrons, their vertices, their tracks and their neutrinos, and measures
-the cones around the two $b$ quarks before and after the decays and with
-and without the neutrinos. From the repository root:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/Decay/Standalone
-python3 standalone_hadron_decays.py                      # seed 1 -> ../event_Decay.lhe (the book's record)
-python3 standalone_hadron_decays.py -v                   # learning mode: the two B hadrons' chains step by step
-python3 standalone_hadron_decays.py -vv                  # ... every decay
-python3 standalone_hadron_decays.py --no-mix             # no B0 / B_s0 oscillations
-python3 standalone_hadron_decays.py --no-limit-tau0      # also decay K_S0, Lambda, Sigma, Xi, Omega (PYTHIA's default)
-python3 standalone_hadron_decays.py --stable-b           # keep the b hadrons (everything else decays)
-python3 standalone_hadron_decays.py --repeat 400 --quiet --history standalone_decay_stats.json
-python3 standalone_hadron_decays.py --single 511 --repeat 20000 --history standalone_single_511.json
-\end{minted}
-The first command decays the record in a second and a half and prints
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-input example/Had/event_Had.lhe: 2251 rows after the decays; seed = 1
-  365 primary hadrons -> 376 decays (1 B oscillations) -> 749 final particles: 338 charged, 327 photons,
-    5 neutrinos (229.4 GeV, |sum pT| = 9.13 GeV), 7 electrons, 2 muons, 408 hadrons; 143 primary hadrons
-    survive, 606 particles come from decays; 396 final particles (176 charged) at |eta| < 2.5
-  most common: gamma 327, pi- 134, pi+ 128, K_S0 29, K+ 24, K- 20, K_L0 19, nbar0 12, n0 11, p+ 10, ...
-  bbar (row 708, pT = 72.50) -> B*0 (row 1069, pT = 82.83) -> Bbar0 -> Xi_c0
-     Bbar0 (row 1590): pT = 81.97, E = 1264.18 GeV, gamma = 239.4; tau = 2.046 ps = 1.34 tau0 -> L = 146.88 mm
-       (L_xy = 9.52), vertex (7.97, 5.21, -146.57) mm; oscillated
-     channel: Bbar0 -> Xi_c0 pi+ Deltabar- (BR 0.0060, meMode 63, hadronic, partonic); 3 direct products,
-       9 final particles (6 charged, 2 photons, 0 neutrinos with 0.00 GeV = 0.0% of the B energy); ...
-  b (row 719, pT = 78.29) -> B*bar0 (row 1012, pT = 78.56) -> Bbar0 -> D*_s- -> D_s-
-     Bbar0 (row 1527): pT = 78.26, E = 165.47 GeV, gamma = 31.3; tau = 2.237 ps = 1.46 tau0 -> L = 21.01 mm
-       (L_xy = 9.94), vertex (-9.13, -3.93, -18.51) mm
-     channel: Bbar0 -> D*_s- D*0 rho+ (BR 0.0740, meMode 43, hadronic, partonic); 3 direct products,
-       15 final particles (8 charged, 6 photons, 0 neutrinos with 0.00 GeV = 0.0% of the B energy);
-       charm hadron D0 pT = 26.97, flies 10.98 mm
-     8 charged tracks from the B: largest impact parameter 1640 um, 8 above 100 um; ...
-     cone R = 0.4 around the quark: partons pT 100.67 -> 6 primary hadrons pT 99.23 -> 31 final particles
-       pT 99.43 (m 16.09 -> 14.59), visible 31 with pT 99.43, charged 16 with pT 67.43; neutrino pT in
-       the cone 0.00; the B's products carry 79%, 0 of them left the cone
-     cone R = 0.8 around the quark: partons pT 104.09 -> 14 primary hadrons pT 105.97 -> 51 final particles
-       pT 108.73 (m 35.88 -> 42.14), ...
-\end{minted}
-and writes the record to \file{example/Decay/event_Decay.lhe}. With
-\code{--history} the summary goes to a JSON file as well; with
-\code{--repeat N} the script decays the same primary hadrons $N$ times with
-seeds $1\ldots N$ and writes the per-event quantities of
-\cref{tab:children_producing_grandchildren:numbers} to a \file{.stats.json}
-file, five minutes for $400$; with \code{--single 511} it decays a $B^0$ at
-rest instead, twenty thousand times in a minute. The physics options are
-\code{--tau0max} and \code{--no-limit-tau0} (who decays,
-\cref{sec:children_producing_grandchildren:lifetime}), \code{--no-mix}
-(\cref{sec:children_producing_grandchildren:mixing}), \code{--stable-b},
-and \code{--radius}. The output with \code{--seed 1} is byte-for-byte the
-committed record.
-
-The two learning modes work as before. \code{-v} prints, before the event,
-the setting of the scene: the tables, the rule for who decays with the list
-of hadrons left to the detector and their $c\tauz$, the lifetimes of the
-heavy hadrons, the mixing parameters, the composition of the $B^0$, $B^+$,
-$\Lambda_b^0$ and $D^0$ tables by class, and the rules for the partonic
-channels; then the list of the 222 primary hadrons that decay; then, for
-the chains of the two B~hadrons, every decay in full, the lifetime draw
-with its random number, the vertex, the mixing probability and its draw,
-the channel with its number and branching ratio, the parton pairing and
-the Poisson draw, the masses, the phase-space tries and the matrix-element
-weight, and the products in the laboratory frame with the conservation
-check; one line per other decay; the checks; the record with its vertex
-table; and the summary. \code{-vv} does the same for every decay. The
-$3200$ lines of \code{-v} for seed~1 are committed as
-\file{example/Decay/Standalone/standalone_hadron_decays.log}, and every
-number quoted in the theory sections is taken from that file. The plots of
-the theory sections come from a sibling script,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/Decay/Standalone/plot_theory_Decay.py   # -> theory_hadron_decays.pdf, one page per section
-\end{minted}
-which replays the seed-1 decays with the classes of the script and reads
-the \code{--repeat} statistics and the \PYTHIA validation files when they
-are present; \code{make figures} regenerates it.
-
-\subsection{Reading the record}
-\label{sec:children_producing_grandchildren:record_format}
-
-The record keeps \PYTHIA's conventions and adds the status codes of the
-decay level to those of \cref{sec:children_getting_married:record_format}.
-A particle that decays keeps its row and its status becomes negative, as
-at every previous stage; its products are appended with status $91$, or
-$92$ if the particle oscillated before decaying, with the mother in the
-first mother column and the daughter range on the mother's row. Our record
-has $2251$ rows: the $1491$ of \cref{ch:children_getting_married}, of which
-$222$ primary hadrons now carry status $-81$ to $-84$ and $143$ keep their
-positive status, then $760$ decay products, $154$ of which decayed in their
-turn ($152$ of status $-91$ and $2$ of $-92$) and $606$ of which are final
-($605$ of status $91$, $1$ of $92$). The final state is every row with a
-positive status, $143+606=749$ particles; their momentum sum is still that
-of the two protons and their charge sum $+2$. Follow the mother once more:
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{1016}{1016}{the \Bstarbar (row 1012), status $-83$ now, daughters 1527 and 1528}
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{1531}{1532}{the \Bbar (row 1527, status $-91$) and its photon (row 1528, final)}
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{1973}{1975}{the three direct products of the \Bbar: $D_s^{*-}$, $D^{*0}$ and $\rho^+$, every one of which decays again}
-The new table is the second one. After the listing and its sums the file
-carries a \emph{vertex listing}, one row for every particle born more than
-$0.1\um$ from the origin and for every particle that drew a proper
-lifetime: the production vertex in millimetres, the production time in
-$\mathrm{mm}/c$, and the proper lifetime $\tau$ drawn for the row, $330$
-rows in our record.
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{2261}{2261}{its columns}
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{2273}{2273}{the \Bbar, born at the origin}
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{2380}{2381}{its $D_s^{*-}$ and $D^{*0}$: born at the \Bbar's vertex}
-The listing has six fields and the particle rows thirteen, so the reader
-of \cref{ch:mother_gives_birth}'s script skips it; the reader of
-\file{plot_journey_Decay.py} parses it. The record ends with the sums,
-\filelistinglines[\widelisting]{text}{example/Decay/event_Decay.lhe}{2255}{2255}{the charge and momentum sums over the 749 final particles}
-the charge of two protons and their momentum to a few MeV.
-
-\subsection{Drawing the event}
-
-\file{example/Decay/plot_journey_Decay.py} draws the record in the
-$(\eta,\phi)$ plane in the layout of the \CMSSW analyser of
-\cref{sec:children_producing_grandchildren:cmssw}
-(\cref{fig:children_producing_grandchildren:journey}), reusing the reader
-and the frame of the previous stages. The categories of this stage are
-four: every final descendant of the \Bstarbar and of the \Bstar, the $b$
-and $\bar b$ systems, in red and blue; their vector sum, the magenta star
-of every stage; the primary hadrons that survive, in purple; and every
-other decay product in grey, with the neutrinos drawn hollow and marked
-$\nu$. The header keeps the two B~hadron lines of the \CMSSW figure and
-adds the flight distance of each weakly decaying B, the vector sum of all
-final particles, which must vanish, and the missing transverse momentum
-carried by the neutrinos.
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/Decay/plot_journey_Decay.py                 # -> example/Decay/journey_Decay.pdf
-python3 example/Decay/plot_journey_Decay.py -i my.lhe --png
-\end{minted}
-
-\section{B-hadron lifetimes and displaced vertices: the family's birthmark}
+\subsection{B-hadron lifetimes and displaced vertices: the family's birthmark}
 \label{sec:children_producing_grandchildren:b_hadron_lifetimes_and_displaced_vertice}
 
 Before the grandchildren, the walk: how long a hadron lives, how far that
 takes it, and what of the walk is left for the detector to find.
 
-\subsection{The clock without memory: the decay law and the 10 mm rule}
+\subsubsection{The clock without memory: the decay law and the 10 mm rule}
 \label{sec:children_producing_grandchildren:lifetime}
 
 Guess first. Of the 365 primary hadrons of the record, which ones should
@@ -599,7 +447,7 @@ the generator's $10\mm$ line.}
 \label{fig:children_producing_grandchildren:lifetime_plot}
 \end{figure}
 
-\subsection{The birthmark: the decay vertex and the impact parameter}
+\subsubsection{The birthmark: the decay vertex and the impact parameter}
 \label{sec:children_producing_grandchildren:vertices}
 
 Guess first: the \Bbar walked $21\mm$. What of that walk does the detector
@@ -724,7 +572,7 @@ our event.}
 \label{fig:children_producing_grandchildren:vertex_plot}
 \end{figure}
 
-\subsection{A change of name on the way: \texorpdfstring{$B^0$--$\bar B^0$}{B0-B0bar} oscillations}
+\subsubsection{A change of name on the way: \texorpdfstring{$B^0$--$\bar B^0$}{B0-B0bar} oscillations}
 \label{sec:children_producing_grandchildren:mixing}
 
 Guess first: the $\bar b$ of our event became a \Bstar, which radiated a
@@ -823,12 +671,12 @@ convention and not a disagreement. Panel~(a) of
 distribution of $t$ that \cref{eq:children_producing_grandchildren:mixing}
 is averaged over.
 
-\section{The decay tables: who the grandchildren are}
+\subsection{The decay tables: who the grandchildren are}
 \label{sec:children_producing_grandchildren:decay_tables}
 
 The clock said when and the walk said where. The tables say what.
 
-\subsection{The roll of the dice: branching ratios, \texorpdfstring{\code{onMode}}{onMode} and the partonic channels}
+\subsubsection{The roll of the dice: branching ratios, \texorpdfstring{\code{onMode}}{onMode} and the partonic channels}
 \label{sec:children_producing_grandchildren:tables}
 
 Guess first: a \Bbar has $870$ ways to decay. How does the generator pick
@@ -936,7 +784,7 @@ script and \PYTHIA, with our event and the \CMSSW event marked.}
 \label{fig:children_producing_grandchildren:tables_plot}
 \end{figure}
 
-\subsection{Where the grandchildren go: phase space and the matrix elements}
+\subsubsection{Where the grandchildren go: phase space and the matrix elements}
 \label{sec:children_producing_grandchildren:kinematics}
 
 Guess first: the channel is drawn and the masses are fixed. In which
@@ -1007,14 +855,14 @@ $D^-$. The sixteen particles of the mother's system are listed in
 sum is the \Bstarbar's momentum to $10^{-11}\GeV$, which the log checks
 after every decay.
 
-\section{Semileptonic decays: neutrinos and soft muons leave the family}
+\subsection{Semileptonic decays: neutrinos and soft muons leave the family}
 \label{sec:children_producing_grandchildren:semileptonic_decays_neutrinos_and_soft_m}
 
 One decay in five is different in kind. The $W$ inside the hadron becomes
 a lepton and a neutrino instead of two quarks, and two things leave the
 family that no later stage of the journey will bring back.
 
-\subsection{The \texorpdfstring{$W$}{W} inside the hadron: \texorpdfstring{$b\to c\ell\bar\nu$}{b -> c l nu} and the V\texorpdfstring{$-$}{-}A matrix element}
+\subsubsection{The \texorpdfstring{$W$}{W} inside the hadron: \texorpdfstring{$b\to c\ell\bar\nu$}{b -> c l nu} and the V\texorpdfstring{$-$}{-}A matrix element}
 \label{sec:children_producing_grandchildren:va}
 
 Guess first: how often does a B~hadron decay to a lepton, and how hard is
@@ -1146,7 +994,7 @@ quark's hadron, from the B itself and from the charm cascade, with the
 \label{fig:children_producing_grandchildren:semileptonic_plot}
 \end{figure}
 
-\subsection{The emigrants: the neutrino's share and the soft lepton}
+\subsubsection{The emigrants: the neutrino's share and the soft lepton}
 \label{sec:children_producing_grandchildren:emigrant}
 
 Guess first: the cone around the $b$ held $99.23\GeV$ of primary hadrons.
@@ -1218,7 +1066,7 @@ hadron's $235.9\GeV$, $f_\nu=0.41$, and the electron kept $5.0\GeV$ of
 the lepton's \pt, page~5 (\cref{fig:children_producing_grandchildren:our_jet_plot})
 the response.
 
-\subsection{The recipe, step by step}
+\subsubsection{The recipe, step by step}
 \label{sec:children_producing_grandchildren:step_by_step}
 
 \Cref{fig:children_producing_grandchildren:flow} is the whole stage as the
@@ -1246,166 +1094,38 @@ scene~6 is that order.
 \label{fig:children_producing_grandchildren:flow}
 \end{figure}
 
-\section{Validation from official packages}
-\label{sec:children_producing_grandchildren:validation}
-
-Two official sources again: \PYTHIA driven from a script, and the CMS
-generator job of \cref{ch:ancestral_home}, which decayed its hadrons in
-the same step that showered, dressed and hadronised them. As at the
-previous stop the first comparison is made on identical input, and this
-time a third mode isolates one particle.
-
-\subsection{The same hadrons with \PYTHIA: the validation script}
-\label{sec:children_producing_grandchildren:pythia}
-
-\file{validate_decays_with_pythia.py} has three modes. In mode
-\code{record} it switches \PYTHIA's process level off, fills the event
-record by hand with the 365 primary hadrons of \file{event_Had.lhe} with
-their status codes, and lets \code{next()} run the decays on them with
-\code{ParticleDecays:limitTau0 = on} and \code{tau0Max = 10}, $N$ times
-with different seeds; the standalone script does the same with
-\code{--repeat N}. In mode \code{single} it decays one particle at rest
-$N$ times, a $B^0$ by default, which removes the boost and the rest of
-the event and tests the tables, the matrix elements and the mixing alone.
-In mode \code{full} the hard event of \cref{ch:ancestral_home} is written
-to a Les Houches file $N$ times and \PYTHIA runs the whole chain with the
-CP5 settings and decays on, with or without the impact-parameter window
-of \cref{sec:uninvited_cousins:pythia}. All three record per event what
-\cref{tab:children_producing_grandchildren:numbers} lists, in the JSON
-layout of the standalone statistics so that \file{plot_theory_Decay.py}
-draws both. As before \PYTHIA's output goes through C++ streams and is
-captured by redirecting the file descriptor:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{bash}
-cd example/Decay/Standalone
-PY=../../ME/Standalone/.venv/bin/python
-$PY validate_decays_with_pythia.py -n 400 --standalone-stats standalone_decay_stats.stats.json
-$PY validate_decays_with_pythia.py --mode single --id 511 -n 20000 --seed 3 \
-    --standalone-stats standalone_single_511.json
-$PY validate_decays_with_pythia.py --mode full -n 2000
-\end{minted}
-The first two runs take a minute each, the full chain a few minutes. The
-columns of \cref{tab:children_producing_grandchildren:numbers} are the
-result; read the first two together. \PYTHIA makes $739.2\pm11.9$ final
-particles from our hadrons where the script makes $740.3\pm11.7$,
-$331.1$ against $331.2$ charged, $328.8$ against $330.0$ photons, $2.85$
-against $3.10$ neutrinos, and the species agree to a tenth of a percent
-of the final state, $44.5\%$ photons, $17.8\%$ $\pi^-$, $17.1\%$ $\pi^+$,
-$3.1\%$ $K_S^0$ in both. For the mother's hadron the two agree on the
-flight distance, $13.2$ against $14.5\mm$ with a width of $13$, on the
-number of its final particles, $11.05$ against $11.08$, on its neutrino
-energy, on the impact parameters of its tracks, on the final \pt of the
-cone to $0.01\GeV$, $98.786$ against $98.793$, and on the visible \pt to
-$1.2\GeV$ with a width of $12$. The $B^0$ at rest, with twenty thousand
-decays, resolves two small differences: the script makes $2\%$ more
-particles, $11.11$ against $10.87$, almost all of them photons from the
-$\pi^0$ of its partonic channels, and it splits the charm hadrons
-slightly differently, $30\%$ $D^-$ and $28\%$ $\bar D^0$ where \PYTHIA
-has $35$ and $27$, a detail of how the spectator hadron is picked in the
-weak partonic channels; the semileptonic fraction, $20.51$ against
-$20.70\%$, and the lepton spectrum, $1.396$ against $1.383\GeV$, agree.
-The one entry of the table that differs by many standard deviations,
-the oscillated fraction, is the bookkeeping of
-\cref{sec:children_producing_grandchildren:mixing}. The full chain, with
-the B~hadron species mixed and the hadrons harder, gives the same
-semileptonic fractions and neutrino shares as the same-hadron columns
-and a wider everything else, $459\pm175$ final particles, because the
-number of secondary scatterings is wide. \PYTHIA's first decay of our
-hadrons is in \file{validate_decays_with_pythia_record_event1.txt} and
-its first full-chain event in \file{validate_decays_with_pythia_full_event1.txt},
-both in the standalone format with the vertex table, so that
-\file{plot_journey_Decay.py} draws them.
-
-\subsection{How CMS does it in practice: decays inside the GEN step}
-\label{sec:children_producing_grandchildren:cmssw}
-
-Nothing new has to be run. The \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} decayed the event, since
-\code{HadronLevel:all} covers the decays and
-\code{ParticleDecays:limitTau0 = on} with \code{tau0Max = 10} is in every
-CMS configuration, and \code{JitJetSW}'s analyser drew the stable
-particles, \code{genParticles} with status~1, as its fifth figure. From
-the setup of \cref{sec:mother_gives_birth:cmssw},
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
-\end{minted}
-produces \file{genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf}, whose fifth
-page is \cref{fig:children_producing_grandchildren:cmssw}; the copy in
-\file{example/Decay/CMSSW/} is the one used here, and the log is the one
-of \cref{ch:mother_gives_birth}. This job decayed its $b$ and $c$ hadrons
-with \PYTHIA's own tables, the ones the script embeds; the production
-configurations of CMS hand them to EvtGen~\cite{Lange:2001uf} through the
-external-decayer interface instead, with PHOTOS for the radiative
-corrections and TAUOLA for the $\tau$, and
-\cref{sec:children_producing_grandchildren:caveats} says what changes.
-
-\subsubsection{Reading the log}
-
-The particle listing of \file{step1_GEN_PS_cfg.log} continues after the
-primary hadrons of \cref{sec:children_getting_married:cmssw} with the
-decay products, status~1 for the stable ones and status~2 for those that
-decayed again, and its vertex columns, in centimetres, now vary from row
-to row. Follow the mother once more:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\scriptsize]{text}
-  829 |  -521 -      B- |  2 |  824  828 1434 1436 |  5  3 |  94.279  -1.567 -2.092 | ... |  0.028 -0.017  3.112 |
- 1434 |   -12 - nu_ebar |  1 |  829  829   -1   -1 |  1  0 |  37.457  -1.588 -2.098 | ... | -0.128 -0.288  2.394 |
- 1435 |    11 -      e- |  1 |  829  829   -1   -1 |  1  0 |   4.951  -1.431 -2.210 | ... | -0.128 -0.288  2.394 |
- 1436 | 10421 -   D*_00 |  2 |  829  829 1725 1726 |  1  2 |  51.912  -1.563 -2.077 | ... | -0.128 -0.288  2.394 |
-\end{minted}
-Row 829 is the $B^-$ of \cref{ch:children_getting_married} at
-$94.279\GeV$, status~2 now, with daughters 1434 to 1436: an electron
-antineutrino of $37.457\GeV$, an electron of $4.951$, and a $D_0^{*0}$
-($c\bar u$, the scalar excitation of the $D^0$) of $51.912\GeV$ that
-decays further at rows 1725 and 1726. Its production vertex is the
-smeared collision point, $(0.028,-0.017,3.112)\,\mathrm{cm}$; its
-daughters are born at $(-0.128,-0.288,2.394)$, so that the $B^-$ walked
-$L=\sqrt{0.156^2+0.271^2+0.718^2}\,\mathrm{cm}=7.83\mm$ with
-$\Lxy=3.13\mm$. The neutrino carries $96.2$ of the hadron's $235.9\GeV$
-of energy, $f_\nu=0.41$, and $37.5$ of its $94.3\GeV$ of \pt: this is the
-tail of \cref{sec:children_producing_grandchildren:emigrant} in one
-event. The $\bar b$'s $B^{*+}$ ($u\bar b$), row 968, radiated its photon,
-row 1504, and left a $B^+$ of $112.618\GeV$, row 1503, whose daughters at
-rows 1752 to 1756, $\bar D^{*0}\pi^+\pi^0K^0\bar K^{*0}$, are born at
-$(0.322,0.451,-8.604)\,\mathrm{cm}$: $L=117.3\mm$ down the beam pipe,
-$\Lxy=5.53$, sixteen final particles and no neutrino. These are the
-\CMSSW numbers of \cref{tab:children_producing_grandchildren:numbers}.
-
-\subsubsection{The figure}
-
-\Cref{fig:children_producing_grandchildren:cmssw} is the analyser's
-stage-5 picture: $634$ stable particles, $132$ of them primary hadrons
-that survived and $477$ decay products, the $B^-$'s nine descendants in
-red at $\eta=-1.57$ and the $B^+$'s sixteen in blue at $\eta=-3.75$, and
-$38$ particles beyond $|\eta|=6$ on the border. Set it next to
-\cref{fig:children_producing_grandchildren:journey}. The two are different
-decays of different hadronisations of different showers of the same hard
-event, and the comparison to make is
-\cref{tab:children_producing_grandchildren:numbers}; what the pictures
-share is the structure, a dense cluster of grandchildren where each
-B~hadron was, now a dozen particles instead of one, and a grey background
-of decay products twice as dense as the purple one of the primary hadrons
-was.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=5,width=\textwidth]{Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf}
-\caption[The event after the hadron decays in \CMSSW]{Stage~5 of our
-event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
-the stable particles after the decays. Red and blue are the descendants of
-the $B^-$ and the $B^{*+}$, magenta their vector sum, purple the primary
-hadrons that survived and grey the other decay products; particles beyond
-$|\eta|=6$ are drawn on the border. The same stage of the standalone
-record is \cref{fig:children_producing_grandchildren:journey}.}
-\label{fig:children_producing_grandchildren:cmssw}
-\end{figure}
-
-\section{Our jet at this stage: the grandchildren in the cone and the first loss}
+\section{The energy ledger: our jet at this stage}
 \label{sec:children_producing_grandchildren:our_jet_at_this_stage}
 
 The record is complete: $2251$ rows, $749$ of them the particles that
 \cref{ch:family_photograph} will cluster and \cref{ch:crossing_the_border}
-will send into the detector. Three numbers describe the family at this
-stage, the \pt of the cone, its visible part and its mass, and the
-chapter closes with them.
+will send into the detector, and the companion prints the rows that matter
+with a guide to the new status codes.
+\label{sec:children_producing_grandchildren:record_format}
+A particle that decays keeps its row and its status becomes negative, as at
+every previous stage; its products are appended with status $91$, or $92$
+if the particle oscillated before decaying, with the mother in the first
+mother column and the daughter range on the mother's row. Our record has
+the $1491$ rows of \cref{ch:children_getting_married}, of which $222$
+primary hadrons now carry status $-81$ to $-84$ and $143$ keep their
+positive status, then $760$ decay products, $154$ of which decayed in their
+turn and $606$ of which are final; the final state is every row with a
+positive status, $143+606=749$ particles, with the momentum of the two
+protons and the charge $+2$. Follow the mother once more: the \Bstarbar of
+row~1012 carries status $-83$ now, with daughters~1527 and~1528, the \Bbar
+and its photon; the \Bbar, status $-91$, has as daughters the three rows
+$1969$ to $1971$, its $D_s^{*-}$, $D^{*0}$ and $\rho^+$, every one of which
+decays again. The new table is the second one: after the listing and its
+sums the file carries a \emph{vertex listing}, one row for every particle
+born more than $0.1\um$ from the origin and for every particle that drew a
+proper lifetime, with the production vertex in millimetres, the production
+time in $\mathrm{mm}/c$ and the proper lifetime drawn for the row, $330$
+rows in our record; the \Bbar is born at the origin, its $D_s^{*-}$ and
+$D^{*0}$ at the \Bbar's vertex, $(-9.130,-3.934,-18.508)\mm$. The reader of
+\file{plot_journey_Decay.py} parses that table; the readers of the earlier
+stages skip it. Three numbers describe the family at this stage, the \pt
+of the cone, its visible part and its mass, and the chapter closes with
+them.
 
 \begin{table}[htbp]\centering\small
 \caption[Kinematics of the two $b$ quarks, their hadrons and their cones
@@ -1477,38 +1197,94 @@ cone through the stages.}
 \label{fig:children_producing_grandchildren:our_jet_plot}
 \end{figure}
 
+The ledger gets the rows that turn the family into what the detector will
+see, and \cref{fig:children_producing_grandchildren:journey} puts them next to the event display of the
+standalone stage. The first row is the last one of
+\cref{ch:children_getting_married}; the visible and charged rows are new,
+and the visible one is the first place where the ledger of another seed
+would show a loss.
+
 \begin{figure}[htbp]\centering
-\includegraphics[width=\textwidth]{Decay/journey_Decay.pdf}
-\caption[The event after the hadron decays in the $(\eta,\phi)$ plane]{The
-final state of our event after the standalone hadron-decay stage, drawn by
+\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
+Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
+ & [GeV] & [GeV] & & [GeV] \\ \midrule
+\ledgerrow{$b$ family after hadronisation ($\dR<0.4$)}{99.23}{16.08}{6}{--}
+\ledgerrow{$b$ family after this stage ($\dR<0.4$, final)}{99.43}{14.59}{31}{$+0.20$}
+\ledgerrow{\quad of which visible (no neutrino)}{99.43}{14.59}{31}{$0.00$}
+\ledgerrow{\quad of which charged}{67.43}{--}{16}{--}
+\ledgerrow{\quad of which the \Bbar's descendants}{78.26}{5.28}{15}{--}
+\ledgerrow{\quad the same within $\dR<0.8$}{108.73}{42.14}{51}{$+2.75$}
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.58\textwidth}\centering
+\includegraphics[width=\linewidth]{Decay/journey_Decay.pdf}
+\end{minipage}
+\caption[The energy ledger and the event after the hadron decays in the $(\eta,\phi)$ plane]{The
+energy ledger at the stage ``The Children Produce Grandchildren'' (left;
+$\Delta\pt$ is relative to the previous row) and the final state of our
+event after the standalone hadron-decay stage (right), drawn by
 \file{example/Decay/plot_journey_Decay.py} from
-\file{example/Decay/event_Decay.lhe} in the layout of
-\cref{fig:children_producing_grandchildren:cmssw}. Red and blue are the 16
-and 10 final descendants of the \Bstarbar and the \Bstar, magenta their
-vector sum, purple the 143 primary hadrons that survived, grey the other
-580 decay products, with the five neutrinos hollow; 43 particles beyond
-$|\eta|=6$ are on the border. The header lists the flight distance of each
-weakly decaying B, the vector sum of all 749 particles, which vanishes,
-and the $9.1\GeV$ of missing transverse momentum carried by the
-neutrinos.}
+\file{example/Decay/event_Decay.lhe} in the layout of \cref{fig:children_producing_grandchildren:cmssw}.
+Red and blue are the 16 and 10 final descendants of the \Bstarbar and the
+\Bstar, magenta their vector sum, purple the 143 primary hadrons that
+survived, grey the other 580 decay products, with the five neutrinos
+hollow; 43 particles beyond $|\eta|=6$ are on the border. The header lists
+the flight distance of each weakly decaying B, the vector sum of all 749
+particles, which vanishes, and the $9.1\GeV$ of missing transverse momentum
+carried by the neutrinos.}
 \label{fig:children_producing_grandchildren:journey}
 \end{figure}
 
-The ledger gets the rows that turn the family into what the detector will
-see. The first row is the last one of \cref{ch:children_getting_married};
-the visible and charged rows are new, and the visible one is the first
-place where the ledger of another seed would show a loss.
+\paragraph{The same event in \CMSSW.} The particle listing of the GEN log
+continues after the primary hadrons of \cref{sec:children_getting_married:cmssw}
+with the decay products, status~1 for the stable ones and status~2 for
+those that decayed again, and its vertex columns, in centimetres, now vary
+from row to row. Row~829 is the $B^-$ of \cref{ch:children_getting_married}
+at $94.279\GeV$, status~2 now, with daughters~1434 to~1436: an electron
+antineutrino of $37.457\GeV$, an electron of $4.951$, and a $D_0^{*0}$
+($c\bar u$, the scalar excitation of the $D^0$) of $51.912\GeV$ that decays
+further. Its production vertex is the smeared collision point,
+$(0.028,-0.017,3.112)\,\mathrm{cm}$; its daughters are born at
+$(-0.128,-0.288,2.394)$, so that the $B^-$ walked
+$L=\sqrt{0.156^2+0.271^2+0.718^2}\,\mathrm{cm}=7.83\mm$ with
+$\Lxy=3.13\mm$. The neutrino carries $96.2$ of the hadron's $235.9\GeV$ of
+energy, $f_\nu=0.41$, and $37.5$ of its $94.3\GeV$ of \pt: this is the tail
+of \cref{sec:children_producing_grandchildren:emigrant} in one event. The $\bar b$'s $B^{*+}$ ($u\bar b$),
+row~968, radiated its photon and left a $B^+$ of $112.618\GeV$, row~1503,
+whose five daughters, $\bar D^{*0}\pi^+\pi^0K^0\bar K^{*0}$, are born at
+$(0.322,0.451,-8.604)\,\mathrm{cm}$: $L=117.3\mm$ down the beam pipe,
+$\Lxy=5.53$, sixteen final particles and no neutrino. These are the \CMSSW
+numbers of \cref{tab:children_producing_grandchildren:numbers}.
 
-\begin{ledger}{The Children Produce Grandchildren}
-  \ledgerrow{$b$ family after hadronisation ($\dR<0.4$)}{99.23}{16.08}{6}{--}
-  \ledgerrow{$b$ family after this stage ($\dR<0.4$, final)}{99.43}{14.59}{31}{$+0.20$}
-  \ledgerrow{\quad of which visible (no neutrino)}{99.43}{14.59}{31}{$0.00$}
-  \ledgerrow{\quad of which charged}{67.43}{--}{16}{--}
-  \ledgerrow{\quad of which the \Bbar's descendants}{78.26}{5.28}{15}{--}
-  \ledgerrow{\quad the same within $\dR<0.8$}{108.73}{42.14}{51}{$+2.75$}
-\end{ledger}
+\Cref{fig:children_producing_grandchildren:cmssw} is the analyser's
+stage-5 picture: $634$ stable particles, $132$ of them primary hadrons
+that survived and $477$ decay products, the $B^-$'s nine descendants in
+red at $\eta=-1.57$ and the $B^+$'s sixteen in blue at $\eta=-3.75$, and
+$38$ particles beyond $|\eta|=6$ on the border. Set it next to
+\cref{fig:children_producing_grandchildren:journey}. The two are different
+decays of different hadronisations of different showers of the same hard
+event, and the comparison to make is
+\cref{tab:children_producing_grandchildren:numbers}; what the pictures
+share is the structure, a dense cluster of grandchildren where each
+B~hadron was, now a dozen particles instead of one, and a grey background
+of decay products twice as dense as the purple one of the primary hadrons
+was.
 
-\section{What this stage is, and what it is not}
+\begin{figure}[htbp]\centering
+\includegraphics[page=5,width=\textwidth]{Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf}
+\caption[The event after the hadron decays in \CMSSW]{Stage~5 of our
+event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
+the stable particles after the decays. Red and blue are the descendants of
+the $B^-$ and the $B^{*+}$, magenta their vector sum, purple the primary
+hadrons that survived and grey the other decay products; particles beyond
+$|\eta|=6$ are drawn on the border. The same stage of the standalone
+record is \cref{fig:children_producing_grandchildren:journey}.}
+\label{fig:children_producing_grandchildren:cmssw}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
 \label{sec:children_producing_grandchildren:caveats}
 
 The agreement in \cref{tab:children_producing_grandchildren:numbers} was

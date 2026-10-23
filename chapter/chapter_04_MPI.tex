@@ -1,8 +1,9 @@
 % ---------------------------------------------------------------------------
 % Chapter 4: Cousins Nobody Invited: Underlying Event and Colour Reconnection
-% The scripts, records and figures discussed here live in example/MPI/ of
-% https://github.com/ravindkv/JitJet . The book gives the physics and the
-% instructions; the code itself is read on GitHub, not printed here.
+% The scripts, records, logs and films of this stop live in example/MPI/, and
+% the technical companion of the chapter is chapter/chapter_04_MPI.md: how to
+% run the scripts, how to read the records and logs, how the official numbers
+% were obtained, and the full tables. The book gives the physics.
 % ---------------------------------------------------------------------------
 %% chapter-local shorthands (\pt already carries a subscript, so it cannot take another)
 \providecommand{\ptzero}{\ensuremath{p_{\mathrm{T}0}}\xspace}
@@ -25,9 +26,12 @@ overlap of two protons and the enhancement factor, the chain of interactions
 below the hard scale, depleted parton densities and companion quarks, beam
 remnants and primordial transverse momentum, the MPI-based colour
 reconnection and the string length, the transverse-region definition of the
-underlying event, the CP5 tune, the underlying-event energy inside a cone}
+underlying event, the CP5 tune, the underlying-event energy inside a cone.
+The one number to take away: at this collision geometry the uninvited
+cousins add $1.6\pm2.2\GeV$ to a cone of $\dR<0.4$ around the mother, and
+in our event they happened to add nothing.}
 
-\section{Welcome back: what we will see at this third stop}
+\section{What we will see at this stop}
 \label{sec:uninvited_cousins:what_we_compute}
 
 At the end of \cref{ch:mother_gives_birth} the record contained forty
@@ -57,36 +61,109 @@ $R=0.4$ and are the reason jets are not built with $R=1$; the detector will
 later add two hundred \emph{other} collisions on top
 (\cref{ch:crowd_on_the_road}), and the methods of
 \cref{ch:paying_for_uninvited} will have to tell the two apart. As at the
-previous stops we meet the number four times, from the top down:
-\begin{enumerate}[nosep]
-  \item \textbf{Watch it.} A film shows two protons overlapping, the chain
-    of secondary scatterings running down in \pt, the remnants being formed
-    from what is left, the strings reconnecting, and the same hard event
-    dressed four hundred times (\cref{sec:uninvited_cousins:animation}).
-  \item \textbf{Run it.} A Python file, needing only NumPy and SciPy, takes
-    the showered record of \cref{ch:mother_gives_birth} and adds the
-    multiparton interactions, the beam remnants and the colour
-    reconnection, in two seconds, following \PYTHIA's construction class by
-    class (\cref{sec:uninvited_cousins:standalone_code}).
-  \item \textbf{Derive it.} Why the QCD $2\to2$ cross section must exceed
-    the proton--proton cross section, how that paradox is resolved by
-    counting scatterings per collision, how the impact parameter enters,
-    how the chain is generated with the veto algorithm of
-    \cref{sec:mother_gives_birth:veto}, what the protons look like after each
-    scattering, how the remnants are formed, and what colour reconnection
-    does to the strings
-    (\crefrange{sec:uninvited_cousins:the_rest_of_the_protons_does_not_stay_qu}{sec:uninvited_cousins:measuring_the_underlying_event_transvers}).
-  \item \textbf{Check it against the official packages.} A validation
-    script dresses the same hard event two thousand times with the real
-    \PYTHIA, and the CMS generator job of \cref{ch:ancestral_home} already
-    had all of this switched on, so its log and its third figure are read
-    with the new status codes in hand
-    (\cref{sec:uninvited_cousins:validation}).
-\end{enumerate}
+previous stops we meet the number four times, from the top down: a film
+shows two protons overlapping, the chain of secondary scatterings running
+down in \pt, the remnants being formed, the strings reconnecting and the
+same hard event dressed four hundred times; a Python file takes the
+showered record of \cref{ch:mother_gives_birth} and adds the multiparton
+interactions, the beam remnants and the colour reconnection in two seconds,
+following \PYTHIA's construction class by class; the theory derives why the
+QCD $2\to2$ cross section must exceed the proton--proton cross section, how
+the impact parameter enters, how the chain is generated, what the protons
+look like after each scattering, how the remnants are formed and what
+colour reconnection does to the strings; and the official packages, the
+real \PYTHIA dressing the same hard event two thousand times and the CMS
+generator job of \cref{ch:ancestral_home}, get the last word.
+
 \MG again does not appear: multiparton interactions, remnants and colour
 reconnection are \PYTHIA's job in every CMS sample, whatever produced the
 hard process.
 
+\paragraph{The film.}
+\label{sec:uninvited_cousins:animation}
+The film first: the fourth on the playlist of \jitjetworld replays the
+seed-1 dressing at the \CMSSW impact parameter in five narrated scenes,
+once without and once with colour reconnection, so that every number on the
+screen, and every number the narrator says, is produced by the classes that
+wrote the record. Two discs of matter slide towards each other in the
+transverse plane while the overlap and the enhancement factor rise along
+their curves, until the collision stops at the impact parameter of the
+\CMSSW event; a scale runs from the hard scale down to the cut-off and the
+ladder of the $24$ secondary scatterings fills rung by rung, seventeen of
+them crowded below $2\GeV$; the momentum bars of the two protons are eaten
+interaction by interaction until the grey remnant partons appear with their
+flavours and their primordial kicks; the colour strings of the event are
+drawn before and after reconnection, the $b$ quark's own string
+highlighted among the $33$ that remain; and the same showered event is
+dressed with seeds $1,2,3,\ldots$ while the running means settle next to
+the \PYTHIA values. \Cref{fig:uninvited_cousins:stills} shows the first
+four scenes; the fifth is \cref{tab:uninvited_cousins:numbers} in motion.
+Watch first, and let the formulae catch up.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.47\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\hfill
+\includegraphics[page=2,width=0.47\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\\[2mm]
+\includegraphics[page=3,width=0.47\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\hfill
+\includegraphics[page=4,width=0.47\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}
+\caption[Key frames of the animated standalone MPI stage]{Key frames of
+four of the five scenes of the animated standalone MPI stage, drawn by
+\file{animate_standalone_multiparton_interactions.py} with \code{--stills}.
+Top left: the two protons at impact parameter $b$ with the overlap and the
+enhancement factor. Top right: the \pt ladder of the 24 secondary
+scatterings, the $(\eta,\phi)$ picture and the no-interaction probability.
+Bottom left: the momentum bars of the two protons being used up and the
+primordial-$k_{\mathrm{T}}$ kicks. Bottom right: the colour strings before
+and after reconnection and the string length. The fifth scene, four hundred
+dressings of the same event against the \PYTHIA reference, is the table of
+this section. The film itself is the fourth on the playlist of
+\jitjetworld.}
+\label{fig:uninvited_cousins:stills}
+\end{figure}
+
+\paragraph{The picture to carry.}
+\Cref{fig:uninvited_cousins:two_protons_sketch} is the stop in one sketch:
+one proton--proton collision contains many parton--parton scatterings, in
+our event the hard one at $113\GeV$ and $24$ softer ones between $11.5$
+and $0.43\GeV$, because the parton--parton cross section, regularised at
+small \pt by the finite size of the proton, is nine times the cross section
+for the two protons to interact at all. Everything else at this stop, the
+impact parameter, the chain, the depleted protons, the remnants and the
+strings, follows from reading that ratio as a count.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/mpi_two_protons}}
+\caption[One collision, many scatterings, and the regularised cross
+section]{Left: one proton--proton collision contains many parton--parton
+scatterings; in our event the hard $\bar uu\to\bbbar$ at $113\GeV$ and 24
+softer ones between $11.5$ and $0.43\GeV$. Right: the parton--parton cross
+section $\mathrm{d}\sigma/\mathrm{d}\pt^2$ diverges as $1/\pt^4$ (dashed)
+and is regularised by the replacement of \cref{eq:uninvited_cousins:regularised}
+(solid); its integral above $\pt^{\min}$, shaded, is nine times the
+non-diffractive cross section.}
+\label{fig:uninvited_cousins:two_protons_sketch}
+\end{figure}
+
+\paragraph{A picture to carry: the other tenants.} The project picture of
+\cref{ch:mother_gives_birth} had two main contractors and their
+subcontractors. This chapter adds the rest of the building. The hard process
+rented the top floor; the other floors are rented too, by tenants who never
+heard of our project, each running a small project of their own with the
+same rules, the same subcontracting, the same recoils. They share the
+building's budget (the protons' momentum), so every tenant that moves in
+leaves less for the next, and the landlord (the remnant) keeps what nobody
+rented. Then the electricians come: the colour strings that hadronisation
+will pull into hadrons do not run floor by floor but are rewired so that
+the total length of cable is as short as possible, and a cable that starts
+on our floor may now end on somebody else's. The picture captures the three
+things the chapter derives: more than one scattering per collision, a
+shared and depleted budget, and strings that cross system boundaries. Its
+limit is the same as before: the scatterings are independent only in the
+model's leading approximation, and the model has knobs, the tune, which
+the data fix.
+
+\paragraph{The number, three ways.}
+\label{sec:uninvited_cousins:validation}
+\label{sec:uninvited_cousins:standalone_code}
 \Cref{tab:uninvited_cousins:numbers} gives away the ending, with the same
 warning as \cref{tab:mother_gives_birth:numbers} and one more. The stage is
 random, so single events are compared on structure and ensembles on
@@ -99,6 +176,61 @@ be central, $b=0.31\bmean$, with 31 secondary scatterings. The book's record
 therefore fixes the impact parameter to the \CMSSW value, so that the two
 can be compared at the same geometry, and every ensemble below is given both
 ways: with $b$ drawn, as nature does it, and at $b=0.3136\bmean$.
+
+The standalone script is a port of four classes of \PYTHIA~8,
+\code{MultipartonInteractions}, \code{BeamParticle}, \code{BeamRemnants} and
+the \code{reconnectMPIs} model of \code{ColourReconnection}, into Python
+that needs NumPy and SciPy and nothing else; it imports the shower of
+\cref{ch:mother_gives_birth} and runs it on every secondary system. Its
+learning mode, \code{-v}, prints the regularised cross section with its
+integral, the overlap table, the state of the two protons after the hard
+process, and then every secondary interaction with its scale, its veto
+weight, the depleted densities it saw, the channel it chose and the size of
+its shower, every remnant with its flavour and kick, and every colour
+reconnection decision; the $1500$ lines for seed~1 at the \CMSSW impact
+parameter are committed, and every number quoted in the theory of this
+chapter is taken from that log.
+\label{sec:uninvited_cousins:pythia}
+The first official check is \PYTHIA itself, dressing the same hard event
+two thousand times with the CP5 settings of the \CMSSW configuration,
+showers, multiparton interactions, remnants and colour reconnection on,
+hadronisation off; since the impact parameter cannot be fixed from the
+Python binding, the fixed-$b$ column keeps the \PYTHIA events within a
+narrow window around the \CMSSW value. Read the columns as before. The
+geometry agrees: $\langle b\rangle$, $\langle f\rangle$ and $f(0.3136)$
+within $2\%$. The remnant count, the hardest secondary scattering and the
+underlying-event density agree at the $5$--$10\%$ level, and the extra \pt
+inside the cones follows the density. The one real disagreement is the
+number of scatterings, $20\%$ low in the standalone chain at both
+geometries, and its cause is known: \PYTHIA interleaves the multiparton
+interactions with the initial- and final-state showers of \emph{all}
+systems in one common \pt sequence, so that the depletion a scattering sees
+is only that of the scatterings and emissions harder than itself, while
+the script showers each system to its cut-off before drawing the next,
+softer scattering, which makes the proton look emptier than it should.
+Without any showering the two chains agree to $4\%$; the remaining
+difference, a $10\%$ stronger soft radiation of the chapter-2 shower, was
+already seen in \cref{sec:mother_gives_birth:pythia}. The cone \emph{mass}
+is not compared: the standalone ensembles keep the seed-1 shower, whose
+family mass of $13.5\GeV$ is a high draw, while \PYTHIA reshowers to
+$8\GeV$ on average.
+\label{sec:uninvited_cousins:cmssw}
+The second official check costs nothing to run: the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} had multiparton interactions, remnants and
+colour reconnection on from the start, and its log prints the same numbers
+the script derives, the regularised cross section integrated at
+initialisation, ``\code{pT0 = 1.44 gives sigmaInteraction = 500.67 mb}'',
+and for the first event ``\code{Impact parameter b = 3.136e-01 gives
+enhancement factor = 3.709}'' and ``\code{Number of MPI = 32}'', the hard
+process counted among them. The book's record was fixed to that impact
+parameter, and \cref{sec:uninvited_cousins:our_jet_at_this_stage_ue_energy_inside_r}
+reads the \CMSSW event next to the standalone one. How each column was
+produced, the commands, the options, the logs and the status codes, is in
+the companion of this chapter,
+\begin{center}
+  \companion{chapter_04_MPI}
+\end{center}
+together with the full tables behind every number quoted below.
 
 \begin{table}[htbp]\centering\small
 \caption[The rest of the protons obtained three ways]{The rest of the
@@ -135,269 +267,13 @@ string length $\lambda$ before $\to$ after & -- & $563\to375$ & -- & $769\to472$
 \end{tabular}
 \end{table}
 
-\paragraph{A picture to carry: the other tenants.} The project picture of
-\cref{ch:mother_gives_birth} had two main contractors and their
-subcontractors. This chapter adds the rest of the building. The hard process
-rented the top floor; the other floors are rented too, by tenants who never
-heard of our project, each running a small project of their own with the
-same rules, the same subcontracting, the same recoils. They share the
-building's budget (the protons' momentum), so every tenant that moves in
-leaves less for the next, and the landlord (the remnant) keeps what nobody
-rented. Then the electricians come: the colour strings that hadronisation
-will pull into hadrons do not run floor by floor but are rewired so that
-the total length of cable is as short as possible, and a cable that starts
-on our floor may now end on somebody else's. The picture captures the three
-things the chapter derives: more than one scattering per collision, a
-shared and depleted budget, and strings that cross system boundaries. Its
-limit is the same as before: the scatterings are independent only in the
-model's leading approximation, and the model has knobs, the tune, which
-the data fix.
+\section{Let us dive into the details: the theory}
+\label{sec:uninvited_cousins:theory}
 
-\section{Watch the protons empty out: the animated journey}
-\label{sec:uninvited_cousins:animation}
-
-The film first. \file{example/MPI/Standalone/animate_standalone_multiparton_interactions.py}
-imports the standalone script of \cref{sec:uninvited_cousins:standalone_code}
-and replays the seed-1 dressing at the \CMSSW impact parameter in five
-narrated scenes of a little over four minutes in all, once without and
-once with colour reconnection, so that every number on the screen, and every
-number the narrator says, is produced by the classes that wrote the record.
-It is on the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}
-\end{center}
-and \cref{fig:uninvited_cousins:stills} shows one key frame per scene. Each
-scene names the section that explains it.
-\begin{enumerate}
-  \item \textbf{Two protons meet} (\cref{sec:uninvited_cousins:impact}).
-    Two discs of matter, the CP5 double-Gaussian profile with $63\%$ of the
-    matter in a core of $0.76$ of the radius, slide towards each other in
-    the transverse plane. As the impact parameter $b$ shrinks the overlap
-    $O(b)$ and the enhancement $f(b)=n(b)/\langle n\rangle$ on the right
-    rise along their curves; the collision stops at $b=0.3136\bmean$, the
-    value of the \CMSSW event, where $f=3.63$ and the Poisson mean of
-    secondary scatterings, $32.5$, appears. Watch how fast $f$ falls: at
-    $b=\bmean$ it is already $0.52$, and the seed-1 draw without the
-    \code{--impact} option, $b=1.21\bmean$, sits at $f=0.20$.
-  \item \textbf{The chain runs down in \pt} (\cref{sec:uninvited_cousins:chain}).
-    A scale runs from the hard scale, $113\GeV$, to $\pt^{\min}=0.2\GeV$.
-    Every time it passes the \pt of one of the 24 secondary scatterings the
-    scattering happens: the ladder on the left gains a rung, the
-    $(\eta,\phi)$ picture in the middle gains a pair of cyan squares among
-    the partons of the hard system, and the no-interaction curve on the
-    right shows how unlikely the quiet stretch from $113$ down to
-    $11.5\GeV$ was. The rungs crowd together below $2\GeV$: seventeen of
-    the 24 are there.
-  \item \textbf{What is left} (\cref{sec:uninvited_cousins:remnants}). The
-    momentum bars of the two protons are eaten interaction by interaction,
-    red for the hard process, cyan for the secondary systems; the valence
-    content changes when a valence quark leaves, and at the end the grey
-    remnant partons appear with their flavours: a $ud_0$ diquark and six
-    companion quarks for proton~A, a $ud_1$ and eight companions for
-    proton~B. On the right the primordial-$k_{\mathrm{T}}$ kicks of every
-    initiator and remnant are drawn as arrows; per proton they sum to zero.
-  \item \textbf{The strings reconnect} (\cref{sec:uninvited_cousins:colour_reconnection_and_its_effect_on_je}).
-    The colour strings of the event in the $(y,\phi)$ plane, before and
-    after the MPI-based colour reconnection. Before, each of the 25 systems
-    has its own strings and they criss-cross the whole rapidity range;
-    after, the gluons of 23 soft systems have been moved onto the strings
-    of harder systems and the total string length $\lambda$ has dropped
-    from $880$ to $521$. The $b$ quark's own string is highlighted: it is
-    one of the 33 that remain.
-  \item \textbf{Dressed again and again} (\cref{tab:uninvited_cousins:numbers}).
-    The same showered event dressed with seeds $1,2,3,\ldots$ at the same
-    impact parameter: the histograms of the number of interactions, of the
-    transverse underlying-event density and of the extra \pt inside
-    $\dR<0.4$ around the $b$ fill up, and their running means settle on
-    $21.4$, $3.23\GeV$ and $1.60\GeV$ next to the \PYTHIA values $27.5$,
-    $3.48$ and $1.80$ of the validation run. Our event, the first frame, is
-    on the lucky side for the cone and on the busy side for the chain.
-\end{enumerate}
-Rendering needs matplotlib in addition to NumPy and SciPy, \code{ffmpeg}
-for an \code{.mp4}, and \code{edge-tts} for the voice, as for the earlier
-films; the narration and the score come from the shared
-\file{example/soundtrack.py}, and \code{--no-narration} gives the silent
-cut of under a minute:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/MPI/Standalone
-python3 animate_standalone_multiparton_interactions.py            # the film and its .srt, about an hour to render
-python3 animate_standalone_multiparton_interactions.py --fast     # low-resolution preview
-python3 animate_standalone_multiparton_interactions.py --print-script   # the narration, to record it yourself
-python3 animate_standalone_multiparton_interactions.py --no-narration   # music only, about 55 s
-python3 animate_standalone_multiparton_interactions.py --scene chain -o chain.gif
-python3 animate_standalone_multiparton_interactions.py --stills stills.pdf --no-video
-\end{minted}
-The physics options are those of the standalone script: \code{--seed 7}
-films another dressing, \code{--impact 1.0} a peripheral collision, and
-\code{--no-cr} leaves the strings as they were.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.49\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\hfill
-\includegraphics[page=2,width=0.49\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\\[2mm]
-\includegraphics[page=3,width=0.49\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\hfill
-\includegraphics[page=4,width=0.49\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}\\[2mm]
-\includegraphics[page=5,width=0.49\textwidth]{MPI/Standalone/animate_standalone_multiparton_interactions_stills.pdf}
-\caption[Key frames of the animated standalone MPI stage]{Key frames of the
-five scenes of the animated standalone MPI stage, drawn by
-\file{animate_standalone_multiparton_interactions.py} with \code{--stills}.
-Top left: the two protons at impact parameter $b$ with the overlap and the
-enhancement factor. Top right: the \pt ladder of the 24 secondary
-scatterings, the $(\eta,\phi)$ picture and the no-interaction probability.
-Middle left: the momentum bars of the two protons being used up and the
-primordial-$k_{\mathrm{T}}$ kicks. Middle right: the colour strings before
-and after reconnection and the string length. Bottom: four hundred
-dressings of the same event against the \PYTHIA reference. The film is on
-the JitJet YouTube playlist.}
-\label{fig:uninvited_cousins:stills}
-\end{figure}
-
-\section{Press the button: the standalone MPI stage}
-\label{sec:uninvited_cousins:standalone_code}
-
-Now dress the event yourself. The material of this chapter is in
-\file{example/MPI/} of the JitJet repository,
-\begin{center}
-  \url{https://github.com/ravindkv/JitJet}
-\end{center}
-with the script, its log, its validation and its plots under
-\file{example/MPI/Standalone/}, the event record and the plotting script one
-level up, and the \CMSSW figure under \file{example/MPI/CMSSW/}. As before
-the code is not printed; each script gets a description, the command and
-the output to expect.
-
-\subsection{The standalone script}
-
-The script, \file{standalone_multiparton_interactions.py} in
-\file{example/MPI/Standalone/}, is a port of four classes of \PYTHIA~8,
-\code{MultipartonInteractions},
-\code{BeamParticle}, \code{BeamRemnants} and the \code{reconnectMPIs} model of
-\code{ColourReconnection}, into two thousand lines of Python that need NumPy
-and SciPy and nothing else. It imports the shower script of
-\cref{ch:mother_gives_birth} for the running coupling, the event record and
-the shower itself, which it runs on every secondary system; its own PDF
-grid, embedded between \code{BEGIN/END GENERATED TABLES} by
-\file{dump_mpi_tables.py}, is the same NNPDF3.1 set on LHAPDF's knots but
-reaches down to $x=10^{-9}$, because a $0.2\GeV$ scattering at rapidity~9
-takes $x\sim10^{-8}$ from a proton. A map of the file: \code{SigmaInt} (the
-regularised cross section, \cref{sec:uninvited_cousins:cross_section});
-\code{Overlap} (the proton profile, $O(b)$ and $f(b)$,
-\cref{sec:uninvited_cousins:impact}); \code{Beam} and \code{BeamPDF} (the
-depleted proton, \cref{sec:uninvited_cousins:flavours}); \code{Generator}
-with \code{next\_pt}, \code{trial} and \code{scatter} (the chain,
-\cref{sec:uninvited_cousins:chain}), \code{shower\_system} (the chapter-2
-shower with the depleted proton on each side), \code{remnants}
-(\cref{sec:uninvited_cousins:remnants}), \code{reconnect},
-\code{remnant\_colours} and \code{lambda\_measure}
-(\cref{sec:uninvited_cousins:colour_reconnection_and_its_effect_on_je});
-and \code{summarise}, which measures the underlying event and the cones
-around the two $b$ quarks. From the repository root:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/MPI/Standalone
-python3 standalone_multiparton_interactions.py --impact 0.3136      # seed 1 -> ../event_MPI.lhe (the book's record)
-python3 standalone_multiparton_interactions.py                      # draw the impact parameter instead
-python3 standalone_multiparton_interactions.py --impact 0.3136 -v   # learning mode: every number, every step
-python3 standalone_multiparton_interactions.py --impact 0.3136 -vv  # ... every veto trial and the secondary showers
-python3 standalone_multiparton_interactions.py --no-cr --no-kt      # colour reconnection and primordial kT off
-python3 standalone_multiparton_interactions.py --repeat 400 --impact 0.3136 --quiet --history s.json
-\end{minted}
-The first command integrates the cross section at start-up (three seconds)
-and generates one event (two seconds, most of it the 24 secondary showers),
-then prints
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\footnotesize]{text}
-pT0 = 1.4417 GeV, sigma_int = 497.33 mb, sigma_ND = 55.42 mb, <n> = 8.974; f(b) ranges up to 4.52, <f>_hard = 2.218
-input example/PS/event_PS.lhe: 963 rows after MPI; seed = 1
-impact parameter b = 0.3136 <b> with enhancement f(b) = 3.627; expected 32.5 interactions, got 25 (1 hard + 24 MPI) ...
-  pT of the secondary interactions [GeV]: 11.45 7.68 4.47 3.65 3.42 3.14 2.80 2.19 2.18 1.79 1.76 1.63 1.50 ...
-  final state: 211 partons, of which 155 from the MPI systems (incl. their showers: 31 ISR + 76 FSR branchings) ...
-  underlying event (|eta| < 2.5, w.r.t. the leading b): toward 49.47, transverse 21.99, away 47.67 GeV; ...
-  bbar: pT = 72.50 GeV at eta = -3.42; cone R = 0.4: 4 partons, pT 91.27 (hard system) -> 93.88 GeV with 1 UE ...
-  b: pT = 78.29 GeV at eta = -1.38; cone R = 0.4: 3 partons, pT 100.67 (hard system) -> 100.67 GeV with 0 UE ...
-  colour reconnection: 23 systems merged; string length lambda = 879.6 -> 520.8; 33 colour-singlet strings
-\end{minted}
-and writes the record to \file{example/MPI/event_MPI.lhe}. With
-\code{--history} the chain and the summary go to a JSON file as well; with
-\code{--repeat N} the script dresses the showered event $N$ times with
-seeds $1\ldots N$ and writes the per-event quantities of
-\cref{tab:uninvited_cousins:numbers} to \file{s.stats.json}, about fifteen
-minutes for $400$. The physics options are \code{--pt0ref} and
-\code{--ecmpow} (the regulator of \cref{sec:uninvited_cousins:cross_section}
-and its energy dependence), \code{--sigma-nd}, \code{--impact} (the
-impact parameter in units of $\bmean$, drawn when absent), \code{--cr-range}
-(the reconnection strength), \code{--ptmin-isr}, \code{--ptmin-fsr} and
-\code{--pt0} (the cut-offs of the secondary showers), \code{--no-shower},
-\code{--no-isr}, \code{--no-fsr}, \code{--no-cr}, \code{--no-kt} and
-\code{--radius}. The output with \code{--seed 1 --impact 0.3136} is
-byte-for-byte the committed record.
-
-The two learning modes work as in \cref{ch:mother_gives_birth}. \code{-v}
-prints, before the event, the regularised cross section at a dozen scales
-with its integral, the overlap table in $b$, and the state of the two
-protons after the hard process; then, for every secondary interaction, the
-accepted scale and its veto weight, the rapidities and momentum fractions,
-the depleted densities of both protons at that $x$, the six largest channel
-weights, the chosen process with its colour flow and momenta, and the size
-of its shower; then the remnant flavours, the primordial-$k_{\mathrm{T}}$
-widths and kicks, the light-cone solution, every remnant row, every colour
-reconnection decision with the dipole each gluon was inserted into, the
-string length before and after, the conservation checks and the full
-record. \code{-vv} adds every trial scale of the veto algorithm and the
-secondary showers' own \code{-v} output. The $1500$ lines of \code{-v} for
-seed~1 at $b=0.3136\bmean$ are committed as
-\file{example/MPI/Standalone/standalone_multiparton_interactions.log}, and
-every number quoted in the theory sections is taken from that file. The
-plots of the theory sections come from a sibling script,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/MPI/Standalone/plot_theory_MPI.py   # -> theory_multiparton_interactions.pdf, one page per section
-\end{minted}
-which replays the seed-1 dressing with the classes of the script and reads
-the \code{--repeat} statistics and the \PYTHIA validation files when they
-are present; \code{make figures} regenerates it.
-
-\subsection{Reading the record}
-\label{sec:uninvited_cousins:record_format}
-
-The record keeps \PYTHIA's conventions and adds five status codes to those
-of \cref{sec:mother_gives_birth:record_format}. A secondary scattering is
-written like the hard process: $-31$ for its two incoming partons and $-33$
-for its two outgoing ones, negative because every one of them is replaced by
-the shower's copies. At the end of the stage every system is boosted to the
-frame of its initiators after the primordial $k_{\mathrm{T}}$ and the
-remnant kinematics; the boosted initiators are written with status $-61$ and
-the boosted final partons with status~$62$, so that the final state of the
-record is every row with status~$62$ plus the beam remnants, status~$63$.
-Our record has $963$ rows, of which $195$ are status~$62$ and $16$ are
-status~$63$; the mother of a status-$62$ row is its last copy of the shower
-stage, so the family of any final parton is still found by walking up the
-mother column, now through a $-31$ or $-33$ row if the parton belongs to a
-secondary system. The momentum sum at the bottom of the file is, for the
-first time, that of the two protons: $(E,p_x,p_y,p_z)=(13600,0,0,0)\GeV$ to
-two MeV.
-
-\subsection{Drawing the event}
-
-\file{example/MPI/plot_journey_MPI.py} draws the record in the $(\eta,\phi)$
-plane in the layout of the \CMSSW analyser of
-\cref{sec:uninvited_cousins:cmssw} (\cref{fig:uninvited_cousins:journey}),
-reusing the reader and the frame of chapter~2's script and adding the two
-origins of this stage, secondary scatterings and beam remnants. It applies
-the analyser's classification rule on purpose: a copy or an FSR radiator
-inherits the origin of its mother, so a gluon \emph{emitted} by a parton of
-a secondary system is counted as FSR and an initial-state emission of a
-secondary system as ISR, and only the outgoing partons of the scatterings
-themselves and their descendants by recoil are counted as ``MPI''. That is
-why the figure says $45$ MPI partons while the script's summary says $155$
-partons from the secondary systems: the two numbers count the same partons
-with different rules, and \cref{sec:uninvited_cousins:cmssw} needs the
-analyser's.
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-python3 example/MPI/plot_journey_MPI.py                 # -> example/MPI/journey_MPI.pdf
-python3 example/MPI/plot_journey_MPI.py -i my.lhe --png
-\end{minted}
-
-\section{The rest of the protons does not stay quiet: multiparton interactions}
+\subsection{The rest of the protons does not stay quiet: multiparton interactions}
 \label{sec:uninvited_cousins:the_rest_of_the_protons_does_not_stay_qu}
 
-\subsection{A cross section larger than the proton: the regularised \texorpdfstring{$2\to2$}{2 to 2} rate}
+\subsubsection{A cross section larger than the proton: the regularised \texorpdfstring{$2\to2$}{2 to 2} rate}
 \label{sec:uninvited_cousins:cross_section}
 
 Guess first. \Cref{ch:ancestral_home} computed the cross section for
@@ -423,19 +299,6 @@ is the observation of Sj\"ostrand and van~Zijl~\cite{Sjostrand:1987su} on
 which every \PYTHIA event rests, and it has a corollary that the rest of the
 section makes precise: our hard scattering is accompanied by the others,
 which do not know about it.
-
-\begin{figure}[htbp]\centering
-\resizebox{\textwidth}{!}{\input{chapter/tikz/mpi_two_protons}}
-\caption[One collision, many scatterings, and the regularised cross
-section]{Left: one proton--proton collision contains many parton--parton
-scatterings; in our event the hard $\bar uu\to\bbbar$ at $113\GeV$ and 24
-softer ones between $11.5$ and $0.43\GeV$. Right: the parton--parton cross
-section $\mathrm{d}\sigma/\mathrm{d}\pt^2$ diverges as $1/\pt^4$ (dashed)
-and is regularised by the replacement of \cref{eq:uninvited_cousins:regularised}
-(solid); its integral above $\pt^{\min}$, shaded, is nine times the
-non-diffractive cross section.}
-\label{fig:uninvited_cousins:two_protons_sketch}
-\end{figure}
 
 The count cannot be left to diverge, though, and the $1/\pt^4$ of the
 matrix element does diverge as $\pt\to0$. Physically the divergence is cut
@@ -523,7 +386,7 @@ below $10\GeV$, where all the secondary scatterings of our event are.}
 \label{fig:uninvited_cousins:cross_section_plot}
 \end{figure}
 
-\subsection{Where the two protons meet: the impact parameter}
+\subsubsection{Where the two protons meet: the impact parameter}
 \label{sec:uninvited_cousins:impact}
 
 Guess again. Our hard scattering happened. Does that tell us anything about
@@ -630,7 +493,7 @@ against \PYTHIA; our event and the \CMSSW event are the vertical line.}
 \label{fig:uninvited_cousins:overlap_plot}
 \end{figure}
 
-\subsection{The chain of interactions below the hard scale}
+\subsubsection{The chain of interactions below the hard scale}
 \label{sec:uninvited_cousins:chain}
 
 How are the $n(b)$ scatterings generated? Not all at once. If every
@@ -721,7 +584,7 @@ the reason given in \cref{sec:uninvited_cousins:caveats}.}
 \label{fig:uninvited_cousins:chain_plot}
 \end{figure}
 
-\subsection{Which partons: flavours, momentum fractions and the depleted proton}
+\subsubsection{Which partons: flavours, momentum fractions and the depleted proton}
 \label{sec:uninvited_cousins:flavours}
 
 Guess first: after the hard process took a valence $u$ quark with $x=0.47$
@@ -800,7 +663,7 @@ momentum fraction $X$ left in each proton after each scattering,
 \label{fig:uninvited_cousins:flavours_plot}
 \end{figure}
 
-\subsection{What is left: beam remnants and primordial transverse momentum}
+\subsubsection{What is left: beam remnants and primordial transverse momentum}
 \label{sec:uninvited_cousins:remnants}
 
 The record of \cref{ch:mother_gives_birth} ended with a momentum sum that
@@ -884,7 +747,7 @@ close at one.}
 \label{fig:uninvited_cousins:remnants_plot}
 \end{figure}
 
-\subsection{From formula to event: the stage step by step}
+\subsubsection{From formula to event: the stage step by step}
 \label{sec:uninvited_cousins:step_by_step}
 
 \Cref{fig:uninvited_cousins:flow} collects the construction in the order the
@@ -901,7 +764,7 @@ from the \code{-v} log.}
 \label{fig:uninvited_cousins:flow}
 \end{figure}
 
-\section{Colour reconnection and its effect on jet mass and top mass}
+\subsection{Colour reconnection and its effect on jet mass and top mass}
 \label{sec:uninvited_cousins:colour_reconnection_and_its_effect_on_je}
 
 Guess first: before hadronisation, the event has 25 systems, each with its
@@ -1015,7 +878,7 @@ $(y,\phi)$ plane, with its partons coloured by origin.}
 \label{fig:uninvited_cousins:cr_plot}
 \end{figure}
 
-\section{Measuring the underlying event: transverse-region observables}
+\subsection{Measuring the underlying event: transverse-region observables}
 \label{sec:uninvited_cousins:measuring_the_underlying_event_transvers}
 
 Guess first: the secondary scatterings of our event carry $230\GeV$ of
@@ -1089,176 +952,40 @@ at our impact parameter.}
 \label{fig:uninvited_cousins:ue_plot}
 \end{figure}
 
-\section{Validation from official packages}
-\label{sec:uninvited_cousins:validation}
-
-Two official sources again: \PYTHIA driven from a script so that it dresses
-exactly our hard event, and the CMS generator job of \cref{ch:ancestral_home},
-which had multiparton interactions, remnants and colour reconnection on
-from the start. As before, ensembles are compared on averages and the
-single \CMSSW event on structure.
-
-\subsection{The same stage with \PYTHIA: the validation script}
-\label{sec:uninvited_cousins:pythia}
-
-\file{validate_mpi_with_pythia.py} writes the hard event of
-\cref{ch:ancestral_home} into a Les Houches file $N$ times with
-\code{SCALUP} $=113.32\GeV$ and lets \PYTHIA~8.315, in the environment of
-\file{example/ME/Standalone/}, run its parton level with the CP5 settings of
-the \CMSSW configuration: showers, multiparton interactions, remnants and
-colour reconnection on, hadronisation and QED off. It reads \PYTHIA's
-initialisation numbers, assigns every final parton to its system by walking
-the record, and measures the same quantities as the standalone
-\code{--repeat}. Two things in it are worth knowing before you write your
-own. \code{Tune:pp = 14} resets \code{PDF:pSet}, so the tune must be set
-\emph{before} the PDF, as the \CMSSW configuration does; the chapter-2
-validation script had the order reversed and its \PYTHIA numbers moved by
-one to two percent when it was corrected. And \PYTHIA prints its
-initialisation through C++ streams, invisible to Python's \code{sys.stdout},
-so the file descriptor is redirected while \code{init()} runs. The impact
-parameter cannot be fixed from the Python binding, so the fixed-$b$ sample
-keeps the events with $|b/\bmean-0.3136|<0.03$, $537$ of $8000$:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/MPI/Standalone
-PY=../../ME/Standalone/.venv/bin/python
-$PY validate_mpi_with_pythia.py -n 2000 --standalone-stats standalone_mpi_stats_sampled.stats.json
-$PY validate_mpi_with_pythia.py -n 8000 --impact 0.3136 --window 0.03
-$PY validate_mpi_with_pythia.py -n 500 --no-cr
-\end{minted}
-\PYTHIA dresses two thousand copies in about a minute and prints
-$\ptzero=1.44\GeV$, $\sigint=496.6\,\mathrm{mb}$ and $\signd=55.42\,\mathrm{mb}$
-at initialisation, against the script's $497.3$; the \CMSSW log's $500.67$
-differs from both by the version of the integration grid. The columns of
-\cref{tab:uninvited_cousins:numbers} are the result. Read them as before.
-The geometry agrees: $\langle b\rangle$, $\langle f\rangle$ and $f(0.3136)$
-within $2\%$. The remnant count, the hardest secondary scattering and the
-underlying-event density agree at the $5$--$10\%$ level, and the extra \pt
-inside the cones follows the density. The one real disagreement is the
-number of scatterings, $20\%$ low in the standalone chain at both
-geometries, and its cause is known: \PYTHIA interleaves the multiparton
-interactions with the initial- and final-state showers of \emph{all}
-systems in one common \pt sequence, so that the depletion a scattering sees
-is only that of the scatterings and emissions harder than itself, while
-the script showers each system to its cut-off before drawing the next,
-softer scattering, which makes the proton look emptier than it should.
-Without any showering the two chains agree to $4\%$ ($7.2$ against $7.5$
-scatterings per unit of $f$). The remaining difference, a $10\%$ stronger
-soft radiation of the chapter-2 shower, was already seen in
-\cref{sec:mother_gives_birth:pythia}. The cone \emph{mass} is not compared:
-the standalone ensembles keep the seed-1 shower, whose family mass of
-$13.5\GeV$ is a high draw, while \PYTHIA reshowers to $8\GeV$ on average.
-\PYTHIA's first dressed event is in
-\file{validate_mpi_with_pythia_event1.txt} in the standalone format.
-
-\subsection{How CMS does it in practice: the rest of the protons inside the GEN step}
-\label{sec:uninvited_cousins:cmssw}
-
-Nothing new has to be run: the \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} already produced this stage, and
-\code{JitJetSW}'s analyser drew it as its third figure. From the setup of
-\cref{sec:mother_gives_birth:cmssw},
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
-\end{minted}
-produces \file{genPartAnalyzer_ME_PS_MPI_out.pdf}, whose third page is
-\cref{fig:uninvited_cousins:cmssw}; the copy in \file{example/MPI/CMSSW/}
-is the one used here, and the log is the one of \cref{ch:mother_gives_birth}.
-
-\subsubsection{Reading the log}
-
-Four lines of \file{step1_GEN_PS_cfg.log} are this chapter. At
-initialisation,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{text}
- |    pT0 =  1.44 gives sigmaInteraction =   500.67 mb: accepted    |
-\end{minted}
-is \cref{eq:uninvited_cousins:regularised,eq:uninvited_cousins:dsigma}: \PYTHIA
-integrates the regularised cross section at the start of every job and
-accepts the regulator if the integral is large enough for the veto
-algorithm's overestimate; the warning that follows,
-``\code{MultipartonInteractions::init: maximum increased by factor 1.090}'',
-is the overestimate of \cref{eq:uninvited_cousins:trial} being tightened
-by a trial scan. The settings table below it lists \code{pT0Ref = 1.41},
-\code{ecmPow = 0.03344}, \code{coreFraction = 0.63}, \code{coreRadius = 0.7634},
-\code{bProfile = 2} and \code{ColourReconnection:range = 5.176}, the CP5
-numbers used throughout. In the Info Listing of the first event, after the
-hard-process invariants,
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{text}
- Impact parameter b =  3.136e-01 gives enhancement factor =  3.709e+00.
- Max pT scale for MPI =  1.133e+02, ISR =  1.133e+02, FSR =  1.133e+02.
- Number of MPI =    32, ISR =    28, FSRproc =    64, FSRreson =     0.
-\end{minted}
-The first line is \cref{eq:uninvited_cousins:fb} for this event, the value
-the book's record was fixed to; the second is the common starting scale of
-the interleaved evolution; the third counts the hard process among the
-``MPI'', so the event has 31 secondary scatterings, and its 28 initial-state
-and 64 final-state branchings belong to all 32 systems together, which is
-why they could not be compared with \cref{tab:mother_gives_birth:numbers}
-at the previous stop. In the drawer's table the new status codes of
-\cref{sec:uninvited_cousins:record_format} appear in the same roles: 62
-rows of status~31 and 62 of status~33, the incoming and outgoing partons of
-the 31 secondary scatterings; 64 rows of status~61, the initiators of all
-32 systems after the remnant kinematics; 156 of status~62; 13 of status~63,
-the remnants; and then 120 of status~71 and 45 of status~73, the copies
-that \PYTHIA makes when it collects each colour-singlet string and joins
-very soft partons for hadronisation, which the standalone record does not
-have. Follow the mother once more: row~515 is her status-62 copy at
-$91.744\GeV$, $0.15\GeV$ above the $91.59$ of her last shower copy (row 182,
-status~52), the same primordial-$k_{\mathrm{T}}$ boost that moved ours from
-$78.12$ to $78.29$; row~824, status~71, hands her to hadronisation at the
-same momentum.
-
-\subsubsection{The figure}
-
-\Cref{fig:uninvited_cousins:cmssw} is the analyser's stage-3 picture: 169
-final partons, 61 from the secondary scatterings by the analyser's rule, 13
-remnants of which most are on the border at $|\eta|>6$, and the $b$ and
-$\bar b$ where the previous stage left them. Set it next to
-\cref{fig:uninvited_cousins:journey}. The two are different dressings of
-different showers of the same hard event, and the comparison to make is
-\cref{tab:uninvited_cousins:numbers}; what the pictures share is the
-structure, cyan squares spread uniformly in $\eta$ and $\phi$ with no
-preferred direction, far more of them at $|\eta|>3$ than a central detector
-will ever see, and a handful of them inside the cones that the later
-chapters will draw around the two $b$ quarks.
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=3,width=\textwidth]{MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf}
-\caption[The event after MPI and beam remnants in \CMSSW]{Stage~3 of our
-event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
-the parton level after multiparton interactions, beam remnants and colour
-reconnection. Red and blue are the status-62 copies of the $b$ and $\bar b$,
-orange and green triangles the initial- and final-state emissions of all
-systems, cyan squares the outgoing partons of the 31 secondary scatterings
-and their copies, grey diamonds the 13 beam remnants; partons beyond
-$|\eta|=6$ are drawn on the border. The same stage of the standalone
-record is \cref{fig:uninvited_cousins:journey}.}
-\label{fig:uninvited_cousins:cmssw}
-\end{figure}
-
-\section{Our jet at this stage: UE energy inside \texorpdfstring{$R=0.4$}{R = 0.4} and \texorpdfstring{$R=0.8$}{R = 0.8}}
+\section{The energy ledger: our jet at this stage}
 \label{sec:uninvited_cousins:our_jet_at_this_stage_ue_energy_inside_r}
 
 Here is the family among the cousins. The record,
-\file{example/MPI/event_MPI.lhe}, has 963 rows. The first 158, rows 0 to
-157, are the showered event of \cref{ch:mother_gives_birth}, every one of
-its final partons now with a negative status because the stage copied
-them; rows 158 to 161 are the first secondary scattering:
-\filelistinglines[\widelisting]{text}{example/MPI/event_MPI.lhe}{162}{165}{the first secondary scattering, $gg\to gg$ at $\pt=11.45\GeV$: two incoming gluons (status $-31$) and two outgoing (status $-33$), with the colour tags of the log}
-whose outgoing gluons have $p_x=\pm3.302$, $p_y=\pm10.967\GeV$, that is
+\file{example/MPI/event_MPI.lhe}, has $963$ rows, and the companion prints
+the rows that matter with a guide to the new status codes.
+\label{sec:uninvited_cousins:record_format}
+The record keeps \PYTHIA's conventions and adds five codes to those of
+\cref{sec:mother_gives_birth:record_format}: a secondary scattering is
+written like the hard process, $-31$ for its two incoming partons and $-33$
+for its two outgoing ones, negative because every one of them is replaced
+by the shower's copies; at the end of the stage every system is boosted to
+the frame of its initiators after the primordial $k_{\mathrm{T}}$ and the
+remnant kinematics, the boosted initiators are written with status $-61$
+and the boosted final partons with status~$62$, so that the final state is
+every row with status~$62$ plus the beam remnants, status~$63$. Our record
+has $195$ rows of status~$62$ and $16$ of status~$63$; the mother of a
+status-$62$ row is its last copy of the shower stage, so the family of any
+final parton is still found by walking up the mother column, now through a
+$-31$ or $-33$ row if the parton belongs to a secondary system. The first
+$158$ rows are the showered event of \cref{ch:mother_gives_birth}, every
+one of its final partons now with a negative status because the stage
+copied them; the next four are the first secondary scattering, $gg\to gg$,
+whose outgoing gluons have $p_x=\pm3.302$ and $p_y=\pm10.967\GeV$, that is
 $\pt=11.453\GeV$, and whose incoming gluons carry $p_z=3.317$ and
 $-103.979\GeV$, that is $x_1=4.88\times10^{-4}$ and $x_2=1.53\times10^{-2}$
-of $6800\GeV$. The next hundred rows are its shower and the 23 further
-scatterings with theirs. From row 702 the stage writes the boosted copies:
-702 and 703 are the hard system's initiators after their kicks
-(status $-61$, $p_x,p_y=-1.767,+1.652$ and $-1.113,-1.838\GeV$), and far
-below, among the status-62 copies,
-\filelistinglines[\widelisting]{text}{example/MPI/event_MPI.lhe}{723}{723}{the mother's final copy (row 719, status 62) after the primordial-$k_{\mathrm{T}}$ boost}
-is the mother at $78.29\GeV$, mother row 124, her last shower copy. The
-sixteen remnants close the record,
-\filelistinglines[\widelisting]{text}{example/MPI/event_MPI.lhe}{951}{953}{the first three remnants of proton A (status 63): the $ud_0$ diquark and two companion $u$ quarks}
-\filelistinglines[\widelisting]{text}{example/MPI/event_MPI.lhe}{964}{967}{the last two remnants of proton B and the momentum sum over the final state}
-and the momentum sum is that of the two protons.
+of $6800\GeV$; then a hundred rows of its shower and the $23$ further
+scatterings with theirs. From row~702 the stage writes the boosted copies,
+first the hard system's initiators after their kicks, and far below, among
+the status-62 rows, the mother at $78.29\GeV$ with her last shower copy as
+her mother. The sixteen remnants close the record, a $ud_0$ diquark and six
+companions for proton~A, a $ud_1$ and eight for proton~B, and the momentum
+sum at the bottom is, for the first time, that of the two protons:
+$(E,p_x,p_y,p_z)=(13600,0,0,0)\GeV$ to two MeV.
 
 \begin{table}[htbp]\centering\small
 \caption[Kinematics of the two $b$ quarks and their cones after the MPI
@@ -1320,34 +1047,88 @@ hard-system partons and of all partons inside $R$, and the mass of each.}
 \label{fig:uninvited_cousins:our_jet_plot}
 \end{figure}
 
+The ledger gets its first row that adds instead of subtracting, and
+\cref{fig:uninvited_cousins:journey} puts the rows next to the event
+display of the standalone stage. The $R=0.4$ row is the one the later
+stages are compared with; the $R=0.8$ row is listed because the
+large-radius jets of \cref{ch:three_families} will need it.
+
 \begin{figure}[htbp]\centering
-\includegraphics[width=\textwidth]{MPI/journey_MPI.pdf}
-\caption[The event after the MPI stage in the $(\eta,\phi)$ plane]{The
-parton level of our event after the standalone MPI stage, drawn by
-\file{example/MPI/plot_journey_MPI.py} from \file{example/MPI/event_MPI.lhe}
-in the layout of \cref{fig:uninvited_cousins:cmssw}. Red and blue are the
-status-62 copies of the $b$ and $\bar b$, magenta their vector sum; orange
-and green triangles the initial- and final-state emissions of all systems,
-cyan squares the outgoing partons of the 24 secondary scatterings and their
-copies, grey diamonds the 16 beam remnants, most of them on the border. The
-header lists the number and the net and scalar \pt of each group; the
-vector sum of all 211 partons vanishes.}
+\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
+Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
+ & [GeV] & [GeV] & & [GeV] \\ \midrule
+\ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
+\ledgerrow{$b$ family after this stage ($\dR<0.4$)}{100.67}{13.52}{3}{$+0.22$}
+\ledgerrow{\quad of which the $b$ quark itself}{78.29}{4.80}{1}{--}
+\ledgerrow{\quad the same within $\dR<0.8$ (3 UE partons)}{104.09}{20.17}{6}{$+3.42$}
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.58\textwidth}\centering
+\includegraphics[width=\linewidth]{MPI/journey_MPI.pdf}
+\end{minipage}
+\caption[The energy ledger and the event after the MPI stage in the $(\eta,\phi)$ plane]{The
+energy ledger at the stage ``Cousins Nobody Invited'' (left; $\Delta\pt$ is
+relative to the previous row) and the parton level of our event after the
+standalone MPI stage (right), drawn by \file{example/MPI/plot_journey_MPI.py}
+from \file{example/MPI/event_MPI.lhe} in the layout of
+\cref{fig:uninvited_cousins:cmssw}. Red and blue are the status-62 copies of
+the $b$ and $\bar b$, magenta their vector sum; orange and green triangles
+the initial- and final-state emissions of all systems, cyan squares the
+outgoing partons of the 24 secondary scatterings and their copies, grey
+diamonds the 16 beam remnants, most of them on the border. The header lists
+the number and the net and scalar \pt of each group; the vector sum of all
+211 partons vanishes. The display applies the analyser's classification
+rule, so a gluon emitted by a parton of a secondary system counts as FSR,
+which is why it says $45$ MPI partons where the script's summary counts
+$155$ partons from the secondary systems.}
 \label{fig:uninvited_cousins:journey}
 \end{figure}
 
-The ledger gets its first row that adds instead of subtracting. The $R=0.4$
-row is the one the later stages are compared with; the $R=0.8$ row is
-listed because the large-radius jets of \cref{ch:three_families} will need
-it.
+\paragraph{The same event in \CMSSW.} In the drawer's table of the GEN
+log the new status codes appear in the same roles: 62 rows of status~31
+and 62 of status~33, the incoming and outgoing partons of the 31 secondary
+scatterings; 64 rows of status~61, the initiators of all 32 systems after
+the remnant kinematics; 156 of status~62; 13 of status~63, the remnants;
+and then 120 of status~71 and 45 of status~73, the copies that \PYTHIA
+makes when it collects each colour-singlet string and joins very soft
+partons for hadronisation, which the standalone record does not have.
+Follow the mother once more: row~515 is her status-62 copy at
+$91.744\GeV$, $0.15\GeV$ above the $91.59$ of her last shower copy (row
+182, status~52), the same primordial-$k_{\mathrm{T}}$ boost that moved ours
+from $78.12$ to $78.29$; row~824, status~71, hands her to hadronisation at
+the same momentum. Its 28 initial-state and 64 final-state branchings
+belong to all 32 systems together, which is why they could not be compared
+with \cref{tab:mother_gives_birth:numbers} at the previous stop.
 
-\begin{ledger}{Cousins Nobody Invited}
-  \ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
-  \ledgerrow{$b$ family after this stage ($\dR<0.4$)}{100.67}{13.52}{3}{$+0.22$}
-  \ledgerrow{\quad of which the $b$ quark itself}{78.29}{4.80}{1}{--}
-  \ledgerrow{\quad the same within $\dR<0.8$ (3 UE partons)}{104.09}{20.17}{6}{$+3.42$}
-\end{ledger}
+\Cref{fig:uninvited_cousins:cmssw} is the analyser's stage-3 picture: 169
+final partons, 61 from the secondary scatterings by the analyser's rule, 13
+remnants of which most are on the border at $|\eta|>6$, and the $b$ and
+$\bar b$ where the previous stage left them. Set it next to
+\cref{fig:uninvited_cousins:journey}. The two are different dressings of
+different showers of the same hard event, and the comparison to make is
+\cref{tab:uninvited_cousins:numbers}; what the pictures share is the
+structure, cyan squares spread uniformly in $\eta$ and $\phi$ with no
+preferred direction, far more of them at $|\eta|>3$ than a central detector
+will ever see, and a handful of them inside the cones that the later
+chapters will draw around the two $b$ quarks.
 
-\section{What this stage is, and what it is not}
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf}
+\caption[The event after MPI and beam remnants in \CMSSW]{Stage~3 of our
+event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
+the parton level after multiparton interactions, beam remnants and colour
+reconnection. Red and blue are the status-62 copies of the $b$ and $\bar b$,
+orange and green triangles the initial- and final-state emissions of all
+systems, cyan squares the outgoing partons of the 31 secondary scatterings
+and their copies, grey diamonds the 13 beam remnants; partons beyond
+$|\eta|=6$ are drawn on the border. The same stage of the standalone
+record is \cref{fig:uninvited_cousins:journey}.}
+\label{fig:uninvited_cousins:cmssw}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
 \label{sec:uninvited_cousins:caveats}
 
 The agreement in \cref{tab:uninvited_cousins:numbers} was obtained by

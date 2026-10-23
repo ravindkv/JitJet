@@ -1,12 +1,13 @@
 % ---------------------------------------------------------------------------
 % Chapter 3: Whose Child Is It? Matching and Merging
-% A short stop, by design (prompt/prompt_10_MatchingMerging.md, 2026-10-07):
+% An interlude, by design (prompt/prompt_10_MatchingMerging.md, 2026-10-07):
 % our event u ubar -> b bbar is a single leading-order 2->2 process with no
 % extra-parton subprocess, so no matching or merging is applied to it. The
-% chapter explains in two pages what the procedures are, where CMS uses
-% them, and why the ledger does not change here. There is no standalone
-% script at this stop; the ten-second film (added 2026-10-14, prompt 16) is
-% example/MnM/animate_whose_child.py and the sketches live in chapter/tikz/mm_*.tex.
+% chapter explains what the procedures are, where CMS uses them, and why the
+% ledger does not change here. There is no standalone script at this stop;
+% the film is example/MnM/animate_whose_child.py, the sketches live in
+% chapter/tikz/mm_*.tex, and the companion is chapter/chapter_03_MnM.md.
+% Interlude layout (Constitution, rule E1): sections C1, C3-2 and C4 only.
 % ---------------------------------------------------------------------------
 \chapter{Whose Child Is It? Matching and Merging}
 \chaptermark{Whose Child Is It?}
@@ -24,48 +25,11 @@ short stop, a look at the map of a road we do not have to take.
 shower emission, the merging scale, MLM jet matching and the
 \code{xqcut}/\code{qcut} parameters, CKKW-L Sudakov reweighting, NLO matching
 in MC@NLO and POWHEG, FxFx merging, where CMS uses each and why our event
-uses none}
+uses none. The one number to take away: the ledger row repeats itself,
+$\Delta\pt=0$, by construction.}
 
-\section{Watch the cart roll past: a short film}
-\label{sec:whose_child:animation}
-
-The film first, and it is a short one.
-\file{example/MnM/animate_whose_child.py} draws the road of this book with
-its stops and the cart that carries our event up to stop 3, in three beats
-on a script clock of twelve seconds, stretched to about two minutes by the
-narration: the sign at the stop says who it is for, events with a
-second parent for their extra parton, and the passengers of the $\ttbar$+jets,
-$W/Z$+jets and POWHEG samples get off; the card for our event says why we do
-not, one leading-order $2\to2$ process and nothing to match, and the ledger
-row repeats itself with $\Delta\pt=0$; the cart rolls on to stop 4. It is on
-the JitJet playlist,
-\begin{center}
-  \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}
-\end{center}
-and \cref{fig:whose_child:stills} shows one frame per beat. The numbers on
-the screen are the ones of the ledger in \cref{sec:whose_child:our_jet};
-there is no standalone script at this stop, so the film imports none but
-the shared \file{example/soundtrack.py} for the voice and the score (the
-\code{edge-tts} package, as in chapter~1). Rendering needs matplotlib and
-\code{ffmpeg}:
-\begin{minted}[linenos=false,frame=single,framesep=1.5mm,fontsize=\small]{bash}
-cd example/MnM
-python3 animate_whose_child.py                            # the film and its .srt, ten minutes to render
-python3 animate_whose_child.py --fast                     # low-resolution preview
-python3 animate_whose_child.py --print-script             # the narration, to record it yourself
-python3 animate_whose_child.py --no-narration             # music only, the 12.5 s script clock
-python3 animate_whose_child.py --stills stills.pdf --no-video
-\end{minted}
-
-\begin{figure}[htbp]\centering
-\includegraphics[page=1,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
-\includegraphics[page=2,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
-\includegraphics[page=3,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}
-\caption[Three frames of the film: the sign, the verdict, the next stop]{One frame per beat of the film, drawn by \file{animate\_whose\_child.py} with \code{--stills}. Left: the cart with our event arrives at stop 3 and the sign unfolds, naming the events this stop is for; the passengers of merged and matched samples get off. Middle: the card for our event, one $2\to2$ process with one parent for every extra parton, the stamp, and the ledger row that repeats itself. Right: the cart rolls on to chapter 4.}
-\label{fig:whose_child:stills}
-\end{figure}
-
-\section{A short stop: why our event needs no matching}
+\section{What we will see at this stop}
+\label{sec:whose_child:what_we_compute}
 \label{sec:whose_child:why_short}
 
 \Cref{ch:mother_gives_birth} ended with a confession. The standalone shower,
@@ -81,29 +45,37 @@ arises that this chapter is named after: the $2\to2$ matrix element followed
 by one shower emission and the $2\to3$ matrix element describe the \emph{same}
 final state, and adding the two counts the gluon twice.
 
-We do not have to answer it, for a reason that is worth stating plainly
-rather than hiding. Our event is one leading-order process,
-\code{HardQCD:qqbar2bbbar}, with no additional subprocess
-($u\bar u\to\bbbar g$, $ug\to\bbbar u$, \dots) anywhere in the sample, neither
-in the standalone script, nor in the \CMSSW configuration of
-\cref{sec:ancestral_home:validation}, nor in the \MG run of
-\cref{sec:ancestral_home:madgraph}, which produced $\bbbar$ and nothing
-else. There is exactly one parent for every extra parton, the shower, and
-nothing to match it to. The price is the one named in
-\cref{sec:mother_gives_birth:caveats}: wide-angle emissions above the
-starting scale of $113.32\GeV$ are forbidden and those below it are only
-logarithmically accurate. For following one $b$ jet of $100\GeV$ through
-the detector that price is small, a few percent of the family's momentum
-against a seed-to-seed spread of $29\GeV$, and the official CMS QCD
-multijet samples made with \PYTHIA alone pay it too. It is \emph{not} small
-when the extra jets are the measurement, $\ttbar$+jets, $W/Z$+jets or the
-multijet background of a search, and that is where the recipes below are
-used. This stop therefore has no script; it has a short film, two
-pictures, the vocabulary, and the references to go further.
+We do not have to answer it, and \cref{sec:whose_child:caveats} says
+plainly why and what that costs. This stop therefore has no script and no
+validation run; it has a short film, two pictures, the vocabulary, and the
+references to go further, and it is the one stop of the journey at which
+the ledger row is copied rather than earned.
 
-\section{Who owns the extra gluon?}
+\paragraph{The film.}
+\label{sec:whose_child:animation}
+The film first, and it is a short one: the third on the playlist of
+\jitjetworld draws the road of this book with its stops and the cart that
+carries our event up to stop~3, in three beats on a script clock of twelve
+seconds, stretched to about two minutes by the narration. The sign at the
+stop says who it is for, events with a second parent for their extra
+parton, and the passengers of the $\ttbar$+jets, $W/Z$+jets and POWHEG
+samples get off; the card for our event says why we do not, one
+leading-order $2\to2$ process and nothing to match, and the ledger row
+repeats itself with $\Delta\pt=0$; the cart rolls on to stop~4.
+\Cref{fig:whose_child:stills} shows one frame per beat; the numbers on the
+screen are those of the ledger row below, and since there is no standalone
+script at this stop the film imports none.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
+\includegraphics[page=2,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}\hfill
+\includegraphics[page=3,width=0.325\textwidth]{MnM/animate_whose_child_stills.pdf}
+\caption[Three frames of the film: the sign, the verdict, the next stop]{One frame per beat of the film, drawn by \file{animate\_whose\_child.py} with \code{--stills}. Left: the cart with our event arrives at stop 3 and the sign unfolds, naming the events this stop is for; the passengers of merged and matched samples get off. Middle: the card for our event, one $2\to2$ process with one parent for every extra parton, the stamp, and the ledger row that repeats itself. Right: the cart rolls on to chapter 4.}
+\label{fig:whose_child:stills}
+\end{figure}
+
+\paragraph{Who owns the extra gluon?}
 \label{sec:whose_child:who_owns}
-
 Guess first: if we had included $u\bar u\to\bbbar g$ in \cref{ch:ancestral_home},
 how many of the $38$ branchings of our event would it have produced?
 \Cref{fig:whose_child:double_counting} gives the answer with the merging
@@ -150,8 +122,10 @@ matrix-element corrections \PYTHIA does apply, following
 \cite{Miu:1998ju,Norrbin:2000uu}, cover colour-singlet production and
 resonance decays, not a coloured $2\to2$ final state like ours.
 
-\section{The recipes, one paragraph each}
+\paragraph{The recipes, one paragraph each.}
 \label{sec:whose_child:recipes}
+Three families of recipes draw that line, and \cref{fig:whose_child:recipes}
+shows them as flow charts before each gets its paragraph.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/mm_recipes}}
@@ -217,18 +191,66 @@ side and, for colour-singlet production, at NNLO. The review
 chapter on matching and merging, are the places to read all of this at
 length.
 
-\section{Our jet at this stage: nothing changes, by construction}
+\paragraph{Our jet at this stage: nothing changes, by construction.}
 \label{sec:whose_child:our_jet}
+The ledger receives a row that repeats the previous one
+(\cref{tab:whose_child:ledger}). It is there so that the chain of stages is
+complete, and as a reminder that for a merged sample this row would be the
+first in which the matrix element, not the shower, decided whether the
+mother's $34\GeV$ gluon exists. What little there is to run at this stop,
+the film, the two shower experiments of the exercises and the settings of
+the official recipes, is in the companion of this chapter,
+\begin{center}
+  \companion{chapter_03_MnM}
+\end{center}
 
-The ledger receives a row that repeats the previous one. It is there so
-that the chain of stages is complete, and as a reminder that for a merged
-sample this row would be the first in which the matrix element, not the
-shower, decided whether the mother's $34\GeV$ gluon exists.
+\begin{table}[htbp]\centering
+\caption[Energy ledger at the stage ``Whose Child Is It?'']{Energy ledger at
+the stage ``Whose Child Is It?''. $\Delta\pt$ is relative to the previous
+row; no matching or merging is applied to our event, so the row is copied.}
+\label{tab:whose_child:ledger}
+\begin{tabular}{lrrrr}\toprule
+Stage & $\pt$ [GeV] & $m$ [GeV] & $n_{\mathrm{const}}$ & $\Delta\pt$ [GeV] \\ \midrule
+\ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
+\ledgerrow{$b$ family after matching and merging (none applied)}{100.45}{13.52}{3}{$0$}
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{ledger}{Whose Child Is It?}
-  \ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
-  \ledgerrow{$b$ family after matching and merging (none applied)}{100.45}{13.52}{3}{$0$}
-\end{ledger}
+\section{What this stop is, and what it is not}
+\label{sec:whose_child:caveats}
+
+It is a map of a road we do not take, and the reason is worth stating
+plainly rather than hiding. Our event is one leading-order process,
+\code{HardQCD:qqbar2bbbar}, with no additional subprocess
+($u\bar u\to\bbbar g$, $ug\to\bbbar u$, \dots) anywhere in the sample, neither
+in the standalone script, nor in the \CMSSW configuration of
+\cref{sec:ancestral_home:validation}, nor in the \MG run of
+\cref{sec:ancestral_home:madgraph}, which produced $\bbbar$ and nothing
+else. There is exactly one parent for every extra parton, the shower, and
+nothing to match it to. The price is the one named in
+\cref{sec:mother_gives_birth:caveats}: wide-angle emissions above the
+starting scale of $113.32\GeV$ are forbidden and those below it are only
+logarithmically accurate. For following one $b$ jet of $100\GeV$ through
+the detector that price is small, a few percent of the family's momentum
+against a seed-to-seed spread of $29\GeV$, and the official CMS QCD
+multijet samples made with \PYTHIA alone pay it too. It is \emph{not} small
+when the extra jets are the measurement, $\ttbar$+jets, $W/Z$+jets or the
+multijet background of a search, and that is where the recipes of
+\cref{sec:whose_child:recipes} are used. Three things this stop is not:
+\begin{itemize}[nosep]
+  \item It is not a correction that was skipped. Nothing is missing from a
+    \code{HardQCD} sample except the physics it never claimed, hard
+    wide-angle jets.
+  \item It is not a statement that the shower's hard emissions are right.
+    Five of the $38$ branchings of our event lie above a merging scale of
+    $30\GeV$ and would, in a merged sample, have come from a matrix element
+    with a different \pt and angular distribution; which of the two is
+    closer to nature at $\pt\approx100\GeV$ is Exercise~1.
+  \item It is not a stage of the event. No particle is added, moved or
+    removed here, the record of \cref{ch:mother_gives_birth} is the record
+    of \cref{ch:uninvited_cousins}, and the ledger row is a copy.
+\end{itemize}
 
 \section{Further reading}
 \label{sec:whose_child:further_reading}

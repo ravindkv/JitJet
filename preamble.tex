@@ -63,11 +63,39 @@
 \newcommand{\PUPPI}{\textsc{Puppi}\xspace}
 \newcommand{\CMSSW}{\textsc{cmssw}\xspace}
 \newcommand{\code}[1]{\texttt{#1}}
+
+%% -------- the three homes of a chapter (Constitution, rules A1-A4) ----------
+%% \jitjetworld: how a chapter points at the JitJet World table of the preface;
+%% chapters never print the repository or playlist addresses themselves.
+\newcommand{\jitjetworld}{JitJet World (\cref{tab:jitjet-world})}
+%% \companion{chapter_01_ME}: the one address a chapter prints, that of its
+%% technical companion chapter/chapter_01_ME.md on GitHub (rule A3).
+\newcommand{\companion}[1]{\url{https://github.com/ravindkv/JitJet/blob/main/chapter/#1.md}}
 %% \file{path/with_underscores.py}: robust, usable in captions and section titles
 \DeclareRobustCommand{\file}[1]{\path{#1}}
 
 %% -------- editorial ---------------------------------------------------------
 \newcommand{\todo}[1]{\textcolor{red!80!black}{\textbf{[TODO:} #1\textbf{]}}}
+
+%% -------- per-chapter .aux files live in chapter/aux/ -----------------------
+%% \include{chapter/X} writes chapter/X.aux next to the source. The two patches
+%% below send it to chapter/aux/X.aux instead (the Makefile and latexmkrc
+%% create the directory). Every \include of the book is under chapter/.
+\usepackage{etoolbox}
+\makeatletter
+%% chapter/X -> chapter/aux/X.aux (\filename@parse splits area and base name,
+%% whatever the catcodes of the argument)
+\def\jj@setauxpath#1{\filename@parse{#1}%
+  \edef\jj@auxpath{\filename@area aux/\filename@base.aux}}
+\patchcmd{\@include}
+  {\immediate\write\@mainaux{\string\@input{#1.aux}}}
+  {\jj@setauxpath{#1}\immediate\write\@mainaux{\string\@input{\jj@auxpath}}}
+  {}{\errmessage{preamble: could not redirect the \string\include\space aux file (patch 1)}}
+\patchcmd{\@include}
+  {\openout\@partaux "#1.aux"}
+  {\openout\@partaux "\jj@auxpath"}
+  {}{\errmessage{preamble: could not redirect the \string\include\space aux file (patch 2)}}
+\makeatother
 
 %% "The stage in the journey": the metaphor paragraph opening each chapter
 \newtcolorbox{journeybox}{colback=yellow!8,colframe=orange!60!black,
@@ -79,13 +107,15 @@
   \noindent\textbf{Physics in this chapter:} \emph{#1}\par\medskip}
 
 %% Pitfalls & FAQs box (fixed part 5 of every chapter)
-\newtcolorbox{pitfalls}{colback=red!4,colframe=red!50!black,
+%% breakable: the box may continue on the next page instead of forcing a break
+\tcbuselibrary{breakable}
+\newtcolorbox{pitfalls}{breakable,colback=red!4,colframe=red!50!black,
   title=Pitfalls and FAQs for newcomers,fonttitle=\bfseries,boxrule=0.6pt,arc=2pt}
 
 %% Exercises
 \newcommand{\exercisesheader}{\medskip\noindent\textbf{Exercises}\par\nopagebreak}
 \newlist{exercises}{enumerate}{1}
-\setlist[exercises]{label=\textbf{Exercise~\arabic*.},leftmargin=*,before=\exercisesheader}
+\setlist[exercises]{label=\textbf{Exercise~\arabic*.},leftmargin=*,before=\exercisesheader\small}
 
 %% Energy ledger: one table per "Our jet at this stage" section.
 %% \begin{ledger}{stage name}  \ledgerrow{label}{pT}{m}{n}{delta pT}  \end{ledger}

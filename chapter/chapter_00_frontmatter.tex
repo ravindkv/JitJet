@@ -1,5 +1,8 @@
 % ---------------------------------------------------------------------------
-% Front matter: preface, how to read this book, the two pilgrims
+% Front matter: preface, how to read this book, the two pilgrims, JitJet World
+% This chapter is the one place where the Constitution (Constitution.md) is
+% documented for the reader: the three homes of a chapter, the shape of a
+% stop, the companion files, the page budget and the JitJet World table.
 % ---------------------------------------------------------------------------
 \chapter{Preface: A Jet Is a Journey, Not a Destination}
 \chaptermark{Preface}
@@ -36,40 +39,82 @@ The author is the guide and you are the passenger: at every stop the guide
 explains what is happening outside the window, hands you the formula that
 describes it, and asks you to press a button and see the number come out
 yourself. The tone is deliberately that of a teacher standing beside you
-rather than a reference manual in front of you, the book says so
-and does it with you. The code that produces every number is not printed in
-the book. It lives in the public repository
-\url{https://github.com/ravindkv/JitJet}, and each chapter gives the command
-to run and the output to expect, so that the pages can be spent on the
-mathematics instead.
+rather than a reference manual in front of you. The guide's job is to keep
+the passengers engaged, and a passenger who is reading a log file is not
+looking out of the window. So the code that produces every number is not
+printed in the book, and neither are the commands that run it, the logs it
+writes or the configurations of the official packages. They live in the
+public repository, in the three homes described next, so that the pages can
+be spent on the physics.
 
-Every chapter has the same internal structure, and the order is deliberate:
-it runs from the top down, the way a guided tour does, not from the bottom
-up, the way a textbook does.
+\paragraph{The three homes of a stop.} Every chapter of the journey, every
+stop, lives in three places:
+\begin{description}[nosep]
+  \item[\file{example/XYZ/}] the scripts, the event records, the logs, the
+    plots and the films of the stop, one directory per stage.
+  \item[\file{chapter/chapter_XYZ.tex}] the chapter you are reading: the
+    physics, in the guide's voice.
+  \item[\file{chapter/chapter_XYZ.md}] the technical companion of the
+    chapter, a page on GitHub that is not compiled into the book: how to run
+    each script and what it prints, how to read its records and logs, how
+    each number of the official packages was obtained, and the full tables
+    behind every number the chapter quotes.
+\end{description}
+A chapter prints exactly one address, that of its own companion. Everything
+else, the repository, the scripts, the \CMSSW material, the films, is
+reached through the \jitjetworld table at the end of this preface, and
+chapters point at that table rather than repeating its addresses.
+
+\paragraph{The shape of a stop.} Every chapter has the same shape, and the
+order is deliberate: it runs from the top down, the way a guided tour does,
+not from the bottom up, the way a textbook does. The chapter opens with
+\textbf{the stage in the journey}, the metaphor in one paragraph, and
+\textbf{the physics in this chapter}, one paragraph that ends with the one
+number to take away from the stop. Then come four sections, always the same
+four and always in this order.
 \begin{enumerate}[nosep]
-  \item \textbf{The stage in the journey}: the metaphor, what physically
-    happens, and the one number to take away from the stop.
-  \item \textbf{Watch it}: a short film of the stage, rendered from the same
-    code that produces the chapter's numbers, with one key frame per scene
-    printed in the book.
-  \item \textbf{Run it}: the standalone script, the command to run and the
-    output to expect. You press the button before you know what is behind it.
-  \item \textbf{Derive it}: the minimal, correct mathematics of the stage,
-    ending with the step-by-step recipe that the script executes. Every
-    section of the derivation is told the same way: a question to guess at,
-    a sketch or Feynman diagram, the equation, the numbers the equation gives
-    for our event (copied from the log of the standalone script), and a plot
-    of the equation over the whole phase space.
-  \item \textbf{Validation from official packages}: the same number from
-    \CMSSW, \PYTHIA, \MG or the JME tools, read from their configurations,
-    logs and records.
-  \item \textbf{Our jet at this stage}: the numbers from the energy ledger,
-    plots and event displays.
-  \item \textbf{Further reading}: the papers behind the stop, then
-    \textbf{Pitfalls and FAQs} for newcomers, \textbf{Exercises}, and a list
+  \item \textbf{What we will see at this stop.} The motivation, connected to
+    the previous stop; the film of the stage, rendered from the same code
+    that produces the chapter's numbers, in one paragraph and one figure of
+    key frames (the films are fully narrated, so the book does not retell
+    them); a sketch of the stage, and a picture to carry if it helps; and the
+    agreement table, one row per quantity, with the standalone script, the
+    official package and \CMSSW side by side, explained in a paragraph or
+    two. How the numbers were produced is in the companion, not here.
+  \item \textbf{Let us dive into the details: the theory.} The minimal,
+    correct mathematics of the stage. Every subsection is told the same way:
+    a question to guess at, then a sketch or Feynman diagram, then the
+    equation, then the numbers the equation gives for \emph{our} event,
+    quoted in the text from the learning mode of the standalone script
+    (never as a log listing), and then a plot of the equation over the whole
+    phase space, one figure per equation, drawn from the same code. The
+    theory ends with the recipe, step by step, that the script executes.
+  \item \textbf{The energy ledger: our jet at this stage.} The ledger table
+    and the $(\eta,\phi)$ display of our jet side by side, from the
+    standalone script and from \CMSSW, cumulative since the first stop; then
+    what this stop is, and what it is not.
+  \item \textbf{Further reading.} The papers behind the stop, then
+    \textbf{pitfalls and FAQs} for newcomers, \textbf{exercises}, and a list
     of \textbf{open problems} for the Phase-2 LHC with the state of the art
     and its references.
 \end{enumerate}
+
+\paragraph{The companion.} Each companion has the same five sections, so
+that you know where to look whatever the stop: running the standalone script
+(the command, its options, what the learning modes \code{-v} and \code{-vv}
+print); reading the record (the event record of the stage and the log
+excerpts that the chapter quotes its numbers from); drawing the event and
+rendering the film; validation from official packages (the \PYTHIA, \MG or
+\FASTJET script, the \CMSSW configuration and log, and how each number was
+read out of them); and the full tables, every number the chapter quotes with
+the command that produced it.
+
+\paragraph{The length of a stop.} A stop is $25$ pages, give or take five. A short
+interlude, a stop with no standalone script of its own such as matching and
+merging, is at most eight and has only the first section, the ``what it is
+not'' and the further reading. Commands, logs and configurations are never
+printed in the book; the only code typeset here is the TikZ of the sketches.
+The budget is checked from the table of contents at every build.
 
 \paragraph{Top to bottom, bottom to top.} The two phrases are not in
 conflict. The \emph{journey} runs from the bottom up: it starts where the
@@ -102,12 +147,46 @@ For both jets we keep an \emph{energy ledger}: one row per stage with the jet
 stage. The ledger is the quantitative red thread of the book and is closed in
 \cref{ch:energy_ledger}.
 
-\section*{Reproducibility}
+\section*{JitJet World: the tour office}
 
-All scripts, generator configurations, logs and event records used in the
-book are in the \code{example/} directory of
-\url{https://github.com/ravindkv/JitJet}, one subdirectory per stage; the
-animated views of the calculations are collected in the JitJet playlist at
-\url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4}.
+Everything that is not printed in this book is public, and
+\cref{tab:jitjet-world} is the one place that says where. The addresses are
+clickable in the electronic copy; in print, the repository is the place to
+start, and its front page links to the rest. Every chapter refers to this
+table and prints only the address of its own companion.
+
+\begin{table}[htbp]\centering\small
+\caption[JitJet World: where everything lives]{JitJet World: where
+everything that the book refers to lives. The chapters point here instead of
+repeating the addresses; the only address a chapter prints itself is that of
+its own companion page.}
+\label{tab:jitjet-world}
+\begin{tabular}{@{}p{0.19\textwidth}p{0.43\textwidth}p{0.32\textwidth}@{}}\toprule
+What & Where & What you find there \\ \midrule
+The book &
+  \url{https://github.com/ravindkv/JitJet} &
+  the \LaTeX\ source, this preface, the Constitution and the build \\[1mm]
+Standalone scripts &
+  \url{https://github.com/ravindkv/JitJet/tree/main/example} &
+  one directory per stop: the scripts, the event records, the logs, the
+  plots and the films \\[1mm]
+Chapter companions &
+  \url{https://github.com/ravindkv/JitJet/tree/main/chapter} &
+  the \file{.md} companion of every chapter: how to run and read
+  everything \\[1mm]
+\CMSSW material &
+  \url{https://github.com/ravindkv/JitJetSW} &
+  the configurations, the \code{genPartAnalyzer} and the other analysers of
+  the book, and their logs \\[1mm]
+The films &
+  \url{https://www.youtube.com/@JitJetTour} &
+  the channel: the trailers and every film of the book \\[1mm]
+The animated journey &
+  \url{https://www.youtube.com/playlist?list=PLbSW20iyZFd4} &
+  the playlist: one narrated film per stop, in the order of the journey \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \todo{Software releases, generator versions, random seeds and the container
 image.}

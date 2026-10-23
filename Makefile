@@ -11,6 +11,7 @@
 #   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
 #   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
+#   make pages     -> pages per chapter from the table of contents, against the budget of 25 +- 5 pages per stop
 #   make clean     -> remove auxiliary files
 #   make distclean -> also remove the PDF
 #
@@ -24,14 +25,25 @@ PYTHON ?= python3
 COVER := cover/cover.pdf
 SRC := $(MAIN).tex preamble.tex $(wildcard chapter/*.tex) reference/JitJet.bib $(COVER)
 
-$(MAIN).pdf: $(SRC)
+# The per-chapter .aux files are written to chapter/aux/ (see preamble.tex);
+# TeX cannot create the directory, so every build target depends on it.
+$(MAIN).pdf: $(SRC) | chapter/aux
 	$(TEX) $(MAIN).tex
 	bibtex $(MAIN)
 	$(TEX) $(MAIN).tex
 	$(TEX) $(MAIN).tex
+	-$(PYTHON) tools/chapter_pages.py
 
-quick: $(COVER)
+quick: $(COVER) | chapter/aux
 	$(TEX) $(MAIN).tex
+
+chapter/aux:
+	mkdir -p $@
+
+# Pages per chapter from the table of contents, against the Constitution's
+# budget (25 +- 5 pages per stop, 8 per interlude); exits 1 when a chapter is over the cap.
+pages:
+	$(PYTHON) tools/chapter_pages.py
 
 # The cover is a standalone TikZ document (no shell escape needed).
 cover: $(COVER)
@@ -306,7 +318,7 @@ example/GenJet/event_GenJet.lhe: example/GenJet/Standalone/standalone_genjets.py
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \
-	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux \
+	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux chapter/aux/*.aux \
 	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log \
 	      cover/cover_timeline_minimal.aux cover/cover_timeline_minimal.log \
 	      smpost/cover_photo_youtube.aux smpost/cover_photo_youtube.log \

@@ -5,5 +5,6 @@ $pdf_mode = 1;
 $pdflatex = 'pdflatex -shell-escape -interaction=nonstopmode -halt-on-error %O %S';
 $bibtex_use = 2;
 system('make listings');
+system('mkdir -p chapter/aux');   # the per-chapter .aux files (see preamble.tex)
 push @generated_exts, 'pyg';
 $clean_ext .= ' %R.pyg';

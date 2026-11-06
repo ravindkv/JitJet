@@ -1,0 +1,29 @@
+% ---------------------------------------------------------------------------
+% The clock: the sixteen crossings of the Run-3 production window, 25 ns
+% apart, with the number of collisions the MixingModule drew for each in our
+% event (the -v log, seed 1), the in-time crossing with the signal, and the
+% EncodedEventId(bx, k) that lets the simulation tell them apart.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,3.6) {the window $bx=-12\ldots+3$: sixteen crossings, sixteen Poisson draws, 960 collisions on one signal event};
+\draw[-{Stealth}] (-0.6,0) -- (17.2,0) node[below left,lab] {$t$ [ns]};
+% bars: height 0.04 cm per collision (60 -> 2.4 cm)
+\foreach \bx/\n/\col in {-12/60/yellow!60!brown,-11/56/yellow!60!brown,-10/68/yellow!60!brown,-9/61/yellow!60!brown,-8/66/yellow!60!brown,-7/56/yellow!60!brown,-6/55/yellow!60!brown,-5/50/yellow!60!brown,-4/53/yellow!60!brown,-3/66/yellow!60!brown,-2/61/yellow!60!brown,-1/60/yellow!60!brown,0/63/cyan!60!blue,1/63/red!50!orange,2/59/red!50!orange,3/63/red!50!orange} {
+  \pgfmathsetmacro{\x}{12.6+1.0*\bx}
+  \pgfmathsetmacro{\h}{0.04*\n}
+  \fill[\col,opacity=0.75] (\x-0.32,0) rectangle (\x+0.32,\h);
+  \node[lab,anchor=south] at (\x,\h+0.02) {\n};
+  \node[lab,anchor=north] at (\x,-0.06) {$\bx$};
+}
+\foreach \bx in {-12,-8,-4,0,3} {\pgfmathsetmacro{\x}{12.6+1.0*\bx} \node[lab,anchor=north,text=black!60] at (\x,-0.42) {$25\times(\bx)$};}
+\draw[black!40,dashed] (-0.6,2.4) -- (16.4,2.4) node[lab,anchor=west,text=black!60] at (16.45,2.4) {$\mu=60$};
+\node[star,star points=5,fill=red!80!black,inner sep=0pt,minimum size=9pt] at (12.6,1.2) {};
+\node[lab,text=red!80!black,anchor=west] at (12.85,1.25) {ours};
+\node[lab,anchor=north west,text width=5.2cm,align=left,text=yellow!50!brown] at (-0.6,-0.95) {\textbf{early}, $bx<0$: 12 crossings, 712 collisions; their hits arrive $25\,{\rm ns}\times|bx|$ before the signal, up to 300 ns, and the slow detectors (calorimeter pulses, strip readout) remember them};
+\node[lab,anchor=north west,text width=4.6cm,align=left,text=cyan!50!blue] at (5.4,-0.95) {\textbf{in time}, $bx=0$: 63 collisions in the same crossing as the signal, 9033 particles in the detector's reach; the only ones a generator-level jet can see};
+\node[lab,anchor=north west,text width=4.6cm,align=left,text=red!50!orange] at (10.6,-0.95) {\textbf{late}, $bx>0$: 3 crossings, 185 collisions, up to 75 ns after the signal: the tails of the latest pulses};
+\node[lab,anchor=north west,text width=17.6cm,align=left] at (-0.6,-2.75) {In space the sixteen crowds sit on the same beam spot; only the clock tells them apart, and in the simulation the clock is written down: the \code{Adjuster} of the \code{MixingModule} stamps every \code{SimTrack}, \code{SimVertex} and hit of collision $k$ of crossing $bx$ with \code{EncodedEventId(bx, k)} and adds $25\,{\rm ns}\times bx$ to its time. \code{bunchCrossing() = 0} and \code{event() = 0} is the signal; \code{bunchCrossing() = 0} and \code{event() $\ge$ 1} an in-time pileup collision; \code{bunchCrossing() $\neq$ 0} an out-of-time one. The record of this stop keeps the same two numbers in its vertex listing ($bx$ and $k$), and the reconstruction of \cref{ch:first_checkpoint} will never see them: the truth of which hit came from which crowd exists in the simulation and nowhere else.};
+\end{tikzpicture}

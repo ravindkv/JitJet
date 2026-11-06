@@ -1,0 +1,45 @@
+%% smpost/thumbnail/trailer_part1_ch01_07.tex : thumbnail of the Part I trailer,
+%% "JitJet | Part I | The Family Is Born: Chapters 1-7 in Two Minutes". Motif:
+%% the counter of the film. A road climbs through six milestones, one per page
+%% of the CMSSW stack, and the number of particles grows at each: 2 after the
+%% hard scattering, 57 after the shower, 169 with MPI and the remnants, 320
+%% hadrons, 634 stable particles, and then 27 anti-kT jets.
+%% Compile: make thumbnails-youtube   (or: pdflatex trailer_part1_ch01_07)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{{\fontsize{9}{10}\selectfont 1--7}}{Part I trailer}{Chapters 1 -- 7}{The Family\\Is Born}{Seven chapters in two minutes: one simulated event, from two quarks to 634 particles and 27 jets}
+
+\begin{scope}[shift={(\mx-0.2,\my-0.6)}]
+%% the road and its milestones, one per stage of the stack
+\coordinate (m1) at (-3.5,-2.4);
+\coordinate (m2) at (-2.3,-1.65);
+\coordinate (m3) at (-1.1,-0.9);
+\coordinate (m4) at (0.1,-0.15);
+\coordinate (m5) at (1.3,0.6);
+\coordinate (m6) at (3.0,1.9);
+\draw[roadline] (m1) -- (m2) -- (m3) -- (m4) -- (m5) -- (m6);
+%% the counts: the number above each milestone grows with the event
+\foreach \m/\n/\s/\w in {m1/2/11/quarks, m2/57/14/shower, m3/169/17/MPI, m4/320/20/hadrons, m5/634/24/decays}{
+  \node[milestone, minimum size=18pt, line width=1.2pt, font=\sffamily\bfseries\scriptsize] at (\m) {};
+  \node[anchor=south east, white, inner sep=1pt, font=\fontsize{\s}{\s}\selectfont\sffamily\bfseries] at ($(\m)+(0.15,0.33)$) {\n};
+  \node[anchor=north, gold!80!white, motiflabel, font=\sffamily\scriptsize] at ($(\m)+(0,-0.38)$) {\w};}
+%% the two quarks at the first milestone, the shower at the second
+\draw[bline, line width=2pt] (m1) -- +(150:0.7);
+\draw[bbarline, line width=2pt] (m1) -- +(-30:0.7);
+%% the last milestone is the photograph: anti-kT draws the circles
+\shade[inner color=gold, outer color=navy, opacity=0.8] (m6) circle[radius=1.1];
+\draw[gold, line width=2.4pt] (m6) circle[radius=0.95];
+\pgfmathsetseed{27}
+\foreach \i in {1,...,16}{
+  \pgfmathsetmacro{\rr}{0.75*sqrt(rnd)} \pgfmathsetmacro{\tt}{360*rnd}
+  \node[hadron, minimum size=6pt] at ($(m6)+({\rr*cos(\tt)},{\rr*sin(\tt)})$) {};}
+\foreach \dx/\dy in {-0.15/0.2, 0.3/-0.1, 0.0/-0.4, -0.35/-0.2}
+  \node[hadron, fill=bred, minimum size=7pt] at ($(m6)+(\dx,\dy)$) {};
+\node[anchor=south, white, inner sep=1pt, font=\fontsize{20}{20}\selectfont\sffamily\bfseries] at ($(m6)+(0,1.05)$) {27 jets};
+\node[anchor=north, gold!80!white, motiflabel, font=\sffamily\scriptsize] at ($(m6)+(0,-1.1)$) {anti-$k_T$, $R=0.4$};
+\end{scope}
+\end{tikzpicture}
+\end{document}

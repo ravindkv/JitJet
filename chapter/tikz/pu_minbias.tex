@@ -1,0 +1,57 @@
+% ---------------------------------------------------------------------------
+% One member of the crowd: the four inelastic process types of SoftQCD:inelastic
+% with their rapidity profiles (ND: both protons break up, a plateau; SD: one
+% proton survives, a gap; DD: both dissociate, a gap in the middle; CD: both
+% survive, a small central system), their cross sections and their shares in
+% the 2000-event library of make_pileup_library.py (13.6 TeV).
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  prot/.style={-{Stealth[length=2mm]},thick},
+  prof/.style={thick}]
+\foreach \dx/\name/\col/\code/\sig/\share/\np/\desc in {
+   0/ND/blue!60!black/101/55.4 mb/71.2\%/230/{both protons break up; several parton pairs interact (MPI); a plateau of $\sim6$ charged per unit of $\eta$},
+   5.2/SD/green!50!black/103+104/12.9 mb/16.0\%/51/{one proton survives intact, the other dissociates; a rapidity gap on the surviving side},
+   10.4/DD/orange!80!black/105/8.8 mb/11.0\%/62/{both dissociate into low-mass systems; a gap in the middle, little in the tracker},
+   15.6/CD/violet!80!black/106/1.3 mb/1.9\%/28/{both survive; a small system in the centre: a few particles}} {
+ \begin{scope}[xshift=\dx cm]
+  \node[head,anchor=west,text=\col] at (-0.2,3.3) {\name\quad\textcolor{black!60}{code \code}};
+  % the eta axis
+  \draw[-{Stealth}] (-0.2,0) -- (4.4,0) node[below left,lab] {$\eta$};
+  \foreach \x/\t in {0.4/$-8$,1.3/$-4$,2.1/0,2.9/4,3.8/8} {\draw (\x,-0.05) -- (\x,0.05); \node[lab,anchor=north] at (\x,-0.08) {\t};}
+  \draw[black!30] (1.6,0) -- (1.6,1.9); \draw[black!30] (2.6,0) -- (2.6,1.9);
+  \node[lab,text=black!50] at (2.1,2.0) {tracker};
+  \draw[black!15,dashed] (1.1,0) -- (1.1,1.9); \draw[black!15,dashed] (3.1,0) -- (3.1,1.9);
+ \end{scope}
+}
+% the profiles, hand drawn: dN/deta per unit eta (scale 0.2 cm per particle)
+\begin{scope}
+ \draw[prof,blue!60!black] plot[smooth] coordinates {(0.3,0.1)(0.7,0.9)(1.1,1.3)(1.5,1.4)(2.1,1.45)(2.7,1.4)(3.1,1.3)(3.5,0.9)(3.9,0.1)};
+ \node[lab,text=blue!60!black] at (2.1,1.7) {$\sim6$ charged per unit $\eta$};
+\end{scope}
+\begin{scope}[xshift=5.2cm]
+ \draw[prof,green!50!black] plot[smooth] coordinates {(0.3,0.1)(0.7,0.8)(1.1,1.0)(1.4,0.9)(1.7,0.5)(1.9,0.15)(2.2,0.05)(3.9,0.05)};
+ \draw[prot,green!50!black] (3.9,0.6) -- (4.3,0.6); \node[lab,text=green!50!black,anchor=south] at (4.0,0.65) {$p$};
+ \node[lab,text=green!50!black] at (3.0,0.5) {gap};
+\end{scope}
+\begin{scope}[xshift=10.4cm]
+ \draw[prof,orange!80!black] plot[smooth] coordinates {(0.3,0.1)(0.7,0.8)(1.0,0.9)(1.3,0.5)(1.6,0.1)(2.6,0.1)(2.9,0.5)(3.2,0.9)(3.5,0.8)(3.9,0.1)};
+ \node[lab,text=orange!80!black] at (2.1,0.5) {gap};
+\end{scope}
+\begin{scope}[xshift=15.6cm]
+ \draw[prof,violet!80!black] plot[smooth] coordinates {(0.3,0.03)(1.5,0.05)(1.9,0.4)(2.1,0.5)(2.3,0.4)(2.7,0.05)(3.9,0.03)};
+ \draw[prot,violet!80!black] (3.9,0.6) -- (4.3,0.6); \draw[prot,violet!80!black] (0.3,0.6) -- (-0.1,0.6);
+ \node[lab,text=violet!80!black,anchor=south] at (4.0,0.65) {$p$}; \node[lab,text=violet!80!black,anchor=south] at (0.2,0.65) {$p$};
+\end{scope}
+% the table below each
+\foreach \dx/\col/\sig/\share/\np/\nc/\desc in {
+   0/blue!60!black/55.4 mb/71.2\%/230/16/{both protons break up; several parton pairs interact (MPI); a plateau},
+   5.2/green!50!black/12.9 mb/16.0\%/51/3/{one proton survives, the other dissociates; a gap on the surviving side},
+   10.4/orange!80!black/8.8 mb/11.0\%/62/3/{both dissociate into low-mass systems; a gap in the middle, little in the tracker},
+   15.6/violet!80!black/1.3 mb/1.9\%/28/2/{both survive; a small system in the centre, a few particles}} {
+  \node[lab,anchor=north west,text width=4.5cm,align=left] at (\dx cm-0.2cm,-0.55) {\textcolor{\col}{$\sigma=\sig$, \share\ of the library}\\ \np\ particles on average, \nc\ charged in the tracker\\ \desc};
+}
+\node[lab,anchor=north west,text width=20cm,align=left] at (-0.2,-2.5) {\textbf{Minimum bias} is all of them in their natural proportions, $\sigma_{\rm inel}=78.4$ mb at 13.6 TeV (\PYTHIA, CP5: $\sigma_{\rm tot}=100.3$ and $\sigma_{\rm el}=21.9$ mb fixed by the tune, the same at 14 TeV; the diffractive pieces from its parametrisation, ND what remains). The library holds 2000 of them: 179 final particles per collision on average, a median of 116, from 3 to 829; the hardest particle $2.2$ GeV on average; $0.95$ GeV of $p_T$ per unit area in the tracker's reach.};
+\end{tikzpicture}

@@ -69,6 +69,16 @@ example/GenJet/Standalone/*.mp4
 
 example/trailer/*.mp4
 
+# chapter 8 (pileup): the film, the subtitles, the ensemble JSON (a minute to remake), the run outputs
+example/PU/Standalone/*.mp4
+example/PU/Standalone/*.srt
+example/PU/Standalone/standalone_pileup_stats.json
+example/PU/Standalone/*.out
+example/PU/*.png
+example/PU/CMSSW/Phase2/
+example/PU/CMSSW/2024
+example/SIM__
+
 smpost/*.aux
 smpost/*.png
 smpost/*.pdf

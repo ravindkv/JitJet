@@ -1,10 +1,39 @@
 # JitJet on social media: one post per video
 
+## Teaching merits
+
+JitJet teaches jet physics the way it actually happens: one simulated event is
+followed from the proton to the histogram, and every stage of the journey, from
+the hard scattering through the parton shower, hadronisation, decays, pileup,
+the detector, Particle Flow, clustering, calibration and tagging, is a stop with
+the same shape. The reader sees the stage first in a short narrated film, runs
+it second with a standalone Python script of a few hundred lines that
+reproduces the algorithm of the official package, derives it third from the
+formula on the page, and then lets PYTHIA, FastJet or CMSSW have the last
+word in an agreement table. The numbers in the text are the numbers the script
+prints, so a student can press a button, see 99.83 GeV in 31 particles come out,
+change a parameter and watch the number move. Nothing is hidden behind a
+framework: the scripts, records, logs and companions are public, and the
+family metaphor of a mother quark, her children and the crowd on the road
+holds together in memory what the equations state explicitly.
+
+The merit for teaching is that the book closes the gap between a lecture course
+on QCD and a first week in an LHC analysis. Textbooks derive the splitting
+functions but stop before the detector; experiment tutorials show the
+configuration files but not the physics behind them. JitJet keeps the two in
+one event, so that the b quark a student met in a Feynman diagram is the same
+b quark whose jet is tagged at the last stop, and every intermediate loss of
+energy, every choice of radius or threshold and every systematic uncertainty is
+met at the place where it enters. Each chapter stands alone as a lecture with
+its film, its exercises and its pitfalls, and together they form a course that
+a master's student, a new PhD student or a physicist changing from theory to
+experiment can follow at their own pace, running the same code the author ran.
+
 
 ### ---------------------------------
 Channel Name: JitJet
-Channel Handle: JitJetLHC
-Channel Playlist: JitJet bTour, JitJet tTour, etc
+Channel Handle: JourneyIsTheJet
+Channel Playlist: JitJet Book, JitJet bTour, JitJet tTour, etc
 ### ---------------------------------
 
 JitJet: Journey is the Jet
@@ -138,6 +167,30 @@ flight distance and the visible share of the jet pT.
 Path:
 example/Decay/Standalone/animate_standalone_hadron_decays.mp4
 chapter/chapter_06_children_producing_grandchildren.tex
+
+
+### --------------------------------------
+(7/30) JitJet | Chapter-7 | The Family Photograph: Generator-Level Jets and Truth Definitions
+
+Nothing happens to the 749 particles of the previous stop; what happens is a
+decision. Before the family walks into the detector we take its photograph: the
+final state appears in the eta-phi plane, hardest particles first, and the 42
+circles of the anti-kT jets settle over it. Then the zoom on the b quark's jet,
+the 36 merges in their order, the hard core first and the soft periphery last,
+until the circle of R = 0.4 is drawn and the jet holds 99.83 GeV in 31
+particles: the reference every reconstructed jet of the journey will be judged
+against. The same family in other photographs shows what the three choices of
+radius, neutrinos and threshold cost. Then who decides this is a b jet at all:
+the B hadron shrinks to a ghost and still lands in the jet, hadronFlavour 5,
+while at the other end of the event a gluon-splitting pair shares one jet and
+an oscillated B gives the bbar jet a b. A soft B0 Bbar0 pair whispering between
+two light jets flips the labels, and interleaved flavour neutralisation cancels
+it again: which definitions are infrared safe. The film ends with the ensemble,
+the response of the AK4, AK4-no-neutrino and AK8 jets to the b quark.
+
+Path:
+example/GenJet/Standalone/animate_standalone_genjets.mp4
+chapter/chapter_07_GenJet.tex
 
 
 

@@ -1,0 +1,288 @@
+
+ *-------  PYTHIA Process Initialization  --------------------------*
+ |                                                                  |
+ | We collide p+ with p+ at a CM energy of 1.360e+04 GeV            |
+ |                                                                  |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | Subprocess                                    Code |   Estimated |
+ |                                                    |    max (mb) |
+ |                                                    |             |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | non-diffractive                                101 |   5.542e+01 |
+ | A B -> X B single diffractive                  103 |   6.432e+00 |
+ | A B -> A X single diffractive                  104 |   6.432e+00 |
+ | A B -> X X double diffractive                  105 |   8.848e+00 |
+ | A B -> A X B central diffractive               106 |   1.285e+00 |
+ |                                                                  |
+ *-------  End PYTHIA Process Initialization -----------------------*
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |                   sigmaNonDiffractive =    55.42 mb              | 
+ |                                                                  | 
+ |    pT0 =  1.44 gives sigmaInteraction =   494.46 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |   diffraction XB for p+ on p+                                    | 
+ |                                                                  | 
+ |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.13 gives sigmaInteraction =     1.59 mb: rejected    | 
+ |    pT0 =  1.02 gives sigmaInteraction =     2.63 mb: rejected    | 
+ |    pT0 =  0.92 gives sigmaInteraction =     4.38 mb: rejected    | 
+ |    pT0 =  0.83 gives sigmaInteraction =     7.50 mb: rejected    | 
+ |    pT0 =  0.74 gives sigmaInteraction =    13.42 mb: accepted    | 
+ |   diffractive mass = 1.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.15 gives sigmaInteraction =     2.58 mb: rejected    | 
+ |    pT0 =  1.04 gives sigmaInteraction =     4.08 mb: rejected    | 
+ |    pT0 =  0.93 gives sigmaInteraction =     6.61 mb: rejected    | 
+ |    pT0 =  0.84 gives sigmaInteraction =    11.02 mb: accepted    | 
+ |   diffractive mass = 2.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.17 gives sigmaInteraction =     3.68 mb: rejected    | 
+ |    pT0 =  1.05 gives sigmaInteraction =     5.75 mb: rejected    | 
+ |    pT0 =  0.95 gives sigmaInteraction =     9.17 mb: rejected    | 
+ |    pT0 =  0.85 gives sigmaInteraction =    14.85 mb: accepted    | 
+ |   diffractive mass = 4.23e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.19 gives sigmaInteraction =     4.94 mb: rejected    | 
+ |    pT0 =  1.07 gives sigmaInteraction =     7.55 mb: rejected    | 
+ |    pT0 =  0.96 gives sigmaInteraction =    11.66 mb: accepted    | 
+ |   diffractive mass = 6.85e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.21 gives sigmaInteraction =     6.29 mb: rejected    | 
+ |    pT0 =  1.09 gives sigmaInteraction =     9.39 mb: rejected    | 
+ |    pT0 =  0.98 gives sigmaInteraction =    14.21 mb: accepted    | 
+ |   diffractive mass = 1.11e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.23 gives sigmaInteraction =     7.87 mb: rejected    | 
+ |    pT0 =  1.10 gives sigmaInteraction =    11.43 mb: accepted    | 
+ |   diffractive mass = 1.79e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.25 gives sigmaInteraction =     9.66 mb: rejected    | 
+ |    pT0 =  1.12 gives sigmaInteraction =    13.63 mb: accepted    | 
+ |   diffractive mass = 2.90e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.27 gives sigmaInteraction =    11.94 mb: accepted    | 
+ |   diffractive mass = 4.69e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.29 gives sigmaInteraction =    15.07 mb: accepted    | 
+ |   diffractive mass = 7.59e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.31 gives sigmaInteraction =    18.84 mb: accepted    | 
+ |   diffractive mass = 1.23e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.33 gives sigmaInteraction =    23.82 mb: accepted    | 
+ |   diffractive mass = 1.99e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.35 gives sigmaInteraction =    30.48 mb: accepted    | 
+ |   diffractive mass = 3.21e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.37 gives sigmaInteraction =    38.41 mb: accepted    | 
+ |   diffractive mass = 5.20e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.40 gives sigmaInteraction =    48.74 mb: accepted    | 
+ |   diffractive mass = 8.41e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.42 gives sigmaInteraction =    60.37 mb: accepted    | 
+ |   diffractive mass = 1.36e+04 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.44 gives sigmaInteraction =    75.73 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |   diffraction AX for p+ on p+                                    | 
+ |                                                                  | 
+ |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.13 gives sigmaInteraction =     1.60 mb: rejected    | 
+ |    pT0 =  1.02 gives sigmaInteraction =     2.61 mb: rejected    | 
+ |    pT0 =  0.92 gives sigmaInteraction =     4.38 mb: rejected    | 
+ |    pT0 =  0.83 gives sigmaInteraction =     7.54 mb: rejected    | 
+ |    pT0 =  0.74 gives sigmaInteraction =    13.43 mb: accepted    | 
+ |   diffractive mass = 1.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.15 gives sigmaInteraction =     2.56 mb: rejected    | 
+ |    pT0 =  1.04 gives sigmaInteraction =     4.07 mb: rejected    | 
+ |    pT0 =  0.93 gives sigmaInteraction =     6.63 mb: rejected    | 
+ |    pT0 =  0.84 gives sigmaInteraction =    11.14 mb: accepted    | 
+ |   diffractive mass = 2.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.17 gives sigmaInteraction =     3.69 mb: rejected    | 
+ |    pT0 =  1.05 gives sigmaInteraction =     5.76 mb: rejected    | 
+ |    pT0 =  0.95 gives sigmaInteraction =     9.12 mb: rejected    | 
+ |    pT0 =  0.85 gives sigmaInteraction =    14.83 mb: accepted    | 
+ |   diffractive mass = 4.23e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.19 gives sigmaInteraction =     4.95 mb: rejected    | 
+ |    pT0 =  1.07 gives sigmaInteraction =     7.50 mb: rejected    | 
+ |    pT0 =  0.96 gives sigmaInteraction =    11.69 mb: accepted    | 
+ |   diffractive mass = 6.85e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.21 gives sigmaInteraction =     6.30 mb: rejected    | 
+ |    pT0 =  1.09 gives sigmaInteraction =     9.35 mb: rejected    | 
+ |    pT0 =  0.98 gives sigmaInteraction =    14.11 mb: accepted    | 
+ |   diffractive mass = 1.11e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.23 gives sigmaInteraction =     7.87 mb: rejected    | 
+ |    pT0 =  1.10 gives sigmaInteraction =    11.38 mb: accepted    | 
+ |   diffractive mass = 1.79e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.25 gives sigmaInteraction =     9.68 mb: rejected    | 
+ |    pT0 =  1.12 gives sigmaInteraction =    13.64 mb: accepted    | 
+ |   diffractive mass = 2.90e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.27 gives sigmaInteraction =    11.90 mb: accepted    | 
+ |   diffractive mass = 4.69e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.29 gives sigmaInteraction =    14.96 mb: accepted    | 
+ |   diffractive mass = 7.59e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.31 gives sigmaInteraction =    18.89 mb: accepted    | 
+ |   diffractive mass = 1.23e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.33 gives sigmaInteraction =    23.92 mb: accepted    | 
+ |   diffractive mass = 1.99e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.35 gives sigmaInteraction =    30.01 mb: accepted    | 
+ |   diffractive mass = 3.21e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.37 gives sigmaInteraction =    38.29 mb: accepted    | 
+ |   diffractive mass = 5.20e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.40 gives sigmaInteraction =    47.75 mb: accepted    | 
+ |   diffractive mass = 8.41e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.42 gives sigmaInteraction =    60.52 mb: accepted    | 
+ |   diffractive mass = 1.36e+04 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.44 gives sigmaInteraction =    75.32 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |   diffraction AXB for p+ on p+                                   | 
+ |                                                                  | 
+ |   diffractive mass = 1.00e+01 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.13 gives sigmaInteraction = 3.88e-01 mb: rejected    | 
+ |    pT0 =  1.02 gives sigmaInteraction = 5.97e-01 mb: rejected    | 
+ |    pT0 =  0.92 gives sigmaInteraction = 9.51e-01 mb: rejected    | 
+ |    pT0 =  0.83 gives sigmaInteraction =     1.53 mb: rejected    | 
+ |    pT0 =  0.74 gives sigmaInteraction =     2.57 mb: accepted    | 
+ |   diffractive mass = 1.62e+01 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.15 gives sigmaInteraction = 4.86e-01 mb: rejected    | 
+ |    pT0 =  1.04 gives sigmaInteraction = 7.37e-01 mb: rejected    | 
+ |    pT0 =  0.93 gives sigmaInteraction =     1.12 mb: rejected    | 
+ |    pT0 =  0.84 gives sigmaInteraction =     1.76 mb: rejected    | 
+ |    pT0 =  0.76 gives sigmaInteraction =     2.85 mb: accepted    | 
+ |   diffractive mass = 2.62e+01 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.17 gives sigmaInteraction = 5.98e-01 mb: rejected    | 
+ |    pT0 =  1.05 gives sigmaInteraction = 8.66e-01 mb: rejected    | 
+ |    pT0 =  0.95 gives sigmaInteraction =     1.28 mb: rejected    | 
+ |    pT0 =  0.85 gives sigmaInteraction =     1.93 mb: rejected    | 
+ |    pT0 =  0.77 gives sigmaInteraction =     3.05 mb: accepted    | 
+ |   diffractive mass = 4.23e+01 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.19 gives sigmaInteraction = 7.26e-01 mb: rejected    | 
+ |    pT0 =  1.07 gives sigmaInteraction =     1.01 mb: rejected    | 
+ |    pT0 =  0.96 gives sigmaInteraction =     1.45 mb: rejected    | 
+ |    pT0 =  0.87 gives sigmaInteraction =     2.09 mb: rejected    | 
+ |    pT0 =  0.78 gives sigmaInteraction =     3.19 mb: accepted    | 
+ |   diffractive mass = 6.85e+01 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.21 gives sigmaInteraction = 8.90e-01 mb: rejected    | 
+ |    pT0 =  1.09 gives sigmaInteraction =     1.20 mb: rejected    | 
+ |    pT0 =  0.98 gives sigmaInteraction =     1.64 mb: rejected    | 
+ |    pT0 =  0.88 gives sigmaInteraction =     2.32 mb: accepted    | 
+ |   diffractive mass = 1.11e+02 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.23 gives sigmaInteraction =     1.12 mb: rejected    | 
+ |    pT0 =  1.10 gives sigmaInteraction =     1.48 mb: rejected    | 
+ |    pT0 =  0.99 gives sigmaInteraction =     1.93 mb: rejected    | 
+ |    pT0 =  0.89 gives sigmaInteraction =     2.59 mb: accepted    | 
+ |   diffractive mass = 1.79e+02 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.25 gives sigmaInteraction =     1.44 mb: rejected    | 
+ |    pT0 =  1.12 gives sigmaInteraction =     1.81 mb: rejected    | 
+ |    pT0 =  1.01 gives sigmaInteraction =     2.31 mb: accepted    | 
+ |   diffractive mass = 2.90e+02 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.27 gives sigmaInteraction =     1.88 mb: rejected    | 
+ |    pT0 =  1.14 gives sigmaInteraction =     2.30 mb: accepted    | 
+ |   diffractive mass = 4.69e+02 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.29 gives sigmaInteraction =     2.45 mb: accepted    | 
+ |   diffractive mass = 7.59e+02 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.31 gives sigmaInteraction =     3.22 mb: accepted    | 
+ |   diffractive mass = 1.23e+03 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.33 gives sigmaInteraction =     4.15 mb: accepted    | 
+ |   diffractive mass = 1.99e+03 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.35 gives sigmaInteraction =     5.37 mb: accepted    | 
+ |   diffractive mass = 3.21e+03 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.37 gives sigmaInteraction =     6.84 mb: accepted    | 
+ |   diffractive mass = 5.20e+03 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.40 gives sigmaInteraction =     8.59 mb: accepted    | 
+ |   diffractive mass = 8.41e+03 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.42 gives sigmaInteraction =    10.51 mb: accepted    | 
+ |   diffractive mass = 1.36e+04 GeV and sigmaNorm =     2.00 mb    | 
+ |    pT0 =  1.44 gives sigmaInteraction =    12.97 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings (changes only)  ------------------* 
+ |                                                                                                                 | 
+ | Name                                          |                      Now |      Default         Min         Max | 
+ |                                               |                          |                                      | 
+ | Beams:eCM                                     |                13600.000 |    14000.000         0.0             | 
+ | Check:epTolErr                                |                0.0100000 |   1.0000e-04                         | 
+ | ColourReconnection:range                      |                  5.17600 |      1.80000         0.0    10.00000 | 
+ | Main:timesAllowErrors                         |                    10000 |           10           0             | 
+ | MultipartonInteractions:alphaSorder           |                        2 |            1           0           3 | 
+ | MultipartonInteractions:alphaSvalue           |                  0.11800 |      0.13000   0.0600000     0.25000 | 
+ | MultipartonInteractions:bProfile              |                        2 |            3           0           4 | 
+ | MultipartonInteractions:coreFraction          |                  0.63000 |      0.50000         0.0     1.00000 | 
+ | MultipartonInteractions:coreRadius            |                  0.76340 |      0.40000     0.10000     1.00000 | 
+ | MultipartonInteractions:ecmPow                |                0.0334400 |      0.21500         0.0     0.50000 | 
+ | MultipartonInteractions:pT0Ref                |                  1.41000 |      2.28000     0.50000    10.00000 | 
+ | ParticleDecays:limitTau0                      |                       on |          off                         | 
+ | PDF:pSet                                      | LHAGrid1:/Users/ravindrakumar/rverma/JME/JitJet/example/ME/Standalone/.venv/share/LHAPDF/NNPDF31_nnlo_as_0118/NNPDF31_nnlo_as_0118_0000.dat |           13 | 
+ | Print:errors                                  |                      off |           on                         | 
+ | Random:seed                                   |                    20261 |           -1               900000000 | 
+ | Random:setSeed                                |                       on |          off                         | 
+ | SigmaProcess:alphaSorder                      |                        2 |            1           0           3 | 
+ | SigmaProcess:alphaSvalue                      |                  0.11800 |      0.13000   0.0600000     0.25000 | 
+ | SigmaTotal:mode                               |                        0 |            1           0           4 | 
+ | SigmaTotal:sigmaEl                            |                 21.89000 |     25.00000         0.0             | 
+ | SigmaTotal:sigmaTot                           |                100.30900 |    100.00000         0.0             | 
+ | SigmaTotal:zeroAXB                            |                      off |           on                         | 
+ | SLHA:minMassSM                                |                 1000.000 |    100.00000                         | 
+ | SoftQCD:inelastic                             |                       on |          off                         | 
+ | SpaceShower:alphaSorder                       |                        2 |            1           0           3 | 
+ | SpaceShower:alphaSvalue                       |                  0.11800 |      0.13650   0.0600000     0.25000 | 
+ | StringZ:useOldAExtra                          |                       on |          off                         | 
+ | TimeShower:alphaSorder                        |                        2 |            1           0           3 | 
+ | TimeShower:alphaSvalue                        |                  0.11800 |      0.13650   0.0600000     0.25000 | 
+ | Tune:preferLHAPDF                             |                        2 |            0           0           3 | 
+ |                                                                                                                 | 
+ *-------  End PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings  -----------------------------* 
+
+ --------  PYTHIA Particle Data Table (changed only)  ------------------------------------------------------------------------------
+ 
+      id   name            antiName         spn chg col      m0        mWidth      mMin       mMax       tau0    res dec ext vis wid
+             no onMode   bRatio   meMode     products 
+
+ no particle data has been changed from its default value 
+
+ --------  End PYTHIA Particle Data Table  -----------------------------------------------------------------------------------------
+
+
+ *-------  PYTHIA Event and Cross Section Statistics  -------------------------------------------------------------*
+ |                                                                                                                 |
+ | Subprocess                                    Code |            Number of events       |      sigma +- delta    |
+ |                                                    |       Tried   Selected   Accepted |     (estimated) (mb)   |
+ |                                                    |                                   |                        |
+ |-----------------------------------------------------------------------------------------------------------------|
+ |                                                    |                                   |                        |
+ | non-diffractive                                101 |        1425       1425       1425 |   5.542e+01  2.583e-07 |
+ | A B -> X B single diffractive                  103 |         166        166        166 |   6.432e+00  0.000e+00 |
+ | A B -> A X single diffractive                  104 |         153        153        153 |   6.432e+00  0.000e+00 |
+ | A B -> X X double diffractive                  105 |         219        219        219 |   8.848e+00  5.158e-08 |
+ | A B -> A X B central diffractive               106 |          37         37         37 |   1.285e+00  0.000e+00 |
+ |                                                    |                                   |                        |
+ | sum                                                |        2000       2000       2000 |   7.842e+01  2.634e-07 |
+ |                                                                                                                 |
+ *-------  End PYTHIA Event and Cross Section Statistics ----------------------------------------------------------*
+
+ *-------  PYTHIA Error and Warning Messages Statistics  ----------------------------------------------------------* 
+ |                                                                                                                 | 
+ |  times   message                                                                                                | 
+ |                                                                                                                 | 
+ |      4   Error in BeamRemnants::setKinematics: kinematics construction failed after retrying 10 times           | 
+ |      3   Warning in MultipartonInteractions::init: maximum increased                                            | 
+ |    638   Warning in SimpleSpaceShower::pT2nextQCD: small daughter PDF                                           | 
+ |    354   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
+ |      2   Warning in SimpleTimeShower::init: pTmin too low                                                       | 
+ |                                                                                                                 | 
+ *-------  End PYTHIA Error and Warning Messages Statistics  ------------------------------------------------------* 
+
+# per-process cross sections [mb] as PYTHIA estimated them from the generated events (sigmaGen, sigmaErr)
+  code 101 ND: 55.4215 +- 0.0000 mb
+  code 103 SD: 6.4321 +- 0.0000 mb
+  code 104 SD: 6.4321 +- 0.0000 mb
+  code 105 DD: 8.8484 +- 0.0000 mb
+  code 106 CD: 1.2850 +- 0.0000 mb
+  all: 78.4190 +- 0.0000 mb
+
+# 2000 events written to /Users/ravindrakumar/rverma/JME/JitJet/example/PU/pileup_library.lhe.gz: CD 37, DD 219, ND 1425, SD 319
+# final particles per event: mean 179.2, min 3, max 829

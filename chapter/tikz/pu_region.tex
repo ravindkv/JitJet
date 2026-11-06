@@ -1,0 +1,44 @@
+% ---------------------------------------------------------------------------
+% The beam spot of 2024: (a) the two bunches in the (x, z) plane and their
+% overlap, with the hourglass of the beta function; (b) the numbers of the
+% payload against the drawn vertices, the CMSSW library and the HL-LHC model;
+% the clock of the sixteen crossings is pu_clock.tex.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries}]
+% ---------------- (a) the crossing plane --------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,3.4) {(a) the beam spot in the $(x,z)$ plane};
+\draw[-{Stealth}] (-4.2,0) -- (4.4,0) node[below left,lab] {$z$};
+\draw[-{Stealth}] (0,-1.6) -- (0,2.2) node[left,lab] {$x$ ($\times10^{3}$)};
+% the hourglass envelope: sigma(z) = sigma0 sqrt(1 + z^2/beta*^2), beta* = 30 cm (scale 0.2 cm per cm)
+\draw[black!35,dashed] plot[domain=-4:4,samples=60] (\x,{0.22*sqrt(1+(\x/1.2)*(\x/1.2))});
+\draw[black!35,dashed] plot[domain=-4:4,samples=60] (\x,{-0.22*sqrt(1+(\x/1.2)*(\x/1.2))});
+\node[lab,text=black!50,anchor=west] at (-4.1,1.7) {hourglass: $\sigma_x(z)=\sigma_{x0}\sqrt{1+(z-z_0)^2/\beta^{*2}}$, $\beta^*=30$ cm};
+% bunch 1 (blue) moving +z, bunch 2 (orange) moving -z, a small crossing angle
+\begin{scope}[rotate=5]
+ \fill[blue!25,opacity=0.8] (-1.9,0) ellipse (1.8 and 0.22);
+\end{scope}
+\begin{scope}[rotate=-5]
+ \fill[orange!35,opacity=0.8] (1.9,0) ellipse (1.8 and 0.22);
+\end{scope}
+\draw[blue!60!black,thick,-{Stealth[length=2mm]}] (-3.6,-0.75) -- (-2.6,-0.6) node[lab,below,pos=0.3] {bunch 1};
+\draw[orange!80!black,thick,-{Stealth[length=2mm]}] (3.6,-0.75) -- (2.6,-0.6) node[lab,below,pos=0.3] {bunch 2};
+\fill[green!50!black,opacity=0.55] (0.1,0) ellipse (0.72 and 0.16);
+\node[lab,text=green!50!black,anchor=north] at (0.1,-0.25) {the overlap: $\sigma_z=3.6$ cm, $\sigma_t=120$ ps, $\sigma_{xy}=9\,\mu$m};
+\node[lab,anchor=north west,text width=8.8cm,align=left] at (-4.2,-1.85) {Two Gaussian bunches meeting head-on collide over $\sigma_z=\sigma_s/\sqrt2$, during $\sigma_t=\sigma_z/c$, with $z$ and $t$ independent, \cref{eq:crowd_on_the_road:region}. The crossing angle of Run 3 shortens the overlap; \CMSSW does not model it but reads the measured region from the database: \code{BetafuncEvtVtxGenerator} draws $z$, $t$, $x$ and $y$ from the 2024 payload, the signal and every library event alike.};
+\end{scope}
+% ---------------- (b) the numbers --------------------------------------------------------------------
+\begin{scope}[xshift=12.4cm]
+\node[head,anchor=west] at (-3.2,3.4) {(b) how long, how wide: the payload and three checks};
+\foreach \y/\t/\v/\w in {2.6/{the 2024 payload}/3.60/2.88, 1.9/{our 960 vertices}/3.79/3.03, 1.2/{\CMSSW library (250)}/3.56/2.85, 0.5/{the HL-LHC model}/4.27/3.42} {
+  \draw[fill=green!30] (0,\y-0.18) rectangle (\w,\y+0.18);
+  \node[lab,anchor=west] at (\w+0.1,\y) {\v\ cm};
+  \node[lab,anchor=east] at (-0.1,\y) {\t};
+}
+\draw[-{Stealth}] (0,0.1) -- (4.3,0.1) node[below left,lab] {$\sigma_z$ [cm], 0.8 cm per cm};
+\node[lab,anchor=north west,text width=7.6cm,align=left] at (-3.2,-0.5) {In time the same four read $120$, $119$, $122$ and $193$ ps. The payload is a fit to the early-2024 data: centre $(0.03,-0.02,0.42)$ cm, $\sigma_z=3.6$ cm, $\beta^*=30$ cm, emittance $5.7\times10^{-8}$ cm, hence $\sigma_{xy}=\sqrt{\epsilon\beta^*/2}=9\,\mu$m at the focus. The HL-LHC region is longer because the crab cavities give back what its larger crossing angle takes.};
+\end{scope}
+\end{tikzpicture}

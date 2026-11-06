@@ -1,0 +1,38 @@
+% written by minbias_catalogue.py: three tables of the minimum-bias library (do not edit)
+\newcommand{\minbiasCatalogueTen}{%
+\begin{tabular}{rlrrrrrrrrrrr}\toprule
+event & proc. & interactions & stable & charged & central & $|\eta|>5.5$ & lead \pt & $\Sigma\pt$ & jets $>10$ & fwd $p$ & $z$ [cm] & $t$ [ns] \\ \midrule
+823 & SD & 1 & 4 & 2 & 0 & 4 & 0.69 & 1.4 & 0 & 2 & $+1.84$ & $-0.070$ \\
+547 & ND & 3 & 175 & 80 & 12 & 53 & 1.97 & 60.9 & 0 & 0 & $+9.05$ & $-0.183$ \\
+1407 & ND & 1 & 86 & 40 & 5 & 27 & 1.22 & 26.1 & 0 & 0 & $+6.45$ & $+0.023$ \\
+573 & ND & 19 & 347 & 148 & 37 & 85 & 4.53 & 158.2 & 1 & 0 & $-3.81$ & $+0.023$ \\
+43 & ND & 2 & 82 & 34 & 7 & 29 & 1.52 & 28.5 & 0 & 0 & $+1.68$ & $+0.061$ \\
+1895 & SD & 1 & 70 & 30 & 3 & 15 & 1.12 & 20.3 & 0 & 1 & $-4.38$ & $-0.117$ \\
+1417 & SD & 1 & 85 & 44 & 2 & 17 & 0.78 & 24.5 & 0 & 1 & $-5.54$ & $-0.137$ \\
+1924 & ND & 24 & 537 & 252 & 93 & 76 & 5.12 & 254.3 & 1 & 0 & $+3.09$ & $+0.183$ \\
+1665 & ND & 2 & 91 & 52 & 9 & 30 & 3.50 & 35.8 & 0 & 1 & $+2.40$ & $+0.022$ \\
+1293 & SD & 1 & 49 & 22 & 1 & 16 & 1.03 & 14.5 & 0 & 1 & $-3.32$ & $+0.210$ \\
+\bottomrule\end{tabular}}
+\newcommand{\minbiasCatalogueSummary}{%
+\begin{tabular}{lrrrr}\toprule
+per collision & mean & median & min & max \\ \midrule
+interactions & 6.0 & 2 & 1 & 45 \\
+stable particles & 179 & 116 & 3 & 829 \\
+charged stable particles & 83 & 54 & 2 & 374 \\
+central ($|\eta|<2.5$, $\pt>0.5\GeV$) & 19 & 8 & 0 & 167 \\
+beyond $|\eta|=5.5$ & 37 & 34 & 2 & 108 \\
+\pt of the hardest particle [GeV] & 2.17 & 1.7 & 0.1 & 17.9 \\
+scalar sum of \pt [GeV] & 73 & 38 & 1 & 518 \\
+\antikt $R=0.4$ jets above $10\GeV$ & 0.15 & 0 & 0 & 7 \\
+forward protons ($\xi<0.55$) & 0.38 & 0 & 0 & 2 \\
+vertex $z$ [cm], the 960 drawn & $0.28$ & $0.33$ & $-12.4$ & $13.9$ \\
+vertex $t$ [ns], the 960 drawn & $0.003$ & $-0.002$ & $-0.33$ & $0.37$ \\
+\bottomrule\end{tabular}}
+\newcommand{\minbiasCataloguePerProcess}{%
+\begin{tabular}{lrrrrrrrr}\toprule
+per process & events & $\sigma$ [mb] & interactions & stable & charged & central & lead \pt [GeV] & $\Sigma\pt$ [GeV] \\ \midrule
+non-diffractive (ND) & 1425 & 55.42 & 8.1 & 230 & 106 & 25 & 2.6 & 95 \\
+single diffractive (SD) & 319 & 12.86 & 1.0 & 51 & 24 & 4 & 1.2 & 17 \\
+double diffractive (DD) & 219 & 8.85 & 1.0 & 62 & 29 & 4 & 1.2 & 21 \\
+central diffractive (CD) & 37 & 1.29 & 1.0 & 28 & 14 & 2 & 0.9 & 9 \\
+\bottomrule\end{tabular}}

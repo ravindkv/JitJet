@@ -1,0 +1,1264 @@
+% ---------------------------------------------------------------------------
+% Chapter 8: The Crowd on the Road: Pileup
+% The scripts, records, logs and films of this stop live in example/PU/, and
+% the technical companion of the chapter is chapter/chapter_08_PU.md: how to
+% run the scripts, how to read the records and logs, how the official numbers
+% were obtained, and the full tables. The book gives the physics.
+% The crowd is the crowd of Run 3 (2024): sixty collisions per crossing at
+% 13.6 TeV, the 2024 beam spot, the production window bx = -12 ... +3.
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\akfour}{\code{ak4GenJets}\xspace}
+\providecommand{\akfournonu}{\code{ak4GenJetsNoNu}\xspace}
+\providecommand{\mup}{\ensuremath{\mu}\xspace}
+\providecommand{\mutrue}{\ensuremath{\mu_{\mathrm{true}}}\xspace}
+\providecommand{\rhoPU}{\ensuremath{\rho}\xspace}
+\providecommand{\sigmainel}{\ensuremath{\sigma_{\mathrm{inel}}}\xspace}
+\providecommand{\bx}{\ensuremath{\mathrm{bx}}\xspace}
+\providecommand{\ns}{\ensuremath{\,\mathrm{ns}}\xspace}
+\providecommand{\ps}{\ensuremath{\,\mathrm{ps}}\xspace}
+\providecommand{\cm}{\ensuremath{\,\mathrm{cm}}\xspace}
+\providecommand{\um}{\ensuremath{\,\mu\mathrm{m}}\xspace}
+\providecommand{\mbarn}{\ensuremath{\,\mathrm{mb}}\xspace}
+\providecommand{\Mix}{\code{MixingModule}\xspace}
+\input{example/PU/Standalone/minbias_catalogue}
+\chapter{The Crowd on the Road: Pileup}
+\chaptermark{The Crowd on the Road}
+\label{ch:crowd_on_the_road}
+
+\begin{journeybox}
+Our family is not alone. At every bunch crossing some sixty other families
+set out at the same moment, and the road is so crowded that some of their
+members walk in step with ours and are impossible to tell apart. The road
+is the road of Run~3 in its last full year, 2024: the crowd of this
+chapter is the one CMS recorded, and the one its simulation was built to
+reproduce, and the family will meet it again at every stop ahead.
+\end{journeybox}
+
+\physicsline{the mean number of collisions per bunch crossing,
+$\mup=L\sigmainel/(n_b f_{\mathrm{rev}})$, and its Poisson fluctuation; the
+minimum-bias collision and its four kinds; in-time and out-of-time pileup,
+the 25\ns clock and the sixteen crossings of the production window; the
+beam spot of 2024, where and when the collisions happen; how \CMSSW mixes
+a library of soft collisions into a signal event, why the production
+premixes, and how a flat pileup profile is reweighted; the median energy
+density \rhoPU, the jet area $A$ and the subtraction $\pt-\rhoPU A$. The
+one number to take away: at $\mup=60$ the crowd puts $59\GeV$ into every
+unit of area of the $(\eta,\phi)$ plane, thirty GeV of strangers into our
+hundred-GeV jet, and the subtraction removes them on average, not event by
+event: $\pm7\GeV$ stay.}
+
+\section{What we will see at this stop}
+\label{sec:crowd_on_the_road:what_we_compute}
+
+At the end of \cref{ch:family_photograph} the photograph was taken: jet [0]
+of \akfour, $99.83\GeV$ in $31$ particles around $\eta=-1.44$, $\phi=-2.71$,
+the reference every later jet will be judged against. The family was alone
+in the picture. It never is in the detector. The LHC does not collide one
+proton with one proton; it collides bunches of $10^{11}$ protons every
+$25\ns$, and at the luminosity the LHC delivered in 2024, about sixty pairs
+of protons collided inelastically in each crossing. One of those collisions
+is ours, the $q\bar q\to b\bar b$ of \cref{ch:ancestral_home}. The other
+sixty happened because they could, soft and uneven, and their particles
+land in the same detector at the same moment, on top of our family, inside
+the circle of our jet. They are called pileup, and they are the crowd on
+the road. This stop is about the crowd itself: how large it is and why,
+what one member of it carries, where and when along the beam line it
+walks, and how much of it falls inside our jet before any detector has
+seen a single particle. The mitigation, the tracks that point back to the
+right vertex, is the business of
+\crefrange{ch:crossing_the_border}{ch:the_police}; the correction that
+pays for what cannot be removed is \cref{ch:paying_for_uninvited}. Here we
+only let the crowd arrive and measure what it does.
+
+The crowd is the crowd of 2024, and the choice deserves a sentence. The
+family of \crefrange{ch:ancestral_home}{ch:family_photograph} was born at
+$\sqrt{s}=13.6\TeV$, the energy of Run~3, and Run~3 is over: its
+luminosity, its filling scheme, its beam spot and its detector are
+frozen, measured, and written into the conditions of \CMSSW, so that a
+book pinned to them stays right. The High-Luminosity LHC, with its two
+hundred collisions per crossing and the detector CMS is building for
+them, is still being designed, and a book pinned to it would be out of
+date before the first beam. So the crowd of every stop from here on is
+the Run-3 crowd, the detector of \cref{ch:crossing_the_border} is the
+2024 CMS detector, and what the HL-LHC will change is said at the end of
+each chapter, in its open problems, where the scripts of this stop keep
+the HL-LHC road one option away.\footnote{\file{standalone_pileup.py
+--scenario ultimate} mixes the same family at $\mup=200$ with the Phase-2
+luminous region, and the exercises and open problems use it.}
+
+The numbers to take away are four. The crowd of our crossing has $63$
+collisions, a Poisson draw with mean $60$, and brings $12\,113$ particles
+to the $744$ of the family, $860$ charged ones into the tracker's reach
+against $93$. It puts $68\GeV$ into every unit of area of the
+$(\eta,\phi)$ plane in this crossing, $59$ on average, $0.94$ per
+collision, so that the circle of our jet, $0.53$ units of area, receives
+$33.61\GeV$ of strangers from $34$ different collisions and reads
+$132.75\GeV$ instead of $99.83$. The subtraction $\pt-\rhoPU A$ takes
+$36.09\GeV$ back out and leaves $96.66$, three GeV below the truth in this
+crossing and $-2\pm7\GeV$ from it over four hundred draws of the crowd:
+the average is removed, the fluctuation is not, and that fluctuation is
+the first term of the resolution of a jet in Run~3. And the collisions are
+spread over $\pm3.6\cm$ along the beam and $\pm120\ps$ in time, the
+nearest one to ours a twentieth of a millimetre away in this crossing and
+a millimetre on the median, which is the room the vertex finder will have
+to work in, with no timing layer to help it. As at the previous stops we
+meet the numbers four times, from the top down: a film shows the
+photograph of \cref{ch:family_photograph} disappearing under the crowd
+collision by collision, the beam spot and the 25\ns clock, one member of
+the crowd, the median that measures it, our jet filling up and being
+subtracted, and the crowd drawn four hundred times; a Python file, needing
+only NumPy, mixes a library of two thousand minimum-bias collisions into
+the record in the way \CMSSW's \Mix does, clusters the result with the
+\antikt of \cref{ch:family_photograph} and ghosts, and writes \rhoPU, the
+areas and the subtracted jets; the theory derives \mup from the
+luminosity, the collision from the cross section, the beam spot from two
+bunches and \rhoPU from the median; and the official packages, \PYTHIA for
+the library and its cross sections, \FASTJET for the areas and the two
+estimators of \rhoPU on exactly our mixed particles, and the 2024 \CMSSW
+mixing of the companion, get the last word.
+
+\paragraph{The film.}
+\label{sec:crowd_on_the_road:animation}
+The film first: the eighth on the playlist of \jitjetworld puts the
+photograph into the crowd in six narrated scenes, every number on the
+screen read from the record and the ensemble that the script wrote. The
+voice picks up where the film of \cref{ch:family_photograph} stopped, the
+photograph is taken, and ends at the next stop, the border of the
+detector. The $651$ signal particles sit in the $(\eta,\phi)$ plane with
+their jet circles, and the $63$ collisions of the crossing stack onto
+them one by one, a counter running and \rhoPU rising by a GeV per
+collision until the plane is khaki and \antikt finds $173$ jets; the beam
+spot appears as the overlap of two bunches, the vertices of our crossing
+spread along it with the signal among them, and the fifteen neighbouring
+crossings of the production window arrive $25\ns$ apart; the four kinds
+of minimum-bias collision are drawn one after the other, each with its
+row in the table of cross sections and multiplicities, and the
+multiplicity of all two thousand builds up; the grid cells fill
+with transverse momentum and their median settles at \rhoPU; the family's
+circle fills with strangers, the counter climbs from $99.8$ to
+$132.7\GeV$, and $\rhoPU A$ is taken out; and the crowd is drawn four
+hundred times on the same photograph, the pileup inside the circle and
+the residual after the subtraction filling their histograms.
+\Cref{fig:crowd_on_the_road:stills} shows one key frame per scene. Watch
+first, and let the formulae catch up.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}\hfill
+\includegraphics[page=2,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}\hfill
+\includegraphics[page=3,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}\\[1.5mm]
+\includegraphics[page=4,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}\hfill
+\includegraphics[page=5,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}\hfill
+\includegraphics[page=6,width=0.325\textwidth]{PU/Standalone/animate_standalone_pileup_stills.pdf}
+\caption[Key frames of the animated standalone pileup stage]{Key frames of
+the six scenes of the animated standalone pileup stage, drawn by
+\file{animate_standalone_pileup.py} with \code{--stills}, in reading
+order. The crowd arriving on the photograph; the beam spot and the
+sixteen crossings on the clock; the four kinds of collision and the library;
+the grid cells and their median; our jet filling up and being
+subtracted; the crowd drawn four hundred times. The film itself is the
+eighth on the playlist of \jitjetworld.}
+\label{fig:crowd_on_the_road:stills}
+\end{figure}
+
+\paragraph{The picture to carry: the crowd.}
+The two halves of \cref{fig:crowd_on_the_road:crowd_sketch} are the whole
+chapter. On the left, one bunch crossing: two bunches of protons pass
+through each other, and wherever and whenever they overlap a collision
+can happen, sixty of them in a region $4\cm$ long and an eighth of a
+nanosecond wide, one of them ours. Nothing selects it; the detector
+records the crossing because our collision fired the trigger, and the
+other sixty come free, as do the crowds of the twelve crossings before
+and the three after, which the slow detectors remember. On the right, the
+circle of our jet in the $(\eta,\phi)$ plane: the family, thirty-one
+particles within a tenth of a unit of the axis, and the strangers,
+sixty-five soft particles from thirty-four collisions scattered evenly
+over the circle, a third as many GeV as the family itself. Two things in
+the picture matter for everything that follows. The crowd is
+\emph{uniform on average and uneven in every event}: its mean density
+\rhoPU is one number for the whole plane and can be measured from the
+empty parts of the plane and subtracted from the full ones, and that
+subtraction is exact only for the mean, because the number of collisions,
+the number of particles each brings and where they land all fluctuate,
+and what they leave behind in a circle of area $0.5$ is $\pm7\GeV$ wide.
+And the crowd is \emph{soft}: its hardest particle is $2\GeV$ on average,
+its members make jets of their own above $30\GeV$ only before \rhoPU is
+subtracted and never after, and what they do to our jet is a pedestal,
+not a disguise; a fake jet of the crowd is rare, a true jet with the
+crowd on top is every jet. The rules are the jet-area paper of Cacciari
+and Salam~\cite{Cacciari:2007fd} and the catchment area of
+jets~\cite{Cacciari:2008gn}, the \FASTJET manual~\cite{Cacciari:2011ma},
+the \CMSSW \Mix and its \code{BetafuncEvtVtxGenerator}; the experiment's
+view of the crowd is the pileup mitigation paper of
+CMS~\cite{CMS:2020ebo}, and the theorist's the review of
+Soyez~\cite{Soyez:2018opl}.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_crowd}}
+\caption[The crowd on the road: one bunch crossing, and the circle of our
+jet with the strangers inside]{The crowd on the road. Left: one bunch
+crossing of 2024, two bunches passing through each other and the sixty
+collisions of the crossing spread along their overlap, ours among them.
+Right: the circle of our jet, the family in red and the crowd in khaki,
+with the numbers of the four hundred draws of the crowd on the same
+photograph: what walks in, what the subtraction takes out, and what is
+left.}
+\label{fig:crowd_on_the_road:crowd_sketch}
+\end{figure}
+
+\paragraph{The number, four ways.}
+\label{sec:crowd_on_the_road:validation}
+\label{sec:crowd_on_the_road:standalone_code}
+\Cref{tab:crowd_on_the_road:numbers} gives away the ending, and its columns
+are of two kinds. The crowd itself is made by \PYTHIA: a library of two
+thousand minimum-bias collisions at $13.6\TeV$, generated once with the
+fragment the Run-3 libraries use, \code{SoftQCD:inelastic} with the CP5
+tune, and stored as a record, so that the standalone script needs NumPy
+and nothing else to read it. That is the way of \CMSSW too, whose \Mix
+reads a library of simulated collisions made once and stacked many
+times, and the first rows of the table check the library against the
+cross sections \PYTHIA printed and against the $250$-event library of the
+2024 \CMSSW exercise of the companion. Everything after the library is a
+port: the Poisson draw of the \Mix, the beam spot of the
+\code{BetafuncEvtVtxGenerator}, the stacking, the \antikt with ghosts, the
+two estimators of \rhoPU and the subtraction; and for those the sharpest
+check is, as in \cref{ch:family_photograph}, a comparison on identical
+input, the $9684$ particles of the mixed final state clustered by
+\FASTJET~3.5.2 with its active area and its two background estimators.
+The $173$ jets agree exactly, to the last constituent and the last digit
+of every momentum; the grid median agrees to the last digit, since the
+grid is the same grid; the areas agree to the placement of the ghosts,
+which \FASTJET scatters differently from the script, $\pm0.03$ on an area
+of $0.5$; and the jet median, which is measured on the ghost jets
+themselves, agrees to the percent by which it moves when the ghosts move.
+The last column is the 2024 \CMSSW mixing of the companion,
+\code{CMSSW\_15\_0\_5} with the 2024 conditions at $13.6\TeV$: the GEN-SIM
+library it reads, its vertex smearing, and one signal event mixed at
+$\mup=60$ in three crossings, which is the exercise a laptop can afford
+once the hits of \GEANT are involved, and which the standalone script
+reproduces at the generator level with \code{--window 1 --sequential}.
+
+The standalone script writes out what the \Mix does before the
+digitisers run and what the \FASTJET area tools do afterwards. Its
+learning mode, \code{-v}, prints the arithmetic of \mup and the sixteen
+Poisson draws, which library events were read, the payload of the beam
+spot and the vertices drawn, the stacking crossing by crossing, the
+clustering of our jet with its signal and pileup constituents, the two
+estimates of \rhoPU, the subtraction of the twelve leading jets against
+the truth, the vertices the tracker can see and the profile weights;
+\code{-vv} adds every collision with its vertex and every constituent of
+our jet. The \code{-v} log for seed~1 is committed, and every number
+quoted in the theory of this chapter is taken from it. How each column of
+the table was produced, the commands, the modes and the logs, is in the
+companion of this chapter,
+\begin{center}
+  \companion{chapter_08_PU}
+\end{center}
+together with the full tables behind every number quoted below.
+
+\begin{table}[htbp]\centering\small
+\caption[The crowd on the road obtained four ways]{The crowd on the road
+obtained four ways. ``Library'' is the two thousand minimum-bias
+collisions of \file{pileup_library.lhe.gz}, made once with \PYTHIA at
+$13.6\TeV$; ``standalone'' is \file{standalone_pileup.py} on the record of
+\cref{ch:family_photograph} with that library, seed~1, $\mup=60$ in
+$\bx=-12\ldots+3$; ``\FASTJET'' is \FASTJET~3.5.2 on exactly the mixed
+final state of the record; ``400 draws'' is the in-time crowd drawn again
+and again on the same photograph, with the pileup counted inside the
+circle of $R=0.4$ around our jet; ``\CMSSW'' is the 2024 library and
+mixing of the companion (\code{CMSSW\_15\_0\_5}, $13.6\TeV$, $250$ library
+events, one signal event mixed at $\mup=60$ in $\bx=-1\ldots+1$). The
+spread of a single event follows $\pm$.}
+\label{tab:crowd_on_the_road:numbers}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrr}\toprule
+ & \PYTHIA & library & standalone / \FASTJET & 400 draws & \CMSSW 2024 \\
+ & cross sections & 2000 collisions & seed 1, $\mup=60$ & $\mup=60$ & 250 + 1 events \\ \midrule
+\sigmainel at $13.6\TeV$ [mb] & $78.42$ & -- & -- & -- & $78.42$ \\
+ND / SD / DD / CD [\%] & $70.7$ / $16.4$ / $11.3$ / $1.6$ & $71.2$ / $16.0$ / $11.0$ / $1.9$ & $69.5$ / $16.9$ / $12.0$ / $1.7$ (960 drawn) & -- & $73$ / $18$ / $8$ / $1$ \\
+particles per collision: mean, median & -- & $179$, $116$ & $192$ & -- & $194$, $132$ \\
+\quad charged, $|\eta|<2.5$, $\pt>0.5\GeV$ & -- & $12.2$ (median 6) & $13.7$ & -- & $21$ (all, median 10) \\
+\quad hardest particle [GeV] & -- & $2.2$ (max $17.9$) & -- & -- & $2.2$ (max $8.1$) \\ \midrule
+\mup: formula / mixed & -- & -- & $59.3$ / $60$ & $60$ & $60$ (AVE\_60); production flat $55$--$75$ \\
+collisions per crossing & -- & -- & $50$ to $68$ in 16 crossings, $\mathbf{63}$ in time, $960$ & $59.9\pm7.4$ (in time) & $66$, $\mathbf{55}$, $77$ ($\bx=-1\ldots+1$) \\
+beam spot $\sigma_z$ [cm], $\sigma_t$ [ps] & -- & -- & payload $3.60$, $120$; drawn $3.79$, $119$ & $3.74$, $119$ & $3.6$, $120$ (payload); $3.56$, $122$ (250) \\
+signal vertex $z$ [cm], $t$ [ps] & -- & -- & $-0.17$, $-121$ & -- & $3.11$, $-140$ \\
+nearest pileup vertex: $\Delta z$ [mm], $\Delta t$ [ps] & -- & -- & $0.06$, $5$ & median $0.98$, $2.6$ & $0.4$ (3 within 1 mm) \\ \midrule
+in-time particles, within $|\eta|<5$ no $\nu$ & -- & -- & $12\,113$, $9033$ & $7949$ & $31\,597$ primaries (198 ev.) \\
+\rhoPU, grid median [GeV per unit area] & -- & -- & $68.28$ / 68.28 & $59.0\pm11.5$ & -- \\
+\rhoPU, $k_T$-jet median & -- & -- & $69.87$ / 70.43 & -- & -- \\
+\quad per collision & -- & $0.95$ (plateau) & $1.08$ / $1.11$ & $0.94$ (slope) & -- \\
+mixed jets above $3$ / $30\GeV$ & -- & -- & $173$ / $62$, all identical & -- & -- \\
+our jet: \pt with the crowd [GeV], $n$ & -- & -- & $132.75$, $112$ (31 + 81) & -- & -- \\
+\quad area $A$ & -- & -- & $0.529$ / 0.529 & $\pi R^2=0.503$ & -- \\
+\quad pileup inside, $\rhoPU A$, $\pt-\rhoPU A$ [GeV] & -- & -- & $33.61$, $36.09$, $96.66$ & $27.8\pm8.4$, $29.7\pm5.8$ & $\sim55$ (ECAL energy, in time) \\
+\quad residual to the signal inside [GeV] & -- & -- & $-3.41$ & $-1.9\pm6.7$ & -- \\
+pileup jets above $30\GeV$: before, after & -- & -- & $56$, $0$ & -- & -- \\
+in-time collisions visible to the tracker & -- & -- & $43$ of $63$ & $62\%$ & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:crowd_on_the_road:theory}
+
+\subsection{How many: the luminosity, the cross section and the Poisson draw}
+\label{sec:crowd_on_the_road:forty_families_at_once_what_pileup_is_an}
+
+The question first. The hard scattering of \cref{ch:ancestral_home} has a
+cross section of $345\pb$; an inelastic proton-proton collision of any
+kind has one of $78\mbarn$, eleven orders of magnitude more. Every time
+two bunches cross, each proton of the one sees the $10^{11}$ protons of
+the other, and the number of inelastic collisions in that crossing is
+the luminosity of the crossing times \sigmainel. Nothing about our
+collision makes the others less likely; they are there whenever the
+beams are, and the only question is how many.
+\Cref{fig:crowd_on_the_road:mu_sketch} draws the answer. The luminosity
+$L$ an accelerator quotes is a rate per unit cross section integrated
+over all crossings, so the number of inelastic collisions per second is
+$L\sigmainel$; the number of bunch crossings per second is the number of
+colliding bunch pairs times the revolution frequency, and the ratio is
+the mean number of collisions per crossing:
+\begin{equation}
+  \mup=\frac{L\,\sigmainel}{n_b\,f_{\mathrm{rev}}},\qquad
+  f_{\mathrm{rev}}=\frac{c}{26\,659\,\mathrm{m}}=11\,245\,\mathrm{Hz},\qquad
+  n_b=2350\ \text{of the }3564\text{ slots in }2024.
+  \label{eq:crowd_on_the_road:mu}
+\end{equation}
+The denominator is not the $40\,\mathrm{MHz}$ of the $25\ns$ spacing:
+only $2350$ of the $3564$ slots of the ring held a colliding pair in the
+filling scheme of 2024, the gaps being needed by the injection and dump
+kickers, so that CMS saw $2.64\times10^{7}$ crossings per second. The
+numbers of 2024 are $L=2.0\times10^{34}\,\mathrm{cm^{-2}s^{-1}}$ at the
+levelled peak and, from \PYTHIA with the CP5 tune at $13.6\TeV$,
+$\sigmainel=78.42\mbarn$: the script prints $1.57\times10^{9}$
+collisions per second over $2.64\times10^{7}$ crossings per second,
+$\mup=59.3$, or $60.5$ with the $80\mbarn$ that CMS uses for its pileup
+bookkeeping. The mixing scenario of the 2024 simulation rounds this to
+$60$, \code{AVE\_60\_BX\_25ns}, and $60$ is the number this chapter mixes;
+the same arithmetic with the $2748$ bunches of the HL-LHC gives $127$ for
+its nominal $5\times10^{34}$ and $190$ for its ultimate $7.5\times10^{34}$,
+which \CMSSW mixes as $140$ and $200$.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_mu}}
+\caption[How many: the ring, the arithmetic of $\mup$ and the Poisson
+draw]{How many. (a) The ring: $3564$ slots of $25\ns$, $2350$ of them
+colliding at CMS in 2024, $11\,245$ times a second each. (b) The
+arithmetic of \cref{eq:crowd_on_the_road:mu} for 2024 and for the two
+HL-LHC scenarios, and the value \CMSSW mixes at. (c) The draw: for every
+crossing of the window the \Mix takes $n$ from a Poisson distribution of
+mean \mup, sixteen numbers around $60$ for our event, and the flat band
+of \mutrue the production draws from.}
+\label{fig:crowd_on_the_road:mu_sketch}
+\end{figure}
+
+\mup is a mean. The collisions of a crossing are independent, so their
+number is a Poisson variable with mean \mup and standard deviation
+$\sqrt{\mup}$, $60\pm8$, and this is exactly what the \Mix draws, once
+for every bunch crossing of the window it is asked to fill, $\bx=-12$ to
+$+3$ in the Run-3 production, sixteen draws and $960$ collisions per
+signal event. The window is asymmetric because the detectors with the
+longest memory, the calorimeter pulses and the strip readout, integrate
+collisions up to $300\ns$ old, while nothing arrives from the future
+beyond the $75\ns$ of the latest pulse tails. The script draws the same
+way, and seed~1 gives sixteen numbers from $50$ to $68$, $960$ collisions
+for an expectation of $960$; the one that matters most, the in-time
+crossing $\bx=0$, has $63$, and the draws are written to the record the
+way \CMSSW writes them to its \code{PileupSummaryInfo}, one entry per
+crossing with the number drawn and the mean it was drawn from. For every
+collision the script then reads one event of the library at a random
+position, with replacement, which is \CMSSW's default
+(\code{sequential = False}) and the reason a library of two thousand can
+serve a crossing of sixty and an ensemble of four hundred crossings:
+$763$ distinct events served the $960$ collisions of our event, and
+reusing a soft collision as the background of two unrelated signal events
+costs nothing a measurement can see, as long as it is not reused within
+one event. \Cref{fig:crowd_on_the_road:theory_mu} draws
+\cref{eq:crowd_on_the_road:mu} against the luminosity with the three
+scenarios on it, the Poisson distributions of $\mup=60$ and $200$ with
+the sixteen draws of our event, and the third thing a mean hides.
+
+\subsubsection{The profile of a year, and the reweighting}
+\label{sec:crowd_on_the_road:profile}
+\mup is a mean over a crossing, but it is also a number that changes
+during a fill and from fill to fill: a year of running is a distribution
+of \mup, the \emph{pileup profile}, weighted by the collisions themselves
+since every collision counts once. In 2024 the luminosity was
+\emph{levelled}: the beams were kept slightly separated at the start of a
+fill so that \mup stayed near $60$ for hours instead of starting higher
+and decaying, and only the last hours of a fill ran below it. The script
+builds the profile from a luminosity curve: one fill levelled at $60$ for
+eight hours and then decaying with a lifetime of ten keeps $72\%$ of its
+collisions at the levelled value and has a mean of $57$; a year of such
+fills levelled between $57$ and $67$, a model of the fill-to-fill spread
+and not the measured profile, has a mean of $59$ with two thirds of its
+collisions between $52$ and $66$. A simulated sample is mixed with one
+profile and compared with data taken with another, and the repair is a
+weight per event,
+\begin{equation}
+  w(\mutrue)=\frac{P_{\mathrm{target}}(\mutrue)}{P_{\mathrm{sample}}(\mutrue)},
+  \label{eq:crowd_on_the_road:reweight}
+\end{equation}
+with \mutrue the mean the event's in-time crossing was drawn from, the
+\code{getTrueNumInteractions} of the \code{PileupSummaryInfo}, and never
+the number actually drawn, which would fold the Poisson fluctuation into
+the weight twice. This is why the Run-3 production does not mix at a
+fixed $60$ at all: its scenario, \code{Run3\_Flat55To75\_PoissonOOTPU},
+hands the \Mix a histogram in place of a mean (\code{type = probFunction}),
+flat between $55$ and $75$, draws \mutrue from it for every signal event,
+and gives the sixteen crossings Poisson draws of that mean, about $1040$
+collisions per signal event. A flat profile covers whatever the year
+turns out to be, and the reweighting to the measured profile then costs
+events where the band is wider than the year: against the model year the
+weights run from $1.6$ at the levelled values to zero above $70$, $1.54$
+at $\mutrue=60$. A sample mixed at a fixed $\mup=60$, like the record of
+this chapter, covers one value and cannot be reweighted to a profile at
+all. Panel (c) of \cref{fig:crowd_on_the_road:theory_mu} shows the three
+profiles and the weight.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=1,width=\textwidth]{PU/Standalone/theory_pileup.pdf}
+\caption[The crowd's size: $\mup$ against the luminosity, the Poisson draw,
+the profiles]{Page~1 of \file{theory_pileup.pdf}. (a)
+\Cref{eq:crowd_on_the_road:mu} against the luminosity, with the three
+scenarios from the formula and the values \CMSSW mixes at. (b) The Poisson
+distributions of $\mup=60$ and $200$, and the sixteen draws of our event,
+one per crossing. (c) The pileup profile of a 2024-like year of levelled
+fills, one fill, the flat $55$--$75$ profile of the Run-3 production, and
+the weight of \cref{eq:crowd_on_the_road:reweight} for an event of the
+flat sample.}
+\label{fig:crowd_on_the_road:theory_mu}
+\end{figure}
+
+\subsection{One member of the crowd: the minimum-bias collision}
+\label{sec:crowd_on_the_road:one_member}
+
+What does one of the sixty carry? Not a hard scattering: a collision with
+a $100\GeV$ parton pair in it is one in a hundred thousand, and the crowd
+is what happens in all the others, the inelastic collisions in their
+natural proportions, which the experiments call \emph{minimum bias} after
+the trigger that selects them with the least possible bias. \PYTHIA makes
+them as \code{SoftQCD:inelastic}, the sum of the four processes of
+\cref{fig:crowd_on_the_road:minbias_sketch}: the non-diffractive
+collision, in which both protons break up and several parton pairs
+interact as in \cref{ch:uninvited_cousins}, so that the plateau of soft
+particles stretches over ten units of rapidity; the single-diffractive
+one, in which one proton survives and the other dissociates, leaving a
+gap in rapidity on the surviving side; the double-diffractive one, both
+dissociating with a gap between them; and the central-diffractive one,
+both surviving and a small system in the middle. Their cross sections are
+not computed from the parton distributions: the CP5 tune fixes the total
+and the elastic cross sections, $\sigma_{\mathrm{tot}}=100.31$ and
+$\sigma_{\mathrm{el}}=21.89\mbarn$, at whatever energy it is run, the
+diffractive pieces come from \PYTHIA's parametrisation and the
+non-diffractive part is what remains,
+\begin{equation}
+  \sigmainel=\sigma_{\mathrm{tot}}-\sigma_{\mathrm{el}}=78.42\mbarn
+  =\underbrace{55.42}_{\mathrm{ND}}+\underbrace{2\times6.43}_{\mathrm{SD}}+\underbrace{8.85}_{\mathrm{DD}}+\underbrace{1.29}_{\mathrm{CD}}\ \mbarn,
+  \label{eq:crowd_on_the_road:sigma}
+\end{equation}
+the shares $70.7$, $16.4$, $11.3$ and $1.6\%$, which the library
+reproduces as $71.2$, $16.0$, $11.0$ and $1.9$ in its two thousand
+collisions and the $250$-event \CMSSW library as $183$, $45$, $19$ and
+$3$. The $14\TeV$ fragment of the release gives the same numbers to the
+second decimal, which is why the Run-3 workflows can mix their
+$13.6\TeV$ signals with a $14\TeV$ library and why the companion sets the
+energy by hand instead. The measured inelastic cross section at $13\TeV$
+is $79.5\pm1.8\mbarn$~\cite{ATLAS:2016ygv,CMS:2018mlc}, and the $80\mbarn$
+of the bookkeeping is that number rounded.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_minbias}}
+\caption[One member of the crowd: the four kinds of inelastic collision]{One
+member of the crowd. The four processes of \code{SoftQCD:inelastic} with
+their profiles in rapidity, their cross sections at $13.6\TeV$, their
+shares in the library of two thousand collisions and the particles each
+brings on average.}
+\label{fig:crowd_on_the_road:minbias_sketch}
+\end{figure}
+
+\Cref{tab:crowd_on_the_road:catalogue} is the crowd one member at a
+time, the catalogue of the library as the companion's
+\code{minBiasGenStats.py} prints it for the $250$ GEN events of the 2024
+\CMSSW library: the first ten collisions of our in-time crossing, each
+with its kind, its parton-parton interactions, its particles, what the
+tracker and what nothing will see of them, its hardest particle, its
+jets, its forward protons, and the vertex the mixing drew for it. The
+first of the ten is a single-diffractive collision of four particles,
+a surviving proton among them, that no central detector will notice; the
+eighth is a non-diffractive one with $24$ interactions and $537$
+particles, $93$ of them in the tracker's reach, more than the family's
+own $93$. The summary below it, over the two thousand, and the means per
+kind say the rest.
+
+\begin{table}[htbp]\centering\small
+\caption[The catalogue of the library: ten collisions, the summary and
+the means per kind]{The catalogue of the library, written by
+\file{minbias_catalogue.py} in the format of the companion's
+\code{minBiasGenStats.py}. Top: the first ten in-time collisions of our
+crossing, with their library event, kind, parton-parton interactions
+(the hardest scattering plus the multiparton ones), stable particles,
+charged ones, central ones ($|\eta|<2.5$ and $\pt>0.5\GeV$, all species),
+the ones beyond $|\eta|=5.5$ where no subdetector is, the hardest
+particle, the scalar sum of \pt, the \antikt $R=0.4$ jets above
+$10\GeV$, the forward protons that keep most of the beam energy
+($\xi<0.55$, the ones \CMSSW's \code{LHCTransport} carries to the PPS),
+and the vertex the mixing drew. Middle: the same quantities over the two
+thousand collisions of the library, with the vertices of the $960$
+collisions of our event. Bottom: the means per kind, with the cross
+section of each at $13.6\TeV$.}
+\label{tab:crowd_on_the_road:catalogue}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{\minbiasCatalogueTen}\\[2mm]
+\minbiasCatalogueSummary\\[2mm]
+\resizebox{\textwidth}{!}{\minbiasCataloguePerProcess}
+\end{table}
+
+A member of the crowd, then, is soft and uneven. The library's
+collisions have from $3$ to $829$ final particles, $179$ on average and a
+median of $116$: a non-diffractive one brings $230$ particles and $16$
+charged ones into the tracker's reach, $|\eta|<2.5$ and $\pt>0.5\GeV$, a
+diffractive one $50$ to $60$ and $3$, a central-diffractive one $28$ and
+$2$; the hardest particle of a collision is $2.2\GeV$ on average, and in
+two thousand collisions it never exceeded $18$. Where they walk is the
+plateau: $5.5$ charged particles per unit of pseudorapidity at $\eta=0$,
+$13$ with the neutrals, falling off beyond the tracker and gone beyond
+$|\eta|=8$, where the beam remnants carry the rest of the energy into the
+beam pipe. What they carry is the number this chapter is about. The
+transverse momentum of a collision per unit of $\eta$ and $\phi$,
+\begin{equation}
+  \rhoPU_1=\frac{1}{2\pi}\,\Big\langle\frac{\mathrm{d}\Sigma\pt}{\mathrm{d}\eta}\Big\rangle_{\text{one collision}}
+  =0.95\GeV\ \text{per unit area at }|\eta|<2.5,
+  \label{eq:crowd_on_the_road:rho1}
+\end{equation}
+averaged over the library without the neutrinos, is the slope of
+everything that follows: sixty collisions put $57\GeV$ into every unit of
+area, and a jet of $R=0.4$ covers $\pi R^2=0.503$ of them, $29\GeV$
+under our $100\GeV$ jet before any subtraction.
+\Cref{fig:crowd_on_the_road:theory_member} shows the three panels, and
+the one surprise in them: the multiplicity distribution is so wide that
+the median collision has two thirds of the mean, and in any crossing a
+handful of the sixty, the non-diffractive ones with many multiparton
+interactions, carry a quarter of the crowd. The \CMSSW library of the
+companion, $250$ collisions through the full chain, has $194$ stable
+particles per collision with a median of $132$, from $3$ to $723$, and
+the same shape; ten of its events, single-diffractive ones that hand
+\GEANT a surviving proton and nothing else, leave no hit in the central
+detector at all.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=2,width=\textwidth]{PU/Standalone/theory_pileup.pdf}
+\caption[One member of the crowd: the multiplicity, the plateau, the
+transverse momentum per unit area]{Page~2 of \file{theory_pileup.pdf}.
+(a) The final particles per collision in the library, by process type,
+with the \CMSSW library's mean and our signal event for comparison. (b)
+The particles per unit of $\eta$ per collision, all and charged: the
+plateau, the tracker's reach and the beam remnants. (c) The transverse
+momentum per unit area per collision, \cref{eq:crowd_on_the_road:rho1},
+and the slope of \rhoPU it predicts against the one measured over four
+hundred draws.}
+\label{fig:crowd_on_the_road:theory_member}
+\end{figure}
+
+\subsection{Where and when: the beam spot and the 25 ns clock}
+\label{sec:crowd_on_the_road:in_time_out_of_time_and_the_25_ns_bunch_}
+
+The crowd walks in the same picture, but not from the same point. Two
+bunches of protons pass through each other, and a collision can happen
+anywhere in their overlap and at any moment of it; the region where the
+collisions happen, the \emph{beam spot}, is what the vertex finder of
+\cref{ch:first_checkpoint} will use to tell the crowd from the family, and
+its time spread is what no detector of Run~3 can resolve.
+\Cref{fig:crowd_on_the_road:region_sketch} draws it. Bunch~1 moves along
+$+z$ and bunch~2 along $-z$; at the laboratory time $t$ their centres are
+at $z=\pm ct$, and a proton at the longitudinal offset $s$ from its bunch
+centre sits at $z=\pm ct+s$. For two Gaussian bunches of length
+$\sigma_s$ meeting head-on the density of collisions is the product of
+the two bunch densities at the same point and time,
+\begin{equation}
+  p(z,t)\propto
+  \exp\!\Big[-\frac{(z-ct)^2+(z+ct)^2}{2\sigma_s^2}\Big]
+  =\exp\!\Big[-\frac{z^2}{2\sigma_z^2}\Big]\exp\!\Big[-\frac{t^2}{2\sigma_t^2}\Big],
+  \qquad \sigma_z=\frac{\sigma_s}{\sqrt2},\quad \sigma_t=\frac{\sigma_z}{c},
+  \label{eq:crowd_on_the_road:region}
+\end{equation}
+after the transverse coordinates have been integrated out: a Gaussian
+along the beam, a Gaussian in time of the same width in units of $z/c$,
+and the two independent, because the cross term $z\,ct$ cancels between
+the two bunches. Across the beam the collisions follow the beam size,
+$\sigma_{x,y}(z)=\sqrt{\epsilon\beta^*/2}\,\sqrt{1+(z-z_0)^2/\beta^{*2}}$,
+narrowest at the focus and growing on either side, the hourglass of a
+beam focused to $\beta^*$. This is exactly the model of \CMSSW's
+\code{BetafuncEvtVtxGenerator}, the \code{VtxSmeared} of every Run-3
+GEN step: it draws $z$ and $t$ as independent Gaussians of the same
+width, and $x$ and $y$ around the centre of the beam spot with the
+hourglass width at that $z$. What it does not do is compute $\sigma_z$
+from the bunches. The real bunches of Run~3 are longer than
+$\sqrt2\times3.6\cm$ and cross at an angle, which shortens their overlap,
+and the generator reads instead the \emph{measured} beam spot from the
+database, the \code{SimBeamSpot} payload of the 2024 global tag, a fit to
+the early-2024 data: centre $(0.03,-0.02,0.42)\cm$, $\sigma_z=3.6\cm$,
+$\beta^*=30\cm$ and an emittance of $5.7\times10^{-8}\cm$, hence
+$\sigma_t=120\ps$ and $\sigma_{xy}=9\um$ at the focus. The script draws
+every vertex of the crowd, and the signal's, from that payload: the $960$
+vertices of our event have an r.m.s.\ of $3.79\cm$ in $z$ and $119\ps$
+in $t$, $9\um$ across, and the signal sits at $z=-0.17\cm$, $t=-121\ps$.
+The $250$-event \CMSSW library of the companion, drawn by the real
+module, has $3.56\cm$ and $122\ps$ with its vertices between $-9.5$ and
+$+10.1\cm$, and the \CMSSW signal event sits at $z=3.11\cm$. The HL-LHC
+of the open problems is another story: there the crossing angle would
+cut the overlap to $2\cm$, crab cavities give most of it back, and
+\CMSSW's \code{HLLHCEvtVtxGenerator} builds the region from the bunches,
+$4.3\cm$ and $190\ps$; the script keeps that model as \code{--region
+hllhc}.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_region}}
+\caption[The beam spot of 2024: the two bunches and the numbers of the
+payload]{The beam spot. (a) The $(x,z)$ plane: the two bunches, their
+overlap and the hourglass of the $\beta$ function. (b) The length of the
+beam spot: the 2024 payload against the vertices of our event, the
+\CMSSW library and the HL-LHC model.}
+\label{fig:crowd_on_the_road:region_sketch}
+\end{figure}
+
+The clock is the other half, and \cref{fig:crowd_on_the_road:clock}
+draws it with the numbers of our event. The crossings before and after
+ours, $25\ns$ apart, collide on the same beam spot, and their collisions
+are the same crowd shifted in time: the \Mix draws each of the sixteen
+crossings of the production window on its own, $60$, $56$, $68$, $61$,
+$66$, $56$, $55$, $50$, $53$, $66$, $61$ and $60$ collisions in the
+twelve early ones, $63$ in ours, $63$, $59$ and $63$ in the three late
+ones, $960$ collisions piled on one signal event, of which $712$ arrive
+early, up to $300\ns$ before the signal, and $185$ late, up to $75\ns$
+after it. \CMSSW's \code{Adjuster} stamps every \code{SimTrack},
+\code{SimVertex} and hit of collision $k$ of crossing \bx with
+\code{EncodedEventId(bx, k)} and adds $25\ns\times\bx$ to its time, so
+that in the simulation, and only there, the question ``which crowd did
+this come from'' has an answer: \code{bunchCrossing() = 0} with
+\code{event() = 0} is the signal, \code{bunchCrossing() = 0} with
+\code{event()} of one or more is an in-time collision, and anything with
+\code{bunchCrossing()} different from zero is out of time; the
+\code{TrackingParticle}s and the \code{DigiSimLink}s carry the id
+through the digitisation, which is how the companion's pages colour
+every hit by its crowd and how a reconstructed track can be called
+signal, in-time or out-of-time pileup in a validation. The record of
+this stop keeps the same two numbers, \bx and $k$, in its vertex listing
+for the $897$ out-of-time collisions and for the $63$ in-time ones. In
+space nothing distinguishes an early collision from an in-time one, which
+is why the tracker, which does not keep time to a nanosecond, cannot; the
+calorimeter pulses of \cref{ch:first_checkpoint}, which last several
+crossings, will integrate them, and the price of that is the out-of-time
+pileup of the chapters ahead. At the generator level nothing integrates
+over $25\ns$, so the particles of the other crossings are not clustered
+here; they are in the record for \cref{ch:crossing_the_border}. What the
+in-time crowd does to
+the vertex finder, on the other hand, can be counted now. A collision the
+tracker can see needs charged particles above its threshold pointing back
+to a common point, and with the proxy of at least four charged particles
+of $\pt>0.5\GeV$ within $|\eta|<2.5$, $43$ of the $63$ collisions of our
+crossing are visible, $62\%$ over the ensemble, against the $0.7\mup$ that
+CMS reconstructs with its real threshold; the rest are diffractive or
+forward and leave the tracker empty. Their vertices are a Gaussian of
+$3.6\cm$ with sixty entries, so the typical spacing is a millimetre: the
+nearest crowd vertex to ours is $0.06\,\mathrm{mm}$ away in $z$ in our
+crossing and $0.98$ on the median of the ensemble, in one draw of two one
+of them is within a millimetre, and the vertex finder, which resolves
+vertices a few hundred microns apart, will merge the two in a fair
+fraction of the events; the \CMSSW event of the companion has three
+pileup vertices within a millimetre of the signal's. In time the nearest
+is five picoseconds away and nine of them are within $30\ps$ on average,
+which is the number a timing layer would sort by; Run~3 has none, and in
+this book the time of a collision is a label the record carries and no
+detector reads. \Cref{fig:crowd_on_the_road:theory_region} draws the
+density, the length of the beam spot three ways and the clock.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_clock}}
+\caption[The clock: the sixteen crossings of the production window and
+the collisions of each]{The clock. The sixteen crossings of the Run-3
+production window, $25\ns$ apart, with the number of collisions the
+\Mix drew for each in our event: $712$ early, $63$ in time with the
+signal, $185$ late, $960$ in all; and the \code{EncodedEventId} by which
+the simulation, and nothing after it, knows which crowd a hit came
+from.}
+\label{fig:crowd_on_the_road:clock}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{PU/Standalone/theory_pileup.pdf}
+\caption[The beam spot: the density in $(z,t)$, the $z$ of the vertices,
+the sixteen crossings]{Page~3 of \file{theory_pileup.pdf}. (a) The
+collision density of \cref{eq:crowd_on_the_road:region} in $(z,t)$ with
+the $63$ in-time collisions of our crossing and the signal. (b) The $z$
+of the $960$ vertices of the event against the Gaussian of the payload
+and the $250$ vertices of the \CMSSW library. (c) The sixteen crossings
+on the clock, $25\ns$ apart, early in dark yellow, in time in blue and
+late in salmon, the colours of the \CMSSW pages of the companion.}
+\label{fig:crowd_on_the_road:theory_region}
+\end{figure}
+
+\paragraph{How \CMSSW does it: the library, the mixing and the premixing.}
+\label{sec:crowd_on_the_road:how_cms_mixes_pileup_into_simulation_the}
+What the script does with four-vectors, \CMSSW does with the hits of
+\GEANT, and the strategy is the same. \GEANT is the expensive step,
+$2.5$ seconds per minimum-bias collision, and the hits it leaves add: a
+sensor crossed by particles of two collisions holds two hits, a
+calorimeter cell the sum of two energies. So the minimum-bias collisions
+are generated and simulated once, with the same fragment, the same vertex
+smearing, the same geometry and the same \GEANT as the signal, but with
+their own random seeds, and stored in a GEN-SIM library; the \Mix of the
+DIGI step draws the number of collisions per crossing, reads that many
+library events, stamps and shifts them, and hands the signal and the
+pileup hits together to the digitisers, which add them channel by
+channel and apply the pulse shapes, the time windows and the thresholds
+in which the out-of-time pileup does its damage. The truth survives as
+the \code{PileupSummaryInfo}, the \code{TrackingParticle}s with their
+event ids, and the \code{DigiSimLink}s that say which collision
+contributed what to each channel. The companion's exercise does exactly
+this for one signal event, $\mup=60$ in three crossings, $66$, $55$ and
+$77$ collisions drawn in sequence from a library of $250$: the $198$
+collisions bring $31\,597$ primaries against the $571$ of the signal,
+$444\,535$ tracker hits against $9776$, and own $104\,277$ of the
+$106\,581$ hit cells of the ECAL. In the production window of sixteen
+crossings this classical mixing would read a thousand library events, a
+quarter of a gigabyte, per signal event, and the production therefore
+\emph{premixes}~\cite{Hildreth:2017caz}: the minimum-bias events are
+mixed among themselves at the flat profile and digitised once into a
+library of premixed crossings, and a single premixed event is added, in
+ADC counts, to every digitised signal event. The physics is the same,
+the bookkeeping is a thousand times lighter, and the price is that the
+pileup hits are gone from a premixed sample, so that pictures like those
+of the companion, which colour every hit by the crossing it came from,
+can only be drawn with the classical mixing; the script reproduces the
+conditions of the exercise at the generator level with \code{--window 1
+--sequential}.
+
+\subsection{\rhoPU, the median energy density, and the jet area $A$}
+\label{sec:crowd_on_the_road:rho_the_median_energy_density_and_the_je}
+
+The crowd is uniform on average, and that is the handle. If every unit of
+area of the $(\eta,\phi)$ plane receives \rhoPU GeV of transverse momentum
+from the crowd, then a jet of area $A$ receives $\rhoPU A$, and
+subtracting it is a matter of measuring \rhoPU in the parts of the plane
+where nothing else is and $A$ for the jet. Both ideas are Cacciari and
+Salam's~\cite{Cacciari:2007fd}, and \cref{fig:crowd_on_the_road:rho_sketch}
+draws them. The density is estimated as a median: cut the plane into
+patches, measure the transverse momentum per unit area in each, and take
+the middle value,
+\begin{equation}
+  \rhoPU=\operatorname*{median}_{\text{patches }i}\Big[\frac{\pt^{(i)}}{A^{(i)}}\Big],
+  \label{eq:crowd_on_the_road:rho}
+\end{equation}
+because the median does not care about the tail. The patches that hold a
+jet are the top few percent and would pull a mean up, $74$ against $68$
+in our crossing, and the median ignores them as long as fewer than half
+the patches are jets, which is true of any event. Two choices of patch are
+in use. CMS's \code{fixedGridRhoFastjetAll}, the \rhoPU of the jet energy
+corrections of \cref{ch:paying_for_uninvited}, is \FASTJET's
+\code{GridMedianBackgroundEstimator} on the particles of the whole
+detector: a fixed grid of $18$ by $11$ cells of $0.56\times0.57$ over
+$|y|<5$, in rapidity and with $\phi$ counted from zero, as \FASTJET draws
+it; the original of \cite{Cacciari:2007fd} uses the $k_T$ jets of
+$R=0.4$ as patches, each with its own area, within $|y|<4.4$, since the
+$k_T$ algorithm of \cref{ch:the_inn} tiles the plane with jets of
+comparable area rather than finding hard cores. The script does both. The
+grid gives $\rhoPU=68.28\GeV$ per unit area in our crossing, the cells
+ranging from $13$ to $359$; the $k_T$ jets, $175$ of them within the
+range, give $69.87$; the signal alone, the underlying event of
+\cref{ch:uninvited_cousins} and nothing in most cells, gives $3.42$. Per
+collision that is $1.08$ and $1.11\GeV$ per unit area in this crossing,
+a crowded one, and over four hundred draws \rhoPU is $59\pm12$ with a
+slope of $0.94\GeV$ per collision and an offset of $3$, the family's own
+underlying event, which the median counts as crowd: the slope is the
+$\rhoPU_1$ of \cref{eq:crowd_on_the_road:rho1} within the difference
+between a median and a mean, the $8$ collisions of Poisson spread
+account for $7\GeV$ of the $12$, and the rest is the crowd's own
+unevenness, the same number of collisions bringing more or fewer
+particles.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_rho}}
+\caption[\rhoPU and the area: the grid, the median, the ghosts]{\rhoPU
+and the area. (a) The $(y,\phi)$ plane tiled in the cells of
+\code{fixedGridRhoFastjetAll}, the transverse momentum per unit area of
+each cell as a grey level, the jets dark. (b) The cells sorted: the
+median is \rhoPU, the mean is pulled up by the tail. (c) The active area
+of a jet: the ghosts it swallowed, $0.01$ of the plane each, and the
+subtraction $\pt-\rhoPU A$.}
+\label{fig:crowd_on_the_road:rho_sketch}
+\end{figure}
+
+The area is measured with the trick of \cref{ch:family_photograph}. A
+grid of ghosts, one per $0.01$ of the plane within $|y|<5$, $6300$ of
+them scattered within their cells with a transverse momentum of
+$10^{-18}\GeV$, is clustered together with the particles; \antikt never
+sees their momentum, since the distance to a soft particle is set by the
+hard one, but it catches them like any soft particle within $R$ of the
+core, and the \emph{active area} of a jet is the number of ghosts it
+holds times the area of one,
+\begin{equation}
+  A_j=0.01\times n_{\mathrm{ghosts}}(j),\qquad
+  \pt^{\mathrm{sub}}=\pt-\rhoPU\,A_j,
+  \label{eq:crowd_on_the_road:area}
+\end{equation}
+\FASTJET's \code{active\_area\_explicit\_ghosts}~\cite{Cacciari:2008gn} with
+CMS's \code{GhostArea = 0.01}. A lone hard jet has $A\simeq\pi R^2=0.503$,
+and our jet, whose neighbour at $\dR=0.56$ no longer competes for the
+soft particles between them once the crowd fills the gap, has $0.529$;
+the leading twelve jets of the crossing range from $0.49$ to $0.56$. The
+subtraction is then one line, \cref{eq:crowd_on_the_road:area}, the
+\code{L1FastJet} correction of \cref{ch:paying_for_uninvited} in its
+generator-level form, and the script can check it against a truth the
+detector never has, because every constituent of a mixed jet carries the
+collision it came from: our jet reads $132.75\GeV$ with the crowd,
+$\rhoPU A=68.28\times0.529=36.09$, $\pt^{\mathrm{sub}}=96.66$, and the
+family's particles inside it sum to $100.07$; the crowd had put $33.61$
+in, from $81$ particles of $34$ different collisions, and the subtraction
+took $36.09$ out, a residual of $-3.41\GeV$. That is one draw, and the
+ensemble says how typical: over four hundred draws the crowd puts
+$27.8\pm8.4\GeV$ into the circle of our jet, $\rhoPU\pi R^2$ estimates
+$29.7\pm5.8$, and the residual is $-1.9\pm6.7\GeV$. Two lessons are in
+those three numbers. The subtraction removes the mean, and a little
+more: thirty GeV of strangers become minus two, because the median
+measured over the whole plane includes the family's own underlying event,
+$3\GeV$ per unit area, which is signal in the truth and crowd to the
+estimator; the offset corrections of \cref{ch:paying_for_uninvited}
+measure and remove exactly this kind of bias. And it cannot remove the
+fluctuation: the crowd inside a circle of area $0.5$ varies by $\pm8\GeV$
+from crossing to crossing, the estimate $\rhoPU A$ follows only the part
+of that which is common to the whole plane, and $\pm7\GeV$ remain, on a
+$100\GeV$ jet whose own photograph was stable to half a GeV. This is the
+first term of the jet resolution of \cref{ch:wobbly_ruler} in Run~3, and
+the reason the chapters between here and there exist: a subtraction that
+knows which particles came from which vertex, \cref{ch:the_police}, can
+do what a density cannot. \Cref{fig:crowd_on_the_road:theory_rho} shows
+the cells with their median, \rhoPU against the number of collisions, and
+the truth against the estimate over the ensemble.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=4,width=\textwidth]{PU/Standalone/theory_pileup.pdf}
+\caption[\rhoPU and the area: the cells and their median, \rhoPU against
+the crowd, the truth against $\rhoPU A$]{Page~4 of \file{theory_pileup.pdf}.
+(a) The $198$ grid cells of our crossing, their median \rhoPU and their
+mean. (b) \rhoPU against the number of in-time collisions over four
+hundred draws, with the slope per collision and our crossing. (c) The
+pileup inside the circle of our jet against the estimate $\rhoPU\pi R^2$,
+draw by draw, with the residual in the inset.}
+\label{fig:crowd_on_the_road:theory_rho}
+\end{figure}
+
+\paragraph{A word on the clustering.}
+Sixteen thousand pseudojets, particles and ghosts, are ten times what
+\cref{ch:family_photograph} clustered, and the plain search of its
+\code{Clustering} class, which revisits every pseudojet whose nearest
+neighbour has just merged, slows down badly under \antikt, where the
+nearest neighbour of every ghost is a hard particle, so that each merge
+of a hard particle touches hundreds of ghosts. The script adds the one
+idea of \FASTJET that makes the problem affordable, the tiled search: a
+pair farther apart than $R$ is never merged, because $d_{ij}$ is then
+larger than the beam distance of the softer of the two, which becomes a
+jet first; so the nearest neighbour of a pseudojet lies within $R$ of it,
+the plane is tiled in cells of side $R$, and both the search and the
+update look only at the nine tiles around a pseudojet. The result is the
+same, step by step; the $15\,984$ steps of our crossing take two minutes
+instead of an hour, and the $33\,000$ of an HL-LHC crossing a quarter of
+an hour instead of a day.
+
+\subsubsection{The recipe, step by step}
+\label{sec:crowd_on_the_road:recipe}
+\Cref{fig:crowd_on_the_road:flow} is the script as a flow chart, with the
+numbers of our event beside each step: the scenario and \mup, the sixteen
+Poisson draws and the library, the beam spot and the vertices, the
+stacking of the in-time crowd, the tiled \antikt with ghosts, the two
+medians, the subtraction against the truth, the visible vertices and the
+profile, and the record.
+
+\begin{figure}[htbp]\centering
+\resizebox{\textwidth}{!}{\input{chapter/tikz/pu_flow}}
+\caption[The pileup stage as a flow chart, with the numbers of our
+event]{The pileup stage as a flow chart. Left, the nine steps of
+\file{standalone_pileup.py} with the names of the classes and functions
+that do them; right, the numbers of our event at each step, from the
+\code{-v} log of seed~1 at $\mup=60$ in $\bx=-12\ldots+3$.}
+\label{fig:crowd_on_the_road:flow}
+\end{figure}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:crowd_on_the_road:our_jet_at_this_stage_how_much_pileup_en}
+
+The crowd has arrived, and the ledger of this stop has three lines where
+the previous stops had one: what the photograph held, what the circle
+reads with the crowd in it, and what is left after the subtraction.
+\label{sec:crowd_on_the_road:record_format}
+The record, \file{example/PU/event_PU.lhe}, keeps every row of
+\cref{sec:family_photograph:record_format}, the listing, the vertex table
+and the two jet tables of \cref{ch:family_photograph}, and adds four
+tables after them, which the companion prints with a guide to their
+columns. The \emph{summary} holds the scenario, the draws, the widths of
+the beam spot and \rhoPU. The \emph{vertex listing} has one row per
+collision of the sixteen crossings, $960$ of them and the signal first:
+the crossing, the library event it came from, its process type, its
+particles and its charged ones in the tracker's reach, whether the
+tracker can see it, and its vertex, $x$ and $y$ in microns, $z$ in
+centimetres and $t$ in nanoseconds with the $25\ns\times\bx$ offset
+added; it is the \code{PileupSummaryInfo} and the vertex table of the
+crowd in one. The \emph{particle listing} has every final particle of the
+$63$ in-time collisions, $12\,113$ rows with the collision, the identity,
+the four-momentum and the mixed jet that holds the particle, if any; the
+out-of-time collisions are reproducible from their library events and are
+not listed, since nothing at this stop uses their particles. The
+\emph{jet listing} has one row per mixed \antikt jet, $173$ of them: its
+momentum, its active area, $\rhoPU A$, the subtracted momentum, the
+momentum of its signal and of its pileup constituents, the numbers of
+each and of the collisions they came from, and the jet of
+\cref{ch:family_photograph} it matches within $\dR<0.2$; and the
+\emph{signal constituent listing} says, for each of the $651$ signal
+particles that entered the clustering, which mixed jet holds it.
+
+\begin{table}[htbp]\centering\small
+\caption[Our jet and the $\bar b$ jet before and after the crowd]{Our jet
+and the $\bar b$ jet before and after the crowd, from
+\file{event_PU.lhe} as printed by \file{standalone_pileup.py}. The
+photograph is the \akfour jet of \cref{ch:family_photograph}; the mixed
+jet is the \antikt jet of the same $R$ on the signal and the in-time
+crowd, matched to it within $\dR<0.2$; ``signal inside'' is the scalar
+sum of the \pt of the family's particles in the mixed jet, the truth
+the subtraction is judged against; the ensemble lines are the four
+hundred draws of the crowd on the circle of $R=0.4$ around the
+photograph's axis, for which $A=\pi R^2$.}
+\label{tab:crowd_on_the_road:kinematics}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrrr}\toprule
+ & & \pt [GeV] & $m$ [GeV] & $n$ & $A$ & $\rhoPU A$ & $\pt-\rhoPU A$ & residual \\ \midrule
+$b$ & the photograph, \akfour jet [0] (chapter 7) & $99.83$ & $14.83$ & $31$ & & & & \\
+    & with the crowd: mixed jet [0] & $132.75$ & $45.27$ & $112$ ($31+81$) & $0.529$ & $36.09$ & $96.66$ & $-3.41$ \\
+    & \quad signal inside / pileup inside & $100.07$ / $33.61$ & & $31$ / $81$ (34 coll.) & & & & \\
+    & \quad the ensemble: the circle, 400 draws & $100.09$ + $27.8\pm8.4$ & & $65$ & $0.503$ & $29.7\pm5.8$ & & $-1.9\pm6.7$ \\ \midrule
+$\bar b$ & the photograph, \akfour jet [1] & $94.09$ & $17.83$ & $18$ & & & & \\
+    & with the crowd: mixed jet [1] & $124.71$ & $44.33$ & $98$ ($18+80$) & $0.499$ & $34.05$ & $90.66$ & $-3.64$ \\
+    & \quad signal inside / pileup inside & $94.30$ / $31.26$ & & $18$ / $80$ (36 coll.) & & & & \\
+    & \quad the ensemble: the circle, 400 draws & $93.2$ + $28.2\pm7.7$ & & & $0.503$ & $29.7\pm5.8$ & & $-1.5\pm5.9$ \\ \midrule
+\multicolumn{2}{l}{the crossing: mixed jets above $3$ / $30\GeV$, after the subtraction} & \multicolumn{7}{l}{$173$ / $62$ / $6$; of the $62$, six are the family's and $56$ the crowd's own, none of which survives the subtraction}\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{ledger}{The Crowd on the Road}
+  \ledgerrow{the photograph, \akfour jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+  \ledgerrow{with the crowd: mixed jet [0], $\mup=60$}{132.75}{45.27}{112}{$+32.92$}
+  \ledgerrow{after the subtraction, $\pt-\rhoPU A$}{96.66}{--}{112}{$-36.09$}
+\end{ledger}
+
+\Cref{tab:crowd_on_the_road:kinematics}, the ledger and
+\cref{fig:crowd_on_the_road:journey} say what the record means, and the
+lesson has two halves. The first is how much the crowd is: the circle
+that held $99.83\GeV$ holds $132.75$, the $31$ particles of the family
+have $81$ strangers among them from more than half the collisions of the
+crossing, and the mass of the jet, which was $14.8\GeV$, is $45$, because
+eighty soft particles spread over a circle of $0.4$ carry a great deal of
+invariant mass and none of it is the family's; the $\bar b$ jet tells the
+same story at $124.71$. The axis moved by $0.04$, the family stayed
+whole, not one of its particles fell out and none joined, and that is
+what the softness of the crowd means: it adds, it does not rearrange. In
+\cref{fig:crowd_on_the_road:journey} the whole plane is khaki, the $173$
+mixed jets tile it, $62$ of them above $30\GeV$ where the photograph had
+six, and the family's circle is one circle among many until the
+subtraction, after which the six of the family remain and not one of the
+crowd's own: at $\mup=60$ a pileup jet above $30\GeV$ after $\rhoPU A$ is
+a rare fluctuation, and the pileup jets that \cref{ch:the_police} will
+have to identify live below that threshold. The second half is what the
+subtraction does and does not do, and the ensemble lines of the table
+carry it: the average is removed and two GeV of the family's own
+underlying event with it, a bias the corrections of
+\cref{ch:paying_for_uninvited} calibrate away, and seven GeV of
+fluctuation remain and are not. The $\bar b$ jet at $\eta=-3.5$, in the
+forward calorimeter where the crowd's plateau has begun to fall, reads
+the same residual within a GeV, because at $\mup=60$ the $\eta$
+dependence of the density is still smaller than its fluctuation; the
+$\rhoPU(\eta)$ of \cite{Cacciari:2009dp}, or the $\eta$-dependent offset
+of \cref{ch:paying_for_uninvited}, is the repair where it is not. The
+crowd of \cref{fig:crowd_on_the_road:journey} is what the detector of
+\cref{ch:crossing_the_border} will see, hits and all; the figure beside
+it, the same frame with the crowd removed, is what it will try to get
+back.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.495\textwidth]{PU/journey_PU_signal.pdf}\hfill
+\includegraphics[width=0.495\textwidth]{PU/journey_PU.pdf}
+\caption[The event before and with the crowd in the $(\eta,\phi)$
+plane]{The event in the $(\eta,\phi)$ plane, in the layout of the
+\CMSSW analyser pages. Left: the family alone, the photograph of
+\cref{ch:family_photograph} drawn with the code of this stop. Right: the
+same frame with the $63$ in-time collisions of our crossing, the crowd
+in khaki, the signal particles coloured by the mixed jet that holds them,
+the circles of the mixed jets with their momentum before and after the
+subtraction, and our jet's line in the header: $99.83\to132.75\to96.66$.
+Drawn by \file{plot_journey_PU.py} from \file{event_PU.lhe}.}
+\label{fig:crowd_on_the_road:journey}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:crowd_on_the_road:caveats}
+
+The agreement in \cref{tab:crowd_on_the_road:numbers} with \FASTJET is
+exact where the input is identical, and the parts of the chapter that are
+a model rather than a port carry their caveats:
+\begin{itemize}
+  \item \textbf{The crowd is \PYTHIA's.} The library is CP5's minimum
+    bias, and the $0.95\GeV$ per unit area per collision is its number;
+    a different tune moves it by ten percent, and the measured underlying
+    event of \cite{CMS:2019csb} is what CP5 was tuned to. \rhoPU itself is
+    measured in every event and does not care.
+  \item \textbf{A generator-level crowd.} Every stable particle of every
+    collision within $|\eta|<5$ counts here with its full momentum; the
+    detector of \cref{ch:crossing_the_border} will lose the neutrals
+    below its thresholds, the charged ones below $\pt\simeq0.3\GeV$ that
+    curl in the field, and the forward ones in the cracks, so that the
+    $\rhoPU$ of \cref{ch:paying_for_uninvited} is nearer $0.6\GeV$ per
+    collision than $0.9$. The crowd shrinks; its structure does not.
+  \item \textbf{One value of \mup, not the profile.} The record mixes at
+    a fixed $\mup=60$, the \code{AVE\_60} of the companion's exercise; the
+    production draws \mutrue flat between $55$ and $75$ and reweights,
+    and a sample like this record cannot be reweighted at all. The
+    ensemble draws the crowd at the same mean four hundred times, not over
+    a year.
+  \item \textbf{The out-of-time crowd is counted, not felt.} The $897$
+    collisions of the other fifteen crossings are in the vertex listing
+    with their offsets and nowhere else, because nothing at the generator
+    level lasts $25\ns$. The calorimeters do, and \cref{ch:first_checkpoint}
+    feels them.
+  \item \textbf{The beam spot is a payload, not a model of the beams.}
+    \Cref{eq:crowd_on_the_road:region} is what two head-on Gaussian
+    bunches give, and \CMSSW's generator draws exactly that shape, but with
+    the measured widths of early 2024 rather than widths computed from
+    the bunches; a fill at the end of the year, with a different
+    $\beta^*$ and crossing angle, had a different beam spot, and the real
+    one is measured run by run.
+  \item \textbf{The visible vertex is a proxy.} Four charged particles of
+    $\pt>0.5\GeV$ within $|\eta|<2.5$ is a count, not a fit; the vertex
+    finder of \cref{ch:first_checkpoint} needs tracks, and loses more of
+    the crowd than the proxy does.
+  \item \textbf{The subtraction is scalar.} $\pt-\rhoPU A$ corrects the
+    transverse momentum and leaves the mass of the jet at its inflated
+    value; the four-vector subtraction of \cite{Cacciari:2008gn}, with the
+    area as a four-vector, repairs the mass too, and the substructure
+    chapters will need it.
+  \item \textbf{The ensemble draws the crowd, not the family.} The four
+    hundred draws keep the photograph fixed and count the pileup inside a
+    fixed circle, so that the $\pm7\GeV$ is the crowd's fluctuation
+    alone; the mixed jet of the record, whose axis and area follow the
+    crowd, adds a little to it.
+  \item \textbf{One event is one sample.} The residual of $-3.41\GeV$ is
+    this crossing's and the ensemble's is $-1.9\pm6.7$; the $63$
+    collisions, the $34$ that reached our jet, the $68\GeV$ of \rhoPU
+    against $59$ on average and the crowd vertex a twentieth of a
+    millimetre from ours are this draw's.
+\end{itemize}
+
+\section{Further reading}
+\label{sec:crowd_on_the_road:further_reading}
+The jet area and the median density are \cite{Cacciari:2007fd}, with the
+areas themselves, passive and active, in \cite{Cacciari:2008gn} and their
+implementation in the \FASTJET manual~\cite{Cacciari:2011ma}; the
+$\eta$-dependence of the density is \cite{Cacciari:2009dp}. The
+inelastic cross section is measured in \cite{ATLAS:2016ygv,CMS:2018mlc}.
+The simulation side is the \CMSSW premixing of \cite{Hildreth:2017caz}
+and, for the experiment's own account of its crowd, the pileup
+mitigation paper of CMS~\cite{CMS:2020ebo}, which measures \rhoPU and the
+offset in Run-2 data. What comes next is in the particle-level methods,
+\PUPPI~\cite{Bertolini:2014bba}, SoftKiller~\cite{Cacciari:2014gra},
+constituent subtraction~\cite{Berta:2014eza} and jet
+cleansing~\cite{Krohn:2013lba}, reviewed with a theorist's eye in
+\cite{Soyez:2018opl}. The generator's side is \PYTHIA~8.3's
+guide~\cite{Bierlich:2022pfr} for the soft processes and the tune
+\cite{CMS:2019csb}. The accelerator of the open problems is the HL-LHC
+design report~\cite{Apollinari:2017lhl}, with the crab cavities, the
+levelling and the luminous region, and the detectors that will sort its
+crowd are the Phase-2 tracker~\cite{CMS:2017lum}, the endcap
+calorimeter~\cite{CMS:2017jpq} and the timing layer~\cite{Butler:2019rpu}.
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \textbf{\mup is not the number of vertices.} $\mup=60$ is the
+    mean of a Poisson draw; a given crossing has $60\pm8$ collisions, the
+    tracker sees about $0.7\mup$ of them as vertices, and the
+    \code{PileupSummaryInfo} holds all three numbers: the mean
+    (\code{getTrueNumInteractions}), the draw
+    (\code{getPU\_NumInteractions}) and, after reconstruction, $N_{\mathrm{PV}}$.
+    Reweight on the mean, cut on the vertices, and never mix them.
+  \item \textbf{40 MHz is not the crossing rate.} The bunch spacing is
+    $25\ns$, but $2350$ of $3564$ slots collided in 2024: \cref{eq:crowd_on_the_road:mu}
+    divides by $n_b f_{\mathrm{rev}}$, a third less, and $n_b$ changes
+    with the filling scheme from year to year.
+  \item \textbf{The library must match the signal.} The same beam spot,
+    the same geometry, the same \GEANT, the same energy, and \emph{different
+    seeds}: a library made with the default seeds of \code{cmsDriver.py}
+    draws the same vertex sequence as the signal, and the first pileup
+    event lands on the signal vertex in space and time. A library made
+    with the HL-LHC beam spot under a 2024 signal would be wrong, and
+    nothing in the job would notice.
+  \item \textbf{The flat profile is not the data.} A sample mixed with
+    \code{Run3\_Flat55To75} is meant to be reweighted to the measured
+    profile of the year, on \mutrue; an analysis that forgets the weights
+    compares data at $\langle\mup\rangle\simeq60$ with a simulation at
+    $65$, and its jets are too wide and too many.
+  \item \textbf{The median, not the mean.} A mean density over the plane
+    includes the jets; the median does not. Conversely a median over too
+    few patches, or over a region with more jets than empty patches, is a
+    jet measurement in disguise.
+  \item \textbf{\rhoPU is one number for the whole plane.} The crowd's
+    plateau falls off at large $|\eta|$ and the detector's response with
+    it; a jet in the endcap can be over-subtracted by a \rhoPU measured
+    over $|\eta|<5$, and the offset corrections of
+    \cref{ch:paying_for_uninvited} are binned in $\eta$ for that reason.
+    \rhoPU also counts the signal's own underlying event, $3\GeV$ per
+    unit area here, and subtracts it with the crowd.
+  \item \textbf{$\pt-\rhoPU A$ can be negative.} A soft jet in a crowded
+    event is subtracted to nothing or below; \FASTJET keeps the sign,
+    \CMSSW floors the correction, and a threshold on the subtracted
+    momentum is where the pileup jets of \cref{ch:the_police} start.
+  \item \textbf{The area is not $\pi R^2$.} It is on average, for a lone
+    hard jet; a neighbour within $2R$ takes a bite, a soft jet is irregular,
+    and a jet's area fluctuates with the ghosts by a percent or two.
+    Always use the active area the clustering measured.
+  \item \textbf{Early and late are not in-time.} An out-of-time collision
+    sits on the same beam spot $25\ns$ away; the tracker cannot tell,
+    the calorimeter pulse integrates it, and a track and a cluster that
+    disagree may be a crossing apart. The production window reaches
+    twelve crossings back for that reason.
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item Run the standalone script with \code{--mu 40} and with
+  \code{--mu 75}, the edges of the Run-3 years, and compare \rhoPU, the
+  pileup inside our jet and the number of pileup jets above $30\GeV$
+  before the subtraction with the $\mup=60$ record. Is the pileup inside
+  the circle linear in \mup? Is its fluctuation?
+\item From \cref{eq:crowd_on_the_road:mu}, compute \mup for the LHC of
+  2012 ($L=7.7\times10^{33}$, $n_b=1380$, $50\ns$ spacing,
+  $\sigmainel=73\mbarn$ at $8\TeV$) and for 2018
+  ($1.5\times10^{34}$, $2544$ bunches, $80\mbarn$), and compare with the
+  $\sim21$ and $\sim37$ CMS recorded. What changes in the arithmetic when
+  the spacing doubles?
+\item The library has $2000$ events and a crossing uses $60$. Estimate
+  the probability that a library event appears twice in the same crossing
+  when read at random with replacement, and check it in the vertex listing
+  of the record. Why does the production not worry about it?
+\item Run the script with \code{--window 1 --sequential}, the conditions
+  of the \CMSSW exercise of the companion, and compare the three draws,
+  the particles per crossing and the vertex spread with the companion's
+  table of mixed events. Which numbers can agree, and which cannot?
+\item With \code{fill\_profile} and \code{year\_profile}, build a profile
+  of a year whose fills are levelled at $62$ and compute the weights of
+  \cref{eq:crowd_on_the_road:reweight} for the flat $55$--$75$ sample bin
+  by bin. What fraction of the simulated events carries a weight below
+  $0.1$, and what does that cost in statistical power?
+\item The time spread of the beam spot is $120\ps$. Treating the
+  collisions as Gaussian in time, what fraction of the crowd is within
+  $\pm30\ps$ of the signal, on average? Check it against the
+  \code{within 30 ps} count of the ensemble, and say what a timing layer
+  with that resolution would have left of the in-time crowd.
+\item Compute the grid median of the signal alone with
+  \code{grid\_rho} and explain why it is $3.4\GeV$ per unit area and not
+  zero. What would the $k_T$-jet median give on the signal alone, and why?
+\item Draw the pileup inside the circle against the number of in-time
+  collisions over the ensemble and fit a line. Compare the slope with
+  $\rhoPU_1\pi R^2$ from \cref{eq:crowd_on_the_road:rho1}, and the
+  scatter around the line with $\sqrt{n}$ times the per-collision
+  fluctuation.
+\item Replace the grid median by the mean over the cells and redo the
+  subtraction of the twelve leading jets of the record. Which jets get
+  worse, and by how much?
+\item Change \code{GHOST\_AREA} to $0.04$ and to $0.0025$ and compare the
+  areas of the leading jets and the time of the clustering. At what ghost
+  area does the area of our jet stop changing within its own fluctuation?
+\item A jet of $R=0.8$ has four times the area. Using the ensemble's
+  numbers, estimate the pileup inside an $R=0.8$ circle around our jet and
+  its fluctuation, and say why the boosted-top jets of
+  \cref{ch:three_families} cannot live with $\rhoPU A$ alone.
+\item Run \code{--scenario ultimate} and compare the four numbers of
+  this chapter, \rhoPU, the pileup inside the circle, the residual and
+  the number of pileup jets above $30\GeV$ after the subtraction, between
+  $\mup=60$ and $200$. Which of them scale with \mup, which with
+  $\sqrt{\mup}$, and which do neither?
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:crowd_on_the_road:open_problems}
+
+The crowd of this chapter is the crowd of 2024; the HL-LHC will bring
+three times more of it, two hundred collisions per crossing at $14\TeV$,
+and the detector CMS is building for it, with a tracker to $|\eta|=4$, a
+high-granularity endcap calorimeter and a timing layer, is designed
+around that number. The scripts of this stop keep that road one option
+away, \code{--scenario ultimate}: the same family, $\mup=200$ in
+$\bx=-3\ldots+3$, the luminous region of the crab cavities, and the
+questions below can each be started with it.
+\begin{enumerate}
+  \item \textbf{The resolution floor.} The $\pm7\GeV$ left on a
+    $100\GeV$ jet after $\rhoPU A$ at $\mup=60$ becomes $\pm14$ at
+    $\mup=200$ at the generator level, and the real floor is what the jet
+    energy resolution of \cite{Azzi:2019yne} assumes for every HL-LHC
+    measurement with jets. With the ensemble at $\mup=60$, $140$ and
+    $200$ and the per-collision density of
+    \cref{eq:crowd_on_the_road:rho1}, decompose the fluctuation into its
+    Poisson part, the multiplicity part and the geometric part, and ask
+    which of the three the tracks of \cref{ch:the_police} and the
+    $30\ps$ of the MTD~\cite{Butler:2019rpu} can remove; the open
+    question is the size of the irreducible neutral part at $|\eta|>2.5$,
+    where there are no tracks and the HGCAL~\cite{CMS:2017jpq} has only
+    its own timing.
+  \item \textbf{The density in $\eta$ and in time.} \rhoPU is one number
+    here and one number in \CMSSW; the crowd's plateau is not flat and
+    the detector's response to it less so, and at $\mup=200$ the
+    $\eta$-dependent offset of \cref{ch:paying_for_uninvited} becomes
+    the largest correction of the chain. With the library, measure
+    $\rhoPU_1(\eta)$ and its fluctuation in bins of $\eta$, and ask
+    whether a $\rhoPU(\eta,t)$, a density per unit area per unit time
+    that the timing detectors could measure, subtracts better than
+    $\rhoPU(\eta)$ for a jet whose own time is known; the question, raised
+    for the MTD in \cite{Butler:2019rpu}, is open for the calorimeter jets
+    that carry no track time.
+  \item \textbf{Pileup jets.} At $\mup=60$ not one of the $56$ crowd jets
+    above $30\GeV$ survives the subtraction; at $\mup=200$ a dozen do,
+    twice as many as the family's, and every analysis with a jet veto or
+    a jet count will live on the identification of
+    \cref{ch:the_police}. With the jet listings of the two records,
+    characterise the survivors, their number of collisions, their widths
+    and their charged fractions, and ask which variable separates a crowd
+    jet from a soft quark jet at the generator level; the Phase-2 question
+    is whether the L1 track trigger of \cite{CMS:2020jkc} can make that
+    separation at $40\,\mathrm{MHz}$.
+  \item \textbf{The luminous region and the crab cavities.} The beam
+    spot of 2024 is a payload fitted to data; the HL-LHC region is a
+    model built from the bunches, in which the crossing angle would halve
+    the overlap and the crab cavities give it back, and no data exist yet
+    to fit. With \code{LuminousRegion.density} and its switches, compute
+    the luminosity lost without the crab cavities and the length and the
+    time spread of the region as a function of the crab angle, and ask how
+    the vertex finder and the MTD should be tuned if the crabbing scheme
+    changes during a fill, as the design report~\cite{Apollinari:2017lhl}
+    foresees.
+  \item \textbf{The library, the premixing and the profile at
+    $\mup=200$.} The production premixes because the classical mixing
+    cannot read $1400$ events per signal event, and the premixed sample
+    loses the hit-level truth of the crowd that this chapter's pictures
+    rely on; the HL-LHC profile is a spike at the levelled value with a
+    tail, and a flat band like Run~3's would waste most of its events.
+    With the standalone mixing, which keeps the truth at no cost, measure
+    how many distinct library events a crossing needs before the reuse of
+    a collision within one event becomes visible in the pileup-jet rate,
+    and with \code{fill\_profile} build the mixing histogram that
+    minimises the statistical cost of the reweighting for a levelled
+    fill; the open question, for the Phase-2 production of
+    \cite{Hildreth:2017caz}, is how small a premixed library may be
+    before correlations between signal events appear in a measurement.
+\end{enumerate}
+The next stop takes the family and the crowd across the border, into the
+detector: the magnetic field, the material, the hits, and the first
+things the crowd does to them.

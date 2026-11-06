@@ -1,0 +1,57 @@
+%% smpost/thumbnail/chapter_07_family_photograph.tex : thumbnail of video 7/30,
+%% "Chapter-7 | The Family Photograph: Generator-Level Jets and Truth
+%% Definitions". Motif: the eta-phi plane of the stable particles as a
+%% photograph in a viewfinder; anti-kT draws its circle of R = 0.4 around the
+%% mother's family (the B's grandchildren in red, the rest of the jet in gold),
+%% the crowd of the other jets is grey, the neutrino has already left the frame.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_07_family_photograph)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{7}{Chapter 7}{7 / 30}{The Family\\Photograph}{Generator-level jets: anti-$k_T$ takes the picture every reconstructed jet of the journey is judged against}
+
+\begin{scope}[shift={(\mx+0.1,\my)}, rotate=-4]
+%% the photograph: the eta-phi plane, white border, slightly tilted
+\fill[white, opacity=0.9, rounded corners=3pt] (-3.45,-2.95) rectangle (3.45,2.95);
+\fill[navy!92!black, rounded corners=2pt] (-3.25,-2.75) rectangle (3.25,2.75);
+\draw[white, opacity=0.12, line width=0.3pt, step=0.5cm] (-3.25,-2.75) grid (3.25,2.75);
+\clip[rounded corners=2pt] (-3.25,-2.75) rectangle (3.25,2.75);
+%% the crowd: the 634 stable particles of the event, grey
+\pgfmathsetseed{7}
+\foreach \i in {1,...,110}{
+  \pgfmathsetmacro{\px}{-3.2+6.4*rnd}
+  \pgfmathsetmacro{\py}{-2.7+5.4*rnd}
+  \node[pudot, minimum size=3.5pt, opacity=0.55] at (\px,\py) {};}
+%% two other jets of the 27, faint circles with their own clusters
+\foreach \cx/\cy in {-2.0/1.5, 2.3/-1.7}{
+  \draw[gold, opacity=0.35, line width=1pt] (\cx,\cy) circle[radius=0.75];
+  \pgfmathsetseed{3}
+  \foreach \i in {1,...,7}{
+    \pgfmathsetmacro{\rr}{0.6*sqrt(rnd)} \pgfmathsetmacro{\tt}{360*rnd}
+    \node[pudot, fill=trackcol, minimum size=4pt, opacity=0.8] at ({\cx+\rr*cos(\tt)},{\cy+\rr*sin(\tt)}) {};}}
+%% the mother's family inside the circle of R = 0.4
+\coordinate (J) at (0.5,-0.2);
+\shade[inner color=gold, outer color=navy!92!black, opacity=0.55] (J) circle[radius=1.75];
+\draw[gold, line width=2.4pt] (J) circle[radius=1.75];
+\pgfmathsetseed{31}
+\foreach \i in {1,...,22}{
+  \pgfmathsetmacro{\rr}{1.5*sqrt(rnd)} \pgfmathsetmacro{\tt}{360*rnd}
+  \node[hadron, minimum size=7pt] at ($(J)+({\rr*cos(\tt)},{\rr*sin(\tt)})$) {};}
+\foreach \dx/\dy in {-0.15/0.2, 0.3/-0.1, 0.05/-0.45, -0.4/-0.2, 0.45/0.35, -0.1/0.55, 0.2/0.1, -0.35/0.5, 0.55/-0.4}
+  \node[hadron, fill=bred, minimum size=8pt] at ($(J)+(\dx,\dy)$) {};
+%% the neutrino has walked out of the picture
+\draw[draw=nucol, line width=1.4pt, dash pattern=on 5pt off 4pt, -{Stealth[length=7pt]}] ($(J)+(0.2,0.1)$) -- (3.4,2.6);
+\end{scope}
+%% the viewfinder corners of the camera
+\foreach \sx/\sy in {-1/-1, 1/-1, 1/1, -1/1}
+  \draw[gold, line width=2.2pt, line cap=round]
+    (\mx+0.1+\sx*3.8,\my+\sy*3.1) -- ++(-\sx*0.6,0) (\mx+0.1+\sx*3.8,\my+\sy*3.1) -- ++(0,-\sy*0.6);
+%% the two numbers to take away
+\node[gold, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt] at (\mx+3.9,\my-3.3)
+  {anti-$k_T$, $R=0.4$: 99.83 GeV in 31 particles};
+\node[bred, motiflabel, anchor=north west, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt] at (\mx-3.8,\my+3.55)
+  {hadronFlavour = 5};
+\end{tikzpicture}
+\end{document}

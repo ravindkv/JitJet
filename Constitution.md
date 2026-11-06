@@ -52,8 +52,8 @@ Rule C: The .tex chapter then has exactly these sections
     (C4) Further reading
         (C4-1) pitfalls and FAQs for newcomers
         (C4-2) exercises
-        (C4-3) open problems for the Phase-2 LHC, after a literature survey,
-               with citations
+        (C4-3) open problems for the Phase-2 LHC, after a literature survey focussing
+                every aspect of CMS Phase-2 with citations whenever applicable
 
 Rule D: The .md companion has exactly these sections
     (D1) Running the standalone script: command, options, what -v/-vv print

@@ -9,7 +9,7 @@
 #   make trailer-part1 -> example/trailer/animate_trailer_part1_ch01_07.mp4, the narrated Part I trailer (~100 s)
 #   make cover-youtube -> smpost/cover_photo_youtube.png, the 2560x1440 YouTube channel banner
 #   make profile-youtube -> smpost/profile_photo_youtube.png, the 800x800 YouTube profile picture
-#   make thumbnails-youtube -> smpost/thumbnail/chapter_*.png, the 1280x720 thumbnails of the videos
+#   make thumbnails-youtube -> smpost/thumbnail/{chapter,trailer}_*.png, the 1280x720 thumbnails of the videos
 #   make figures   -> regenerate the figures made from example/ (needs matplotlib)
 #   make pages     -> pages per chapter from the table of contents, against the budget of 25 +- 5 pages per stop
 #   make clean     -> remove auxiliary files
@@ -109,7 +109,7 @@ smpost/profile_photo_youtube.png: smpost/profile_photo_youtube.pdf
 
 # The video thumbnails: one standalone TikZ page per video of smpost/SMPost.md,
 # sharing smpost/thumbnail/thumbnail_common.tex, rasterised to 1280x720.
-THUMBS := $(patsubst %.tex,%.png,$(wildcard smpost/thumbnail/chapter_*.tex))
+THUMBS := $(patsubst %.tex,%.png,$(wildcard smpost/thumbnail/chapter_*.tex smpost/thumbnail/trailer_*.tex))
 
 thumbnails-youtube: $(THUMBS)
 
@@ -147,7 +147,12 @@ FIGURES := example/ME/journey_ME.pdf \
            example/GenJet/Standalone/antiKt.pdf \
            example/GenJet/Standalone/caKt.pdf \
            example/GenJet/Standalone/hotVR.pdf \
-           example/GenJet/Standalone/algorithms_genjets.pdf
+           example/GenJet/Standalone/algorithms_genjets.pdf \
+           example/PU/journey_PU.pdf \
+           example/PU/journey_PU_signal.pdf \
+           example/PU/Standalone/theory_pileup.pdf \
+           example/PU/Standalone/animate_standalone_pileup_stills.pdf \
+           example/PU/Standalone/minbias_catalogue.tex
 
 figures: $(FIGURES)
 
@@ -279,6 +284,30 @@ example/GenJet/Standalone/animate_standalone_genjets_stills.pdf: \
 		example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
 	$(PYTHON) example/GenJet/Standalone/animate_standalone_genjets.py --stills $@ --no-video
 
+# Chapter 8, the crowd on the road: the (eta, phi) display with and without the crowd, the four theory
+# pages (the record, the library, the summary and the 400-draw ensemble when present) and the key frames
+# of the film. The record itself (example/PU/event_PU.lhe) takes two minutes: see the `records` target.
+example/PU/journey_PU.pdf: example/PU/plot_journey_PU.py example/PU/event_PU.lhe example/GenJet/plot_journey_GenJet.py
+	$(PYTHON) example/PU/plot_journey_PU.py -i example/PU/event_PU.lhe -o $@
+
+example/PU/journey_PU_signal.pdf: example/PU/plot_journey_PU.py example/PU/event_PU.lhe
+	$(PYTHON) example/PU/plot_journey_PU.py -i example/PU/event_PU.lhe -o $@ --signal-only
+
+example/PU/Standalone/theory_pileup.pdf: example/PU/Standalone/plot_theory_PU.py \
+		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/PU/Standalone/plot_theory_PU.py -o $@
+
+# The catalogue of the minimum-bias library (one line per collision, the summary, the means per kind): three
+# LaTeX tabulars that the chapter \inputs. About two minutes (the anti-kT jets of every collision).
+example/PU/Standalone/minbias_catalogue.tex: example/PU/Standalone/minbias_catalogue.py \
+		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/PU/Standalone/minbias_catalogue.py -o example/PU/Standalone/minbias_catalogue
+
+example/PU/Standalone/animate_standalone_pileup_stills.pdf: \
+		example/PU/Standalone/animate_standalone_pileup.py \
+		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe
+	$(PYTHON) example/PU/Standalone/animate_standalone_pileup.py --stills $@ --no-video --no-narration --no-music
+
 # Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
 example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
 	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
@@ -291,7 +320,8 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
-RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe example/GenJet/event_GenJet.lhe
+RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe example/GenJet/event_GenJet.lhe \
+           example/PU/event_PU.lhe
 
 records: $(RECORDS)
 
@@ -315,6 +345,12 @@ example/Decay/event_Decay.lhe: example/Decay/Standalone/standalone_hadron_decays
 # Chapter 7 clusters the final state of chapter 6 into the three GenJet collections (anti-kT written out, no FastJet needed; about 15 s).
 example/GenJet/event_GenJet.lhe: example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
 	$(PYTHON) example/GenJet/Standalone/standalone_genjets.py -i example/Decay/event_Decay.lhe -o $@
+
+# Chapter 8: the signal of chapter 7 in a bunch crossing of Run 3 (2024: mu = 60, bx = -12 ... +3, the 2024
+# beam spot), with the library of minimum-bias collisions at 13.6 TeV made once by make_pileup_library.py
+# in the ME venv. About two minutes.
+example/PU/event_PU.lhe: example/PU/Standalone/standalone_pileup.py example/GenJet/event_GenJet.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/PU/Standalone/standalone_pileup.py -i example/GenJet/event_GenJet.lhe -o $@ -v --log example/PU/Standalone/standalone_pileup.log --summary example/PU/Standalone/standalone_pileup.json --quiet
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

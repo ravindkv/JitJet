@@ -1,0 +1,65 @@
+
+==== 1  the scenario: how many collisions per bunch crossing =========================================
+  Run 3 (2024, levelled): L = 2.00e+34 cm^-2 s^-1, sigma_inel = 78.42 mb (PYTHIA, CP5, the tune fixes it),
+  n_b = 2350 colliding bunches, f_rev = 11245.5 Hz: 1.568e+09 collisions/s over 2.643e+07 crossings/s
+  mu = L sigma / (n_b f_rev) = 59.3 (60.5 with the 80 mb of the bookkeeping); the mixing scenario rounds it to mu = 60 (CMSSW AVE_60_BX_25ns), window bx = -12 ... +3, 960 collisions expected per signal event
+  the Run-3 production mixes Run3_Flat55To75_PoissonOOTPU: mu_true of the in-time crossing drawn flat in 55 ... 75 (mean 65), Poisson draws of the same mean in the other 15 crossings, about 1040 collisions per signal event; this record fixes mu_true = 60
+
+==== 2  the draw of the MixingModule: Poisson(mu) collisions per bunch crossing ======================
+  bx -12: 60, bx -11: 56, bx -10: 68, bx -9: 61, bx -8: 66, bx -7: 56, bx -6: 55, bx -5: 50, bx -4: 53, bx -3: 66, bx -2: 61, bx -1: 60, bx +0: 63, bx +1: 63, bx +2: 59, bx +3: 63; 960 collisions for an expectation of 960 (Poisson: 60 +- 7.7 per crossing)
+  library: 2000 events, read at random positions, with replacement; 763 distinct events used
+  process types: CD 16, DD 115, ND 667, SD 162 (library shares: CD 1.9%, DD 10.9%, ND 71.2%, SD 15.9%)
+
+==== 3  the beam spot: where and when each collision happens =========================================
+  BetafuncEvtVtxGenerator with the 2024 payload (SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc):
+  centre (0.0285, -0.0166, 0.416) cm, sigma_z = 3.6 cm, beta* = 30 cm, emittance 5.725e-08 cm: sigma_xy = 9.3 um at the focus, x sqrt(1 + ((z - z0)/beta*)^2) away from it (the hourglass)
+  sigma_z, sigma_t of the model: 3.60 cm, 120 ps (sigma_t = sigma_z / c, z and t independent: what two head-on Gaussian bunches of 5.1 cm would give; the payload is a fit to the 2024 data, the crossing angle folded in)
+  drawn: 960 vertices with r.m.s. x 9.2 um, y 9.4 um, z 3.79 cm (mean 0.28), t 119 ps; z from -12.4 to 13.9 cm
+  the signal vertex: x = 285.9 um, y = -164.1 um, z = -0.17 cm, t = -121 ps; the out-of-time crossings are shifted by 25 ns x bx (the CMSSW signal event of the companion sits at z = 3.11 cm, t = -140 ps)
+
+==== 4  the stacking: one final state out of the signal and the in-time crowd ========================
+  the signal: 744 final particles without the neutrinos, 651 within |eta| < 5
+  in-time (bx = 0): 63 collisions, 12113 final particles, 9033 within |eta| < 5 and not neutrinos; the mixed final state has 9684 particles
+  particles per crossing: bx -12: 10815, bx -11: 9137, bx -10: 14169, bx -9: 10920, bx -8: 11455, bx -7: 10482, bx -6: 10417, bx -5: 7385, bx -4: 8901, bx -3: 13258, bx -2: 10255, bx -1: 11492, bx +0: 12113, bx +1: 12250, bx +2: 10265, bx +3: 10144; the out-of-time ones are recorded with their time offset and not clustered
+  the in-time crowd in the tracker (|eta| < 2.5, pT > 0.5): 860 charged particles against 93 of the signal
+
+==== 5  anti-kT on the mixed final state, with ghosts for the areas ==================================
+  9684 particles + 6300 ghosts of area 0.0100 (|y| < 5): 15984 steps in 117 s; 173 jets above 3 GeV, 62 above 30
+  the b jet: chapter-7 jet [0] 99.83 GeV, 31 particles -> mixed jet [0] 132.75 GeV, 112 particles (31 signal, 81 pileup from 34 collisions), dR = 0.042, area 0.529 (pi R^2 = 0.503); signal pT inside 100.07, pileup pT inside 33.61
+    of the 31 particles of the photograph 31 are in the mixed jet, 0 fell out, 0 signal particles joined
+  the bbar jet: chapter-7 jet [1] 94.09 GeV, 18 particles -> mixed jet [1] 124.71 GeV, 98 particles (18 signal, 80 pileup from 36 collisions), dR = 0.022, area 0.499 (pi R^2 = 0.503); signal pT inside 94.30, pileup pT inside 31.26
+
+==== 6  the median energy density rho, two ways ======================================================
+  grid median (fixedGridRhoFastjetAll): 18 x 11 cells of 0.556 x 0.571 = 0.317 in |y| < 5, phi from 0; rho = 68.28 GeV per unit area (cells from 13.4 to 358.5, mean 73.96)
+  the same grid on the signal alone: rho = 3.42 (the underlying event of chapter 4, and nothing in most cells)
+  jet median (Cacciari-Salam): kT jets of R = 0.4 with ghosts, 197 jets, 175 within |y| < 4.4; rho = 69.87 GeV per unit area (pT/A from 30.3 to 297.4); 18 s
+  per collision: 1.084 (grid) and 1.109 (jets) GeV per unit area
+
+==== 7  the area subtraction, pT - rho A, against the truth ==========================================
+  rho = 68.28 (grid); for every jet pT_sub = pT - rho A, and the truth is the signal pT inside the jet
+   jet       pT      A   rho A   pT_sub   signal   pileup   resid     n  n_pu  eta    phi
+  [ 0]   132.75  0.529   36.09    96.66   100.07    33.61   -3.41   112    81  -1.48 -2.72
+  [ 1]   124.71  0.499   34.05    90.66    94.30    31.26   -3.64    98    80  -3.47  0.59
+  [ 2]    84.23  0.519   35.41    48.82    52.72    32.46   -3.90   115    87  -3.43  1.40
+  [ 3]    83.09  0.509   34.73    48.36    47.85    36.21   +0.51    95    79   0.32 -0.76
+  [ 4]    77.29  0.489   33.37    43.92    40.84    37.52   +3.08    95    82  -2.19 -1.21
+  [ 5]    76.48  0.509   34.73    41.76    46.67    30.58   -4.91    95    70  -2.57 -2.54
+  [ 6]    57.21  0.559   38.13    19.08    11.85    46.47   +7.23    97    91   0.00  2.67
+  [ 7]    53.52  0.529   36.09    17.43     5.31    49.24  +12.13    96    91  -3.87  2.45
+  [ 8]    49.60  0.539   36.77    12.83     0.36    50.10  +12.47   109   108   1.48 -1.69
+  [ 9]    49.19  0.519   35.41    13.78    20.15    29.93   -6.37    89    76   0.71  1.36
+  [10]    48.83  0.519   35.41    13.42     1.24    48.30  +12.18    96    91  -2.61  0.30
+  [11]    48.67  0.529   36.09    12.58     1.93    47.83  +10.65    86    79  -1.51 -1.21
+  pileup jets (more than half their pT from the crowd): 166 of 173, 56 above 30 GeV before and 0 after the subtraction
+  our jet: 99.83 (photograph) -> 132.75 with the crowd; rho A = 68.28 x 0.529 = 36.09; pT_sub = 96.66; the crowd put 33.61 inside, the subtraction took 36.09 out: residual -3.41 GeV on the signal's 100.07
+
+==== 8  the vertices the tracker will see ============================================================
+  in-time collisions with >= 4 charged particles of pT > 0.5 GeV within |eta| < 2.5: 43 of 63 (68%); CMS reconstructs about 0.7 mu primary vertices
+  the nearest crowd vertex to the signal's: 0.06 mm away in z, 5 ps in t; 4 within 1 mm (the vertex finder's reach), 7 within 30 ps (what the timing layer of Phase 2 would resolve; Run 3 has none)
+
+==== 9  the pileup profile of a fill, and the reweighting ============================================
+  a 2024-like fill (levelled at mu = 60 for 8 h, then decaying with tau = 10 h, 12 h in all): mu from 40 to 60, luminosity-weighted mean 57, 72% of the collisions at the levelled value
+  a 2024-like year of such fills levelled between 57 and 67: mean 59, 68% of the collisions between 52 and 66 (a model; the measured profile is what an analysis reweights to)
+  the production's flat profile (probFunction, mu_true uniform in 55 ... 75): the weight w = P_2024(mu_true) / P_flat(mu_true) runs from 0.00 to 1.62 over the flat range, 1.54 at mu_true = 60
+  a sample mixed at a fixed mu = 60 reweighted to the same profile: w = 0.07 for every event, and no event at all for the rest of the profile; the flat profile costs events at the edges and covers the whole year
+  for comparison a levelled HL-LHC fill (mu = 200 for 8 h, then tau = 5 h, 12 h): mean 186, 75% of the collisions at the levelled value

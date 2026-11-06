@@ -1,0 +1,15 @@
+the library: 2000 events; shares against PYTHIA's cross sections at 13.6 TeV (sigma_inel = 78.42 mb):
+CMSSW library (250 events, companion): ND 183 = 73.2%, SD 45 = 18.0%, DD 19 = 7.6%, CD 3 = 1.2%
+  ND:  1425 =  71.2%  expected  70.7%  (55.42 mb)
+  SD:   319 =  15.9%  expected  16.4%  (12.86 mb)
+  DD:   219 =  10.9%  expected  11.3%  (8.85 mb)
+  CD:    37 =   1.9%  expected   1.6%  (1.29 mb)
+per collision: final particles 179.2 (median 116, min 3, max 829); charged 82.6; central charged (|eta| < 2.5, pT > 0.5) 12.2 (median 6, max 97); hardest particle 2.17 GeV (max 17.9); sum pT 73.0 (max 518)
+               central all particles (|eta| < 2.5, pT > 0.5) 19.3 (median 8, max 167)
+CMSSW library (250 events, companion): stable particles 194 (median 132, 3 to 723), central all particles 21 (median 10, max 126), hardest 2.2 GeV (max 8.1), sum pT 0.5 to 376
+  ND:  229.8 particles,  16.1 central charged,   95.2 GeV of pT
+  SD:   50.8 particles,   2.5 central charged,   17.4 GeV of pT
+  DD:   62.4 particles,   2.7 central charged,   20.5 GeV of pT
+  CD:   28.2 particles,   1.6 central charged,    8.6 GeV of pT
+  (CMSSW library per type, stable particles / central: ND 241 / 27, SD 70 / 7, DD 57 / 2, CD 35 / 2; primaries handed to GEANT: ND 195, SD 55, DD 36, CD 32)
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/PU/Standalone/validate_pileup_with_fastjet_library.json

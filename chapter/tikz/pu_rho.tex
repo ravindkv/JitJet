@@ -1,0 +1,64 @@
+% ---------------------------------------------------------------------------
+% rho and the area: (a) the (eta, phi) plane tiled in the 18 x 11 cells of
+% fixedGridRhoFastjetAll, the pT per unit area of each cell as a grey level,
+% the jets dark; (b) the cells sorted: the median is rho, the mean is not;
+% (c) the active area of a jet: the ghosts it swallowed times 0.01.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  ghost/.style={circle,fill=black!35,inner sep=0pt,minimum size=1.8pt},
+  fam/.style={circle,fill=red!80!black,inner sep=0pt,minimum size=3.6pt},
+  crowd/.style={circle,fill=olive!60!brown,inner sep=0pt,minimum size=2.4pt}]
+% ---------------- (a) the grid ---------------------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,3.9) {(a) the grid: 18 $\times$ 11 cells of $0.56\times0.57$ in $|y|<5$};
+\pgfmathsetseed{5}
+\foreach \i in {0,...,17} {
+  \foreach \j in {0,...,10} {
+    \pgfmathsetmacro{\v}{min(100, 35 + 25*rnd + 15*rnd*rnd)}
+    \pgfmathsetmacro{\g}{100-\v*0.6}
+    \fill[black!\g] (\i*0.4,\j*0.3) rectangle (\i*0.4+0.4,\j*0.3+0.3);
+  }
+}
+\fill[black!85] (3.2,0.6) rectangle (3.6,0.9); \fill[black!75] (2.8,0.6) rectangle (3.2,0.9);
+\fill[black!85] (2.0,2.4) rectangle (2.4,2.7); \fill[black!70] (4.8,1.5) rectangle (5.2,1.8);
+\draw[black!40,very thin] (0,0) grid[step=0.4] (7.2,3.3);
+\draw[red!80!black,thick] (3.3,0.75) circle (0.29);
+\node[lab,text=red!80!black,anchor=west] at (3.65,0.75) {our jet};
+\draw[-{Stealth}] (0,-0.25) -- (7.2,-0.25) node[below left,lab] {$y$: $-5$ to $5$};
+\draw[-{Stealth}] (-0.25,0) -- (-0.25,3.3) node[above,lab] {$\phi$};
+\node[lab,anchor=north west,text width=7.4cm,align=left] at (-0.3,-0.65) {Every particle's $p_T$ goes to its cell; the cell's value is $\Sigma p_T/(\Delta y\,\Delta\phi)$. At $\mu=60$ a typical cell holds $\sim22$ GeV in $0.32$ units of area, 68 GeV per unit area; the cells with a jet hold up to 360.};
+\end{scope}
+% ---------------- (b) the median --------------------------------------------------------------------
+\begin{scope}[xshift=8.6cm]
+\node[head,anchor=west] at (-0.4,3.9) {(b) the 198 cells sorted: the median is $\rho$};
+\draw[-{Stealth}] (0,0) -- (6.0,0) node[below left,lab] {cell, sorted by $p_T$/area};
+\draw[-{Stealth}] (0,0) -- (0,3.4) node[left,lab] {GeV per unit area};
+% a sorted distribution: flat-ish middle, a tail of jets at the right
+\draw[olive!60!brown,very thick] plot[domain=0:5.7,samples=80] (\x,{0.25+1.2*\x/5.7+0.25*(\x/5.7)^3+2.2*exp(-(5.7-\x)*(5.7-\x)/0.25)});
+\draw[red!80!black,thick,dashed] (2.85,0) -- (2.85,2.6);
+\node[lab,text=red!80!black,anchor=south] at (2.85,2.65) {median: $\rho=68$};
+\draw[black!60,dashed] (0,1.25) -- (5.7,1.25);
+\node[lab,text=black!60,anchor=west] at (0.1,1.45) {mean, pulled up by the tail};
+\node[lab,text=olive!60!brown,anchor=east] at (5.6,3.2) {the jets};
+\node[lab,anchor=north west,text width=6.4cm,align=left] at (-0.4,-0.65) {$\rho=\mathrm{median}_{\rm cells}\,[\,p_T/A\,]$. The median is what the crowd puts in a cell with nothing else in it; the jets are the top few percent and do not move it. Cacciari and Salam's original uses $k_T$ jets of $R=0.4$ with their areas in place of the cells: $\rho_{\rm jets}$ a few percent above the grid ($69.9$ against $68.3$ here).};
+\end{scope}
+% ---------------- (c) the area ------------------------------------------------------------------------
+\begin{scope}[xshift=16.2cm]
+\node[head,anchor=west] at (-0.4,3.9) {(c) the active area: ghosts of $0.01$ each};
+\pgfmathsetseed{3}
+\foreach \i in {0,...,15} {\foreach \j in {0,...,13} {
+  \pgfmathsetmacro{\xx}{0.1+0.33*\i+0.2*(rnd-0.5)}
+  \pgfmathsetmacro{\yy}{0.1+0.235*\j+0.15*(rnd-0.5)}
+  \node[ghost] at (\xx,\yy) {};
+}}
+\draw[red!80!black,thick] (2.7,1.65) circle (1.15);
+\pgfmathsetseed{11}
+\foreach \i in {1,...,22} {\pgfmathsetmacro{\r}{1.15*0.5*rnd*rnd} \pgfmathsetmacro{\a}{360*rnd} \node[fam] at ({2.7+\r*cos(\a)},{1.65+\r*sin(\a)}) {};}
+\pgfmathsetseed{17}
+\foreach \i in {1,...,40} {\pgfmathsetmacro{\xx}{0.2+5.0*rnd} \pgfmathsetmacro{\yy}{0.15+3.0*rnd} \node[crowd] at (\xx,\yy) {};}
+\node[lab,anchor=north west,text width=6.0cm,align=left] at (-0.4,-0.1) {A grid of ghosts, $p_T=10^{-18}$, one per $0.01$ of the plane, is clustered with the particles. They move nothing (anti-$k_T$ never sees their $p_T$) but they are caught like any soft particle: $A=0.01\times n_{\rm ghosts}$ in the jet. For a lone hard jet $A\simeq\pi R^2=0.503$; a neighbour steals part of it. Then $p_T^{\rm sub}=p_T-\rho\,A$: the \code{L1FastJet} correction of \cref{ch:paying_for_uninvited} in its generator-level form.};
+\end{scope}
+\end{tikzpicture}

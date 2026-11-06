@@ -1,0 +1,65 @@
+% ---------------------------------------------------------------------------
+% The picture to carry: (a) one bunch crossing of Run 3 (2024), sixty
+% collisions along the beam spot, ours among them; (b) the circle of our jet
+% in the (eta, phi) plane: the family and the strangers that walked in, with
+% the numbers of the 400-draw ensemble of standalone_pileup.py --repeat.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  fam/.style={circle,fill=red!80!black,inner sep=0pt,minimum size=4pt},
+  crowd/.style={circle,fill=olive!60!brown,inner sep=0pt,minimum size=2.6pt},
+  vtx/.style={circle,fill=cyan!60!blue,inner sep=0pt,minimum size=2.6pt},
+  ring/.style={red!80!black,line width=1.2pt}]
+% ---------------- (a) the bunch crossing ----------------------------------------------------------
+\begin{scope}
+\node[head,anchor=west] at (-0.3,3.2) {(a) one bunch crossing of 2024: $\mu=60$ collisions along $z$};
+% the two bunches moving towards each other
+\fill[blue!25] (-4.2,0.9) ellipse (1.6 and 0.32);
+\fill[orange!35] (4.2,0.9) ellipse (1.6 and 0.32);
+\draw[-{Stealth[length=2mm]},blue!60!black,thick] (-2.4,1.35) -- (-1.4,1.35) node[lab,above,pos=0.5] {beam 1};
+\draw[-{Stealth[length=2mm]},orange!80!black,thick] (2.4,1.35) -- (1.4,1.35) node[lab,above,pos=0.5] {beam 2};
+\node[lab,text=blue!60!black] at (-4.2,0.45) {$10^{11}$ protons per bunch};
+\node[lab,text=orange!80!black] at (4.2,0.45) {every 25 ns};
+% the beam spot: a Gaussian along z, sigma_z = 3.6 cm (scale: 0.25 cm per cm)
+\draw[-{Stealth}] (-4.5,-0.3) -- (4.5,-0.3) node[below left,lab] {$z$ [cm]};
+\foreach \x/\t in {-4/$-16$,-2/$-8$,0/0,2/8,4/16} {\draw (\x,-0.35) -- (\x,-0.25); \node[lab,anchor=north] at (\x,-0.4) {\t};}
+\draw[green!50!black,thick] plot[domain=-4.5:4.5,samples=80] (\x,{-0.3+1.1*exp(-(\x-0.1)*(\x-0.1)/(2*0.9*0.9))});
+\node[lab,text=green!50!black,anchor=west] at (1.2,0.75) {$\sigma_z=3.6$ cm, $\sigma_t=120$ ps};
+% 60 vertices drawn along z (pseudo-random, Gaussian-like by summing uniforms)
+\pgfmathsetseed{8}
+\foreach \i in {1,...,60} {
+  \pgfmathsetmacro{\zz}{0.1+0.9*(rand+rand+rand)*0.58}
+  \pgfmathsetmacro{\yy}{-0.3+0.08+0.5*rnd*exp(-\zz*\zz/(2*0.9*0.9))}
+  \node[vtx] at (\zz,\yy) {};
+}
+\node[star,star points=5,fill=red!80!black,inner sep=0pt,minimum size=9pt] at (-0.05,0.05) {};
+\node[lab,text=red!80!black,anchor=north] at (-0.05,-0.05) {ours};
+\node[lab,anchor=north west,text width=9.2cm,align=left] at (-4.5,-0.95) {Every 25 ns two bunches cross; $\mu=L\sigma_{\rm inel}/(n_b f_{\rm rev})\simeq60$ inelastic collisions happen in the same crossing, spread over $\pm10$ cm and $\pm0.35$ ns. One is ours. The others are the crowd: soft, uneven, and in the same picture. The twelve crossings before and the three after bring their own crowds, $25$ ns apart.};
+\end{scope}
+% ---------------- (b) the circle of our jet -------------------------------------------------------
+\begin{scope}[xshift=11cm]
+\node[head,anchor=west] at (-0.5,3.2) {(b) the circle of our jet, $R=0.4$, with the crowd inside};
+\draw[ring] (1.6,0.9) circle (1.7);
+\node[lab,text=red!80!black,anchor=south west] at (2.75,2.15) {$R=0.4$};
+% the family: 31 particles, collimated
+\pgfmathsetseed{21}
+\foreach \i in {1,...,31} {
+  \pgfmathsetmacro{\r}{1.7*(0.08+0.55*rnd*rnd)}
+  \pgfmathsetmacro{\a}{360*rnd}
+  \node[fam] at ({1.6+\r*cos(\a)},{0.9+\r*sin(\a)}) {};
+}
+% the crowd: about 130 soft particles per unit of area, 65 of them inside the circle
+\pgfmathsetseed{34}
+\foreach \i in {1,...,165} {
+  \pgfmathsetmacro{\xx}{-0.9+5.0*rnd}
+  \pgfmathsetmacro{\yy}{-1.4+4.6*rnd}
+  \node[crowd] at (\xx,\yy) {};
+}
+\node[lab,anchor=north west,text width=5.9cm,align=left] at (4.1,3.0) {\textcolor{red!80!black}{\textbf{the family}}: 31 particles, $99.8$ GeV, inside $0.1$ of the axis\\[3pt]
+  \textcolor{olive!60!brown}{\textbf{the crowd}}: $\rho\simeq59$ GeV per unit area at $\mu=60$, $0.94$ per collision; the circle covers $\pi R^2=0.50$, so $28\pm8$ GeV walk in, 65 particles from 34 collisions\\[3pt]
+  \textbf{the subtraction}: $p_T-\rho A$ takes $30\pm6$ out; what is left fluctuates by $\pm7$ GeV around the family's $100$\\[3pt]
+  \textbf{the one number}: thirty GeV of strangers on a hundred-GeV jet, removed on average, not event by event};
+\end{scope}
+\end{tikzpicture}

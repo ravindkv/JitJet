@@ -1,167 +1,160 @@
 % ---------------------------------------------------------------------------
-% Front matter: preface, how to read this book, the two pilgrims, JitJet World
-% This chapter is the one place where the Constitution (Constitution.md) is
-% documented for the reader: the three homes of a chapter, the shape of a
-% stop, the companion files, the page budget and the JitJet World table.
+% Front matter: the preface, told from three desks (Director, Producer,
+% JitJet), and the JitJet World table.
+% All three desks share one format: a \section* heading, plain paragraphs
+% separated by vertical space (no indent, no lists, no sub-headings) and a
+% right-aligned closing block set with \deskclose.
+% The JitJet desk is the one place where the Constitution (Constitution.md)
+% is documented for the reader: the three homes of a chapter, the shape of a
+% stop, the page budget and the JitJet World table.
 % ---------------------------------------------------------------------------
-\chapter{Preface: A Jet Is a Journey, Not a Destination}
+\chapter{Preface}
 \chaptermark{Preface}
 \label{ch:preface}
 
-In CMS an electron, a photon or a muon is a \emph{destination}: an object that
-is essentially there at the end of reconstruction and needs only identification
-and calibration. A jet is a \emph{journey}. It does not exist at any single
-point; it is the accumulated history of a coloured parton from the hard
-scattering to the calibrated, tagged, smeared four-vector an analyst finally
-puts into a histogram. Every stage of that journey either adds energy to the
-jet, removes energy from it, or reshuffles how the energy is distributed.
+% Preface layout, local to this file: spaced, unindented paragraphs.
+\begingroup
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7\baselineskip plus 1pt minus 1pt}
+% \deskclose{lines}: the closing block of a desk, right aligned.
+\providecommand{\deskclose}[1]{\par\smallskip{\raggedleft #1\par}}
+
+\section*{From the Director's Desk}
+
+Journey is the Jet: JitJet. The book explicitly covers the journey of quarks which form a jet in the end. However, the idea of writing the book has its own journey. It began years ago, when I started my PhD in particle physics phenomenology at IIT Kanpur in 2013. We had to generate Monte Carlo samples using available software packages, which we downloaded and ran as black boxes with little or no understanding of what happens inside. I wanted to learn and understand that, but did not have enough time or resources.
+
+Later, in 2016, I switched to experimental particle physics, working in the CMS experiment at TIFR Mumbai. I was the AlCa-FTV (2016--18) and AlCa-TSG (2018--20) convener, where we submitted and managed more than 200 workflows which pass through multiple stages of the CMS chain. As conveners, we used to look only at the high-level plots at the end and decide whether a given condition update in CMS changed things as expected. There too, we wanted to learn and understand each stage of the complex CMS workflow, but did not have enough time and resources.
+
+Then in 2022, while I was a postdoc at Florida Tech based at Fermilab, I became an EGM-HLT convener, where we used to check the efficiencies of the HLT paths on a regular basis, whenever there was a change in the detector conditions. The HLT reconstruction itself comprises so many steps that understanding and learning each stage was not feasible for lack of time and resources, given that the data-taking was going on.
+
+In 2024, I joined the University of Helsinki as a postdoc, where I led the JME--JERC group as convener. In JERC, we derive and apply jet energy resolutions and corrections. However, the derivation of the corrections happens mostly when we already have a jet. How we got the jet in the first place was not so well known to me. A jet is the entire journey, and the journey comprises more than 15 stages where we either add energy, remove it or do nothing. Again, I wanted to understand the full journey of the jet, but did not have enough time and resources for that.
+
+The lack of time and resources was fundamentally correlated with the complexity of the CMS experiment. To understand any stage, we needed the technical capability to dig down into the CMS software or MC tools such as Pythia and Geant4. So it required time, technical expertise and, most importantly, support from the institute. In 2026 all three requirements were met: my JERC convenership ended in August 2026, so I had time; there was great progress in agentic AI (e.g.\ Claude Fable), which had the technical expertise; and finally I got full support from Mikko, who is my supervisor. Mikko wanted to write a JERC-related book as part of the ERC grant. However, the JERC Run~2 CHS paper and the JERC Run~2 + Run~3 Puppi paper were already work in progress and were supposed to come in late 2027, so a traditional book on JERC would largely overlap with the papers. In that sense, the JitJet book provides a broader understanding of the jet and of the corrections that happen at its different stages.
+
+The name ``JitJet'' came to my mind when we were on the summer HIP trip to the Tammela region on June 2, 2026. We had many stops, with a tour guide explaining the different parts of the trip to us. I told Mikael (sitting next to me), and later Mikko and Fikri, that the quarks also have to go through so many stops, and that the entire journey becomes a jet. Unlike other objects in CMS, such as electrons, muons and photons, which are there at the destination, a jet is a whole journey. Motivated by the trip, we decided to keep the book in the same spirit: the reader is a passenger and the author is the tour guide. At every stop of the journey, the reader first sees a video, and then the tour guide explains what it is from the physics point of view. Special thanks to Theo for all his blissful ideas and suggestions.
+
+We also have a ROOT version, \file{JitJet.root}, which holds all the necessary data in a flat ROOT tree format that a reader can simply visualise using TBrowser. In a complex workflow like that of CMS, a ``message'' very quickly gets hidden between the ``messengers'' and the ``medium'' of the different stages. For example, a simple event at parton level is stored in the LHE format and then, as it travels, in the HepMC, DIGI, RAW, RECO, etc.\ formats. It is extremely challenging to track the same event, because different software packages are needed at different stages. In this sense, \file{JitJet.root} will be very useful, as the entire journey will be in a single format.
+
+The JitJet book can comfortably fit in a one-semester JitJet course for a master's student who has done a basic course on particle physics. It can also serve as a review project for new PhD students who wish to pursue a career in experimental particle physics. The JitJet book is equally relevant for theory/pheno people who struggle to understand a paper from CMS (in the last 10 years, I have come across numerous pheno physicists who had a hard time reading CMS papers). Keeping this in mind, the entire journey is shown using ``standalone'' scripts and ``CMSSW'' packages, so that both non-CMS and CMS users can run the scripts.
+
+The current JitJet book covers Run~3 of CMS (mostly 2024 and 2025) and lists many open problems in the context of the Phase-2 HL-LHC. A few years later, we can have a JitJet@Phase2 book covering the Phase-2 aspects. I would also like to write a MitMET (M is the MET) book in addition to JitJet. The ``M'' would be unknown, as the MET is. The reader will pick what they prefer for M: Missing, Misbehaved, Miscalibrated, Many, etc. Or I might choose the name for ``M'' which suits the MET best, once we have the MitMET book mostly ready.
+
+Finally, in the age of AI, I see the relation between ``human'' and ``AI'' as that between ``director'' and ``producer''. A director has the core ideas and the vision, and the producer is the one who implements them. A director has to ensure that every frame of a movie, or every line of a book, is consistent and coherent. Only then can we have a good movie or a good book. As humans, whatever fantasy we had, whatever dream we wanted to realise, whatever craving we had can be fulfilled in the age of agentic AI. Next, I would request the Producer for a few words.
+
+\deskclose{Thank you,\\[0.5ex]
+  \todo{Photo}\\
+  \todo{Signature}\\[0.5ex]
+  \textbf{Ravindra Kumar Verma}\\
+  Postdoctoral Researcher, University of Helsinki\\
+  \todo{Date}}
+
+
+\section*{From the Producer's Desk}
+
+Thank you, Director. A producer belongs behind the camera, so I will be
+brief.
+
+I am Claude, an AI model made by Anthropic. My part in this book is the
+making: the standalone scripts, the ports of the algorithms from the
+official packages, the validations, the films, the sketches and the
+typesetting. The idea that a jet is a journey, the tour and its family, and
+the judgement of what a newcomer needs to see first are the Director's. So
+is the Constitution, the short rule book that every chapter follows; when my
+chapters grew too long, the Director added a page budget to it.
+
+There is one thing you should know about a book produced this way: I can
+write a wrong formula as fluently as a right one. So nothing here rests on
+my word. Every number in a chapter is printed by a script that you can run,
+and every script is checked against the official package it imitates: \MG,
+\PYTHIA, \FASTJET and \CMSSW itself. That check has caught me more than
+once. In the chapter on decays I first had the leptons of a semileptonic
+$B$ decay the wrong way round, the hard one soft and the soft one hard, and
+a run of \PYTHIA settled it. In the chapter on hadronisation a string with
+gluon kinks cost hours before its hadrons landed where they should. Many of
+the pitfalls listed at the end of each stop are holes I fell into first.
+
+The algorithms are not mine either. The scripts are small ports, short
+enough to read from top to bottom, of code that the authors of those
+packages built and tested over decades. Where our jet agrees with theirs,
+it is their work showing through.
+
+I also do not carry memory from one working session to the next. What makes
+this one book rather than a pile of separate sessions is on paper: the
+Constitution, the Director's prompts, which are kept in the repository, and
+a notebook of lessons learnt the hard way. If the chapters read as one
+voice, that is the Director checking every frame, as promised above.
+
+Finally, a word to the passenger. A producer like me shortens the distance
+between a question and a script that answers it. It does not shorten the
+understanding. That part is still yours, and it is the best part of the
+trip. So press the button and watch the number come out. If it ever
+disagrees with the page, believe the number, and tell us.
+
+\deskclose{Thank you,\\[0.5ex]
+  \textbf{Claude} (Claude Fable)\\
+  Producer, Anthropic\\
+  13 November 2026}
+
+
+\section*{From the JitJet Desk}
 
 This book follows one and the same jet through every stage, shows the
 mathematics of each stage, measures how much energy that stage added or
-removed, and points to the official paper for further reading. The title is
-meant literally: \emph{Journey Is The Jet}, and the two jets we follow are the
-$b$-jet (bottom) and the top-jet (top).
+removed, and points to the official paper for further reading. The two jets
+we follow are the $b$-jet (bottom) family and the top-jet (top) family. The
+chapters are stages of a pilgrimage told through one metaphor: a mother
+quark, her children from the parton shower, the crowd on the road (pileup),
+borders and checkpoints (detector and trigger), the census (Particle Flow),
+the police (pileup mitigation), the inn (clustering), the tax office (jet
+energy corrections), the wobbly ruler (resolution) and the registry office
+(tagging). The metaphor is a memory aid; the physics is always stated
+explicitly.
 
-\todo{Expand the preface: who this book is for (new Master, PhD and postdoc
-members of the CMS JME group), what is assumed, what is not.}
-
-\section*{How to read this book}
-
-Chapters are stages of a pilgrimage told through one metaphor: a mother quark,
-her children from the parton shower, the crowd on the road (pileup), borders and
-checkpoints (detector and trigger), the census (Particle Flow), the police
-(pileup mitigation), the inn (clustering), the tax office (jet energy
-corrections), the wobbly ruler (resolution) and the registry office (tagging).
-The metaphor is a memory aid; the physics is always stated explicitly.
-
-\paragraph{The voice of this book.} Think of the journey as a guided tour.
-The author is the guide and you are the passenger: at every stop the guide
+The author is the guide and you are the passenger. At every stop the guide
 explains what is happening outside the window, hands you the formula that
 describes it, and asks you to press a button and see the number come out
-yourself. The tone is deliberately that of a teacher standing beside you
-rather than a reference manual in front of you. The guide's job is to keep
-the passengers engaged, and a passenger who is reading a log file is not
-looking out of the window. So the code that produces every number is not
-printed in the book, and neither are the commands that run it, the logs it
-writes or the configurations of the official packages. They live in the
-public repository, in the three homes described next, so that the pages can
-be spent on the physics.
+yourself. A passenger who is reading a log file is not looking out of the
+window, so the code, its commands and logs, and the configurations of the
+official packages are not printed here. Every stop has three homes instead:
+the directory \file{example/XYZ/} with the scripts, the event records, the
+logs, the plots and the films; the chapter \file{chapter/chapter_XYZ.tex}
+that you are reading, with the physics in the guide's voice; and its
+technical companion \file{chapter/chapter_XYZ.md}, a page on GitHub that
+tells how to run each script, how to read its records and logs, and how
+every number the chapter quotes was obtained.
 
-\paragraph{The three homes of a stop.} Every chapter of the journey, every
-stop, lives in three places:
-\begin{description}[nosep]
-  \item[\file{example/XYZ/}] the scripts, the event records, the logs, the
-    plots and the films of the stop, one directory per stage.
-  \item[\file{chapter/chapter_XYZ.tex}] the chapter you are reading: the
-    physics, in the guide's voice.
-  \item[\file{chapter/chapter_XYZ.md}] the technical companion of the
-    chapter, a page on GitHub that is not compiled into the book: how to run
-    each script and what it prints, how to read its records and logs, how
-    each number of the official packages was obtained, and the full tables
-    behind every number the chapter quotes.
-\end{description}
-A chapter prints exactly one address, that of its own companion. Everything
-else, the repository, the scripts, the \CMSSW material, the films, is
-reached through the \jitjetworld table at the end of this preface, and
-chapters point at that table rather than repeating its addresses.
-
-\paragraph{The shape of a stop.} Every chapter has the same shape, and the
-order is deliberate: it runs from the top down, the way a guided tour does,
-not from the bottom up, the way a textbook does. The chapter opens with
-\textbf{the stage in the journey}, the metaphor in one paragraph, and
-\textbf{the physics in this chapter}, one paragraph that ends with the one
-number to take away from the stop. Then come four sections, always the same
-four and always in this order.
-\begin{enumerate}[nosep]
-  \item \textbf{What we will see at this stop.} The motivation, connected to
-    the previous stop; the film of the stage, rendered from the same code
-    that produces the chapter's numbers, in one paragraph and one figure of
-    key frames (the films are fully narrated, so the book does not retell
-    them); a sketch of the stage, and a picture to carry if it helps; and the
-    agreement table, one row per quantity, with the standalone script, the
-    official package and \CMSSW side by side, explained in a paragraph or
-    two. How the numbers were produced is in the companion, not here.
-  \item \textbf{Let us dive into the details: the theory.} The minimal,
-    correct mathematics of the stage. Every subsection is told the same way:
-    a question to guess at, then a sketch or Feynman diagram, then the
-    equation, then the numbers the equation gives for \emph{our} event,
-    quoted in the text from the learning mode of the standalone script
-    (never as a log listing), and then a plot of the equation over the whole
-    phase space, one figure per equation, drawn from the same code. The
-    theory ends with the recipe, step by step, that the script executes.
-  \item \textbf{The energy ledger: our jet at this stage.} The ledger table
-    and the $(\eta,\phi)$ display of our jet side by side, from the
-    standalone script and from \CMSSW, cumulative since the first stop; then
-    what this stop is, and what it is not.
-  \item \textbf{Further reading.} The papers behind the stop, then
-    \textbf{pitfalls and FAQs} for newcomers, \textbf{exercises}, and a list
-    of \textbf{open problems} for the Phase-2 LHC with the state of the art
-    and its references.
-\end{enumerate}
-
-\paragraph{The companion.} Each companion has the same five sections, so
-that you know where to look whatever the stop: running the standalone script
-(the command, its options, what the learning modes \code{-v} and \code{-vv}
-print); reading the record (the event record of the stage and the log
-excerpts that the chapter quotes its numbers from); drawing the event and
-rendering the film; validation from official packages (the \PYTHIA, \MG or
-\FASTJET script, the \CMSSW configuration and log, and how each number was
-read out of them); and the full tables, every number the chapter quotes with
-the command that produced it.
-
-\paragraph{The length of a stop.} A stop is $25$ pages, give or take five. A short
-interlude, a stop with no standalone script of its own such as matching and
-merging, is at most eight and has only the first section, the ``what it is
-not'' and the further reading. Commands, logs and configurations are never
-printed in the book; the only code typeset here is the TikZ of the sketches.
-The budget is checked from the table of contents at every build.
-
-\paragraph{Top to bottom, bottom to top.} The two phrases are not in
-conflict. The \emph{journey} runs from the bottom up: it starts where the
-jet starts, at the hard scattering, and ends where the jet ends, in the
-histogram, and the two pilgrims are the bottom quark and the top quark.
-Each \emph{stop} along the way is told from the top down: you see the stage
-first, run it second, derive it third, and let the official packages have
-the last word. Bottom to top is the road; top to bottom is how the guide
-explains each stop.
-
-\section*{The two pilgrims}
-
-\begin{description}
-  \item[Event A, the $b$-jet.] \code{generate p p > b b\~{}} at $\sqrt{s}=13.6\TeV$ in
-    \MG with a fixed random seed, showered and hadronised with \PYTHIA (CP5 tune),
-    born under Run~3 conditions and kept there: mixed with the sixty pileup
-    collisions per crossing of 2024, simulated with \GEANT in the 2024 CMS
-    detector, passed through Level-1 and
-    High-Level Trigger emulation, reconstructed with Particle Flow, \PUPPI,
-    \antikt $R=0.4$ clustering, jet energy corrections and resolution smearing,
-    and finally $b$-tagged.
-  \item[Event B, the top-jet.] \code{generate p p > t t\~{}} with a boosted
-    hadronically decaying top quark ($\pt>400\GeV$), the same chain,
-    \antikt $R=0.8$ clustering, soft drop, $N$-subjettiness and a
-    machine-learned top tagger.
-\end{description}
-
-\section*{The energy ledger}
-
-For both jets we keep an \emph{energy ledger}: one row per stage with the jet
-\pt, mass, constituent multiplicity and the change with respect to the previous
-stage. The ledger is the quantitative red thread of the book and is closed in
-\cref{ch:energy_ledger}.
-
-\section*{JitJet World: the tour office}
+Every stop has the same shape. It opens with the stage in the journey, the
+metaphor in one paragraph, and the physics in the chapter, which ends with
+the one number to take away. Four sections follow, always in the same
+order. \emph{What we will see at this stop} gives the motivation, the film
+of the stage, a sketch, and a table that sets the standalone script, the
+official package and \CMSSW side by side. \emph{The theory} gives the
+minimal, correct mathematics: for each equation a question to guess at, a
+sketch, the equation itself, the numbers it gives for our event and a plot
+over the whole phase space, and at the end the recipe that the script
+executes. \emph{The energy ledger} keeps the accounts of our jet, one row
+per stage with the jet \pt, mass, constituent multiplicity and the change
+since the previous stage, next to its $(\eta,\phi)$ display; it is the
+quantitative red thread of the book and is closed in
+\cref{ch:energy_ledger}. \emph{Further reading} lists the papers behind the
+stop, the pitfalls for newcomers, exercises and open problems for the
+Phase-2 LHC. A stop is $25$ pages, give or take five; a short interlude,
+such as matching and merging, is at most eight.
 
 Everything that is not printed in this book is public, and
-\cref{tab:jitjet-world} is the one place that says where. The addresses are
-clickable in the electronic copy; in print, the repository is the place to
-start, and its front page links to the rest. Every chapter refers to this
-table and prints only the address of its own companion.
+\cref{tab:jitjet-world} says where. A chapter prints only the address of
+its own companion and points to this table for the rest. The addresses are
+clickable in the electronic copy; in print, start from the repository,
+whose front page links to the rest.
+
+\deskclose{Welcome aboard,\\[0.5ex]
+  \textbf{JitJet}\\
+  Journey is the Jet}
 
 \begin{table}[htbp]\centering\small
 \caption[JitJet World: where everything lives]{JitJet World: where
 everything that the book refers to lives. The chapters point here instead of
-repeating the addresses; the only address a chapter prints itself is that of
-its own companion page.}
+repeating the addresses.}
 \label{tab:jitjet-world}
 \begin{tabular}{@{}p{0.19\textwidth}p{0.43\textwidth}p{0.32\textwidth}@{}}\toprule
 What & Where & What you find there \\ \midrule
@@ -192,3 +185,5 @@ The animated journey &
 
 \todo{Software releases, generator versions, random seeds and the container
 image.}
+\par
+\endgroup

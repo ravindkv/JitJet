@@ -18,7 +18,8 @@ otherwise; the CMSSW analysers are in
 | Event record | [`example/Decay/event_Decay.lhe`](../example/Decay/event_Decay.lhe) (seed 1, 2251 rows, 749 final particles, plus the vertex listing) |
 | Learning-mode log | [`example/Decay/Standalone/standalone_hadron_decays.log`](../example/Decay/Standalone/standalone_hadron_decays.log) (`-v`, 3193 lines) |
 | Validation with PYTHIA | [`example/Decay/Standalone/validate_decays_with_pythia.py`](../example/Decay/Standalone/validate_decays_with_pythia.py) |
-| CMSSW figure | [`example/Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf`](../example/Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf) (page 5); the log is that of chapter 2 |
+| CMSSW figure | [`example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf`](../example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_06_Decay.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_06_Decay.tex); technical companion: [`chapter_06_Decay.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_06_Decay.md) |
 | Film | scene 6 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -251,6 +252,8 @@ distance of each weakly decaying B, the vector sum of all final particles,
 which must vanish, and the missing transverse momentum carried by the
 neutrinos.
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genPartAnalyzer_06_Decay.pdf`](../example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf) at the bottom, each on half a page). Like the CMSSW pages, the display draws the cone of the ledger, Delta R < 0.4 around the last copy of each quark, as a dashed circle with its vector pT and the number of particles inside, and magnifies the one around the b in an inset with the name and pT of its hardest members (`cone_of`, `draw_cones` and `draw_zoom` of `plot_journey_PS.py`, shared by the scripts of chapters 2 and 4 to 6); the script also prints one `cone dR < 0.4 around the b axis ...` line per cone, which is the family row of section 5. Neutrinos are not counted in the cone.
+
 ```bash
 python3 example/Decay/plot_journey_Decay.py                 # -> example/Decay/journey_Decay.pdf
 python3 example/Decay/plot_journey_Decay.py -i my.lhe --png
@@ -394,21 +397,35 @@ section 5.1.
 
 ### 4.2 CMSSW: decays inside the GEN step
 
-Nothing new has to be run. The `GEN` step of chapter 1 decayed the event,
-since `HadronLevel:all` covers the decays and
-`ParticleDecays:limitTau0 = on` with `tau0Max = 10` is in every CMS
-configuration, and JitJetSW's analyser drew the stable particles,
-`genParticles` with status 1, as its fifth figure. From the setup of the
-[chapter 2 companion](chapter_02_PS.md#42-cmssw-the-shower-inside-the-gen-step):
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/06_Decay/run_06_Decay.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the job of chapter 5 with `HadronLevel:Decay = on`: the complete generator event.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_06_Decay.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_06_Decay.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_06_Decay.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_06_Decay.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
 
 ```bash
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./06_Decay/run_06_Decay.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 06_Decay/out/
 ```
 
-produces `genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf`, whose fifth page is
-the chapter's CMSSW figure; the copy in `CMSSW/` is the one used, and the
-log is `example/PS/CMSSW/step1_GEN_PS_cfg.log` of chapter 2. This job
+The page of the analyser that the chapter shows is copied to
+[`example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf`](../example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf);
+the links are also in [`example/Decay/CMSSW/README.md`](../example/Decay/CMSSW/README.md).
+
+In production `HadronLevel:all` covers the decays, and
+`ParticleDecays:limitTau0 = on` with `tau0Max = 10` is in every CMS configuration.
+What the chapter reads from the output (`test/06_Decay/out/`): the final state by
+kind and region and the two cones from `ledger_06_Decay.txt`; the b and bbar systems
+and the members of the cones from `genPartAnalyzer_06_Decay.log`; the decay trees,
+the flight paths and the species from FWLite on `step1_GEN_06_Decay.root` (JitJetSW
+companion, sections 4.4 to 4.6). This job
 decayed its b and c hadrons with PYTHIA's own tables, the ones the script
 embeds; the production configurations of CMS hand them to EvtGen through
 the external-decayer interface instead, with PHOTOS for the radiative
@@ -453,30 +470,30 @@ in the full chain it is a B- in 44% of the events, a Bbar0 in 43, a
 Bbar_s0 in 10 and a Lambda_b0 in 4. "Visible" excludes the neutrinos.
 Commands: `validate_decays_with_pythia.py -n 400` (column 1),
 `standalone_hadron_decays.py --repeat 400` (column 2), `--mode full -n 2000`
-(column 3), `standalone_hadron_decays.py` (column 4), the drawer's table of
-the CMSSW log (column 5); the last three rows are `--mode single --id 511 -n 20000`
+(column 3), `standalone_hadron_decays.py` (column 4), the ledger, the analyser
+log and the FWLite reads of the JitJetSW job `test/06_Decay/` (column 5, section 4.2); the last three rows are `--mode single --id 511 -n 20000`
 and `--single 511 --repeat 20000`.
 
 | quantity | PYTHIA, same hadrons | standalone, same hadrons | PYTHIA full, b drawn | standalone, seed 1 | CMSSW, 1 event |
 |---|---|---|---|---|---|
 | final particles | 739 +- 12 | 740 +- 12 | 459 +- 175 | 749 | 634 |
-| charged / photons / neutrinos | 331 / 329 / 2.9 | 331 / 330 / 3.1 | 210 / 211 / 1.3 | 338 / 327 / 5 | -- |
-| decays performed | 371 | 372 | 205 | 376 | -- |
+| charged / photons / neutrinos | 331 / 329 / 2.9 | 331 / 330 / 3.1 | 210 / 211 / 1.3 | 338 / 327 / 5 | 304 / 273 / 1 |
+| decays performed | 371 | 372 | 205 | 376 | 302 |
 | primary hadrons that survive | 143 | 143 | 86 | 143 | 132 |
 | the B: tau [ps] | 1.41 +- 1.40 | 1.55 +- 1.46 | 1.59 +- 1.60 | 2.24 | -- |
 | the B: L, L_xy [mm] | 13.2, 6.2 | 14.5, 6.8 | 18.7, 7.9 | 21.0, 9.9 | 7.83, 3.13 |
-| the B: final particles (charged) | 11.1 (5.0) | 11.1 (4.9) | 11.0 (4.8) | 15 (8) | 9 |
+| the B: final particles (charged) | 11.1 (5.0) | 11.1 (4.9) | 11.0 (4.8) | 15 (8) | 9 (3) |
 | the B: semileptonic e / mu / tau [%] | 9.5 / 10.0 / 4.0 | 13.0 / 11.0 / 1.2 | 10.9 / 11.4 / 3.4 | hadronic | e |
-| the B: E_nu [GeV], share of E_B | 13.8, 0.084 | 16.4, 0.099 | 18.6, 0.091 | 0, 0 | 96.2, 0.41 |
+| the B: E_nu [GeV], share of E_B | 13.8, 0.084 | 16.4, 0.099 | 18.6, 0.091 | 0, 0 | 95.5, 0.40 |
 | the B: tracks with abs(d0) > 100 um, mean abs(d0) [um] | 3.0, 330 | 3.0, 362 | 3.0, 358 | 8, max 1640 | -- |
 | the B: oscillated [%] | 3.5 (flagged) | 16.8 | 3.7 (flagged) | no | no |
-| b, dR < 0.4: primaries -> final -> visible pT [GeV] | 99.23 -> 98.79 -> 92.3 +- 11.4 | 99.23 -> 98.79 -> 91.1 +- 12.2 | 109.2 -> 109.3 -> 101.4 | 99.23 -> 99.43 -> 99.43 | -- |
+| b, dR < 0.4: primaries -> final -> visible pT [GeV] | 99.23 -> 98.79 -> 92.3 +- 11.4 | 99.23 -> 98.79 -> 91.1 +- 12.2 | 109.2 -> 109.3 -> 101.4 | 99.23 -> 99.43 -> 99.43 | 114.45 -> . -> 79.12 |
 | b, dR < 0.4: final particles (charged) | 24.6 (9.6) | 24.7 (9.5) | 21.0 (9.2) | 31 (16) | -- |
 | b, dR < 0.4: charged pT [GeV], B share | 51.3, 0.788 | 49.9, 0.788 | 60.6, 0.799 | 67.4, 0.79 | -- |
 | b, dR < 0.4: mass, primaries -> final [GeV] | 16.1 -> 14.1 | 16.1 -> 14.2 | 14.2 -> 12.3 | 16.1 -> 14.6 | -- |
 | b, dR < 0.8: final -> visible pT [GeV] | 107.2 -> 100.7 | 107.2 -> 99.5 | 119.2 -> 111.3 | 108.73 -> 108.73 | -- |
 | bbar: L, L_xy [mm] | 119, 7.7 | 117, 7.6 | 152, 7.4 | 146.9, 9.5 | 117.3, 5.5 |
-| bbar, dR < 0.4: final -> visible pT [GeV] | 92.4 -> 85.7 +- 11.3 | 92.4 -> 84.7 +- 12.7 | 106.3 -> 99.1 | 92.99 -> 92.99 | -- |
+| bbar, dR < 0.4: final -> visible pT [GeV] | 92.4 -> 85.7 +- 11.3 | 92.4 -> 84.7 +- 12.7 | 106.3 -> 99.1 | 92.99 -> 92.99 | 115.94 -> 115.94 |
 | B0 at rest (20 000): final / charged / photons | 10.87 / 4.85 / 4.50 | 11.11 / 4.90 / 4.77 | -- | -- | -- |
 | B0 at rest: semileptonic (e + mu) [%], `<E_l>` [GeV] | 20.7, 1.383 | 20.5, 1.396 | -- | -- | -- |
 | B0 at rest: D- / Dbar0 / D0 / D+ [%] | 35 / 27 / 11 / 10 | 30 / 28 / 12 / 9 | -- | -- | -- |
@@ -534,16 +551,32 @@ every particle with a positive status, "visible" excludes the neutrinos.
 | its decay | hadronic, D*_s- D*0 rho+ | semileptonic, nu_ebar e- D*_00 |
 | L, L_xy | 21.0 mm, 9.9 mm | 7.83 mm, 3.13 mm |
 | final particles from the B | 15 | 9 |
-| the neutrino | none | 37.457 GeV of pT, 96.2 GeV of energy (f_nu = 0.41) |
+| the neutrino | none | 37.457 GeV of pT, 95.5 GeV of energy (f_nu = 0.40) |
 | the other B hadron | B0 (oscillated), 146.9 mm along the beam, L_xy 9.5 mm | B+, 117.3 mm along the beam, L_xy 5.53 mm, 16 final particles |
 
 ### 5.5 The energy ledger
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (seed 1, `event_Decay.lhe`) | | | | |
 | b family after hadronisation (dR < 0.4) | 99.23 | 16.08 | 6 | |
 | b family after this stage (dR < 0.4, final) | 99.43 | 14.59 | 31 | +0.20 |
 | of which visible (no neutrino) | 99.43 | 14.59 | 31 | 0.00 |
 | of which charged | 67.43 | | 16 | |
 | of which the Bbar0's descendants | 78.26 | 5.28 | 15 | |
 | the same within dR < 0.8 | 108.73 | 42.14 | 51 | +2.75 |
+| **CMSSW** (run 1, event 1; decays on) | | | | |
+| b family after hadronisation (dR < 0.4) | 114.45 | 20.4 | 9 | |
+| b family after this stage, visible (dR < 0.4) | 79.12 | 12.1 | 21 | -35.33 |
+| the nu_ebar of the B-, inside the cone, not counted | 37.46 | 0 | 1 | |
+
+The standalone family row is printed by `plot_journey_Decay.py` (`cone dR < 0.4
+around the b axis ...: n = 31, |sum pT| = 99.43 GeV`, neutrinos not counted). The CMSSW
+rows: `ledger_06_Decay.txt` of JitJetSW, `b axis [824] status 71 ...: n=21 E=200.6 GeV
+vector pT=79.1 GeV` (E = 200.624, pT = 79.121 from its FWLite), and the stage-5 "cone"
+line of `genPartAnalyzer_06_Decay.log`, `n=21 pt=79.1207 eta=-1.58026`; the mass from
+m = sqrt(E^2 - pT^2 cosh^2 eta) = 12.1 GeV; the difference 79.121 - 114.446 =
+-35.33 GeV. The antineutrino (37.46 GeV of pT, 95.5 GeV of energy, Delta R = 0.02
+from the axis) is the only neutrino of the event (`ledger_06_Decay.txt`, "by kind");
+the earlier value of 96.2 GeV for its energy was pT cosh(eta) with a rounded eta, and
+f_nu = 95.5 / 235.9 = 0.40.

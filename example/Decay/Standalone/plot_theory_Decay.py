@@ -69,7 +69,7 @@ C_MM_PER_PS = core.C_MM_PER_PS
 # the vertices there are in cm)
 CMSSW = dict(n_final=634, n_border=38, n_primary_stable=132, n_from_decays=477,
              b=dict(string="B-", weak="B-", pt=94.279, e=235.85, L=7.83, Lxy=3.13, channel="nu_ebar e- D*_00", cls="semileptonic (e)",
-                    n_system=9, e_nu=96.2, pt_nu=37.457, pt_lepton=4.951, charm="D0", L_charm=1.0, system_pt=94.28),
+                    n_system=9, e_nu=95.5, pt_nu=37.457, pt_lepton=4.951, charm="D0", L_charm=1.0, system_pt=94.28),
              bbar=dict(string="B*+", weak="B+", pt=112.618, e=2385.5, L=117.3, Lxy=5.53, channel="D*bar0 pi+ pi0 K0 K*bar0", cls="hadronic",
                        n_system=16, e_nu=0.0, pt_nu=0.0, pt_lepton=0.0, charm="Dbar0", L_charm=140.6, system_pt=114.17))
 STATS = HERE / "standalone_decay_stats.stats.json"

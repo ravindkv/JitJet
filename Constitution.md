@@ -45,9 +45,12 @@ Rule C: The .tex chapter then has exactly these sections
                script or a script next to it; one figure per equation
         The theory ends with the recipe, step by step, that the script runs.
     (C3) The energy ledger: our jet at this stage
-        (C3-1) the ledger table and the eta-phi display side by side,
-               standalone and CMSSW, cumulative since chapter 1; details in
-               the .md
+        (C3-1) the ledger table, one block of rows for the standalone event
+               and one for the CMSSW event, cumulative since chapter 1; then
+               the paragraph "The same event in CMSSW"; then one figure page
+               with the two eta-phi displays as sub-figures, standalone on
+               top and CMSSW below, half a page each; details in the .md,
+               which links the JitJetSW .tex and .md of the stop
         (C3-2) what this stop is, and what it is not
     (C4) Further reading
         (C4-1) pitfalls and FAQs for newcomers

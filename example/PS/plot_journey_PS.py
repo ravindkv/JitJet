@@ -3,8 +3,9 @@
 
 The input is the parton-level listing written by standalone_parton_showering.py
 (PYTHIA listing format, saved as event_PS.lhe). The picture follows
-example/PS/CMSSW/genPartAnalyzer_stage2_partonShower_run1_event1.pdf so that
-the standalone and the CMSSW result can be compared side by side:
+example/PS/CMSSW/genPartAnalyzer_02_PS.pdf, the page of the CMSSW analyser,
+so that the standalone and the CMSSW result can be compared one above the
+other on the same page of the book:
 
   * header lines with the kinematics of the b (red) and bbar (blue) quark and
     of their vector sum (magenta), then the net pT of the ISR partons (orange),
@@ -13,7 +14,12 @@ the standalone and the CMSSW result can be compared side by side:
     log pT, labelled with its pT when it is above 5 GeV; partons beyond
     |eta| = 6 are drawn on the border with a cross;
   * a legend column with the particle origin, the marker-size scale and the
-    list of generator stages with the current one highlighted.
+    list of generator stages with the current one highlighted;
+  * the cone of the energy ledger, Delta R < 0.4 around the last copy of each
+    hard quark, as a dashed circle with its vector pT and the number of
+    partons inside, and an inset that magnifies the cone of the b with the
+    name and pT of its members (cone_of, draw_cones, draw_zoom; the journey
+    scripts of the MPI, hadronisation and decay stages reuse them).
 
 "b quark" and "bbar quark" are the final-state copies of the two hard quarks,
 found by following the same-flavour daughter down the record (CMSSW's status
@@ -41,6 +47,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.patches import Ellipse  # noqa: E402
 
 # --- appearance (colours and markers of the CMSSW genPartAnalyzer figures) -----
 FAMILY = {
@@ -58,6 +65,7 @@ REGIONS = [
     ("HF", 3.0, 5.2, "#e4e2da"),
 ]
 ETA_MAX = 6.0
+CONE_R = 0.4  # the cone of the energy ledger: what a jet of radius 0.4 around the quark would collect
 STAGES = ["1 hard process", "2 ISR + FSR", "3 MPI / remnants", "4 hadronisation", "5 hadron decays"]
 STAGE = 2
 
@@ -176,6 +184,139 @@ def dphi(a: float, b: float) -> float:
     return 2 * math.pi - d if d > math.pi else d
 
 
+# --- the cone of the ledger (shared by the journey scripts of the later stages) -----
+def wrap(d: float) -> float:
+    """An azimuthal difference brought to (-pi, pi]."""
+    return (d + math.pi) % (2 * math.pi) - math.pi
+
+
+def cone_of(final, axis, R: float = CONE_R, keep=None):
+    """The final-state rows within Delta R < R of the row `axis` (in eta, phi) and their vector sum.
+
+    This is the "family" row of the energy ledger and the dashed circle of the CMSSW genPartAnalyzer pages
+    (its option coneR). `keep` can drop rows from the sum, e.g. the neutrinos."""
+    ka = kinematics(axis)
+    members = []
+    for r in final:
+        if keep is not None and not keep(r):
+            continue
+        k = kinematics(r)
+        if math.hypot(k["eta"] - ka["eta"], wrap(k["phi"] - ka["phi"])) < R:
+            members.append(r)
+    v = vsum(members) if members else dict(px=0.0, py=0.0, pz=0.0, e=0.0)
+    return dict(eta=ka["eta"], phi=ka["phi"], R=R, members=members, n=len(members),
+                pt=math.hypot(v["px"], v["py"]), m=mass(v) if members else 0.0, e=v["e"])
+
+
+def print_cones(cones: dict):
+    for key, c in cones.items():
+        print(f"cone dR < {c['R']:g} around the {key} axis (eta = {c['eta']:.3f}, phi = {c['phi']:.3f}): n = {c['n']}, "
+              f"|sum pT| = {c['pt']:.2f} GeV, m = {c['m']:.1f} GeV (from the rounded listing), E = {c['e']:.2f} GeV")
+
+
+def draw_cones(ax, cones: dict):
+    """A dashed circle Delta R < R around each axis with the vector pT and the number of particles inside."""
+    for key, c in cones.items():
+        col, R = FAMILY[key]["color"], c["R"]
+        for shift in (0.0, 2 * math.pi, -2 * math.pi):          # a circle that crosses phi = +-pi continues on the other side
+            ax.add_patch(Ellipse((c["eta"], c["phi"] + shift), 2 * R, 2 * R, fill=False, ls=(0, (4, 2)), lw=1.5,
+                                 edgecolor=col, zorder=7, clip_on=True))
+        below = c["phi"] - R > -math.pi + 0.30
+        ax.annotate(f"cone {R:g}: {c['pt']:.1f} GeV (n = {c['n']})", (c["eta"], c["phi"] - R if below else c["phi"] + R),
+                    xytext=(0, -3 if below else 3), textcoords="offset points", ha="center", va="top" if below else "bottom",
+                    fontsize=7, color=col, zorder=8, annotation_clip=False)
+
+
+def legend_cone(side, y: float = -0.085):
+    """The cone entry of the legend column, below the list of stages."""
+    side.plot([0.02, 0.14], [y, y], ls=(0, (4, 2)), lw=1.5, color=TEXT, clip_on=False)
+    side.text(0.2, y, rf"cone $\Delta R$ < {CONE_R:g} (the ledger)", fontsize=8.5, color=TEXT, va="center", clip_on=False)
+
+
+def zoom_rects(ax, fig, final, cones: dict, n: int = 1, height: float = 0.42):
+    """Where to put n insets: the corners of the frame that cover the fewest particles and no cone."""
+    R = max(c["R"] for c in cones.values())
+    box = ax.get_position()
+    w_in, h_in = box.width * fig.get_figwidth(), box.height * fig.get_figheight()
+    width = height * h_in * (ZOOM_X[1] - ZOOM_X[0]) / (ZOOM_Y[1] - ZOOM_Y[0]) / w_in
+    pad_x, pad_y = 0.012, 0.018
+    spots = [(1 - width - pad_x, 1 - height - pad_y), (1 - width - pad_x, pad_y), (pad_x, 1 - height - pad_y), (pad_x, pad_y)]
+    pts = [place(kinematics(r))[:2] for r in final]
+    scored = []
+    for order, (x0, y0) in enumerate(spots):
+        e0, e1 = -ETA_MAX + 2 * ETA_MAX * x0, -ETA_MAX + 2 * ETA_MAX * (x0 + width)
+        f0, f1 = -math.pi + 2 * math.pi * y0, -math.pi + 2 * math.pi * (y0 + height)
+        hits = sum(1 for e, f in pts if e0 < e < e1 and f0 < f < f1) + (2 if y0 < 0.5 else 0)   # the bottom corners hold the notes
+        for c in cones.values():
+            if e0 - R < c["eta"] < e1 + R and f0 - R - 0.25 < c["phi"] < f1 + R + 0.25:
+                hits += 10 ** 6
+        scored.append((hits, order, [x0, y0, width, height]))
+    return [rect for _, _, rect in sorted(scored)[:n]]
+
+
+ZOOM_X = (-1.55, 2.55)   # the inset frame in units of R around the cone axis: tick labels, the cone, a column for the labels
+ZOOM_Y = (-1.45, 1.55)   # ... tick labels below and a strip for the title above
+
+
+def draw_zoom(ax, final, cone, rect, color, title: str, style_of, label_of, n_label: int = 10):
+    """The cone once more, magnified, with the name and pT of its hardest members (as on the CMSSW pages).
+
+    style_of(row) -> dict(marker, color, filled); label_of(row) -> the text of its label."""
+    R, e0, f0 = cone["R"], cone["eta"], cone["phi"]
+    axin = ax.inset_axes(rect, zorder=9)
+    axin.set_facecolor("white")
+    axin.set_xlim(e0 + ZOOM_X[0] * R, e0 + ZOOM_X[1] * R)
+    axin.set_ylim(f0 + ZOOM_Y[0] * R, f0 + ZOOM_Y[1] * R)
+    for spine in axin.spines.values():
+        spine.set_color(color)
+        spine.set_linewidth(1.8)
+    axin.tick_params(axis="x", labelsize=5.8, direction="in", length=2.5, colors=TEXT, pad=-9)      # tick labels inside the frame
+    axin.tick_params(axis="y", labelsize=5.8, direction="in", length=2.5, colors=TEXT, pad=-4)
+    step = 0.2 if R <= 0.5 else 0.4
+    axin.set_xticks([x for x in (round((e0 - 1.2 * R) / step) * step + i * step for i in range(8)) if abs(x - e0) <= 1.05 * R])
+    axin.set_yticks([y for y in (round((f0 - 1.2 * R) / step) * step + i * step for i in range(8)) if abs(y - f0) <= 1.05 * R])
+    for lab in axin.get_yticklabels():
+        lab.set_horizontalalignment("left")
+    axin.grid(color=TEXT, lw=0.3, ls=":")
+    axin.set_axisbelow(True)
+    axin.add_patch(Ellipse((e0, f0), 2 * R, 2 * R, fill=False, ls=(0, (4, 2)), lw=1.5, edgecolor=color, zorder=2))
+    axin.text(0.02, 0.975, title, transform=axin.transAxes, fontsize=6.6, color=color, va="top", ha="left", weight="bold")
+    inside = {id(r) for r in cone["members"]}
+    shown = []
+    for r in sorted(final, key=lambda r: -kinematics(r)["pt"]):
+        k = kinematics(r)
+        de, df = k["eta"] - e0, wrap(k["phi"] - f0)
+        if abs(de) > 1.22 * R or abs(df) > 1.22 * R:
+            continue
+        st = style_of(r)
+        member = id(r) in inside
+        axin.scatter(e0 + de, f0 + df, s=area(k["pt"]) * 1.6, marker=st["marker"],
+                     facecolor=st["color"] if st.get("filled", True) else "none", edgecolor=st["color"],
+                     linewidth=0.9, alpha=0.95 if member else 0.35, zorder=4 if member else 3)
+        if member:
+            shown.append((f0 + df, e0 + de, r, st))
+    labelled = sorted(sorted(shown, key=lambda t: -kinematics(t[2])["pt"])[:n_label], key=lambda t: -t[0])
+    if labelled:
+        gap = 0.21 * R
+        top, bottom = f0 + 1.12 * R, f0 - 1.12 * R
+        ys = []
+        for f, _, _, _ in labelled:
+            ys.append(min(f, ys[-1] - gap) if ys else min(f, top))
+        if ys[-1] < bottom:                                   # push the column up if it ran out of the frame
+            shift = bottom - ys[-1]
+            ys = [y + shift for y in ys]
+            for i in range(len(ys)):
+                ys[i] = min(ys[i], top - i * gap)
+        x_lab = e0 + 1.33 * R
+        for y, (f, e, r, st) in zip(ys, labelled):
+            axin.plot([e, x_lab - 0.03 * R], [f, y], lw=0.4, color="#777777", zorder=3)
+            axin.text(x_lab, y, label_of(r), fontsize=6.2, color=st["color"], va="center", ha="left", zorder=5)
+    if len(shown) > len(labelled):
+        axin.text(0.98, 0.02, f"+{len(shown) - len(labelled)} more", transform=axin.transAxes, fontsize=5.8, color=TEXT2,
+                  ha="right", va="bottom")
+    return axin
+
+
 def summary(final, beams, incoming0, incoming):
     """Numbers shown in the header and printed to the terminal."""
     stars = {r["star"]: r for r in final if r["star"] is not None}
@@ -187,6 +328,7 @@ def summary(final, beams, incoming0, incoming):
                          scalar=kinematics(stars[5])["pt"] + kinematics(stars[-5])["pt"],
                          dphi=dphi(kinematics(stars[5])["phi"], kinematics(stars[-5])["phi"]))
     out["all"] = vsum(final)
+    out["cones"] = {key: cone_of(final, stars[pid]) for pid, key in ((5, "b"), (-5, "bbar")) if pid in stars}
     out["extra_b"] = [r for r in final if abs(r["id"]) == 5 and r["star"] is None]
     if beams:
         ebeam = beams[0]["e"]
@@ -212,6 +354,7 @@ def print_table(final, s):
         bb = s["bb"]
         print(f"b + bbar: |pT(b) + pT(bbar)| = {bb['pt']:.2f} GeV, phi = {bb['phi']:+.2f}, y = {bb['y']:+.2f}, "
               f"m = {bb['m']:.1f} GeV, sum |pT| = {bb['scalar']:.2f} GeV, dphi(b, bbar) = {bb['dphi']:.2f}")
+    print_cones(s["cones"])
     a = s["all"]
     print(f"all {s['n']} final-state partons: |sum pT| = {math.hypot(a['px'], a['py']):.3f} GeV, "
           f"sum pz = {a['pz']:.1f} GeV, sum E = {a['e']:.1f} GeV")
@@ -376,6 +519,31 @@ def header(fig, s, title: str, source: str, n_drawn: int, n_border: int, label_m
     return y
 
 
+def parton_style(r):
+    """How draw_particles draws a parton, for the inset of the cone."""
+    return dict(marker=FAMILY[r["cat"]]["marker"], color=FAMILY[r["cat"]]["color"], filled=r["star"] is not None)
+
+
+def parton_label(r):
+    return f"{parton_tex(r['id'])} {kinematics(r)['pt']:.1f}"
+
+
+def cone_title(name: str, c) -> str:
+    return rf"{name} cone $\Delta R$ < {c['R']:g}: n = {c['n']}, $p_T$ = {c['pt']:.2f} GeV"
+
+
+def draw_cone_layer(ax, fig, final, s, style_of, label_of, zoom=("b",), names=None):
+    """The dashed cones of the ledger and the inset(s) that magnify them; used by every journey script from here on."""
+    cones = s.get("cones", {})
+    if not cones:
+        return
+    draw_cones(ax, cones)
+    keys = [k for k in zoom if k in cones]
+    names = names or {"b": r"$b$", "bbar": r"$\bar b$"}
+    for key, rect in zip(keys, zoom_rects(ax, fig, final, cones, n=len(keys))):
+        draw_zoom(ax, final, cones[key], rect, FAMILY[key]["color"], cone_title(names[key], cones[key]), style_of, label_of)
+
+
 def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: float):
     plt.rcParams.update({"font.size": 9, "pdf.fonttype": 42, "mathtext.default": "regular"})
     fig = plt.figure(figsize=(10.0, 7.0))
@@ -386,8 +554,10 @@ def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: 
     draw_axes(ax)
     draw_particles(ax, final, s, label_min)
     draw_incoming(ax, s)
+    draw_cone_layer(ax, fig, final, s, parton_style, parton_label)
     side = fig.add_axes([0.79, 0.08, 0.20, top - 0.08])
     draw_legend(side, {k: len(v) for k, v in s["cats"].items()}, STAGE)
+    legend_cone(side)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output)
     if png:

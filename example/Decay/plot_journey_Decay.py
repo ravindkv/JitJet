@@ -6,7 +6,7 @@ The input is the listing written by Standalone/standalone_hadron_decays.py (PYTH
 format plus a vertex table, saved as event_Decay.lhe): the final particles are the rows with
 a positive status (the primary hadrons that are stable for the detector keep their status
 81-84, the decay products carry 91 or 92). The picture follows
-example/Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf, page 5, so that the
+example/Decay/CMSSW/genPartAnalyzer_06_Decay.pdf, so that the
 standalone and the CMSSW result can be compared side by side. It reuses the frame, the
 marker sizes and the parsing of ../PS/plot_journey_PS.py and ../Had/plot_journey_Had.py;
 the categories of this stage are
@@ -125,7 +125,8 @@ def classify(rows, vertices):
         key = "b" if pid > 0 else "bbar"
         for d in desc:
             rows[d]["cat"] = key
-        systems[pid] = dict(string=h, weak=weak_hadron(rows, h["no"], vertices), members=[rows[d] for d in desc])
+        quark = next((rows[n] for n in (copy, rows[copy]["m1"]) if n in rows and abs(rows[n]["status"]) == 62), rows[copy])
+        systems[pid] = dict(string=h, weak=weak_hadron(rows, h["no"], vertices), members=[rows[d] for d in desc], quark=quark)
     n_strings = len({(r["m1"], r["m2"]) for r in rows.values() if abs(r["status"]) in (81, 82, 83, 84)})
     return final, systems, n_strings
 
@@ -147,6 +148,9 @@ def summary(final, systems, vertices, n_strings):
         bb = dict(px=a["px"] + b["px"], py=a["py"] + b["py"], pz=a["pz"] + b["pz"], e=a["e"] + b["e"])
         out["bb"] = dict(**kinematics(bb), m=mass(bb), **bb, scalar=a["pt"] + b["pt"], dphi=dphi(a["phi"], b["phi"]))
     out["all"] = vsum(final)
+    # the cone of the ledger, around the last copy of each quark; neutrinos are not counted (the "visible" row)
+    out["cones"] = {key: ps.cone_of(final, systems[pid]["quark"], keep=lambda r: not r["nu"])
+                    for pid, key in ((5, "b"), (-5, "bbar")) if pid in systems}
     nus = [r for r in final if r["nu"]]
     out["nu"] = dict(n=len(nus), e=sum(r["e"] for r in nus), pt=kinematics(vsum(nus))["pt"] if nus else 0.0)
     return out
@@ -167,6 +171,7 @@ def print_table(final, s, names):
     if "bb" in s:
         bb = s["bb"]
         print(f"b + bbar systems: |pT(b) + pT(bbar)| = {bb['pt']:.2f} GeV, m = {bb['m']:.1f} GeV, dphi = {bb['dphi']:.2f}")
+    ps.print_cones(s["cones"])
     a = s["all"]
     print(f"all {s['n']} final particles: |sum pT| = {math.hypot(a['px'], a['py']):.3f} GeV, sum pz = {a['pz']:.1f}, sum E = {a['e']:.1f} GeV; "
           f"{s['nu']['n']} neutrinos carry {s['nu']['e']:.1f} GeV, missing pT = {s['nu']['pt']:.2f} GeV")
@@ -263,6 +268,16 @@ def header(fig, s, title: str, source: str, n_drawn: int, n_border: int, label_m
     return y
 
 
+STABLE_TEX = {"gamma": r"$\gamma$", "K_S0": r"$K^0_S$", "K_L0": r"$K^0_L$", "e-": r"$e^-$", "e+": r"$e^+$", "mu-": r"$\mu^-$",
+              "mu+": r"$\mu^+$", "nu_e": r"$\nu_e$", "nu_ebar": r"$\bar\nu_e$", "nu_mu": r"$\nu_\mu$", "nu_mubar": r"$\bar\nu_\mu$",
+              "nu_tau": r"$\nu_\tau$", "nu_taubar": r"$\bar\nu_\tau$"}
+
+
+def particle_tex(name: str) -> str:
+    """The name of a final particle for a label: the leptons, photons and neutral kaons, else the hadron."""
+    return STABLE_TEX.get(name) or hadron_tex(name)
+
+
 def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: float, names: dict):
     plt.rcParams.update({"font.size": 9, "pdf.fonttype": 42, "mathtext.default": "regular"})
     fig = plt.figure(figsize=(10.0, 7.4))
@@ -272,8 +287,12 @@ def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: 
     ax = fig.add_axes([0.06, 0.08, 0.70, top - 0.08])
     ps.draw_axes(ax)
     draw_particles(ax, final, s, label_min, names)
+    ps.draw_cone_layer(ax, fig, final, s,
+                       lambda r: dict(marker=FAMILY[r["cat"]]["marker"], color=FAMILY[r["cat"]]["color"], filled=not r["nu"]),
+                       lambda r: f"{particle_tex(names.get(r['no'], str(r['id'])))} {kinematics(r)['pt']:.1f}")
     side = fig.add_axes([0.79, 0.08, 0.20, top - 0.08])
     draw_legend(side, {k: len(v) for k, v in s["cats"].items()}, STAGE, s["n_strings"])
+    ps.legend_cone(side)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output)
     if png:

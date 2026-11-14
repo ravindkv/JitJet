@@ -16,7 +16,8 @@ the CMSSW analysers are in [JitJetSW](https://github.com/ravindkv/JitJetSW).
 | Event record | [`example/PS/event_PS.lhe`](../example/PS/event_PS.lhe) (seed 1, 158 rows) |
 | Learning-mode log | [`example/PS/Standalone/standalone_parton_showering.log`](../example/PS/Standalone/standalone_parton_showering.log) (`-v`, 1683 lines) |
 | Validation with PYTHIA | [`example/PS/Standalone/validate_shower_with_pythia.py`](../example/PS/Standalone/validate_shower_with_pythia.py) |
-| CMSSW log and figures | [`example/PS/CMSSW/`](../example/PS/CMSSW/) |
+| CMSSW figure | [`example/PS/CMSSW/genPartAnalyzer_02_PS.pdf`](../example/PS/CMSSW/genPartAnalyzer_02_PS.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_02_PS.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_02_PS.tex); technical companion: [`chapter_02_PS.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_02_PS.md) |
 | Film | scene 2 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -297,6 +298,8 @@ hard bbar or an ISR emission, and prints a table of all partons with their
 origin, the momentum sums of the chapter's "children who run away" section
 and the x walk of the incoming partons. It needs matplotlib only:
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genPartAnalyzer_02_PS.pdf`](../example/PS/CMSSW/genPartAnalyzer_02_PS.pdf) at the bottom, each on half a page). Like the CMSSW pages, the display draws the cone of the ledger, Delta R < 0.4 around the last copy of each quark, as a dashed circle with its vector pT and the number of particles inside, and magnifies the one around the b in an inset with the name and pT of its hardest members (`cone_of`, `draw_cones` and `draw_zoom` of `plot_journey_PS.py`, shared by the scripts of chapters 2 and 4 to 6); the script also prints one `cone dR < 0.4 around the b axis ...` line per cone, which is the family row of section 5.
+
 ```bash
 python3 example/PS/plot_journey_PS.py                  # -> example/PS/journey_PS.pdf
 python3 example/PS/plot_journey_PS.py -i my.lhe --label-min 10 --png
@@ -420,36 +423,38 @@ PYTHIA showers the two thousand copies in about a minute. The results are
 the tables of sections 5.1 to 5.3. One trap, found on 2026-10-09: `Tune:pp = 14`
 resets `PDF:pSet`, so the PDF must be given after the tune, as CMSSW does.
 
-### 4.2 CMSSW: the shower inside the GEN step
+### 4.2 CMSSW: the shower in a GEN step of its own
 
-In CMS nobody runs the shower separately. The `GEN` step of chapter 1 hands
-the hard process to PYTHIA's `PartonLevel`, which runs the interleaved ISR,
-FSR and multiparton interactions, adds the beam remnants and passes the
-result to hadronisation, all inside the one `cmsRun` job; the output is the
-`genParticles` collection, in which every stage is still visible through
-the status codes. The book's own analysis package, JitJetSW, adds an
-analyser that draws each stage separately:
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/02_PS/run_02_PS.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the job of chapter 1 with `PartonLevel:ISR = on` and `PartonLevel:FSR = on`; multiparton interactions and the hadron level off.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_02_PS.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_02_PS.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_02_PS.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_02_PS.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
 
 ```bash
-cmsrel CMSSW_15_0_5
-cd CMSSW_15_0_5/src
-cmsenv
-git clone git@github.com:ravindkv/JitJetSW.git
-cd JitJetSW && scram b
-cd Journey/test
-cmsRun step1_GEN_cfg.py 2>&1 | tee step1_GEN_PS_cfg.log
-cmsRun genPartAnalyzer_cfg.py
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./02_PS/run_02_PS.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 02_PS/out/
 ```
 
-The first `cmsRun` is the configuration of chapter 1 with the
-`customiseJitJet` line active, which adds a `ParticleListDrawer` that prints
-the whole generator record of the first event; the second reads the output
-file and writes one figure per stage,
-`genPartAnalyzer_stage1_hardProcess_run1_event1.pdf` through stage 5. The
-log and the first two figures are in `CMSSW/`.
+The page of the analyser that the chapter shows is copied to
+[`example/PS/CMSSW/genPartAnalyzer_02_PS.pdf`](../example/PS/CMSSW/genPartAnalyzer_02_PS.pdf);
+the links are also in [`example/PS/CMSSW/README.md`](../example/PS/CMSSW/README.md).
 
-**Reading the log.** Three things in `step1_GEN_PS_cfg.log` close the loop
-with the chapter. At initialisation (line 21) the warning
+In production nobody runs the shower separately: the `GEN` step hands the hard
+process to PYTHIA's `PartonLevel`, which runs ISR, FSR and the multiparton
+interactions interleaved in one falling pT sequence. This job switches the
+interactions off, so that it shows the shower alone; with them on (the job of
+chapter 4) the same seed draws a different shower of the same hard process.
+
+**Reading the log** (`test/02_PS/out/step1_GEN_02_PS.log`). Three things close
+the loop with the chapter. At initialisation the warning
 
 ```text
  PYTHIA Warning in SimpleTimeShower::init: pTmin too low , raised to 0.611
@@ -465,31 +470,26 @@ the four CP5 shower lines:
  | TimeShower:alphaSvalue                        |                  0.11800 |      0.13650   0.0600000     0.25000 |
 ```
 
-In the Info Listing of the first event, after the invariants of chapter 1,
-come
+In the Info Listing of the event, after the invariants of chapter 1, come the
+starting scale, `Max pT scale for ISR = 1.133e+02, FSR = 1.133e+02`, and the
+count `Number of MPI = 1, ISR = 0, FSRproc = 5`: the one "MPI" is the hard
+process itself, the initial-state shower made no emission and the final-state
+shower five. In the log of the chapter 4 job the same line reads
+`Number of MPI = 32, ISR = 28, FSRproc = 64`, where the 28 and 64 branchings
+belong to all 32 scattering systems together.
 
-```text
- Max pT scale for MPI =  1.133e+02, ISR =  1.133e+02, FSR =  1.133e+02.
- Number of MPI =    32, ISR =    28, FSRproc =    64, FSRreson =     0.
-```
+**What the chapter reads from the output** (`test/02_PS/out/`):
 
-The first line is the starting scale, the same number for all three
-interleaved processes. The second is not directly comparable with the
-standalone counts: with multiparton interactions on, the 32 additional
-scatterings radiate too, and the 28 initial-state and 64 final-state
-branchings count all of them. The single warning
-`SimpleSpaceShower::pT2nextQCD: weight above unity` (line 97) is the same
-event as the script's counter of weights above one: the PDF-ratio
-overestimate of the veto algorithm was exceeded once, and PYTHIA, like the
-script, accepts the branching and says so.
-
-**The drawer's table.** After the hard-process listing comes the
-`ParticleListDrawer` table, 1846 rows for our event: PYTHIA's record seen
-through CMSSW's `GenParticle` interface. The status column is PYTHIA's,
-always positive, and the last column carries the status flags that CMS
-analyses use instead of walking the record (`isHardProcess`, `isFirstCopy`,
-`isLastCopyBeforeFSR`, `isLastCopy`). The mother's copies are in section
-5.5.
+| number in the chapter | value | file |
+|---|---|---|
+| entries in `genParticles`, before and after | 14, 34 | `ledger_01_ME.txt`, `ledger_02_PS.txt` |
+| the five FSR branchings (b -> b g at 47.70 + 65.58 GeV, mass 11.6 GeV, dR 0.156; g -> g g three times; g -> d dbar) | section "The same event in CMSSW" | `step1_GEN_02_PS.root`, FWLite (JitJetSW companion 4.4, 4.5) |
+| the b quark after the shower | 46.88 GeV (index 20, status 52), 47.04 GeV (status 1) | `genPartAnalyzer_02_PS.log`, `ledger_02_PS.txt` |
+| the b family, dR < 0.4, status 1 | n = 6, vector pT 113.555 GeV, mass 13.8 GeV | `ledger_02_PS.txt` ("cone"), FWLite |
+| the bbar | 113.22 GeV (status 23), 114.05 GeV (status 1) | the same |
+| net b + bbar | 66.4 GeV | `genPartAnalyzer_02_PS.log` |
+| 1000 events: no ISR in 2.2 %, a silent bbar in 35.4 %, 3.3 ISR and 14.0 FSR branchings on average | | `showerStats_02_PS.txt` |
+| 1000 events: cross section | 348.2 +/- 6.1 pb | `xsec_GEN_02_PS.log` |
 
 ## 5. The full tables
 
@@ -500,23 +500,24 @@ the shower. The first two columns are averages over 2000 showers of the same
 hard event (the standard deviation of a single shower is quoted after +-
 where it matters; the error of a mean is 45 times smaller); the third column
 is the one shower with seed 1 that wrote `event_PS.lhe`; the last is the
-single event of the CMSSW log, in which multiparton interactions and
-hadronisation were also on. Commands: `validate_shower_with_pythia.py -n 2000`
+single event of the CMSSW job of this chapter (the two showers on, multiparton
+interactions and hadronisation off; its shower partons are counted without the
+four beam remnants). Commands: `validate_shower_with_pythia.py -n 2000`
 (column 1), `standalone_parton_showering.py --repeat 2000 --quiet --history s.json`
-(column 2), `standalone_parton_showering.py` (column 3), the drawer's table
-of `CMSSW/step1_GEN_PS_cfg.log` (column 4).
+(column 2), `standalone_parton_showering.py` (column 3), the log, the ledger and the
+FWLite dump of the JitJetSW job `test/02_PS/` (column 4, section 4.2).
 
 | quantity | PYTHIA 8.315, 2000 showers | standalone, 2000 showers | standalone, seed 1 | CMSSW, 1 event |
 |---|---|---|---|---|
-| ISR branchings | 4.93 +- 2.9 | 4.88 +- 2.9 | 5 | -- |
-| FSR branchings | 19.1 +- 11 | 20.9 +- 12 | 33 | -- |
-| final partons (of which gluons) | 26.0 (20.9) | 27.7 (22.0) | 40 (27) | 57 drawn |
-| partons with pT > 20 / 5 / 1 GeV | 2.8 / 7.1 / 18.6 | 2.8 / 7.3 / 19.5 | 8 / 18 / 31 | -- |
-| x after ISR, +z / -z parton | 0.042 / 0.446 | 0.042 / 0.446 | 0.017 / 0.470 | -- |
-| b: pT after the shower [GeV] | 94.6 +- 30 | 93.9 +- 29 | 78.1 | 91.6 |
-| b family: pT / n / m [GeV] | 107.8 / 2.5 / 8.1 | 108.4 / 2.7 / 8.2 | 100.5 / 3 / 13.5 | -- |
-| bbar: pT after the shower [GeV] | 92.2 | 90.1 | 73.2 | 118.6 |
-| bbar family: pT / n / m [GeV] | 104.8 / 2.4 / 8.0 | 103.4 / 2.7 / 8.0 | 92.1 / 3 / 7.0 | -- |
+| ISR branchings | 4.93 +- 2.9 | 4.88 +- 2.9 | 5 | 0 |
+| FSR branchings | 19.1 +- 11 | 20.9 +- 12 | 33 | 5 |
+| final partons (of which gluons) | 26.0 (20.9) | 27.7 (22.0) | 40 (27) | 7 (3) |
+| partons with pT > 20 / 5 / 1 GeV | 2.8 / 7.1 / 18.6 | 2.8 / 7.3 / 19.5 | 8 / 18 / 31 | 3 / 6 / 7 |
+| x after ISR, +z / -z parton | 0.042 / 0.446 | 0.042 / 0.446 | 0.017 / 0.470 | 0.002 / 0.391 |
+| b: pT after the shower [GeV] | 94.6 +- 30 | 93.9 +- 29 | 78.1 | 46.9 |
+| b family: pT / n / m [GeV] | 107.8 / 2.5 / 8.1 | 108.4 / 2.7 / 8.2 | 100.5 / 3 / 13.5 | 113.6 / 6 / 13.8 |
+| bbar: pT after the shower [GeV] | 92.2 | 90.1 | 73.2 | 113.2 |
+| bbar family: pT / n / m [GeV] | 104.8 / 2.4 / 8.0 | 103.4 / 2.7 / 8.0 | 92.1 / 3 / 7.0 | 114.0 / 1 / 4.8 |
 
 ### 5.2 Final-state radiation alone (`--no-isr` on both sides)
 
@@ -566,8 +567,15 @@ Standalone (`event_PS.lhe`, rows and the `-v` log): 113.22 GeV at birth (row
 branchings (rows 10, 15, 21); 99.9 GeV after her own 32 GeV emission (row
 25); 80.9 GeV after the 4.4 GeV one; 78.12 GeV at the end (row 124).
 
-CMSSW (the drawer's table of `step1_GEN_PS_cfg.log`, PYTHIA status in the
-third column, flags in the last):
+CMSSW, the job of this chapter (showers on, MPI off; `genParticles` of
+`test/02_PS/out/step1_GEN_02_PS.root`): 113.22 GeV at birth (index 5, status 23);
+47.70 GeV after her one emission, a gluon of 65.58 GeV (index 6, status 51);
+46.88 GeV after recoiling against the last branching (index 20, status 52);
+47.04 GeV in the final copy with the primordial kT (index 24, status 1).
+
+CMSSW, the event with the multiparton interactions on (the job of chapter 4,
+`test/04_MPI/out/`; PYTHIA status in the second column, CMS status flags in the
+fourth), which is the shower the later chapters build on:
 
 | row | status | pT [GeV] | flags | meaning |
 |---:|---:|---:|---|---|
@@ -583,6 +591,18 @@ third column, flags in the last):
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (seed 1, `event_PS.lhe`) | | | | |
 | b quark in the hard-process record | 113.22 | 4.80 | 1 | |
 | b family after the shower (dR < 0.4) | 100.45 | 13.52 | 3 | -12.77 |
 | of which the b quark itself | 78.12 | 4.80 | 1 | |
+| **CMSSW** (run 1, event 1; ISR and FSR on, MPI off) | | | | |
+| b quark in the final state of chapter 1 | 113.56 | 4.80 | 1 | |
+| b family after the shower (dR < 0.4) | 113.56 | 13.8 | 6 | 0.00 |
+| of which the b quark itself | 47.04 | 4.80 | 1 | |
+
+The standalone family row is printed by `plot_journey_PS.py` (`cone dR < 0.4 around
+the b axis ...: n = 3, |sum pT| = 100.45 GeV`). The CMSSW rows are the "cone" lines
+of `ledger_01_ME.txt` and `ledger_02_PS.txt` of JitJetSW (status-1 copies: 113.560
+and 113.555 GeV, difference -0.005) and the mass of the six partons from its FWLite
+snippet (13.8 GeV); the analyser page draws the partons before the primordial kT,
+where the same cone reads 113.22 GeV.

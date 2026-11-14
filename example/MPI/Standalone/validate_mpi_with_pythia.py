@@ -46,7 +46,7 @@ def load(name: str, path: Path):
     return mod
 
 
-def write_lhef(ev, path: Path, n: int, scalup: float, sigma=345.1, dsigma=6.1):
+def write_lhef(ev, path: Path, n: int, scalup: float, sigma=348.6, dsigma=6.0):
     ebeam = ev.ebeam
     hard_in = [ev.inA, ev.inB]
     hard_out = [i for i, q in enumerate(ev.p) if q.status == 23]

@@ -4,7 +4,7 @@
 The input is the hard-process record of the event followed through the book:
 either PYTHIA's "Event Listing (hard process)" table as saved in event_ME.lhe,
 or a genuine Les Houches <event> block. The picture follows
-example/PS/CMSSW/genPartAnalyzer_stage1_hardProcess_run1_event1.pdf, and
+example/ME/CMSSW/genPartAnalyzer_01_ME.pdf, and
 example/PS/plot_journey_PS.py draws the showered event the same way, so the
 stages of the journey can be compared at a glance:
 

@@ -217,10 +217,11 @@ family mass of $13.5\GeV$ is a high draw, while \PYTHIA reshowers to
 $8\GeV$ on average.
 \label{sec:uninvited_cousins:cmssw}
 
-The second official check costs nothing to run: the \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} had multiparton interactions, remnants and
-colour reconnection on from the start, and its log prints the same numbers
-the script derives, the regularised cross section integrated at
+The second official check is the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} with the parton level complete: the showers
+of \cref{ch:mother_gives_birth} and, new at this stop, the multiparton
+interactions, the remnants and colour reconnection, the hadron level still
+off. Its log prints the same numbers the script derives, the regularised cross section integrated at
 initialisation, ``\code{pT0 = 1.44 gives sigmaInteraction = 500.67 mb}'',
 and for the first event ``\code{Impact parameter b = 3.136e-01 gives
 enhancement factor = 3.709}'' and ``\code{Number of MPI = 32}'', the hard
@@ -255,14 +256,14 @@ everything.}
 interactions, incl.\ the hard one & $18.0\pm9.9$ & $14.7\pm7.2$ & $27.5\pm5.4$ & $21.4\pm4.2$ & $25$ & $32$ \\
 $b/\bmean$, $f(b)$ & $0.61$, $2.26$ & $0.63$, $2.10$ & $0.31$, $3.70$ & $0.31$, $3.63$ & $0.31$, $3.63$ & $0.31$, $3.71$ \\
 final partons & $125\pm60$ & $138\pm54$ & $181\pm34$ & $190\pm33$ & $211$ & $169$ \\
-\quad of which from secondary systems & $92$ & $88$ & $145$ & $137$ & $155$ & -- \\
+\quad of which from secondary systems & $92$ & $88$ & $145$ & $137$ & $155$ & $142$ \\
 \quad of which beam remnants & $10.2$ & $9.4$ & $13.6$ & $12.9$ & $16$ & $13$ \\
-$\sum\pt$ of the secondary partons [GeV] & $134$ & $124$ & $212$ & $196$ & $230$ & -- \\
+$\sum\pt$ of the secondary partons [GeV] & $134$ & $124$ & $212$ & $196$ & $230$ & $208$ \\
 hardest secondary interaction [GeV] & $6.8$ & $6.5$ & $8.6$ & $8.4$ & $11.45$ & $6.65$ \\ \midrule
 transverse UE density [GeV per unit $\eta$--$\phi$] & $2.21\pm1.72$ & $2.00\pm1.59$ & $3.48\pm1.54$ & $3.23\pm1.44$ & $2.10$ & -- \\
-UE $\sum\pt$ within $\dR<0.4$ of the $b$ [GeV] & $1.21\pm2.48$ & $0.85\pm1.31$ & $1.80\pm2.43$ & $1.60\pm2.19$ & $0.00$ & -- \\
+UE $\sum\pt$ within $\dR<0.4$ of the $b$ [GeV] & $1.21\pm2.48$ & $0.85\pm1.31$ & $1.80\pm2.43$ & $1.60\pm2.19$ & $0.00$ & $6.91$ \\
 UE $\sum\pt$ within $\dR<0.8$ of the $b$ [GeV] & $4.57\pm5.20$ & $3.95\pm4.05$ & $7.32\pm5.68$ & $5.88\pm4.44$ & $3.42$ & -- \\
-UE partons within $\dR<0.4$ / $0.8$ & $0.75$ / $2.99$ & $0.72$ / $2.87$ & $1.20$ / $4.75$ & $1.07$ / $4.18$ & $0$ / $3$ & -- \\ \midrule
+UE partons within $\dR<0.4$ / $0.8$ & $0.75$ / $2.99$ & $0.72$ / $2.87$ & $1.20$ / $4.75$ & $1.07$ / $4.18$ & $0$ / $3$ & $3$ / -- \\ \midrule
 systems merged by colour reconnection & -- & $13.2$ & -- & $19.7$ & $23$ & -- \\
 string length $\lambda$ before $\to$ after & -- & $563\to375$ & -- & $769\to472$ & $880\to521$ & -- \\
 \bottomrule
@@ -1049,85 +1050,128 @@ hard-system partons and of all partons inside $R$, and the mass of each.}
 \label{fig:uninvited_cousins:our_jet_plot}
 \end{figure}
 
-The ledger gets its first row that adds instead of subtracting, and
-\cref{fig:uninvited_cousins:journey} puts the rows next to the event
-display of the standalone stage. The $R=0.4$ row is the one the later
-stages are compared with; the $R=0.8$ row is listed because the
-large-radius jets of \cref{ch:three_families} will need it.
+The ledger gets its first row that adds instead of subtracting
+(\cref{tab:uninvited_cousins:ledger}), and
+\cref{fig:uninvited_cousins:displays} shows the event after the stage
+twice, the standalone record above and the \CMSSW one below. The $R=0.4$
+row is the one the later stages are compared with; the $R=0.8$ row is
+listed because the large-radius jets of \cref{ch:three_families} will need
+it.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{Cousins Nobody Invited}{tab:uninvited_cousins:ledger}{``Family''
+means the final partons within $\dR<0.4$ of the last copy of the $b$
+quark, ``UE'' those of them that belong to the secondary scatterings and
+the remnants. The standalone rows are read from
+\file{example/MPI/event_MPI.lhe} (seed~1, $b=0.3136\bmean$); the \CMSSW
+rows from the ledger and the analyser log of the \code{04\_MPI} job of
+\code{JitJetSW}, whose shower is a different draw from that of the
+\code{02\_PS} job; its family mass follows from the energy, \pt and $\eta$
+of the cone sum.}
+\ledgerblock{Standalone (seed 1, \file{event_MPI.lhe})}
 \ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
 \ledgerrow{$b$ family after this stage ($\dR<0.4$)}{100.67}{13.52}{3}{$+0.22$}
 \ledgerrow{\quad of which the $b$ quark itself}{78.29}{4.80}{1}{--}
 \ledgerrow{\quad the same within $\dR<0.8$ (3 UE partons)}{104.09}{20.17}{6}{$+3.42$}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{MPI/journey_MPI.pdf}
-\end{minipage}
-\caption[The energy ledger and the event after the MPI stage in the $(\eta,\phi)$ plane]{The
-energy ledger at the stage ``Cousins Nobody Invited'' (left; $\Delta\pt$ is
-relative to the previous row) and the parton level of our event after the
-standalone MPI stage (right), drawn by \file{example/MPI/plot_journey_MPI.py}
-from \file{example/MPI/event_MPI.lhe} in the layout of
-\cref{fig:uninvited_cousins:cmssw}. Red and blue are the status-62 copies of
-the $b$ and $\bar b$, magenta their vector sum; orange and green triangles
-the initial- and final-state emissions of all systems, cyan squares the
-outgoing partons of the 24 secondary scatterings and their copies, grey
-diamonds the 16 beam remnants, most of them on the border. The header lists
-the number and the net and scalar \pt of each group; the vector sum of all
-211 partons vanishes. The display applies the analyser's classification
-rule, so a gluon emitted by a parton of a secondary system counts as FSR,
-which is why it says $45$ MPI partons where the script's summary counts
-$155$ partons from the secondary systems.}
-\label{fig:uninvited_cousins:journey}
-\end{figure}
+\ledgerblock{\CMSSW (run 1, event 1; ISR, FSR and MPI on)}
+\ledgerrow{$b$ family after the shower alone (\cref{ch:mother_gives_birth})}{113.56}{13.8}{6}{--}
+\ledgerrow{$b$ family after this stage ($\dR<0.4$)}{127.25}{17.1}{9}{$+13.70$}
+\ledgerrow{\quad of which the hard process and its shower}{120.48}{--}{6}{--}
+\ledgerrow{\quad of which the underlying event (scalar sum)}{6.91}{--}{3}{--}
+\ledgerrow{\quad of which the $b$ quark itself}{91.74}{4.80}{1}{--}
+\end{ledgerboth}
 
-\paragraph{The same event in \CMSSW.} In the drawer's table of the GEN
-log the new status codes appear in the same roles: 62 rows of status~31
-and 62 of status~33, the incoming and outgoing partons of the 31 secondary
-scatterings; 64 rows of status~61, the initiators of all 32 systems after
-the remnant kinematics; 156 of status~62; 13 of status~63, the remnants;
-and then 120 of status~71 and 45 of status~73, the copies that \PYTHIA
-makes when it collects each colour-singlet string and joins very soft
-partons for hadronisation, which the standalone record does not have.
-Follow the mother once more: row~515 is her status-62 copy at
-$91.744\GeV$, $0.15\GeV$ above the $91.59$ of her last shower copy (row
-182, status~52), the same primordial-$k_{\mathrm{T}}$ boost that moved ours
-from $78.12$ to $78.29$; row~824, status~71, hands her to hadronisation at
-the same momentum. Its 28 initial-state and 64 final-state branchings
-belong to all 32 systems together, which is why they could not be compared
-with \cref{tab:mother_gives_birth:numbers} at the previous stop.
+\paragraph{The same event in \CMSSW.} In \CMSSW this stop switches on
+\code{PartonLevel:MPI} and lets \PYTHIA finish its parton level, the
+secondary scatterings, the primordial $k_{\mathrm{T}}$ and the beam
+remnants, with the hadron level still off. The record grows from $34$
+entries to $745$ and the final state from $11$ partons to $169$, and the
+new status codes appear in the roles of
+\cref{sec:uninvited_cousins:record_format}: $62$ entries of status~31 and
+$62$ of status~33, the incoming and outgoing partons of the $31$ secondary
+scatterings; $64$ of status~61, the initiators of all $32$ systems after
+their primordial kick, $1.09\GeV$ on average; and the $13$ beam remnants,
+all single quarks and antiquarks, since with $32$ partons taken out of
+each proton no valence pair was left intact. The cousins are soft: the
+hardest scattering is an $sg\to sg$ at $6.65\GeV$, $18$ of the $31$ are
+below $1\GeV$, and their $62$ outgoing partons are mostly gluons from
+momentum fractions around $3\times10^{-3}$. Of the $13\,600\GeV$ the hard
+process and its shower hold $2862$, the secondary scatterings and their
+showers $8955$ in $142$ partons, and the remnants $1783$; from here on the
+event is final at parton level, and the \CMSSW rows of the next two stops
+build on exactly this record.
 
-\Cref{fig:uninvited_cousins:cmssw} is the analyser's stage-3 picture: 169
-final partons, 61 from the secondary scatterings by the analyser's rule, 13
-remnants of which most are on the border at $|\eta|>6$, and the $b$ and
-$\bar b$ where the previous stage left them. Set it next to
-\cref{fig:uninvited_cousins:journey}. The two are different dressings of
+The shower in it is not the shower of \cref{ch:mother_gives_birth}, and
+it cannot be: \PYTHIA runs the initial-state radiation, the final-state
+radiation and the multiparton interactions in one sequence of falling
+\pt, so that with the interactions on the same seed draws other emissions,
+$28$ initial-state and $64$ final-state ones in the whole event, of which
+$2$ and $10$ belong to the hard process. Follow the mother through it.
+Entry~5 is the hard-process $b$ at $113.22\GeV$; entries~9 and~14, status
+$44$, are her copies after two initial-state recoils, at $112.6$ and
+$122.8\GeV$; entries~49 and~182, status~52, are her copies after she
+recoiled against two emissions of her dipole partner, at $106.0$ and
+$91.59\GeV$. She never branched herself, and her whole loss is recoil.
+Entry~515 is her final copy at $91.74\GeV$, with the same $0.15\GeV$ of
+primordial-$k_{\mathrm{T}}$ boost that moved ours from $78.12$ to $78.29$.
+The copy that the CMS status flags call \code{LastCopyBeforeFSR} is
+entry~14 at $122.8\GeV$, nine GeV \emph{above} the Born value, all of it
+from initial-state recoil.
+
+Now the cone, where the two events differ in the way that matters for
+the ledger. Ours received nothing. Hers holds nine partons with
+$127.25\GeV$: herself, five partons of $15.4$, $5.3$, $3.5$, $2.9$ and
+$1.7\GeV$ that descend from the first initial-state gluon of the hard
+process, emitted $\dR=0.64$ away from her and radiating back into her
+cone, and three uninvited ones, a $\bar u$ of $3.7\GeV$ and a gluon of
+$2.3\GeV$ from the initial-state showers of two secondary scatterings and
+a gluon of $0.9\GeV$ radiated by the $\bar c$ of a third. A cone does not
+know whether a parton was radiated before or after the collision, nor by
+whom. The three carry $6.9\GeV$, five percent of the cone, where
+\cref{tab:uninvited_cousins:numbers} expects $1.8\pm2.4\GeV$ at this
+impact parameter: a high draw, as ours of zero was a low one. The
+$\bar c$ itself, $0.8\GeV$, ended in the cone of the $\bar b$, so one soft
+scattering put transverse momentum into both jets. Within $|\eta|<2.5$ the
+underlying event is two fifths of all the transverse momentum, $104$ of
+$255\GeV$, spread over the whole plane.
+
+Read the two panels of \cref{fig:uninvited_cousins:displays} together.
+Both colour a parton by where it comes from: orange and green triangles
+for initial- and final-state emissions, cyan squares for the outgoing
+partons of the secondary scatterings, grey diamonds for the remnants, most
+of them on the border beyond $|\eta|=6$. Panel~(a) applies one rule to all
+systems, so that a gluon emitted by a parton of a secondary system counts
+as FSR, which is why it shows $45$ cyan squares where the script's summary
+counts $155$ partons from the secondary systems; panel~(b) keeps orange
+and green for the hard process, one initial-state and eleven final-state
+partons, and draws the $25$ and $56$ emissions of the secondary showers as
+cyan triangles next to their $61$ squares. The dashed circles are the
+cones of the ledger, $100.7\GeV$ in (a), $127.3$ and $117.1\GeV$ in (b),
+and the insets magnify the mother's. The two are different dressings of
 different showers of the same hard event, and the comparison to make is
 \cref{tab:uninvited_cousins:numbers}; what the pictures share is the
-structure, cyan squares spread uniformly in $\eta$ and $\phi$ with no
-preferred direction, far more of them at $|\eta|>3$ than a central detector
-will ever see, and a handful of them inside the cones that the later
-chapters will draw around the two $b$ quarks.
+structure, soft partons spread uniformly in $\eta$ and $\phi$ with no
+preferred direction, far more of them at $|\eta|>3$ than a central
+detector will ever see, and a handful inside the cones around the two $b$
+quarks.
 
-\begin{figure}[htbp]\centering
-\includegraphics[page=3,width=\textwidth]{MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf}
-\caption[The event after MPI and beam remnants in \CMSSW]{Stage~3 of our
-event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
-the parton level after multiparton interactions, beam remnants and colour
-reconnection. Red and blue are the status-62 copies of the $b$ and $\bar b$,
-orange and green triangles the initial- and final-state emissions of all
-systems, cyan squares the outgoing partons of the 31 secondary scatterings
-and their copies, grey diamonds the 13 beam remnants; partons beyond
-$|\eta|=6$ are drawn on the border. The same stage of the standalone
-record is \cref{fig:uninvited_cousins:journey}.}
-\label{fig:uninvited_cousins:cmssw}
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {MPI/journey_MPI.pdf}
+  {Standalone: the 211 final partons of \file{example/MPI/event_MPI.lhe} (seed~1, $b=0.3136\bmean$), drawn by \file{plot_journey_MPI.py}.}
+  {fig:uninvited_cousins:journey}
+  {MPI/CMSSW/genPartAnalyzer_04_MPI.pdf}
+  {\CMSSW: the 169 final partons of the \code{04\_MPI} job, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}.}
+  {fig:uninvited_cousins:cmssw}
+\caption[The event after MPI and beam remnants in the $(\eta,\phi)$ plane,
+standalone and \CMSSW]{The parton level of our event after multiparton
+interactions, beam remnants and colour reconnection, standalone (a) and
+\CMSSW (b). Red and blue are the final copies of the $b$ and $\bar b$,
+magenta their vector sum; orange and green triangles are initial- and
+final-state emissions, cyan the secondary scatterings, grey diamonds the
+beam remnants; partons beyond $|\eta|=6$ are drawn on the border. The
+dashed circles are the cones $\dR<0.4$ of the ledger, magnified in the
+insets.}
+\label{fig:uninvited_cousins:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1335,7 +1379,8 @@ pileup is \cite{Cacciari:2008gn}.
   Then use \code{--repeat 100} with \code{--radius 0.2}, \code{0.4},
   \code{0.8} and \code{1.0} and plot the mean underlying-event \pt against
   $R^2$.
-\item \textbf{Read the \CMSSW record.} In \file{step1_GEN_PS_cfg.log} list
+\item \textbf{Read the \CMSSW record.} In the \code{genParticles} of the
+  \CMSSW event of this stop (the companion says where the files are) list
   the 31 status-33 pairs with their \pt, reproduce the ladder of
   \cref{fig:uninvited_cousins:chain_plot}b, and find the 13 status-63
   remnants with their $\eta$. Which flavours did the remnants of each proton

@@ -118,8 +118,8 @@ configuration, one \code{GEN} step of the production chain, runs the same
 process inside \PYTHIA, process code~124 with \code{HardQCD:qqbar2bbbar =
 on}, the gluon channel off and \code{PhaseSpace:pTHatMin = 100}, and the
 statistics table at the end of its log prints the cross section it sampled
-from a thousand events: $3.451\times10^{-7}\,\mathrm{mb}$, that is
-$345.1\pm6.1\pb$, $0.04$ standard deviations from our integral.
+from a thousand events: $3.486\times10^{-7}\,\mathrm{mb}$, that is
+$348.6\pm6.0\pb$, half a standard deviation from our integral.
 \label{sec:ancestral_home:cmssw}
 
 \MG, a second generator that shares none of \PYTHIA's code, builds the one
@@ -158,7 +158,7 @@ Method & Details & $\sigma$ [pb] \\ \midrule
 Standalone script, one pass & LO integral, $2^{16}$ Sobol points & $345.320$ \\
 Standalone script, 8 repeats & LO integral, scrambled seeds & $345.322 \pm 0.001$ \\
 Full script (LHAPDF, \PYTHIA $\alphas$) & LO integral, 8 repeats & $345.324 \pm 0.001$ \\
-\PYTHIA~8.311 in \code{CMSSW\_15\_0\_5} & Monte Carlo, 1000 events & $345.1 \pm 6.1$ \\
+\PYTHIA~8.311 in \code{CMSSW\_15\_0\_5} & Monte Carlo, 1000 events & $348.6 \pm 6.0$ \\
 \MG~3.8.0 & Monte Carlo, 10\,000 events & $344.3 \pm 1.0$ \\
 \bottomrule
 \end{tabular}
@@ -1004,7 +1004,7 @@ curves behind it look between the extremes.
 Three lessons are in the table. First, the scale uncertainty of this
 leading-order number is of order $20\%$, three orders of magnitude larger
 than the integration errors and ten times the statistical error of the
-\CMSSW run; agreement between two leading-order codes at $0.3\%$ says
+\CMSSW run; agreement between leading-order codes at a percent or better says
 nothing about agreement with nature. Second, $\muR$ and $\muF$ pull in
 opposite directions: a larger $\muR$ lowers $\alphas$, while a larger $\muF$
 raises the small-$x$ sea that our $\bar u$ came from, because DGLAP evolution
@@ -1079,39 +1079,88 @@ The $\bar b$ at $\eta=-3.75$ heads into the forward hadron calorimeter, where
 there are no tracks and therefore, much later in the journey, no $b$ tag.
 Keep an eye on both.
 
-The ledger opens with a single entry, one parton, its \pt and its mass, and
-\cref{fig:ancestral_home:journey} puts the entry next to the event display
-of the stage. At this first stop the standalone and the \CMSSW columns of
-the ledger are one and the same, because the record is the \CMSSW one and
-the standalone script integrates over all such records rather than
-generating its own; from the next stop on the two columns will differ, and
-the difference will be part of the story. Every later row will be compared
-with this one.
+The ledger opens with a single entry, one parton, its \pt and its mass
+(\cref{tab:ancestral_home:ledger}), and \cref{fig:ancestral_home:displays}
+shows the event of the stage twice on one page, as every stop will from
+now on: the standalone display above, the \CMSSW one below. At this first
+stop the two blocks of the ledger hold the same quark, because the record
+is the \CMSSW one and the standalone script integrates over all such
+records rather than generating its own; from the next stop on the two
+blocks will differ, and the difference will be part of the story. Every
+later row will be compared with this one.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{The Ancestral Home}{tab:ancestral_home:ledger}{The
+standalone rows are read from \file{example/ME/event_ME.lhe}; the \CMSSW
+rows from the ledger of the \code{01\_ME} job of \code{JitJetSW}, whose
+final-state $b$ quark (status~1) has received the primordial
+$k_{\mathrm{T}}$ of the incoming partons.}
+\ledgerblock{Standalone (\file{event_ME.lhe})}
 \ledgerrow{before this stage}{--}{--}{--}{--}
 \ledgerrow{$b$ quark in the hard-process record}{113.22}{4.80}{1}{--}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{ME/journey_ME.pdf}
-\end{minipage}
-\caption[The energy ledger and the $(\eta,\phi)$ display at the ancestral home]{The
-energy ledger at the stage ``The Ancestral Home'' (left; $\Delta\pt$ is
-relative to the previous row) and the hard process of our event in the
-$(\eta,\phi)$ plane (right), drawn by \file{example/ME/plot_journey_ME.py}
-from \file{example/ME/event_ME.lhe} in the layout of the \CMSSW
-\code{genPartAnalyzer} of the later chapters: marker size grows with
-$\log\pt$, the faint bands are the CMS tracker region, the endcap
-calorimeters and the forward calorimeter (HF), and the incoming partons and
-their momentum fractions are noted at the two edges. Nothing has showered,
-hadronised or reached a detector yet.}
-\label{fig:ancestral_home:journey}
+\ledgerblock{\CMSSW (run 1, event 1; matrix element only)}
+\ledgerrow{$b$ quark of the hard process (status 23)}{113.22}{4.80}{1}{--}
+\ledgerrow{$b$ quark in the final state (status 1, $\dR<0.4$)}{113.56}{4.80}{1}{$+0.34$}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:ancestral_home:cmssw_event}
+In \CMSSW this stop is a job of its own: \PYTHIA is asked for the one
+process, $q\bar q\to\bbbar$ with $\pthat\ge100\GeV$, and told to stop
+there, the showers, the multiparton interactions and the hadron level all
+switched off. Its \code{genParticles} hold fourteen entries, and they are
+worth reading once, because every later stop adds to this list and never
+rewrites it. Two beam protons of $6800\GeV$ (status~4); the two incoming
+partons (status~21), a sea $\bar u$ with $x_1=2.17\times10^{-3}$, that is
+$14.8\GeV$, and a valence $u$ with $x_2=0.390$, that is $2653\GeV$; the
+two outgoing quarks (status~23) of \cref{tab:ancestral_home:kinematics},
+to the last digit. Then the same four once more: the incoming partons with
+a small transverse kick of $1.37$ and $0.97\GeV$ (status~61), the
+primordial $k_{\mathrm{T}}$ of \cref{ch:uninvited_cousins}, and the two
+quarks that absorb it and end, as final-state particles (status~1), at
+$113.56$ and $112.33\GeV$ instead of $113.22$ each. That is the second
+\CMSSW row of the ledger, $+0.34\GeV$ before anything has radiated. The
+last four entries are what is left of the protons, two diquarks of $6643$
+and $4147\GeV$ and two $u$ quarks, all beyond $|\eta|=3.3$. The six final
+entries add up to $13\,600.0\GeV$: of these the matrix element moved
+$2677\GeV$ into the reach of a detector, almost all of it carried by the
+$\bar b$ into the forward calorimeter, and $10\,923\GeV$ leave along the
+beam pipe.
+
+The \code{GEN} step does two more things around \PYTHIA that the
+standalone record does not. It moves the collision from the origin to a
+point drawn from the luminous region of 2024, here
+$(0.028,-0.017,3.112)\,\mathrm{cm}$ at $t=0.121\,\mathrm{ns}$, without
+touching a single momentum; and it already clusters generator jets, which
+at this stop are two jets of one constituent each, the $b$ and the
+$\bar b$. Its cross-section estimate after this one event,
+$157.7\pm157.7\pb$, is the weight of a single phase-space point and not a
+measurement; a thousand events of the same job give the $348.6\pm6.0\pb$
+of \cref{tab:ancestral_home:three_numbers}, half a standard deviation from
+our integral. Panel~(b) of
+\cref{fig:ancestral_home:displays} is the analyser's page for the stage:
+the two outgoing quarks and nothing else, at the same \pt, opposite in
+$\phi$ and $2.3$ units of $\eta$ apart, exactly where panel~(a) has them.
+The incoming partons and the remnants sit on the beam axis and are not
+drawn. The following stops redraw this page with more and more particles
+around the two markers.
+
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {ME/journey_ME.pdf}
+  {Standalone: the hard process of \file{example/ME/event_ME.lhe}, drawn by \file{plot_journey_ME.py}.}
+  {fig:ancestral_home:journey}
+  {ME/CMSSW/genPartAnalyzer_01_ME.pdf}
+  {\CMSSW: the outgoing quarks in the \code{genParticles} of the \code{01\_ME} job, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}.}
+  {fig:ancestral_home:cmssw}
+\caption[The hard process in the $(\eta,\phi)$ plane, standalone and
+\CMSSW]{The event at the stage ``The Ancestral Home'' in the $(\eta,\phi)$
+plane, standalone (a) and \CMSSW (b), in the same layout: $b$ red, $\bar b$
+blue, marker size growing with $\log\pt$. In (a) the faint bands are the
+tracker region, the endcap calorimeters and the forward calorimeter (HF),
+and the incoming partons are noted at the edges; in (b) the margin lists
+the switches of the job. Nothing has showered, hadronised or reached a
+detector yet.}
+\label{fig:ancestral_home:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1167,10 +1216,10 @@ direction numbers of \cite{Joe:2008}.
 
 \begin{pitfalls}
 \begin{itemize}[nosep]
-  \item \textbf{Four numbers, one cross section.} $345.3$, $345.1$ and
+  \item \textbf{Four numbers, one cross section.} $345.3$, $348.6$ and
     $344.3\pb$ are the same calculation with different statistical
     fluctuations and conventions. Do not ``fix'' one to match another, and
-    do not read the $0.3\%$ spread as physics: the theoretical uncertainty
+    do not read the $1\%$ spread as physics: the theoretical uncertainty
     is $20\%$.
   \item \textbf{$\pthat$ is not jet \pt.} The generator cut acts on the two
     Born quarks. After showering, a $113\GeV$ quark becomes a jet of any \pt
@@ -1204,7 +1253,7 @@ direction numbers of \cite{Joe:2008}.
     standard's ($-1$, $1$).
   \item \textbf{Units.} \PYTHIA prints mb, \MG and the scripts print pb, and
     the scripts also print nb. $1\,\mathrm{mb}=10^{6}\nb=10^{9}\pb$; the
-    $3.451\times10^{-7}\,\mathrm{mb}$ of the log is $345.1\pb$.
+    $3.486\times10^{-7}\,\mathrm{mb}$ of the log is $348.6\pb$.
   \item \textbf{Which Python?} A shell alias such as
     \code{alias python=/usr/bin/python3} silently overrides a virtual
     environment. Run the scripts with the explicit interpreter path when in
@@ -1217,7 +1266,7 @@ direction numbers of \cite{Joe:2008}.
 \item \textbf{Run it.} Run \file{standalone_qqbar_bbbar_xsec.py} with no
   options and confirm $345.320\pb$. Run it with \code{--repeats 8} and
   compare the error with \cref{tab:ancestral_home:three_numbers}. The
-  \CMSSW job accepted $1000$ unweighted events and quoted a $1.8\%$
+  \CMSSW job accepted $1000$ unweighted events and quoted a $1.7\%$
   statistical error; how many events would reach $0.1\%$? Why is that
   precision pointless for a leading-order calculation?
 \item \textbf{The angular integral by hand.} Integrate

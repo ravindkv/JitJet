@@ -4,7 +4,7 @@ the (eta, phi) plane, in the layout of the CMSSW genPartAnalyzer (stage 3).
 
 The input is the parton-level listing written by Standalone/standalone_multiparton_interactions.py
 (PYTHIA listing format, saved as event_MPI.lhe). The picture follows
-example/MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf, page 3, so that the standalone and
+example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf, so that the standalone and
 the CMSSW result can be compared side by side. It reuses the frame, the marker sizes and
 the parsing of ../PS/plot_journey_PS.py and adds the two origins of this stage:
 
@@ -115,6 +115,7 @@ def summary(final, beams, incoming0, incoming):
                          scalar=kinematics(stars[5])["pt"] + kinematics(stars[-5])["pt"],
                          dphi=dphi(kinematics(stars[5])["phi"], kinematics(stars[-5])["phi"]))
     out["all"] = vsum(final)
+    out["cones"] = {key: ps.cone_of(final, stars[pid]) for pid, key in ((5, "b"), (-5, "bbar")) if pid in stars}
     out["extra_b"] = [r for r in final if abs(r["id"]) == 5 and r["star"] is None]
     if beams:
         ebeam = beams[0]["e"]
@@ -141,6 +142,7 @@ def print_table(final, s):
     if "bb" in s:
         bb = s["bb"]
         print(f"b + bbar: |pT(b) + pT(bbar)| = {bb['pt']:.2f} GeV, m = {bb['m']:.1f} GeV, dphi = {bb['dphi']:.2f}")
+    ps.print_cones(s["cones"])
     a = s["all"]
     print(f"all {s['n']} final-state partons: |sum pT| = {math.hypot(a['px'], a['py']):.3f} GeV, sum pz = {a['pz']:.1f}, "
           f"sum E = {a['e']:.1f} GeV")
@@ -250,6 +252,11 @@ def header(fig, s, title: str, source: str, n_drawn: int, n_border: int, label_m
     return y
 
 
+def parton_style(r):
+    """How draw_particles draws a parton, for the inset of the cone."""
+    return dict(marker=FAMILY[r["cat"]]["marker"], color=FAMILY[r["cat"]]["color"], filled=r["star"] is not None)
+
+
 def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: float):
     plt.rcParams.update({"font.size": 9, "pdf.fonttype": 42, "mathtext.default": "regular"})
     fig = plt.figure(figsize=(10.0, 7.4))
@@ -260,8 +267,10 @@ def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: 
     ps.draw_axes(ax)
     draw_particles(ax, final, s, label_min)
     ps.draw_incoming(ax, s)
+    ps.draw_cone_layer(ax, fig, final, s, parton_style, ps.parton_label)
     side = fig.add_axes([0.79, 0.08, 0.20, top - 0.08])
     draw_legend(side, {k: len(v) for k, v in s["cats"].items()}, STAGE, s["n_mpi_systems"])
+    ps.legend_cone(side)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output)
     if png:

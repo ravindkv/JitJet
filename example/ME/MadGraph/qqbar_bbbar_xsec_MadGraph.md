@@ -84,7 +84,7 @@ Cross-section : 344.3 +- 0.9587 pb
 Nb of events  : 10000
 ```
 
-Since 1 nb = 1000 pb this is 0.3443 nb, to be compared with the 345.1 +- 6.1 pb
+Since 1 nb = 1000 pb this is 0.3443 nb, to be compared with the 348.6 +- 6.0 pb
 of the CMSSW/PYTHIA run and the 345.32 pb of the standalone integrator. With
 `ptb = 30` instead, the same recipe gives about 19.4 nb against PYTHIA's
 18.4 nb; at the lower cut the four-flavour proton, the b mass and the scale

@@ -91,7 +91,7 @@ COL_U, COL_UBAR = "#2f8f5b", "#8e5bb5"          # incoming quark / antiquark
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 FLAVOUR_COLOURS = {"d": "#9a6b2f", "u": "#2a78d6", "s": "#2f8f5b", "c": "#eb6834", "b": "#8e5bb5"}
 CMAP = "viridis"
-Pythia_NB, Pythia_ERR_NB = 0.3451, 0.0061           # CMSSW step1_GEN_cfg.py GenXSecAnalyzer, pTHat>=100 GeV
+Pythia_NB, Pythia_ERR_NB = 0.3486, 0.0060           # CMSSW, 1000 events of the JitJetSW 01_ME job (xsec_GEN_01_ME.log), pTHat>=100 GeV
 REPEATS8_NB = 0.345324                              # qqbar_bbbar_xsec.py --output result.json (repeats=8)
 SOBOL1_NB = 0.345320                                # standalone_qqbar_bbbar_xsec.py, single 2^16-point Sobol pass
 FIGSIZE = (12.8, 7.2)                               # 16:9; dpi 150 -> 1920x1080, dpi 100 -> 1280x720
@@ -645,7 +645,7 @@ class SurfaceScene(Scene):
                    "($x_1 = 2.2\\times10^{-3}$, $x_2 = 0.39$, $Y = -2.6$) sits far out on that flank.")
         else:
             cap = (f"Volume under the surface on this grid: {self.sigma_nb:.4f} nb, tending to {SOBOL1_NB:.4f} nb as the grid is "
-                   f"refined. The Sobol pass of the standalone script gives {SOBOL1_NB:.5f} nb, Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb.")
+                   f"refined. The Sobol pass of the standalone script gives {SOBOL1_NB:.5f} nb, Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB:.4f} nb.")
         chrome(fig, self.number, self.title, cap)
 
 
@@ -710,7 +710,7 @@ class ConvergeScene(Scene):
         ax_top.set_title(f"$N = {n_now}$:  estimate $= {self.total[n_now - 1]:.4f}$ nb", fontsize=10, color=TEXT, loc="left")
         ax_top.legend(handles=[Line2D([], [], color=TEXT, lw=1.8, label="this pass"),
                                Line2D([], [], color=TEXT, lw=0.8, ls="--", label=f"8 passes: {REPEATS8_NB} nb"),
-                               Line2D([], [], color="#c9c6bc", lw=6, label=f"Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb")],
+                               Line2D([], [], color="#c9c6bc", lw=6, label=f"Pythia {Pythia_NB} $\\pm$ {Pythia_ERR_NB:.4f} nb")],
                       fontsize=8, loc="lower right", frameon=False)
         for i, name in enumerate(core.FLAVOUR_NAMES):
             ax_bot.plot(x, self.running[i, :n_now], color=FLAVOUR_COLOURS[name], lw=1.4,
@@ -728,7 +728,7 @@ class ConvergeScene(Scene):
                    "the $1/\\sqrt{N}$ of random points; $u\\bar u$ and $d\\bar d$ dominate.")
         else:
             cap = (f"After $2^{{{st.power}}}$ points this pass gives {self.total[-1]:.4f} nb; eight scrambled passes give "
-                   f"{REPEATS8_NB} $\\pm$ 0.00005 nb, Pythia's own Monte Carlo {Pythia_NB} $\\pm$ {Pythia_ERR_NB} nb.")
+                   f"{REPEATS8_NB} $\\pm$ 0.00005 nb, Pythia's own Monte Carlo {Pythia_NB} $\\pm$ {Pythia_ERR_NB:.4f} nb.")
         chrome(fig, self.number, self.title, cap)
 
 

@@ -2,7 +2,7 @@
 
 The independent Python integration gives **345.324 +/- 0.001 pb** with the
 settings below (pTHat >= 100 GeV). The PYTHIA result from the CMSSW run is
-**345.1 +/- 6.1 pb**: the difference is **0.06%**, or **0.04 times PYTHIA's
+**348.6 +/- 6.0 pb**: the difference is **0.9%**, or **0.5 times PYTHIA's
 statistical uncertainty**. No normalization was fitted to the PYTHIA result.
 (The earlier pTHat >= 30 GeV setup gave 18.5066 nb against PYTHIA's
 18.440 +/- 0.097 nb.)

@@ -183,8 +183,10 @@ A cross section is a number; a shower is a random process. The same hard
 event showered twice gives two different families, and the spread between
 them is not an error but physics: our event, showered once with the
 standalone script, leaves the mother at $78\GeV$, while two thousand showers
-of the same event leave her at $94\pm29\GeV$ on average, and the \CMSSW run
-left her at $92\GeV$. The three numbers are one distribution. What can be
+of the same event leave her at $94\pm29\GeV$ on average, and the two \CMSSW
+runs of this book left her at $47\GeV$ with the showers alone and at
+$92\GeV$ once the multiparton interactions of \cref{ch:uninvited_cousins}
+are interleaved with them. The four numbers are one distribution. What can be
 compared between two showers is the average over many events, and there the
 standalone script and \PYTHIA agree to a few percent on everything hard and
 to ten percent on the softest emissions.
@@ -225,18 +227,20 @@ final-state ones, with the $b$ families unchanged to a percent. The softest
 activity of a shower is a matter of options; the hard structure is not.
 \label{sec:mother_gives_birth:cmssw}
 
-The second official check is the CMS generator job of \cref{ch:ancestral_home},
-which already ran the shower: in CMS nobody runs it separately, the
-\code{GEN} step hands the hard process to \PYTHIA's \code{PartonLevel},
-which runs the interleaved initial- and final-state radiation together with
-the multi-parton interactions of \cref{ch:uninvited_cousins}, and every
-stage is still visible in the \code{genParticles} collection through the
-status codes. Its log prints the same starting scale as the script,
-$113.3\GeV$ for all three interleaved processes, raises the same cut-off to
+The second official check is the CMS generator job of \cref{ch:ancestral_home}
+with the two showers switched on and nothing else. In production nobody
+runs the shower separately: the \code{GEN} step hands the hard process to
+\PYTHIA's \code{PartonLevel}, which runs the initial- and final-state
+radiation interleaved with the multi-parton interactions of
+\cref{ch:uninvited_cousins}; here the interactions and the hadron level
+stay off, so that the job shows the shower in isolation and its final
+state is still made of partons. Its log prints the same starting scale as
+the script, $113.3\GeV$ for both showers, raises the same cut-off to
 $0.611\GeV$ with a warning that every CP5 log contains, and lists the four
 CP5 shower lines of \cref{sec:mother_gives_birth:cp5}; its event is the last
-column of the table, and \cref{sec:mother_gives_birth:our_jet} sets it next
-to the standalone one. How each column was produced, the commands, the
+column of the table, a quiet draw with no initial-state branching at all,
+and \cref{sec:mother_gives_birth:our_jet} sets it next to the standalone
+one. How each column was produced, the commands, the
 options and the logs, is in the companion of this chapter,
 \begin{center}
   \companion{chapter_02_PS}
@@ -251,22 +255,23 @@ averages over 2000 showers of the same hard event (the spread of a single
 shower is quoted after $\pm$ where it matters; the error of a mean is 45
 times smaller); the third column is the one shower with seed~1 that wrote
 \file{example/PS/event_PS.lhe}; the last is the single event of the \CMSSW
-log, in which multi-parton interactions and hadronisation were also on. All
+job with the two showers on and multi-parton interactions and hadronisation
+off, its shower partons counted without the four beam remnants. All
 runs use the CP5 shower settings of \cref{sec:mother_gives_birth:cp5}.}
 \label{tab:mother_gives_birth:numbers}
 \footnotesize
 \begin{tabular}{lrrrr}\toprule
  & \PYTHIA~8.315 & standalone & standalone & \CMSSW \\
  & 2000 showers & 2000 showers & seed 1 & 1 event \\ \midrule
-ISR branchings & $4.93\pm2.9$ & $4.88\pm2.9$ & $5$ & -- \\
-FSR branchings & $19.1\pm11$ & $20.9\pm12$ & $33$ & -- \\
-final partons (of which gluons) & $26.0$ ($20.9$) & $27.7$ ($22.0$) & $40$ ($27$) & $57$ drawn \\
-partons with $\pt>20$ / $5$ / $1\GeV$ & $2.8$ / $7.1$ / $18.6$ & $2.8$ / $7.3$ / $19.5$ & $8$ / $18$ / $31$ & -- \\
-$x$ after ISR, $+z$ / $-z$ parton & $0.042$ / $0.446$ & $0.042$ / $0.446$ & $0.017$ / $0.470$ & -- \\ \midrule
-$b$: \pt after the shower [GeV] & $94.6\pm30$ & $93.9\pm29$ & $78.1$ & $91.6$ \\
-$b$ family: \pt / $n$ / $m$ [GeV] & $107.8$ / $2.5$ / $8.1$ & $108.4$ / $2.7$ / $8.2$ & $100.5$ / $3$ / $13.5$ & -- \\
-$\bar b$: \pt after the shower [GeV] & $92.2$ & $90.1$ & $73.2$ & $118.6$ \\
-$\bar b$ family: \pt / $n$ / $m$ [GeV] & $104.8$ / $2.4$ / $8.0$ & $103.4$ / $2.7$ / $8.0$ & $92.1$ / $3$ / $7.0$ & -- \\
+ISR branchings & $4.93\pm2.9$ & $4.88\pm2.9$ & $5$ & $0$ \\
+FSR branchings & $19.1\pm11$ & $20.9\pm12$ & $33$ & $5$ \\
+final partons (of which gluons) & $26.0$ ($20.9$) & $27.7$ ($22.0$) & $40$ ($27$) & $7$ ($3$) \\
+partons with $\pt>20$ / $5$ / $1\GeV$ & $2.8$ / $7.1$ / $18.6$ & $2.8$ / $7.3$ / $19.5$ & $8$ / $18$ / $31$ & $3$ / $6$ / $7$ \\
+$x$ after ISR, $+z$ / $-z$ parton & $0.042$ / $0.446$ & $0.042$ / $0.446$ & $0.017$ / $0.470$ & $0.002$ / $0.391$ \\ \midrule
+$b$: \pt after the shower [GeV] & $94.6\pm30$ & $93.9\pm29$ & $78.1$ & $46.9$ \\
+$b$ family: \pt / $n$ / $m$ [GeV] & $107.8$ / $2.5$ / $8.1$ & $108.4$ / $2.7$ / $8.2$ & $100.5$ / $3$ / $13.5$ & $113.6$ / $6$ / $13.8$ \\
+$\bar b$: \pt after the shower [GeV] & $92.2$ & $90.1$ & $73.2$ & $113.2$ \\
+$\bar b$ family: \pt / $n$ / $m$ [GeV] & $104.8$ / $2.4$ / $8.0$ & $103.4$ / $2.7$ / $8.0$ & $92.1$ / $3$ / $7.0$ & $114.0$ / $1$ / $4.8$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1685,89 +1690,105 @@ mother columns of the record, which no detector will read, tells the two
 halves apart. The $u$ quark of the first initial-state branching, now at
 $39.5\GeV$, is a fourth cluster on its own at $\phi=-1.3$.
 
-The ledger gets its second and third rows, and \cref{fig:mother_gives_birth:journey}
-puts them next to the event display of the standalone shower. The family
-row is the one the later stages will be compared with; the bare quark is
-listed because the \CMSSW status flags will keep asking for her.
+The ledger gets its second and third rows (\cref{tab:mother_gives_birth:ledger}),
+and \cref{fig:mother_gives_birth:displays} shows the showered event twice,
+the standalone shower above and the \CMSSW one below. The family row is
+the one the later stages will be compared with; the bare quark is listed
+because the \CMSSW status flags will keep asking for her.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{The Mother Gives Birth}{tab:mother_gives_birth:ledger}{``Family''
+means the final-state partons within $\dR<0.4$ of the last copy of the $b$
+quark. The standalone rows are read from \file{example/PS/event_PS.lhe}
+(seed~1); the \CMSSW rows from the ledger of the \code{02\_PS} job of
+\code{JitJetSW}, the showers on and multiparton interactions off, in the
+final-state copies (status~1).}
+\ledgerblock{Standalone (seed 1, \file{event_PS.lhe})}
 \ledgerrow{$b$ quark in the hard-process record}{113.22}{4.80}{1}{--}
 \ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{$-12.77$}
 \ledgerrow{\quad of which the $b$ quark itself}{78.12}{4.80}{1}{--}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{PS/journey_PS.pdf}
-\end{minipage}
-\caption[The energy ledger and the showered event in the $(\eta,\phi)$ plane]{The
-energy ledger at the stage ``The Mother Gives Birth'' (left; $\Delta\pt$ is
-relative to the previous row) and the parton level of our event after the
-standalone shower (right), drawn by \file{example/PS/plot_journey_PS.py}
-from \file{example/PS/event_PS.lhe} in the layout of
-\cref{fig:mother_gives_birth:cmssw}. Red and blue are the final copies of
-the $b$ and $\bar b$, magenta their vector sum; orange triangles descend
-from an initial-state emission and green triangles from one of the two hard
-quarks; marker size grows with $\log\pt$ and partons above $5\GeV$ are
-labelled. The header lists the net transverse momentum of each group; the
-incoming partons and their momentum fractions before and after the
-initial-state shower are noted at the two edges. The second $\bbbar$ pair
-from a gluon splitting sits next to the $\bar b$ in the forward
-calorimeter.}
-\label{fig:mother_gives_birth:journey}
-\end{figure}
+\ledgerblock{\CMSSW (run 1, event 1; ISR and FSR on, MPI off)}
+\ledgerrow{$b$ quark in the final state of \cref{ch:ancestral_home}}{113.56}{4.80}{1}{--}
+\ledgerrow{$b$ family after the shower ($\dR<0.4$)}{113.56}{13.8}{6}{$0.00$}
+\ledgerrow{\quad of which the $b$ quark itself}{47.04}{4.80}{1}{--}
+\end{ledgerboth}
 
-\paragraph{The same event in \CMSSW.} The \CMSSW record of the mother is
-the drawer's table of the GEN log, $1846$ rows for our event, with the
-\emph{status flags} that CMS analyses use instead of walking the record,
-\code{isHardProcess}, \code{isFirstCopy}, \code{isLastCopyBeforeFSR} and
-\code{isLastCopy}. Follow her: row~5 is the hard-process $b$ at
-$113.22\GeV$ (\code{HardProcess FirstCopy}); rows~9 and~14 are her copies
-after ISR recoils, status~44, at $112.6$ and $122.8\GeV$; rows~49 and~182,
-status~52, are her copies after she recoiled against two emissions of her
-dipole partner, at $106.0$ and $91.59\GeV$; in this shower she never
-branched herself above the cut-off (no copy has status~51), and her whole
-loss is recoil; row~515 is status~62, after the beam remnants of
-\cref{ch:uninvited_cousins} have taken their share, $91.74\GeV$; and
-row~824, status~71 and \code{LastCopy}, is the $b$ that is handed to
-hadronisation at the same momentum. The \code{LastCopyBeforeFSR} flag is
-the CMS way of asking ``what was the \pt of the $b$ before it showered'';
-it is not set on any copy of a $b$ that never radiated, and the copy that
-plays that role here is row~14 at $122.8\GeV$, $9\GeV$ \emph{above} the
-Born value, entirely from ISR recoil.
+\paragraph{The same event in \CMSSW.} In \CMSSW this stop is the job of
+\cref{ch:ancestral_home} with two switches turned on,
+\code{PartonLevel:ISR} and \code{PartonLevel:FSR}; the same fragment, the
+same tune and the same seed draw the same hard process, to the last digit
+of $x_1$, $x_2$ and $\sqrt{\shat}$. What changes is everything after it.
+The record grows from $14$ to $34$ entries, and the status codes say how:
+an outgoing parton produced by a final-state branching carries~51, a
+parton that was only the recoiler of somebody else's branching is copied
+with~52, an incoming recoiler with~53. A parton is never modified in
+place, so the record is a history, and the mother can be followed through
+it. Entry~5 is the hard-process $b$ at $113.22\GeV$. She branches at once,
+$b\to bg$: entries~6 and~7, a $b$ of $47.70\GeV$ and a gluon of
+$65.58\GeV$, which together carry the \pt of the original quark to the
+last digit, have a mass of $11.6\GeV$ and fly $\dR=0.156$ apart. The gluon
+has more \pt than the quark and goes the same way: a collinear emission,
+not a runaway. It splits into two gluons, the softer of which becomes a
+$d\bar d$ pair, and the harder one splits twice more; that is the whole
+shower, five branchings, all on her side. She is the recoiler of the last
+one and ends at $46.88\GeV$ (entry~20, status~52), $47.04$ once the
+primordial $k_{\mathrm{T}}$ is added to the final copies.
 
-\Cref{fig:mother_gives_birth:cmssw} is the analyser's stage-2 figure,
-the parton level of the \CMSSW event: 57 partons, 26 from the initial state
-and 29 from the final state, the $b$ at $91.59\GeV$ and $\eta=-1.57$, the
-$\bar b$ at $118.57\GeV$ and $\eta=-3.73$, their vector sum $27.3\GeV$. Set
-it next to \cref{fig:mother_gives_birth:journey}, the standalone shower of
-the same hard event, drawn by \file{plot_journey_PS.py} in the same layout
-on purpose. The two are different showers of the same event: in one the
-mother kept $92\GeV$, in the other $78$; in one the initial state radiated
-$27\GeV$ net against the pair, in the other $13$. Neither is more right.
-Both sit inside the $94\pm29\GeV$ of two thousand showers, and the
-comparison to make between the two codes is
-\cref{tab:mother_gives_birth:numbers}, not this pair of pictures. What the
-pictures share is the structure: a busy backward hemisphere where the
-$\bbbar$ pair and its children are, initial-state partons spread over the
-whole rapidity range, and a $b$ quark that has moved a few tenths in
-$\eta$ and $\phi$ from where the hard process put it.
+Now count the family. The six final partons of her side, herself, three
+gluons, the $d$ and the $\bar d$, carry $113.56\GeV$ of vector \pt with a
+mass of $13.8\GeV$, and the farthest of them, the $\bar d$ of $6.3\GeV$,
+is $\dR=0.31$ from her: the cone of the ledger holds them all, and the
+family row reads exactly what the quark alone read before the shower. The
+bare quark lost $66\GeV$ and the family lost nothing. This is the other
+half of the lesson of our own shower, where the quark kept $78\GeV$ and
+the family lost $13$: the shower does not change the jet, it changes what
+the jet is made of, and how much runs away is the draw of one event. Two
+more things in this event are draws. The $\bar b$ did not radiate at all
+and went from $113.22$ to $114.05\GeV$ on the primordial kick alone; in a
+thousand events of the same job that happens in $35\%$. And the
+initial-state shower, which was on, made no emission; that happens in
+$2.2\%$ of them, against $3.3$ initial-state and $14.0$ final-state
+branchings on average. The cross section of those thousand events,
+$348.2\pm6.1\pb$, is that of \cref{ch:ancestral_home}: a shower moves
+momentum around, it does not change how often the hard process happens.
 
-\begin{figure}[htbp]\centering
-\includegraphics[width=\textwidth]{PS/CMSSW/genPartAnalyzer_stage2_partonShower_run1_event1.pdf}
-\caption[The parton level of our event in \CMSSW]{The parton level of our
-event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW} from
-the \code{genParticles} of the GEN step (stage~2 of five). Red and blue are
-the last copies of the $b$ and $\bar b$ before hadronisation, magenta their
-vector sum, orange triangles the initial-state partons and green triangles
-the final-state emissions; marker size grows with $\log\pt$ and partons
-above $5\GeV$ are labelled. The same event showered by the standalone
-script is \cref{fig:mother_gives_birth:journey}.}
-\label{fig:mother_gives_birth:cmssw}
+Panel~(b) of \cref{fig:mother_gives_birth:displays} is the analyser's page
+for the stage, seven partons where the standalone shower of panel~(a) has
+forty: the $b$ at $46.9\GeV$ with her five green children, the untouched
+$\bar b$, and the magenta star of their vector sum, $66.4\GeV$, which is
+the radiation still sitting in the record six entries lower. The dashed
+circles are the cones of the ledger with their \pt, and the inset magnifies
+the mother's, whose partons the frame cannot separate; the page draws the
+partons at the end of the shower, before the primordial kick, so its
+circle reads $113.2$ where the ledger reads $113.6$. Set the two panels
+next to each other. They are different showers of the same hard event; in
+one the mother kept $78\GeV$ and the initial state radiated $64\GeV$
+against the pair, in the other she kept $47$ and the initial state stayed
+silent. Neither is more right, and the comparison to make between the two
+codes is \cref{tab:mother_gives_birth:numbers}, not this pair of pictures.
+One warning for the road: \PYTHIA does not run the showers and then the
+multiparton interactions, it runs all three interleaved in one falling
+\pt sequence, so that with the interactions switched on at the next stop
+the same seed draws a different shower, in which the mother keeps
+$91.6\GeV$. The hard process is one event through the whole book; the
+\CMSSW shower of this stop is the shower in isolation.
+
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {PS/journey_PS.pdf}
+  {Standalone: the 40 final partons of \file{example/PS/event_PS.lhe} (seed~1), drawn by \file{plot_journey_PS.py}.}
+  {fig:mother_gives_birth:journey}
+  {PS/CMSSW/genPartAnalyzer_02_PS.pdf}
+  {\CMSSW: the 7 partons of the hard process and its shower in the \code{02\_PS} job (MPI off), drawn by the \code{genPartAnalyzer} of \code{JitJetSW}.}
+  {fig:mother_gives_birth:cmssw}
+\caption[The showered event in the $(\eta,\phi)$ plane, standalone and
+\CMSSW]{The parton level of our event after the shower, standalone (a) and
+\CMSSW (b), in the same layout. Red and blue are the last copies of the
+$b$ and $\bar b$, magenta their vector sum; orange triangles descend from
+an initial-state emission and green ones from a final-state emission;
+marker size grows with $\log\pt$ and partons above $5\GeV$ are labelled.
+The dashed circles are the cones $\dR<0.4$ of the ledger, and the insets
+magnify the one around the $b$.}
+\label{fig:mother_gives_birth:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1946,8 +1967,10 @@ chapter and of \cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
   \code{--no-fsr}, and with \code{--no-dampen}, each for 200 seeds, and
   tabulate the number of branchings and the family \pt and mass of the $b$.
   Which switch changes the family, and which only the rest of the event?
-\item \textbf{Read the \CMSSW record.} In \file{step1_GEN_PS_cfg.log} find
-  every copy of the $b$ quark (id~5) and list its status and \pt. Identify
+\item \textbf{Read the \CMSSW record.} In the \code{genParticles} of the
+  \CMSSW event with the multiparton interactions on (the companion says
+  where the files are) find every copy of the $b$ quark (id~5) and list its
+  status and \pt. Identify
   the rows that correspond to the standalone statuses $44$, $52$, $62$ and
   $71$, and explain what the flags \code{FirstCopy},
   \code{LastCopyBeforeFSR} and \code{LastCopy} mean for it. Which copy would
@@ -2042,7 +2065,8 @@ started with the scripts of this chapter.
     tune parameter elsewhere?
   \item \textbf{Which \pt is the jet's \pt?} The ledger row of this chapter
     is the family within $\dR<0.4$; CMS status flags offer
-    \code{LastCopyBeforeFSR} ($122.8\GeV$ in the \CMSSW event), the last
+    \code{LastCopyBeforeFSR} ($122.8\GeV$ in the \CMSSW event of
+    \cref{ch:uninvited_cousins}), the last
     copy ($91.7\GeV$) and the hard-process copy ($113.2\GeV$) as ``the $b$
     quark''. Jet energy corrections in \cref{ch:fair_price} are derived
     against generator jets, not quarks, and the same ambiguity is at the

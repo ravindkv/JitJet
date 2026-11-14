@@ -18,7 +18,8 @@ otherwise; the CMSSW analysers are in
 | Event record | [`example/GenJet/event_GenJet.lhe`](../example/GenJet/event_GenJet.lhe) (the chapter 6 record plus a jet listing and a constituent listing) |
 | Learning-mode log | [`example/GenJet/Standalone/standalone_genjets.log`](../example/GenJet/Standalone/standalone_genjets.log) (`-v`, 178 lines) |
 | Validation with FastJet and SlowJet | [`example/GenJet/Standalone/validate_genjets_with_fastjet.py`](../example/GenJet/Standalone/validate_genjets_with_fastjet.py) |
-| CMSSW figures | [`example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf`](../example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf) (pages 6 to 8) |
+| CMSSW figure | [`example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf`](../example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_07_GenJet.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.tex); technical companion: [`chapter_07_GenJet.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.md) |
 | Film | scene 7 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -295,6 +296,8 @@ response, the system of the two b jets, and the heavy hadrons behind each
 `hadronFlavour` label; the margin lists the leading jets with their two
 CMSSW labels.
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf`](../example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf) at the bottom, each on half a page).
+
 ```bash
 python3 example/GenJet/plot_journey_GenJet.py                        # ak4GenJets -> example/GenJet/journey_GenJet.pdf
 python3 example/GenJet/plot_journey_GenJet.py --collection ak4nonu   # -> journey_GenJet_nonu.pdf
@@ -443,24 +446,40 @@ and the first full-chain event in `validate_genjets_with_fastjet_full_event1.txt
 
 ### 4.2 CMSSW: the GenJet step
 
-Nothing new has to be generated. The `GEN` step of chapter 1 runs the
-`genJetParticles` and `recoGenJets` sequences after the hadron level, so
-that every GEN file carries `ak4GenJets`, `ak4GenJetsNoNu` and
-`ak8GenJets` already, made by `FastjetJetProducer` with FastJet's
-anti-kT, the E scheme and `jetPtMin = 3`; the flavour producers run
-later, in the `PAT` step, and are not in the GEN output. JitJetSW's
-`genJetAnalyzer` drew the three collections as the sixth, seventh and
-eighth figures of the job. From the setup of the
-[chapter 2 companion](chapter_02_PS.md#42-cmssw-the-shower-inside-the-gen-step):
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/07_GenJet/run_07_GenJet.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): a second `cmsRun` step, process `GENJET`, on the output of the chapter 6 job: the four anti-kT collections.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_07_GenJet.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_07_GenJet.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
 
 ```bash
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genJetAnalyzer, one page per collection
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./07_GenJet/run_07_GenJet.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 07_GenJet/out/
 ```
 
-produces `genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf`, whose pages
-6 to 8 are the chapter's CMSSW figure; the copy in `CMSSW/` is the one
-used.
+The page of the analyser that the chapter shows is copied to
+[`example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf`](../example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf);
+the links are also in [`example/GenJet/CMSSW/README.md`](../example/GenJet/CMSSW/README.md).
+
+Nothing new has to be generated: every `GEN` step runs the `genJetParticles` and
+`recoGenJets` sequences after the hadron level, so that every GEN file carries
+`ak4GenJets`, `ak4GenJetsNoNu` and `ak8GenJets` already, made by
+`FastjetJetProducer` with FastJet's anti-kT, the E scheme and `jetPtMin = 3`; the
+flavour producers run later, in the `PAT` step, and are not in the GEN output. The
+JitJetSW job runs the same producers once more as the process `GENJET` on the file
+of chapter 6 (`cmsDriver.py step2 -s USER:JitJetSW/Journey/genJet_cff.genJetSequence
+--processName GENJET`), drops the jets of the GEN step, and its `genJetAnalyzer`
+draws one page per collection: page 6 `ak4GenJets` (the copy in `CMSSW/`, the lower
+panel of the chapter's display), page 7 `ak4GenJetsNoNu`, page 8 `ak8GenJets`; pages
+7 and 8 are shown in the JitJetSW chapter, not here. The numbers are in
+`test/07_GenJet/out/genJetAnalyzer_07_GenJet.log` and `ledger_07_GenJet.txt`.
 
 **Reading the pages.** Page 6 is ak4GenJets: 27 jets, 239 of the 634
 stable particles clustered, the b quark of status 71 at pT = 91.74 GeV,
@@ -491,17 +510,17 @@ hadronisation, which in the full chain fluctuates itself. Commands:
 `validate_genjets_with_fastjet.py` (column 1), `standalone_genjets.py`
 (column 2), `standalone_genjets.py --repeat 400 --jobs 4` (column 3),
 `validate_genjets_with_fastjet.py --mode full -n 2000` (column 4), pages
-6 to 8 of the CMSSW analyser's output (column 5).
+6 to 8 of the CMSSW analyser's output and its log, `test/07_GenJet/out/` of JitJetSW (column 5, section 4.2).
 
 | quantity | FastJet, same particles | standalone, same particles | standalone, 400 decays | PYTHIA + FastJet, full chain | CMSSW, 1 event |
 |---|---|---|---|---|---|
-| ak4GenJets: jets above 3 / 10 / 30 GeV | 42 / 11 / 6 | 42 / 11 / 6 | 40.0 +- 2.2 / 10.2 / 6.0 | 18.2 +- 11.5 / 3.9 / 2.4 | 27 / -- / -- |
+| ak4GenJets: jets above 3 / 10 / 30 GeV | 42 / 11 / 6 | 42 / 11 / 6 | 40.0 +- 2.2 / 10.2 / 6.0 | 18.2 +- 11.5 / 3.9 / 2.4 | 27 / 6 / 2 |
 | particles clustered, of | 368 of 749 | 368 of 749 | 357 +- 16 | 152 +- 88 | 239 of 634 |
 | ak8GenJets: jets, particles clustered | 30, 600 | 30, 600 | 30.4, 608 | 20.2, 321 | 28, 488 |
 | b quark (last copy): pT [GeV] | 78.29 | 78.29 | 78.29 | 95.5 +- 30.0 | 91.74 |
 | b jet, ak4GenJets: pT [GeV], n | 99.830, 31 | 99.830, 31 | 99.63 +- 0.49, 25.7 | 109.9 +- 27.6, 21.3 | 117.79, 24 |
 | response, dR to the quark | 1.275, 0.062 | 1.275, 0.062 | 1.273 +- 0.006, 0.060 | 1.22 +- 0.51, 0.028 | 1.284, 0.019 |
-| the cone of the same R [GeV] | 99.43 | 99.43 | 98.79 +- 0.68 | 109.7 +- 26.5 | -- |
+| the cone of the same R [GeV] | 99.43 | 99.43 | 98.79 +- 0.68 | 109.7 +- 26.5 | 79.12 (no nu) |
 | neutrino pT inside [GeV] | 0 | 0 | 7.7 (none in 54%) | 7.9 (none in 58%) | 37.5 |
 | b jet, ak4GenJetsNoNu: pT [GeV] | 99.830 | 99.830 | 91.93 +- 12.12 | 102.1 +- 28.9 | 79.82 |
 | b jet, ak8GenJets: pT [GeV], n | 105.786, 47 | 105.786, 47 | 104.61 +- 0.80, 41.3 | 120.0 +- 24.6, 34.3 | 141.10, 55 |
@@ -553,7 +572,7 @@ From `plot_algorithms_GenJet.py` on the 749 particles:
 | Cambridge/Aachen, R = 0.4 | 39 | 356 | 99.83 GeV, 31 (identical) | 94.45 GeV, 20 | 48.07 GeV, 27 |
 | HOTVR (paper's parameters) | 16 | 525 (196 groomed away) | inside a 170.59 GeV jet of 105 particles, m = 160 GeV, subjets = anti-kT [0], [4], [5] | inside a 151.86 GeV jet with [1] and [2] as subjets | a subjet |
 
-### 5.4 The CMSSW pages
+### 5.4 The CMSSW collections (pages 6 to 8 of `genJetAnalyzer_07_GenJet.pdf`)
 
 | page | collection | jets | particles clustered | the b quark's jet | the bbar quark's jet |
 |---|---|---:|---:|---|---|
@@ -565,6 +584,7 @@ From `plot_algorithms_GenJet.py` on the 749 particles:
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (seed 1, `event_GenJet.lhe`) | | | | |
 | b family after the decays (dR < 0.4, final) | 99.43 | 14.59 | 31 | |
 | ak4GenJets jet [0], the photograph | 99.83 | 14.83 | 31 | +0.40 |
 | ak4GenJetsNoNu jet [0], the reference | 99.83 | 14.83 | 31 | 0.00 |
@@ -573,3 +593,17 @@ From `plot_algorithms_GenJet.py` on the 749 particles:
 | mean of 400 decays, with neutrinos | 99.63 | 14.11 | 25.7 | |
 | mean of 400 decays, without | 91.93 | 13.29 | 25.2 | -7.70 |
 | ak8GenJets jet [1], the same family at R = 0.8 | 105.79 | 27.43 | 47 | +5.96 |
+| **CMSSW** (run 1, event 1; the jets of the complete event) | | | | |
+| b family after the decays, visible (dR < 0.4) | 79.12 | 12.1 | 21 | |
+| ak4GenJets jet [0], the photograph | 117.79 | 16.72 | 24 | +38.67 |
+| ak4GenJetsNoNu jet [1], the reference | 79.82 | 13.36 | 22 | -37.97 |
+| of which the B-'s descendants, nu_ebar included | 94.28 | 5.28 | 9 | |
+| ak8GenJets jet [0], the same family at R = 0.8 | 141.10 | 47.26 | 55 | +23.31 |
+
+The CMSSW rows are lines of `genJetAnalyzer_07_GenJet.log` of JitJetSW:
+`[0] pt=117.788 ... mass=16.7186 nConst=24` (ak4GenJets), `[1] pt=79.817 ...
+mass=13.3627 nConst=22` (ak4GenJetsNoNu), `[0] pt=141.096 ... mass=47.2599 nConst=55`
+(ak8GenJets); the first row is the visible cone of chapter 6; delta pT is relative
+to the row above (117.788 - 79.121, 79.817 - 117.788) except for ak8GenJets, which is
+relative to ak4GenJets (141.096 - 117.788). The nine products of the B- inside the
+ak4 jet carry the 94.28 GeV of the hadron.

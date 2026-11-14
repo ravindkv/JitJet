@@ -5,7 +5,7 @@ genPartAnalyzer (stage 4, primary hadrons).
 The input is the hadron-level listing written by Standalone/standalone_hadronisation.py
 (PYTHIA listing format, saved as event_Had.lhe): the primary hadrons are the rows with
 status 81-84, every parton now has a negative status. The picture follows
-example/Had/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_out.pdf, page 4, so that the standalone and
+example/Had/CMSSW/genPartAnalyzer_05_Had.pdf, so that the standalone and
 the CMSSW result can be compared side by side. It reuses the frame, the marker sizes and
 the parsing of ../PS/plot_journey_PS.py; the categories of this stage are
 
@@ -141,6 +141,8 @@ def summary(final, beams, quarks, n_strings):
                          scalar=kinematics(stars[5])["pt"] + kinematics(stars[-5])["pt"],
                          dphi=dphi(kinematics(stars[5])["phi"], kinematics(stars[-5])["phi"]))
     out["all"] = vsum(final)
+    # the cone of the ledger, around the last copy of each quark (the axis the parton-level rows used)
+    out["cones"] = {key: ps.cone_of(final, quarks[pid]) for pid, key in ((5, "b"), (-5, "bbar")) if pid in quarks}
     out["x"] = {}
     for pid, h in stars.items():
         q = quarks.get(pid)
@@ -166,6 +168,7 @@ def print_table(final, s):
     if "bb" in s:
         bb = s["bb"]
         print(f"b + bbar hadrons: |pT(b) + pT(bbar)| = {bb['pt']:.2f} GeV, m = {bb['m']:.1f} GeV, dphi = {bb['dphi']:.2f}")
+    ps.print_cones(s["cones"])
     a = s["all"]
     print(f"all {s['n']} primary hadrons from {s['n_strings']} strings: |sum pT| = {math.hypot(a['px'], a['py']):.3f} GeV, "
           f"sum pz = {a['pz']:.1f}, sum E = {a['e']:.1f} GeV")
@@ -273,8 +276,11 @@ def draw(final, s, output: Path, title: str, source: str, png: bool, label_min: 
     ax = fig.add_axes([0.06, 0.08, 0.70, top - 0.08])
     ps.draw_axes(ax)
     draw_particles(ax, final, s, label_min, names)
+    ps.draw_cone_layer(ax, fig, final, s, lambda r: dict(marker=FAMILY[r["cat"]]["marker"], color=FAMILY[r["cat"]]["color"]),
+                       lambda r: f"{hadron_tex(names.get(r['no'], str(r['id'])))} {kinematics(r)['pt']:.1f}")
     side = fig.add_axes([0.79, 0.08, 0.20, top - 0.08])
     draw_legend(side, {k: len(v) for k, v in s["cats"].items()}, STAGE, s["n_strings"])
+    ps.legend_cone(side)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output)
     if png:

@@ -226,10 +226,11 @@ the \CMSSW impact parameter it gives $306\pm52$, and the \CMSSW event's
 $320$ sits inside.
 \label{sec:children_getting_married:cmssw}
 
-The second official check costs nothing to run: the \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} hadronised the event, since
-\code{HadronLevel:all} is on in every CMS configuration, with the Monash
-values that \code{Tune:pp = 14} selects and that the script embeds. Its
+The second official check is the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} with the hadronisation switched on and the
+decays still off; in production \code{HadronLevel:all} is on in every CMS
+configuration, with the Monash values that \code{Tune:pp = 14} selects and
+that the script embeds. Its
 event is the last column of the table, and
 \cref{sec:children_getting_married:our_jet_at_this_stage_the_hadron_level_f}
 follows the mother through its record. How each column was produced, the
@@ -261,18 +262,18 @@ $\bar B^0$ ($b\bar d$), $B^{*-}$ and $B^-$ ($b\bar u$) and $\bar B_s^{*0}$
  & \PYTHIA & standalone & \PYTHIA full & \PYTHIA full & standalone & \CMSSW \\
  & same partons & same partons & $b$ drawn & $b=0.3136$ & seed 1 & 1 event \\ \midrule
 primary hadrons & $383\pm11$ & $402\pm14$ & $226\pm87$ & $306\pm52$ & $365$ & $320$ \\
-\quad charged & $207.5\pm11.9$ & $217.2\pm12.5$ & $122\pm48$ & $165\pm29$ & $184$ & $167$ \\
+\quad charged & $207.5\pm11.9$ & $217.2\pm12.5$ & $122\pm48$ & $165\pm29$ & $184$ & $169$ \\
 \quad baryons & $44.0\pm7.6$ & $38.8\pm7.6$ & $26.8$ & $36.3$ & $52$ & $34$ \\
-\quad with strangeness & $87.8\pm10.3$ & $92.1\pm10.5$ & $49.6$ & $67.8$ & $94$ & $69$ \\
-\quad at $|\eta|<2.5$ & $193.8$ & $206.3$ & $91.9$ & $128.3$ & $179$ & $139$ \\
-colour singlets, partons joined & $33$, $48$ & $33$, $48$ & -- & -- & $33$, $48$ & $24$, -- \\ \midrule
+\quad with strangeness & $87.8\pm10.3$ & $92.1\pm10.5$ & $49.6$ & $67.8$ & $94$ & $66$ \\
+\quad at $|\eta|<2.5$ & $193.8$ & $206.3$ & $91.9$ & $128.3$ & $179$ & $141$ \\
+colour singlets, partons joined & $33$, $48$ & $33$, $48$ & -- & -- & $33$, $48$ & $26$, $45$ \\ \midrule
 $b$: $\xE=E_B/E_b$ (Lund--Bowler) & $0.913\pm0.062$ & $0.882\pm0.078$ & $0.941\pm0.100$ & $0.931\pm0.089$ & $1.004$ & $1.025$ \\
 $b$: \xE, plain Lund ($r_b=0$) & $0.963\pm0.038$ & $0.952\pm0.048$ & -- & -- & -- & -- \\
 $b$: \xE, Peterson ($\epsilon_b=0.005$) & $0.870\pm0.120$ & $0.839\pm0.132$ & -- & -- & -- & -- \\
 $\bar b$: \xE & $1.033\pm0.049$ & $1.025\pm0.072$ & $0.941\pm0.095$ & $0.936\pm0.094$ & $1.154$ & $0.980$ \\
 $b$: \pt of its hadron [GeV] & $71.1\pm5.0$ & $69.4\pm5.2$ & $87.8\pm26.7$ & $87.7\pm27.3$ & $78.56$ & $94.28$ \\
 $b$: $\bar B^{*0}\!:\!B^{*-}\!:\!\bar B^0\!:\!B^-\!:\!\bar B_s^{*0}$ [\%] & $31:28:14:12:8$ & $31:32:13:12:6$ & $29:29:13:15:6$ & $30:29:14:14:4$ & \Bstarbar & $B^-$ \\ \midrule
-$b$, $\dR<0.4$: partons \pt [GeV] & $100.67$ & $100.67$ & $109.7$ & $109.7$ & $100.67$ & -- \\
+$b$, $\dR<0.4$: partons \pt [GeV] & $100.67$ & $100.67$ & $109.7$ & $109.7$ & $100.67$ & $127.25$ \\
 $b$, $\dR<0.4$: hadrons \pt [GeV] & $98.0\pm2.2$ & $96.8\pm3.1$ & $109.6$ & $109.8$ & $99.23$ & $114.45$ \\
 $b$, $\dR<0.4$: hadrons, mass [GeV] & $7.6$, $17.2$ & $8.0$, $16.8$ & $6.2$, $14.3$ & $6.7$, $15.4$ & $6$, $16.1$ & $9$, $20.4$ \\
 $b$, $\dR<0.4$: $B$ share of the cone \pt & $0.726$ & $0.710$ & $0.800$ & $0.799$ & $0.79$ & $0.82$ \\
@@ -1081,82 +1082,114 @@ event.}
 \label{fig:children_getting_married:our_jet_plot}
 \end{figure}
 
-The ledger gets the row that makes the mother a hadron, and
-\cref{fig:children_getting_married:journey} puts the rows next to the event
-display of the standalone stage. The first row is the last one of
-\cref{ch:uninvited_cousins}; the $R=0.8$ row is listed because the
-large-radius jets of \cref{ch:three_families} will need it.
+The ledger gets the row that makes the mother a hadron
+(\cref{tab:children_getting_married:ledger}), and
+\cref{fig:children_getting_married:displays} shows the hadron level of the
+event twice, the standalone record above and the \CMSSW one below. The
+first row of each block is the last one of \cref{ch:uninvited_cousins};
+the $R=0.8$ row is listed because the large-radius jets of
+\cref{ch:three_families} will need it.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{The Children Get Married}{tab:children_getting_married:ledger}{``Family''
+means what lies within $\dR<0.4$ of the last copy of the $b$ quark,
+partons before the stage and primary hadrons after it. The standalone rows
+are read from \file{example/Had/event_Had.lhe} (seed~1); the \CMSSW rows
+from the ledger and the analyser log of the \code{05\_Had} job of
+\code{JitJetSW}, hadronisation on and decays off.}
+\ledgerblock{Standalone (seed 1, \file{event_Had.lhe})}
 \ledgerrow{$b$ family after the MPI stage ($\dR<0.4$, partons)}{100.67}{13.52}{3}{--}
 \ledgerrow{$b$ family after this stage ($\dR<0.4$, hadrons)}{99.23}{16.08}{6}{$-1.44$}
 \ledgerrow{\quad of which the \Bstarbar itself ($\xE=1.004$)}{78.56}{5.33}{1}{--}
 \ledgerrow{\quad the same within $\dR<0.8$}{105.98}{35.87}{14}{$+1.89$}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{Had/journey_Had.pdf}
-\end{minipage}
-\caption[The energy ledger and the event after hadronisation in the $(\eta,\phi)$ plane]{The
-energy ledger at the stage ``The Children Get Married'' (left; $\Delta\pt$
-is relative to the previous row) and the hadron level of our event after
-the standalone hadronisation stage (right), drawn by
-\file{example/Had/plot_journey_Had.py} from \file{example/Had/event_Had.lhe}
-in the layout of \cref{fig:children_getting_married:cmssw}. Red and blue
-are the \Bstarbar and \Bstar that carry the flavours of the $b$ and $\bar b$,
-magenta their vector sum, purple the other 363 primary hadrons, 30 of them
-beyond $|\eta|=6$ on the border. The header lists each B~hadron with its
-\xE and \xpt and the vector sum of all 365 hadrons, which vanishes.}
-\label{fig:children_getting_married:journey}
-\end{figure}
+\ledgerblock{\CMSSW (run 1, event 1; hadronisation on, decays off)}
+\ledgerrow{$b$ family after the MPI stage ($\dR<0.4$, partons)}{127.25}{17.1}{9}{--}
+\ledgerrow{$b$ family after this stage ($\dR<0.4$, hadrons)}{114.45}{20.4}{9}{$-12.81$}
+\ledgerrow{\quad of which the $B^-$ itself ($\xE=1.025$)}{94.28}{5.28}{1}{--}
+\ledgerrow{\quad the same within $\dR<0.8$}{141.1}{49.8}{28}{--}
+\end{ledgerboth}
 
-\paragraph{The same event in \CMSSW.} The particle listing of the GEN log
-has, after the status-62 and 63 rows of \cref{ch:uninvited_cousins}, $120$
-rows of status $71$ and $45$ of status $73$, the copies \PYTHIA makes when
-it collects each colour singlet and joins very soft partons; grouped by
-their common daughter range they form $24$ colour singlets. Follow the
-mother once more. Row~515 is her status-62 copy at $91.744\GeV$; row~824 is
-her status-71 copy, the first of five partons, $b\,g\,g\,g\,\bar s$, that
-form a string whose daughters are rows~829 to~834, six hadrons: a $B^-$,
-three $\pi^0$, a $\pi^+$ and a $K^0$. The $B^-$ at $94.279\GeV$ and
-$\eta=-1.567$ is $0.01$ from the quark in $\dR$ and carries
-$\xpt=94.279/91.744=1.028$ and $\xE=235.85/230.04=1.025$: above one, as in
-our record, and for the same reason. The $\bar b$'s string is the shortest
-kind, $d\,\bar b$, rows~963 and~964, and made four hadrons,
+\paragraph{The same event in \CMSSW.} In \CMSSW this stop switches on
+\code{HadronLevel:Hadronize} and leaves the decays off, so that the final
+state is the set of primary hadrons. The parton level is that of
+\cref{ch:uninvited_cousins} to the last digit: the same $169$ partons are
+in the record, $156$ with status~62 and the $13$ remnants with status~63.
+New are $120$ entries of status~71 and $45$ of status~73, the copies
+\PYTHIA makes when it collects each colour singlet and joins two very
+nearby partons into one, and the $320$ primary hadrons, $169$ charged and
+$151$ neutral; the record grows from $745$ to $1230$ entries and not one
+free colour charge is left. Grouped by the partons they descend from, the
+hadrons form $26$ colour singlets of $2$ to $42$ hadrons each:
+twenty-one ordinary strings, two junction strings with three quark ends,
+the leftovers of the two protons, and three ministrings too light to
+fragment. The most energetic one carries $3631\GeV$ along the beam and
+makes $42$ hadrons.
+
+Follow the mother once more. Entry~515 is her status-62 copy at
+$91.74\GeV$; entry~824 is her status-71 copy, the first of five partons,
+$b\,g\,g\,g\,\bar s$, that form a string of only $12.8\GeV$ of mass whose
+daughters are entries~829 to~834, six hadrons: a $B^-$ ($b\bar u$), three
+$\pi^0$, a $\pi^+$ and a $K^0$. The $B^-$ at $94.28\GeV$ is $\dR=0.01$
+from the quark and carries $\xE=235.9/230.0=1.025$ of its energy and
+$83\%$ of the energy of the whole string: above one, as in our record, and
+for the same reason, the gluons of the string hand their momentum to the
+hadron at its heavy end. The $\bar b$'s string is the shortest kind,
+$d\,\bar b$, entries~963 and~964, and made four hadrons,
 $\pi^-\,K^+\,K^{*-}\,B^{*+}$, the $B^{*+}$ ($u\bar b$) at $114.17\GeV$
-keeping $\xE=0.980$ of the $116.36\GeV$ quark. Around the $B^-$, nine
+keeping $\xE=0.980$; it is a $B^*$ rather than a $B$ because a
+vector-to-pseudoscalar ratio of $2.2$ draws the excited state $69\%$ of
+the time.
+
+The cone is where this stop costs her something. Around the mother, nine
 primary hadrons within $\dR<0.4$ carry $114.45\GeV$ with a mass of
-$20.4\GeV$, the $B^-$ being $82\%$ of it; within $\dR<0.8$, $28$ hadrons,
-$141.1\GeV$ and $49.8\GeV$ of mass. These are the \CMSSW numbers of
-\cref{tab:children_getting_married:numbers}.
+$20.4\GeV$: the $B^-$, which is $82\%$ of it, five $\pi^0$, a $K^0$, a
+$\bar K^{*0}$ and a $\pi^-$. The nine partons there carried $127.25$, so
+that hadronisation took $12.8\GeV$ out of the cone, where it took
+$1.4\GeV$ out of ours and takes $3.9\pm3.1$ on average out of four hundred
+hadronisations of our partons. Nothing was lost here either, the record
+closes at $13\,600.0\GeV$ string by string, and the missing momentum can
+be pointed at: four hadrons just outside the circle, an antiproton of
+$5.3\GeV$ at $\dR=0.45$, a $\Delta^{++}$ of $2.8\GeV$ at $0.51$, and a
+$\rho^+$ and a $\pi^+$ of $2.4\GeV$ each at $0.46$ and $0.42$, the $\pi^+$
+one of the six hadrons of her own string. A cone is not a string: several
+strings pass through this one, and each puts its hadrons where the string
+runs, not where the parton was. The cone of the $\bar b$ holds the
+$B^{*+}$ and a single $K^{*-}$, $116.0\GeV$ against $117.1$ at parton
+level.
 
-\Cref{fig:children_getting_married:cmssw} is the analyser's stage-4 picture:
-320 primary hadrons, the $B^-$ in red at $\eta=-1.57$ and the $B^{*+}$ in
-blue at $\eta=-3.75$, and the purple hadrons everywhere, 25 of them beyond
-$|\eta|=6$ on the border where the remnants' strings put them. Set it next
-to \cref{fig:children_getting_married:journey}. The two are different
-hadronisations of different showers of the same hard event, and the
-comparison to make is \cref{tab:children_getting_married:numbers}; what the
-pictures share is the structure: a dense cluster of hadrons around each
-B~hadron, the B~hadron itself carrying most of the cluster's momentum, and
-a uniform purple background from the strings of the underlying event that
-reaches into both cones.
+Panel~(b) of \cref{fig:children_getting_married:displays} is the
+analyser's page for the stage: $320$ primary hadrons, the $B^-$ in red at
+$\eta=-1.57$ and the $B^{*+}$ in blue at $\eta=-3.75$ the only two large
+markers, each in its dashed cone, and the purple spray of the $26$
+strings everywhere, denser at large $|\eta|$, with $25$ hadrons beyond
+$|\eta|=6$ on the border; the inset magnifies the mother's cone with the
+name and \pt of every hadron in it. Panel~(a) is our record in the same
+layout, the \Bstarbar and the \Bstar in place of the $B^-$ and the
+$B^{*+}$, $363$ other primary hadrons from $33$ strings, $30$ of them on
+the border, and the cones of the ledger at $99.2$ and $91.3\GeV$. The two
+are different hadronisations of different showers of the same hard event,
+and the comparison to make is \cref{tab:children_getting_married:numbers};
+what the pictures share is the structure: a dense cluster of hadrons
+around each B~hadron, the B~hadron itself carrying most of the cluster's
+momentum, and a uniform purple background from the strings of the
+underlying event that reaches into both cones.
 
-\begin{figure}[htbp]\centering
-\includegraphics[page=4,width=\textwidth]{Had/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_out.pdf}
-\caption[The event after hadronisation in \CMSSW]{Stage~4 of our event in
-\CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}: the primary
-hadrons after the Lund string fragmentation. Red and blue are the $B^-$ and
-$B^{*+}$ that carry the flavours of the $b$ and $\bar b$, magenta their
-vector sum, purple every other primary hadron; hadrons beyond $|\eta|=6$ are
-drawn on the border. The same stage of the standalone record is
-\cref{fig:children_getting_married:journey}.}
-\label{fig:children_getting_married:cmssw}
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {Had/journey_Had.pdf}
+  {Standalone: the 365 primary hadrons of \file{example/Had/event_Had.lhe} (seed~1), drawn by \file{plot_journey_Had.py}.}
+  {fig:children_getting_married:journey}
+  {Had/CMSSW/genPartAnalyzer_05_Had.pdf}
+  {\CMSSW: the 320 primary hadrons of the \code{05\_Had} job, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}.}
+  {fig:children_getting_married:cmssw}
+\caption[The event after hadronisation in the $(\eta,\phi)$ plane,
+standalone and \CMSSW]{The hadron level of our event after the Lund string
+fragmentation, standalone (a) and \CMSSW (b). Red and blue are the
+B~hadrons that carry the flavours of the $b$ and $\bar b$, magenta their
+vector sum, purple every other primary hadron; hadrons beyond $|\eta|=6$
+are drawn on the border. The dashed circles are the cones $\dR<0.4$ of the
+ledger, around the last quark copies in (a) and around the B~hadrons in
+(b), magnified in the insets.}
+\label{fig:children_getting_married:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1343,10 +1376,11 @@ review remains \cite{Buckley:2011ms}. Junctions are
 \item \textbf{Which string?} For each of the six hadrons within $\dR<0.4$
   of the $b$, find its mother range in the record and hence its string.
   How many are from the $b$ string, and what is the \pt of the rest?
-\item \textbf{Read the \CMSSW record.} In \file{step1_GEN_PS_cfg.log}
-  group the status-71 and 73 rows by their daughter range, count the
-  colour singlets and the hadrons of each, and reproduce the 24 singlets
-  and the $B^-$'s string. Then compute \xE for the $B^-$ and the $B^{*+}$
+\item \textbf{Read the \CMSSW record.} In the \code{genParticles} of the
+  \CMSSW event of this stop (the companion says where the files are)
+  group the primary hadrons by the status-71 and 73 partons they descend
+  from, count the colour singlets and the hadrons of each, and reproduce
+  the 26 singlets and the $B^-$'s string. Then compute \xE for the $B^-$ and the $B^{*+}$
   from the rows quoted in \cref{sec:children_getting_married:cmssw}.
 \item \textbf{\PYTHIA's first event.} Run \file{plot_journey_Had.py} on
   \file{validate_hadronisation_with_pythia_record_event1.txt} and compare

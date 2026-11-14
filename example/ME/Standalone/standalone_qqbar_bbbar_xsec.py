@@ -11,9 +11,9 @@ log Q^2. Everything else (phase space, matrix element, cuts, scales) is the
 same physics as qqbar_bbbar_xsec.py, written with numpy arrays.
 
 Default settings reproduce the PYTHIA run summarised by the reference value
-sigma = 345.1 +/- 6.0 pb (pTHat >= 100 GeV, eCM = 13.6 TeV, mb = 4.8 GeV,
+sigma = 348.6 +/- 6.0 pb (pTHat >= 100 GeV, eCM = 13.6 TeV, mb = 4.8 GeV,
 muR^2 = muF^2 = pT^2 + mb^2). The validated full-environment result is
-345.1 pb.
+345.3 pb.
 
 Examples:
   python standalone_qqbar_bbbar_xsec.py
@@ -345,7 +345,7 @@ def main():
     p.add_argument("--power", type=int, default=16, help="2**power Sobol points per repeat")
     p.add_argument("--repeats", type=int, default=1, help=">1 gives an integration error estimate")
     p.add_argument("--seed", type=int, default=24680)
-    p.add_argument("--reference-nb", type=float, default=0.3451)
+    p.add_argument("--reference-nb", type=float, default=0.3486)
     p.add_argument("-v", "--verbose", action="store_true",
                    help="learning mode: narrate the constants, the event's point in the cube with every factor "
                         "of its weight, and the running average of the first Sobol pass")

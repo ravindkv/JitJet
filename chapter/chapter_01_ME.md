@@ -15,7 +15,8 @@ the CMSSW analysers are in [JitJetSW](https://github.com/ravindkv/JitJetSW).
 | Full integrator (LHAPDF + PYTHIA alpha_s) | [`example/ME/Standalone/qqbar_bbbar_xsec.py`](../example/ME/Standalone/qqbar_bbbar_xsec.py) |
 | Event record | [`example/ME/event_ME.lhe`](../example/ME/event_ME.lhe) |
 | Learning-mode log | [`example/ME/Standalone/standalone_qqbar_bbbar_xsec.log`](../example/ME/Standalone/standalone_qqbar_bbbar_xsec.log) |
-| CMSSW configuration and log | [`example/ME/CMSSW/`](../example/ME/CMSSW/) |
+| CMSSW figure | [`example/ME/CMSSW/genPartAnalyzer_01_ME.pdf`](../example/ME/CMSSW/genPartAnalyzer_01_ME.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_01_ME.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_01_ME.tex); technical companion: [`chapter_01_ME.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_01_ME.md) |
 | MadGraph recipe | [`example/ME/MadGraph/qqbar_bbbar_xsec_MadGraph.md`](../example/ME/MadGraph/qqbar_bbbar_xsec_MadGraph.md) |
 | Film | scene 1 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
@@ -230,6 +231,8 @@ chapters (marker size growing with log pT, the tracker, endcap and HF bands,
 the incoming partons and their momentum fractions at the two edges), and
 prints the kinematics table of section 5.6:
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genPartAnalyzer_01_ME.pdf`](../example/ME/CMSSW/genPartAnalyzer_01_ME.pdf) at the bottom, each on half a page).
+
 ```bash
 python3 example/ME/plot_journey_ME.py -i example/ME/event_ME.lhe -o example/ME/journey_ME.pdf
 python3 example/ME/plot_journey_ME.py --png          # also a PNG next to the PDF
@@ -281,7 +284,7 @@ chapter that explains it:
    triangle; its volume is the cross section, and our event is marked on it.
 4. **converge**: one Sobol pass filling the cube while the running average,
    per incoming flavour and in total, settles on 345 pb, with PYTHIA's
-   345.1 +/- 6.1 pb as a band.
+   348.6 +/- 6.0 pb as a band.
 
 It needs matplotlib in addition to NumPy and SciPy, `ffmpeg` for an `.mp4`
 (a `.gif` needs only Pillow and is silent), and for the voice the `edge-tts`
@@ -347,39 +350,71 @@ silently overrides a virtual environment.
 
 ### 4.2 CMSSW: the GEN step
 
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/01_ME/run_01_ME.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the matrix element alone: `PartonLevel:ISR/FSR/MPI = off`, `HadronLevel:all = off`.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_01_ME.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_01_ME.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_01_ME.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_01_ME.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
+
+```bash
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./01_ME/run_01_ME.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 01_ME/out/
+```
+
+The page of the analyser that the chapter shows is copied to
+[`example/ME/CMSSW/genPartAnalyzer_01_ME.pdf`](../example/ME/CMSSW/genPartAnalyzer_01_ME.pdf);
+the links are also in [`example/ME/CMSSW/README.md`](../example/ME/CMSSW/README.md).
+
+What the chapter reads from its output (`test/01_ME/out/`):
+
+| number in the chapter | value | file |
+|---|---|---|
+| the fourteen entries of `genParticles`, status 4 / 21 / 23 / 61 / 1 | section "The same event in CMSSW" | `step1_GEN_01_ME.root` (FWLite dump, JitJetSW companion 4.3) |
+| the final b and bbar after the primordial kT | 113.56, 112.33 GeV | the same dump; `ledger_01_ME.txt`, "cone" lines |
+| the smeared vertex and its time | (0.0277, -0.0169, 3.112) cm, t = 0.121 ns | `step1_GEN_01_ME.root` |
+| energy by region | 2676.9 GeV at abs(eta) < 5.2, 10923.1 GeV beyond 5.5 | `ledger_01_ME.txt` |
+| cross section after one event | 157.7 +/- 157.7 pb | `step1_GEN_01_ME.log` |
+| cross section from 1000 events (2913 tried) | 348.6 +/- 6.0 pb | `xsec_GEN_01_ME.log` |
+
 In CMS the hard process is one step of a production chain driven by
-`cmsDriver.py`. The configuration `CMSSW/step1_GEN_cfg.py` was generated with
-the command in its header, here broken into lines:
+`cmsDriver.py`. The job is two commands, both written by `run_01_ME.sh`: one
+event, which is the event of the book, and the same job with a thousand events
+and no output file, for the cross section. The first, here broken into lines:
 
 ```bash
 cmsDriver.py Configuration/GenProduction/python/BBbar_14TeV_TuneCP5_cfi.py \
-  --conditions auto:phase1_2024_realistic --era Run3_2024 --geometry DB:Extended \
-  -n 1 -s GEN --datatier GEN --eventcontent FEVTDEBUG \
-  --fileout file:output_step1_GEN.root --python_filename step1_GEN_cfg.py \
-  --no_exec --beamspot DBrealistic \
-  --customise_commands "process.generator.comEnergy = cms.double(13600.0)"
+  --conditions auto:phase1_2024_realistic --era Run3_2024 --geometry DB:Extended --beamspot DBrealistic \
+  -n 1 -s GEN --datatier GEN --eventcontent FEVTDEBUG --fileout file:step1_GEN_01_ME.root \
+  --customise_commands "process.generator.comEnergy = cms.double(13600.0)\nprocess.generator.PythiaParameters.processParameters.extend(['PhaseSpace:pTHatMin = 100', 'PartonLevel:ISR = off', 'PartonLevel:FSR = off', 'PartonLevel:MPI = off', 'HadronLevel:all = off', 'HadronLevel:Hadronize = off', 'HadronLevel:Decay = off'])" \
+  --python_filename 01_ME/step1_GEN_01_ME_cfg.py --no_exec
 ```
 
 The pieces: a *fragment* (the `_cfi.py` file, which carries the PYTHIA
-settings), the detector *conditions* and *era*, the *step* (`GEN` only), the
-output data tier and event content, and a customisation that overrides the
-fragment's 14 TeV with the Run 3 energy of 13.6 TeV. To run it:
-
-```bash
-cmsrel CMSSW_15_0_5
-cd CMSSW_15_0_5/src
-cmsenv
-cmsRun step1_GEN_cfg.py 2>&1 | tee step1_GEN_cfg.log
-```
+settings), the detector *conditions* and *era*, the vertex smearing
+(`--beamspot`), the *step* (`GEN` only), the output data tier and event
+content, and a customisation that overrides the fragment's 14 TeV with the
+Run 3 energy of 13.6 TeV, raises the cut on pTHat to 100 GeV and switches off
+everything after the hard process. The second command is the same with
+`-n 1000 --no_output` and the file name `01_ME/xsec_GEN_01_ME_cfg.py`; its
+first event is the event of the book. The JitJetSW companion explains every
+argument.
 
 **Reading the configuration.** Most of the file is boilerplate that every
 CMSSW job carries. The physics is in the module `process.generator`, an
 `EDFilter` of type `Pythia8ConcurrentGeneratorFilter`, and in particular in
 three blocks of its `PythiaParameters`:
 
-- `processParameters`: the three lines that define the process,
+- `processParameters`: the lines that define the process,
   `HardQCD:gg2bbbar = off`, `HardQCD:qqbar2bbbar = on` and
-  `PhaseSpace:pTHatMin = 100.`.
+  `PhaseSpace:pTHatMin` (30 in the fragment, 100 appended by the command),
+  followed by the six switches that stop PYTHIA after the hard process.
 - `pythia8CP5Settings`: the CMS tune. It fixes the PDF through `PDF:pSet` to
   NNPDF3.1 NNLO, and sets the four couplings (matrix element, the two showers
   and the multiparton interactions) to alpha_s(m_Z) = 0.118 at second order.
@@ -388,18 +423,15 @@ three blocks of its `PythiaParameters`:
 - `pythia8CommonSettings`: production defaults such as the tolerance on
   energy-momentum conservation and the lifetime cut-off for particle decays.
 
-Other lines worth noticing: `maxEvents.input = 1000` (the fragment name says
-one event, the job was run with a thousand); the `comEnergy` override at the
-end; the output module writing `FEVTDEBUG` content to `output_step1_GEN.root`;
-and the `customiseJitJet` line from
-[JitJetSW](https://github.com/ravindkv/JitJetSW) that hooks in the book's own
-analysers, used from chapter 2 on.
+The random seeds are not passed: they are the defaults of
+`IOMC/RandomEngine/python/IOMC_cff.py`, identical in every generator job of the
+book, which is why the jobs of chapters 1, 2 and 4 to 6 share this hard process.
 
-**Reading the log.** PYTHIA writes two things to `CMSSW/step1_GEN_cfg.log`
-that close the loop with the chapter's recipe. For the first event it prints
-the Info Listing: the two incoming partons with their x and PDF values, the
-partonic invariants, pTHat and thetaHat, and the coupling at the scale Q^2,
-which are the quantities of section 5.5:
+**Reading the log.** PYTHIA writes two things that close the loop with the
+chapter's recipe. For the event of the book (`test/01_ME/out/step1_GEN_01_ME.log`)
+it prints the Info Listing: the two incoming partons with their x and PDF
+values, the partonic invariants, pTHat and thetaHat, and the coupling at the
+scale Q^2, which are the quantities of section 5.5:
 
 ```text
  In 1: id =   -2, x =  2.174e-03, pdf =  1.145e+00 at Q2 =  1.284e+04.
@@ -413,23 +445,28 @@ which are the quantities of section 5.5:
 ```
 
 Immediately after it comes the hard-process listing, which is the record of
-section 2. At the end of the job it prints the Event and Cross Section
+section 2. At the end of a job it prints the Event and Cross Section
 Statistics table: how many phase-space points were tried, how many selected
-and accepted, and the cross section with its error, in mb. About three
-phase-space points are tried for each unweighted event that is kept; the cross
-section is the average weight of the tried points, not the acceptance ratio,
-exactly as in the chapter's recipe.
+and accepted, and the cross section with its error, in mb. After the single
+event that table holds one point, 157.7 +/- 157.7 pb, which is a weight and
+not a measurement; the thousand-event job (`xsec_GEN_01_ME.log`) is the one to
+read. About three phase-space points are tried for each unweighted event that
+is kept; the cross section is the average weight of the tried points, not the
+acceptance ratio, exactly as in the chapter's recipe.
 
 ```text
  | Subprocess                                    Code |            Number of events       |      sigma +- delta    |
  |                                                    |       Tried   Selected   Accepted |     (estimated) (mb)   |
- | q qbar -> b bbar                               124 |        2910       1000       1000 |   3.451e-07  6.078e-09 |
+ | q qbar -> b bbar                               124 |        2913       1000       1000 |   3.486e-07  6.035e-09 |
 ```
 
-With 1 mb = 10^9 pb this is 345.1 +/- 6.1 pb, 0.04 standard deviations from
-the standalone 345.32 pb. The 1.8% statistical error of a thousand-event run
+With 1 mb = 10^9 pb this is 348.6 +/- 6.0 pb, 0.54 standard deviations from
+the standalone 345.32 pb. The 1.7% statistical error of a thousand-event run
 is the largest number in the agreement table, and still ten times smaller
-than the theoretical uncertainty of the chapter.
+than the theoretical uncertainty of the chapter. (Until 2026-11-14 the book
+quoted 345.1 +/- 6.1 pb, from 2910 points of an earlier thousand-event job of
+the same process with the showers and the hadron level left on; its log was
+removed from `example/ME/CMSSW/`. The two are independent samples.)
 
 ### 4.3 MadGraph5_aMC@NLO
 
@@ -504,7 +541,7 @@ numerical only.
 | Standalone script, one pass | LO integral, 2^16 Sobol points | 345.320 | `standalone_qqbar_bbbar_xsec.py` |
 | Standalone script, 8 repeats | LO integral, scrambled seeds | 345.322 +/- 0.001 | `standalone_qqbar_bbbar_xsec.py --repeats 8` |
 | Full script (LHAPDF, PYTHIA alpha_s) | LO integral, 8 repeats | 345.324 +/- 0.001 | `.venv/bin/python qqbar_bbbar_xsec.py --output result.json` |
-| PYTHIA 8.311 in CMSSW_15_0_5 | Monte Carlo, 1000 events | 345.1 +/- 6.1 | `cmsRun step1_GEN_cfg.py`, statistics table of the log |
+| PYTHIA 8.311 in CMSSW_15_0_5 | Monte Carlo, 1000 events | 348.6 +/- 6.0 | the JitJetSW job `test/01_ME/` (section 4.2), statistics table of `xsec_GEN_01_ME.log` |
 | MadGraph5_aMC@NLO 3.8.0 | Monte Carlo, 10 000 events | 344.3 +/- 1.0 | the recipe of section 4.3 |
 
 ### 5.2 Contribution of each incoming flavour
@@ -592,5 +629,15 @@ with it.
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (`event_ME.lhe`) | | | | |
 | before this stage | | | | |
 | b quark in the hard-process record | 113.22 | 4.80 | 1 | |
+| **CMSSW** (run 1, event 1; matrix element only) | | | | |
+| b quark of the hard process (status 23) | 113.22 | 4.80 | 1 | |
+| b quark in the final state (status 1, dR < 0.4) | 113.56 | 4.80 | 1 | +0.34 |
+
+The CMSSW rows are those of `test/01_ME/out/ledger_01_ME.txt` of JitJetSW ("cone
+Delta R < 0.4 around the last copy of each outgoing parton": `b axis [9] status 1
+pT=113.6 ... n=1`; three decimals, 113.560, from its FWLite dump): the status-1 b
+carries the primordial kT of the incoming partons, 0.34 GeV more than the
+hard-process copy.

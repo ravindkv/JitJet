@@ -17,7 +17,8 @@ otherwise; the CMSSW analysers are in
 | Event record | [`example/Had/event_Had.lhe`](../example/Had/event_Had.lhe) (seed 1, 1491 rows, 365 primary hadrons) |
 | Learning-mode log | [`example/Had/Standalone/standalone_hadronisation.log`](../example/Had/Standalone/standalone_hadronisation.log) (`-v`, 2187 lines) |
 | Validation with PYTHIA | [`example/Had/Standalone/validate_hadronisation_with_pythia.py`](../example/Had/Standalone/validate_hadronisation_with_pythia.py) |
-| CMSSW figure | [`example/Had/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_out.pdf`](../example/Had/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_out.pdf) (page 4); the log is that of chapter 2 |
+| CMSSW figure | [`example/Had/CMSSW/genPartAnalyzer_05_Had.pdf`](../example/Had/CMSSW/genPartAnalyzer_05_Had.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_05_Had.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_05_Had.tex); technical companion: [`chapter_05_Had.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_05_Had.md) |
 | Film | scene 5 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -231,6 +232,8 @@ hadron is what the detector will see. The header keeps the two B hadron
 lines of the CMSSW figure and adds x_E and x_pT of each, the number of
 strings, and the vector sum of all hadrons, which must vanish.
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genPartAnalyzer_05_Had.pdf`](../example/Had/CMSSW/genPartAnalyzer_05_Had.pdf) at the bottom, each on half a page). Like the CMSSW pages, the display draws the cone of the ledger, Delta R < 0.4 around the last copy of each quark, as a dashed circle with its vector pT and the number of particles inside, and magnifies the one around the b in an inset with the name and pT of its hardest members (`cone_of`, `draw_cones` and `draw_zoom` of `plot_journey_PS.py`, shared by the scripts of chapters 2 and 4 to 6); the script also prints one `cone dR < 0.4 around the b axis ...` line per cone, which is the family row of section 5.
+
 ```bash
 python3 example/Had/plot_journey_Had.py                 # -> example/Had/journey_Had.pdf
 python3 example/Had/plot_journey_Had.py -i my.lhe --png
@@ -365,28 +368,42 @@ so that `plot_journey_Had.py` draws them. The tables are in section 5.1.
 
 ### 4.2 CMSSW: hadronisation inside the GEN step
 
-Nothing new has to be run. The `GEN` step of chapter 1 hadronised the
-event, since `HadronLevel:all` is on in every CMS configuration, and
-JitJetSW's analyser drew the primary hadrons as its fourth figure. From the
-setup of the [chapter 2 companion](chapter_02_PS.md#42-cmssw-the-shower-inside-the-gen-step):
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/05_Had/run_05_Had.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the job of chapter 4 with `HadronLevel:Hadronize = on`; `HadronLevel:Decay = off`.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_05_Had.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_05_Had.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_05_Had.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_05_Had.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
 
 ```bash
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./05_Had/run_05_Had.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 05_Had/out/
 ```
 
-produces `genPartAnalyzer_ME_PS_MPI_Had_out.pdf`, whose fourth page is the
-chapter's CMSSW figure; the copy in `CMSSW/` is the one used, and the log
-is `example/PS/CMSSW/step1_GEN_PS_cfg.log` of chapter 2. The hadronisation
-settings do not appear in the log's table of changed settings because CP5
-changes none of them: `Tune:pp = 14` selects `Tune:ee = 7`, the Monash
-values the script embeds.
+The page of the analyser that the chapter shows is copied to
+[`example/Had/CMSSW/genPartAnalyzer_05_Had.pdf`](../example/Had/CMSSW/genPartAnalyzer_05_Had.pdf);
+the links are also in [`example/Had/CMSSW/README.md`](../example/Had/CMSSW/README.md).
 
-**Reading the log.** The particle listing has, after the status-62 and 63
+In production `HadronLevel:all` is on in every CMS configuration; the hadronisation
+settings do not appear in the log's table of changed settings because CP5 changes
+none of them: `Tune:pp = 14` selects `Tune:ee = 7`, the Monash values the script
+embeds. What the chapter reads from the output (`test/05_Had/out/`): the final state
+by kind and region and the two cones from `ledger_05_Had.txt`; the b and bbar chains
+and the members of the cones from `genPartAnalyzer_05_Had.log`; the strings, the
+species and the hadrons just outside the cone from FWLite on `step1_GEN_05_Had.root`
+(JitJetSW companion, sections 4.3 and 4.5).
+
+**Reading the record.** The `genParticles` of the job have, after the status-62 and 63
 rows of chapter 4, 120 rows of status 71 and 45 of status 73, the copies
 PYTHIA makes when it collects each colour singlet and joins very soft
-partons; grouped by their common daughter range they form 24 colour
-singlets. The mother's string and its hadrons:
+partons; grouped by the partons the primary hadrons descend from they form
+26 colour singlets (21 strings, two junction strings, three ministrings). The mother's string and its hadrons:
 
 ```text
   515 |     5 -     b | 62 |  182  182  824  824 |  1  1 |  91.744  -1.570 -2.084 | ...
@@ -419,24 +436,24 @@ around the final copy of the b quark; the B share is the hadron's pT over
 the cone's. Commands: `validate_hadronisation_with_pythia.py -n 400`
 (column 1), `standalone_hadronisation.py --repeat 400` (column 2),
 `--mode full -n 2000` (column 3), `--mode full -n 8000 --impact 0.3136 --window 0.03`
-(column 4), `standalone_hadronisation.py` (column 5), the drawer's table
-of the CMSSW log (column 6).
+(column 4), `standalone_hadronisation.py` (column 5), the ledger, the analyser
+log and the FWLite counts of the JitJetSW job `test/05_Had/` (column 6, section 4.2).
 
 | quantity | PYTHIA, same partons | standalone, same partons | PYTHIA full, b drawn | PYTHIA full, b = 0.3136 | standalone, seed 1 | CMSSW, 1 event |
 |---|---|---|---|---|---|---|
 | primary hadrons | 383 +- 11 | 402 +- 14 | 226 +- 87 | 306 +- 52 | 365 | 320 |
-| charged | 207.5 +- 11.9 | 217.2 +- 12.5 | 122 +- 48 | 165 +- 29 | 184 | 167 |
+| charged | 207.5 +- 11.9 | 217.2 +- 12.5 | 122 +- 48 | 165 +- 29 | 184 | 169 |
 | baryons | 44.0 +- 7.6 | 38.8 +- 7.6 | 26.8 | 36.3 | 52 | 34 |
-| with strangeness | 87.8 +- 10.3 | 92.1 +- 10.5 | 49.6 | 67.8 | 94 | 69 |
-| at abs(eta) < 2.5 | 193.8 | 206.3 | 91.9 | 128.3 | 179 | 139 |
-| colour singlets, partons joined | 33, 48 | 33, 48 | -- | -- | 33, 48 | 24, -- |
+| with strangeness | 87.8 +- 10.3 | 92.1 +- 10.5 | 49.6 | 67.8 | 94 | 66 |
+| at abs(eta) < 2.5 | 193.8 | 206.3 | 91.9 | 128.3 | 179 | 141 |
+| colour singlets, partons joined | 33, 48 | 33, 48 | -- | -- | 33, 48 | 26, 45 |
 | b: x_E = E_B/E_b (Lund-Bowler) | 0.913 +- 0.062 | 0.882 +- 0.078 | 0.941 +- 0.100 | 0.931 +- 0.089 | 1.004 | 1.025 |
 | b: x_E, plain Lund (r_b = 0) | 0.963 +- 0.038 | 0.952 +- 0.048 | -- | -- | -- | -- |
 | b: x_E, Peterson (epsilon_b = 0.005) | 0.870 +- 0.120 | 0.839 +- 0.132 | -- | -- | -- | -- |
 | bbar: x_E | 1.033 +- 0.049 | 1.025 +- 0.072 | 0.941 +- 0.095 | 0.936 +- 0.094 | 1.154 | 0.980 |
 | b: pT of its hadron [GeV] | 71.1 +- 5.0 | 69.4 +- 5.2 | 87.8 +- 26.7 | 87.7 +- 27.3 | 78.56 | 94.28 |
 | b: B*bar0 : B*- : Bbar0 : B- : B*_sbar0 [%] | 31:28:14:12:8 | 31:32:13:12:6 | 29:29:13:15:6 | 30:29:14:14:4 | B*bar0 | B- |
-| b, dR < 0.4: partons pT [GeV] | 100.67 | 100.67 | 109.7 | 109.7 | 100.67 | -- |
+| b, dR < 0.4: partons pT [GeV] | 100.67 | 100.67 | 109.7 | 109.7 | 100.67 | 127.25 |
 | b, dR < 0.4: hadrons pT [GeV] | 98.0 +- 2.2 | 96.8 +- 3.1 | 109.6 | 109.8 | 99.23 | 114.45 |
 | b, dR < 0.4: hadrons, mass [GeV] | 7.6, 17.2 | 8.0, 16.8 | 6.2, 14.3 | 6.7, 15.4 | 6, 16.1 | 9, 20.4 |
 | b, dR < 0.4: B share of the cone pT | 0.726 | 0.710 | 0.800 | 0.799 | 0.79 | 0.82 |
@@ -503,7 +520,23 @@ two gluons' halves.
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (seed 1, `event_Had.lhe`) | | | | |
 | b family after the MPI stage (dR < 0.4, partons) | 100.67 | 13.52 | 3 | |
 | b family after this stage (dR < 0.4, hadrons) | 99.23 | 16.08 | 6 | -1.44 |
 | of which the B*bar0 itself (x_E = 1.004) | 78.56 | 5.33 | 1 | |
 | the same within dR < 0.8 | 105.98 | 35.87 | 14 | +1.89 |
+| **CMSSW** (run 1, event 1; hadronisation on, decays off) | | | | |
+| b family after the MPI stage (dR < 0.4, partons) | 127.25 | 17.1 | 9 | |
+| b family after this stage (dR < 0.4, hadrons) | 114.45 | 20.4 | 9 | -12.81 |
+| of which the B- itself (x_E = 1.025) | 94.28 | 5.28 | 1 | |
+| the same within dR < 0.8 | 141.1 | 49.8 | 28 | |
+
+The standalone family row is printed by `plot_journey_Had.py` (`cone dR < 0.4 around
+the b axis ...: n = 6, |sum pT| = 99.23 GeV`). The CMSSW rows: `ledger_05_Had.txt` of
+JitJetSW, `b axis [824] status 71 pT=91.7 ...: n=9 E=290.6 GeV vector pT=114.4 GeV`
+(E = 290.560, pT = 114.446 from its FWLite), and the stage-4 "cone" line of
+`genPartAnalyzer_05_Had.log`, `n=9 pt=114.446 eta=-1.58091`; the mass from
+m = sqrt(E^2 - pT^2 cosh^2 eta) = 20.4 GeV; the difference 114.446 - 127.253 =
+-12.81 GeV. The species counts of table 5.1 (169 charged, 66 with strangeness: 39
+kaons, 17 K*, 10 strange baryons; 141 at abs(eta) < 2.5; 26 singlets, 45 partons of
+status 73) are those of the JitJetSW companion, sections 4.1 and 4.5.

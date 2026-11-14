@@ -7,6 +7,8 @@
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb,bm}
 \usepackage{graphicx}
+\usepackage{subcaption}  % the two (eta, phi) displays of the energy ledger, standalone above CMSSW
+\captionsetup[sub]{font=small,skip=3pt}
 \usepackage{pdfpages}  % the TikZ cover (cover/cover.pdf) is the first page of the book
 \usepackage{booktabs}
 \usepackage{xcolor}
@@ -126,6 +128,35 @@
   Stage & $\pt$ [GeV] & $m$ [GeV] & $n_{\mathrm{const}}$ & $\Delta\pt$ [GeV] \\ \midrule}%
   {\bottomrule\end{tabular}\end{table}}
 \newcommand{\ledgerrow}[5]{#1 & #2 & #3 & #4 & #5 \\}
+
+%% The ledger of a stop, rule C3-1: one table with a block of rows for the
+%% standalone event and a block for the CMSSW event, and one figure page with
+%% the two (eta, phi) displays, each on half a page.
+%% \begin{ledgerboth}{stage name}{label}{what the two blocks are}
+%%   \ledgerblock{Standalone ...} \ledgerrow... \ledgerblock{CMSSW ...} \ledgerrow...
+%% \end{ledgerboth}
+\newenvironment{ledgerboth}[3]{%
+  \begin{table}[htbp]\centering\small
+  \caption[Energy ledger at the stage ``#1'', standalone and \CMSSW]{Energy
+  ledger at the stage ``#1'', for the standalone event and for the \CMSSW
+  event. $\Delta\pt$ is relative to the previous row of the same block. #3}
+  \label{#2}
+  \begin{tabular}{@{}lrrrr@{}}\toprule
+  Stage & $\pt$ [GeV] & $m$ [GeV] & $n_{\mathrm{const}}$ & $\Delta\pt$ [GeV] \\}%
+  {\bottomrule\end{tabular}\end{table}}
+\newcommand{\ledgerblock}[1]{\midrule\multicolumn{5}{@{}l}{\textbf{#1}}\\[1pt]}
+%% \ledgerdisplays{standalone pdf}{its caption}{its label}{CMSSW pdf}{its caption}{its label}
+%% goes inside a figure[p]; each display gets the full width or 0.39 of the
+%% text height, whichever is reached first, so that the pair fills one page.
+\newcommand{\ledgerdisplays}[6]{%
+  \begin{subfigure}[t]{\textwidth}\centering
+    \includegraphics[width=\textwidth,height=0.39\textheight,keepaspectratio]{#1}
+    \caption{#2}\label{#3}
+  \end{subfigure}\\[2mm]
+  \begin{subfigure}[t]{\textwidth}\centering
+    \includegraphics[width=\textwidth,height=0.39\textheight,keepaspectratio]{#4}
+    \caption{#5}\label{#6}
+  \end{subfigure}}
 
 %% code listings (short inline snippets: listings; whole files from example/: minted)
 \lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,

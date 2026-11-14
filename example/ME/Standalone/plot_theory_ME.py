@@ -61,7 +61,7 @@ COL_EVENT = "#c0392b"
 COL_CUT = "#f3c6c6"
 COL_SOBOL, COL_RANDOM = "#2a78d6", "#9a6b2f"
 COL_MUR, COL_MUF, COL_BOTH = "#c0392b", "#2a78d6", "#52514e"
-PYTHIA_PB, PYTHIA_ERR_PB = 345.1, 6.1
+PYTHIA_PB, PYTHIA_ERR_PB = 348.6, 6.0   # 1000 events of the JitJetSW 01_ME job (xsec_GEN_01_ME.log)
 
 plt.rcParams.update({
     "font.size": 11, "axes.titlesize": 11.5, "axes.labelsize": 11, "legend.fontsize": 10,
@@ -530,7 +530,7 @@ def page_scale_variation(st, ev):
     a1.set_ylabel(r"$\sigma$  [pb]")
     a1.axhline(central, color=TEXT2, lw=0.8, ls=":")
     a1.axhspan(PYTHIA_PB - PYTHIA_ERR_PB, PYTHIA_PB + PYTHIA_ERR_PB, color="#e8e6df", lw=0)
-    a1.text(2 ** -0.95, PYTHIA_PB + 7, "PYTHIA in CMSSW\n$\\pm1.8\\%$", fontsize=9.5, color=TEXT2, ha="left")
+    a1.text(2 ** -0.95, PYTHIA_PB + 7, "PYTHIA in CMSSW\n$\\pm1.7\\%$", fontsize=9.5, color=TEXT2, ha="left")
     a1.set_title(r"(a) $\mu_{\mathrm{R}}$ moves the rate by $-16\%$ to $+23\%$, $\mu_{\mathrm{F}}$ by $\pm4\%$, in opposite directions")
     a1.legend(loc="upper right")
     # (b) the seven-point grid

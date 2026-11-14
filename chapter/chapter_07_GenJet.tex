@@ -248,9 +248,12 @@ The third official check costs nothing to generate: the \code{GEN} step of
 file carries \akfour, \akfournonu and \akeight already, made by
 \code{FastjetJetProducer} with \FASTJET's \antikt, the E scheme and
 \code{jetPtMin = 3}; the flavour producers run later, in the \code{PAT}
-step, and are not in the GEN output. Its event is the last column of the
-table, and \cref{sec:family_photograph:our_jet_at_this_stage_the_reference_genj} reads
-its three pages next to the standalone ones. How each column was
+step, and are not in the GEN output. For this stop the same producers are
+run once more as a step of their own on the complete event of
+\cref{ch:children_producing_grandchildren}, so that the jets can be read
+and drawn. Its event is the last column of the table, and
+\cref{sec:family_photograph:our_jet_at_this_stage_the_reference_genj} reads
+its \akfour page next to the standalone one. How each column was
 produced, the commands, the modes and the logs, is in the companion of
 this chapter,
 \begin{center}
@@ -271,21 +274,21 @@ with \FASTJET and the same ghosts, the status-71 copy of the quark as the
 axis. The spread of a single event follows $\pm$. ``Response'' is
 $\pt(\mathrm{jet})/\pt(b)$ with the last copy of the quark before the
 hadronisation, which in the full chain fluctuates itself. The \CMSSW
-column is the single event of \cref{ch:ancestral_home}, read from pages
-6 to 8 of its analyser's output.}
+column is the single event of \cref{ch:ancestral_home}, read from the log
+of its jet analyser.}
 \label{tab:family_photograph:numbers}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}\toprule
  & \FASTJET & standalone & standalone & \PYTHIA + \FASTJET & \CMSSW \\
  & same particles & same particles & 400 decays & full chain & 1 event \\ \midrule
-\akfour: jets above $3$ / $10$ / $30\GeV$ & $42$ / $11$ / $6$ & $42$ / $11$ / $6$ & $40.0\pm2.2$ / $10.2$ / $6.0$ & $18.2\pm11.5$ / $3.9$ / $2.4$ & $27$ / -- / -- \\
+\akfour: jets above $3$ / $10$ / $30\GeV$ & $42$ / $11$ / $6$ & $42$ / $11$ / $6$ & $40.0\pm2.2$ / $10.2$ / $6.0$ & $18.2\pm11.5$ / $3.9$ / $2.4$ & $27$ / $6$ / $2$ \\
 \quad particles clustered, of & $368$ of $749$ & $368$ of $749$ & $357\pm16$ & $152\pm88$ & $239$ of $634$ \\
 \akeight: jets, particles clustered & $30$, $600$ & $30$, $600$ & $30.4$, $608$ & $20.2$, $321$ & $28$, $488$ \\ \midrule
 $b$ quark (last copy): \pt [GeV] & $78.29$ & $78.29$ & $78.29$ & $95.5\pm30.0$ & $91.74$ \\
 $b$ jet, \akfour: \pt [GeV], $n$ & $99.830$, $31$ & $99.830$, $31$ & $99.63\pm0.49$, $25.7$ & $109.9\pm27.6$, $21.3$ & $117.79$, $24$ \\
 \quad response, \dR to the quark & $1.275$, $0.062$ & $1.275$, $0.062$ & $1.273\pm0.006$, $0.060$ & $1.22\pm0.51$, $0.028$ & $1.284$, $0.019$ \\
-\quad the cone of the same $R$ [GeV] & $99.43$ & $99.43$ & $98.79\pm0.68$ & $109.7\pm26.5$ & -- \\
+\quad the cone of the same $R$ [GeV] & $99.43$ & $99.43$ & $98.79\pm0.68$ & $109.7\pm26.5$ & $79.12$ (no $\nu$) \\
 \quad neutrino \pt inside [GeV] & $0$ & $0$ & $7.7$ (none in $54\%$) & $7.9$ (none in $58\%$) & $37.5$ \\
 $b$ jet, \akfournonu: \pt [GeV] & $99.830$ & $99.830$ & $91.93\pm12.12$ & $102.1\pm28.9$ & $79.82$ \\
 $b$ jet, \akeight: \pt [GeV], $n$ & $105.786$, $47$ & $105.786$, $47$ & $104.61\pm0.80$, $41.3$ & $120.0\pm24.6$, $34.3$ & $141.10$, $55$ \\
@@ -1118,16 +1121,20 @@ over the \PYTHIA chain, with our event and the \CMSSW event marked.}
 \label{fig:family_photograph:our_jet_plot}
 \end{figure}
 
-The ledger gets the photograph, and \cref{fig:family_photograph:journey} puts it next
-to the \akfour display of the standalone stage. The first row is the last
-one of \cref{ch:children_producing_grandchildren}; the three jets are new,
-and the \akfournonu row is the one every later stage is corrected towards.
+The ledger gets the photograph (\cref{tab:family_photograph:ledger}), and
+\cref{fig:family_photograph:displays} shows the \akfour collection of the
+event twice, the standalone record above and the \CMSSW one below. The
+first row of each block is the last one of
+\cref{ch:children_producing_grandchildren}; the three jets are new, and
+the \akfournonu row is the one every later stage is corrected towards.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{The Family Photograph}{tab:family_photograph:ledger}{The
+standalone rows are read from \file{example/GenJet/event_GenJet.lhe}
+(seed~1) and from the ensemble of four hundred decays; the \CMSSW rows
+from the log of the \code{genJetAnalyzer} of \code{JitJetSW} on the
+\code{07\_GenJet} job. The number in brackets is the rank of the jet in
+its collection.}
+\ledgerblock{Standalone (seed 1, \file{event_GenJet.lhe})}
 \ledgerrow{$b$ family after the decays ($\dR<0.4$, final)}{99.43}{14.59}{31}{--}
 \ledgerrow{\akfour jet [0], the photograph}{99.83}{14.83}{31}{$+0.40$}
 \ledgerrow{\quad \akfournonu jet [0], the reference}{99.83}{14.83}{31}{$0.00$}
@@ -1136,81 +1143,107 @@ Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
 \ledgerrow{\quad mean of 400 decays, with neutrinos}{99.63}{14.11}{25.7}{--}
 \ledgerrow{\quad mean of 400 decays, without}{91.93}{13.29}{25.2}{$-7.70$}
 \ledgerrow{\akeight jet [1], the same family at $R=0.8$}{105.79}{27.43}{47}{$+5.96$}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{GenJet/journey_GenJet.pdf}
-\end{minipage}
-\caption[The energy ledger and the \akfour jets of the event in the $(\eta,\phi)$ plane]{The
-energy ledger at the stage ``The Family Photograph'' (left; $\Delta\pt$ is
-relative to the previous row) and the \akfour collection of our event
-(right), drawn by \file{example/GenJet/plot_journey_GenJet.py} from
-\file{example/GenJet/event_GenJet.lhe} in the layout of
-\cref{fig:family_photograph:cmssw}. The 42 jets above $3\GeV$ are circles of radius
-$0.4$, the $b$ jet red at $(-1.44,-2.71)$ and the $\bar b$ jet blue at
-$(-3.45,0.59)$, the next six in colour, the rest grey with their
-constituents; the 381 particles in no jet are hollow and the last copies
-of the quarks black stars. The header gives the quark-to-jet lines with
-\dR and the response, the two-jet system, and the heavy hadrons behind
-each \hadflav label; the margin lists the leading jets with their two
-labels.}
-\label{fig:family_photograph:journey}
-\end{figure}
+\ledgerblock{\CMSSW (run 1, event 1; the jets of the complete event)}
+\ledgerrow{$b$ family after the decays, visible ($\dR<0.4$)}{79.12}{12.1}{21}{--}
+\ledgerrow{\akfour jet [0], the photograph}{117.79}{16.72}{24}{$+38.67$}
+\ledgerrow{\quad \akfournonu jet [1], the reference}{79.82}{13.36}{22}{$-37.97$}
+\ledgerrow{\quad of which the $B^-$'s descendants, $\bar\nu_e$ included}{94.28}{5.28}{9}{--}
+\ledgerrow{\akeight jet [0], the same family at $R=0.8$}{141.10}{47.26}{55}{$+23.31$}
+\end{ledgerboth}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.84\textwidth]{GenJet/journey_GenJet_nonu.pdf}\\[1mm]
 \includegraphics[width=0.84\textwidth]{GenJet/journey_GenJet_ak8.pdf}
 \caption[The \akfournonu and \akeight jets of the event]{The other two
 collections of our event, \akfournonu (top) and \akeight (bottom), in the
-same layout. Without the neutrinos the two $b$ jets are unchanged and the
-gluon pair's jet [2] loses its $8.1\GeV$ neutrino; with $R=0.8$ the
-$\bar b$'s jet swallows the pair, $147.69\GeV$ and three B~hadrons at
-$\dR=0.36$ from the quark, and the $b$'s grows to $105.79$.}
+layout of \cref{fig:family_photograph:displays}. Without the neutrinos the
+two $b$ jets are unchanged and the gluon pair's jet [2] loses its
+$8.1\GeV$ neutrino; with $R=0.8$ the $\bar b$'s jet swallows the pair,
+$147.69\GeV$ and three B~hadrons at $\dR=0.36$ from the quark, and the
+$b$'s grows to $105.79$.}
 \label{fig:family_photograph:journey_more}
 \end{figure}
 
-\paragraph{The same event in \CMSSW.} \code{JitJetSW}'s \code{genJetAnalyzer}
-drew the three collections of the GEN file as the sixth, seventh and
-eighth pages of its output. Page~6 is \akfour: $27$ jets, $239$ of the
-$634$ stable particles clustered, the $b$ quark of status 71 at
-$\pt=91.74\GeV$, $(\eta,\phi)=(-1.57,-2.08)$, matched to jet [0] of
-$117.79\GeV$ with $24$ constituents, $\dR=0.019$ from the quark and a
-response of $1.284$; the $\bar b$ at $116.36\GeV$ and $\eta=-3.75$
-matched to jet [1] of $115.94$, $18$ constituents, response $0.996$.
-Page~7 is the same event without the neutrinos: the $\bar b$'s jet is
-unchanged and the $b$'s has become jet [1] of $79.82\GeV$ with $22$
-constituents and a response of $0.870$, the $37.5\GeV$ of the electron
-antineutrino of \cref{sec:children_producing_grandchildren:cmssw} gone,
-and the two leading jets have swapped places. Page~8 is \akeight: $28$
-jets, $488$ particles clustered, the $b$'s jet at $141.10\GeV$ with $55$
-constituents and the $\bar b$'s at $121.01$ with $32$. The responses of
-$1.28$ and $1.54$ for the $b$ quark are what ours are, $1.275$ and
-$1.351$: the status-71 quark is the last copy before the hadronisation,
-soft because the shower took its share, and the jet holds the shower's
-gluons back plus the underlying event. Set the pages next to
-\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}. The two are different
-showers of the same hard event, so the comparison to make is
-\cref{tab:family_photograph:numbers}; what the pictures share is the structure, two
-hard circles on the two B~hadrons, four to six circles on the gluon and
-quark jets of the shower, and a scatter of circles of a few GeV on the
-underlying event, $27$ in one event and $42$ in the other, with hollow
-particles everywhere between them that no circle above $3\GeV$ reached.
+\paragraph{The same event in \CMSSW.} In \CMSSW this stop adds nothing to
+the event and removes nothing from it: a step of its own, the process
+\code{GENJET}, reads the complete generator event of
+\cref{ch:children_producing_grandchildren}, runs \FASTJET's \antikt on its
+$634$ stable particles and writes four collections, $R=0.4$ and $R=0.8$,
+each with and without the neutrinos, above the $3\GeV$ of the standard
+configuration. The \code{GEN} step had clustered jets already, as every
+\code{GEN} step does, and those are dropped, so that the file holds one
+set of jets, the one made here. What enters the clustering is decided by
+a selector, not by the algorithm: every stable particle except a list of
+hypothetical invisible ones, none of which occurs in this event, so that
+all $634$ are offered to \akfour and, the three neutrino species added to
+the list, $633$ to \akfournonu.
 
-\begin{figure}[htbp]\centering
-\includegraphics[page=6,width=\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\\[2mm]
-\includegraphics[page=7,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}\hfill
-\includegraphics[page=8,width=0.495\textwidth]{GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf}
-\caption[The generator-level jets of the event in \CMSSW]{Stage~6 of our
-event in \CMSSW, drawn by the \code{genJetAnalyzer} of \code{JitJetSW}:
-\akfour (top), \akfournonu (bottom left) and \akeight (bottom right).
-Every jet above $3\GeV$ is a circle of radius $R$, the $b$ jet red and
-the $\bar b$ jet blue with their constituents, the leading other jets in
-colour, the stable particles in no jet hollow, and the status-71 $b$
-quarks as stars; the header gives the quark-to-jet matching with \dR and
-the response. The same stage of the standalone record is
-\cref{fig:family_photograph:journey,fig:family_photograph:journey_more}.}
-\label{fig:family_photograph:cmssw}
+\akfour finds $27$ jets with $239$ of the $634$ particles in them. The
+$b$ quark of status~71, the last copy before the hadronisation at
+$\pt=91.74\GeV$ and $(\eta,\phi)=(-1.57,-2.08)$, is matched to jet [0]
+of $117.79\GeV$ with $24$ constituents, $\dR=0.019$ from the quark, and
+the constituents say where the momentum comes from: nine are the decay
+products of the $B^-$ and carry $94.3\GeV$, seven more, $17.5\GeV$, are
+hadrons from the mother's own string, the radiated energy coming back,
+and the last eight, $6.4\GeV$, come from the strings of the multiparton
+interactions and the remnants. The response of $1.284$ is the bookkeeping
+of the shower, the reference quark having radiated already; against the
+hard-process $b$ the same jet reads $1.04$. The $\bar b$ at $116.36\GeV$
+and $\eta=-3.75$ is matched to jet [1] of $115.94\GeV$, $18$
+constituents of which $16$ are the $B^{*+}$'s products, response $0.996$.
+The pair of jets has a net \pt of $6.1\GeV$, the best balance of the
+whole journey, where the two quarks had $25.1$.
+
+Without the neutrinos the photograph loses a face. The $\bar b$'s jet is
+unchanged and the mother's has become jet [1] of $79.82\GeV$ with $22$
+constituents and a response of $0.870$: the $37.5\GeV$ of the electron
+antineutrino of \cref{sec:children_producing_grandchildren:cmssw} are
+gone, the axis moved with them and a pion of $0.5\GeV$ at the edge now
+belongs to a neighbour, and the two leading jets have swapped places.
+The pair is now $36.5\GeV$ out of balance, in her direction, which is
+what a detector will call missing transverse momentum. In our own record
+the two rows are equal, because our \Bbar decayed hadronically; the mean
+of four hundred decays loses $7.7\GeV$, and the \CMSSW event is the tail
+of that distribution once more. \akeight finds $28$ jets with $488$
+particles in them, the mother's at $141.10\GeV$ with $55$ constituents
+and a mass of $47\GeV$, $38$ of them with $28.5\GeV$ from strings other
+than her own, and the $\bar b$'s at $121.01$ with $32$. The responses of
+$1.28$ and $1.54$ are what ours are, $1.275$ and $1.351$: the status-71
+quark is soft because the shower took its share, and the jet holds the
+shower's gluons back plus the underlying event.
+
+Panel~(b) of \cref{fig:family_photograph:displays} is the analyser's page
+for \akfour: every jet above $3\GeV$ a circle of radius $R$ around its
+axis, its constituents in the colour of the jet, the $395$ stable
+particles in no jet grey, $38$ of them on the border, and the status-71
+quarks as stars; the pages for \akfournonu and \akeight are in the
+\code{JitJetSW} chapter that the companion links to. Set it next to
+panel~(a) and to \cref{fig:family_photograph:journey_more}. The two are
+different showers of the same hard event, so the comparison to make is
+\cref{tab:family_photograph:numbers}; what the pictures share is the
+structure, two hard circles on the two B~hadrons, four to six circles on
+the gluon and quark jets of the shower, and a scatter of circles of a few
+GeV on the underlying event, $27$ in one event and $42$ in the other,
+with unclustered particles everywhere between them that no circle above
+$3\GeV$ reached.
+
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {GenJet/journey_GenJet.pdf}
+  {Standalone: the 42 \akfour jets of \file{example/GenJet/event_GenJet.lhe} (seed~1), drawn by \file{plot_journey_GenJet.py}.}
+  {fig:family_photograph:journey}
+  {GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf}
+  {\CMSSW: the 27 \code{ak4GenJets} of the \code{07\_GenJet} job, drawn by the \code{genJetAnalyzer} of \code{JitJetSW}.}
+  {fig:family_photograph:cmssw}
+\caption[The \akfour jets of the event in the $(\eta,\phi)$ plane,
+standalone and \CMSSW]{The \akfour jets of our event, standalone (a) and
+\CMSSW (b). Every jet above $3\GeV$ is a circle of radius $0.4$, the $b$
+jet red and the $\bar b$ jet blue with their constituents, the leading
+other jets in colour; the particles in no jet are hollow in (a) and grey
+in (b), and the last copies of the two quarks are stars. The headers give
+the quark-to-jet matching with \dR and the response, the margins the
+leading jets.}
+\label{fig:family_photograph:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1406,7 +1439,9 @@ the status codes and \code{SlowJet}.
   the recombination scheme in it to \code{pt\_scheme} and find how far
   the jet masses move; then run \code{SlowJet} with \code{massSet = 0}
   and explain the change in the rapidities.
-\item \textbf{The \CMSSW pages.} From the headers of pages 6 to 8
+\item \textbf{The \CMSSW pages.} From the header of panel~(b) of
+  \cref{fig:family_photograph:displays} and from the log of the jet
+  analyser (the companion says where the files are)
   reproduce the responses $1.284$, $0.870$ and $1.538$ and the $37.5\GeV$
   of neutrino from the difference of the first two; then explain why the
   $\bar b$'s jet has the same \pt with and without the neutrinos.

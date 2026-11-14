@@ -237,9 +237,9 @@ the hadrons harder, gives the same semileptonic fractions and neutrino
 shares as the same-hadron columns and a wider everything else.
 \label{sec:children_producing_grandchildren:cmssw}
 
-The second official check costs nothing to run: the \code{GEN} step of
-\cref{sec:ancestral_home:cmssw} decayed the event, since
-\code{HadronLevel:all} covers the decays and
+The second official check is the \code{GEN} step of
+\cref{sec:ancestral_home:cmssw} with its last switch turned on, the hadron
+decays; in production \code{HadronLevel:all} covers them, and
 \code{ParticleDecays:limitTau0 = on} with \code{tau0Max = 10} is in every
 CMS configuration. This job decayed its $b$ and $c$ hadrons with \PYTHIA's
 own tables, the ones the script embeds; the production configurations of
@@ -266,8 +266,8 @@ decaying hadron of the $b$ quark, \Bbar ($b\bar d$) in every same-hadron
 column; in the full chain it is a $B^-$ ($b\bar u$) in $44\%$ of the
 events, a \Bbar in $43$, a $\bar B_s^0$ ($b\bar s$) in $10$ and a
 $\Lambda_b^0$ ($udb$) in $4$. ``Visible'' excludes the neutrinos. The
-\CMSSW column is the single event of \cref{ch:ancestral_home}, read from
-its log; its $B^-$ decayed semileptonically.}
+\CMSSW column is the single event of \cref{ch:ancestral_home} with the
+decays on; its $B^-$ decayed semileptonically.}
 \label{tab:children_producing_grandchildren:numbers}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{%
@@ -275,23 +275,23 @@ its log; its $B^-$ decayed semileptonically.}
  & \PYTHIA & standalone & \PYTHIA full & standalone & \CMSSW \\
  & same hadrons & same hadrons & $b$ drawn & seed 1 & 1 event \\ \midrule
 final particles & $739\pm12$ & $740\pm12$ & $459\pm175$ & $749$ & $634$ \\
-\quad charged / photons / neutrinos & $331$ / $329$ / $2.9$ & $331$ / $330$ / $3.1$ & $210$ / $211$ / $1.3$ & $338$ / $327$ / $5$ & -- \\
-\quad decays performed & $371$ & $372$ & $205$ & $376$ & -- \\
+\quad charged / photons / neutrinos & $331$ / $329$ / $2.9$ & $331$ / $330$ / $3.1$ & $210$ / $211$ / $1.3$ & $338$ / $327$ / $5$ & $304$ / $273$ / $1$ \\
+\quad decays performed & $371$ & $372$ & $205$ & $376$ & $302$ \\
 \quad primary hadrons that survive & $143$ & $143$ & $86$ & $143$ & $132$ \\ \midrule
 the B: $\tau$ [ps] & $1.41\pm1.40$ & $1.55\pm1.46$ & $1.59\pm1.60$ & $2.24$ & -- \\
 the B: $L$, \Lxy [mm] & $13.2$, $6.2$ & $14.5$, $6.8$ & $18.7$, $7.9$ & $21.0$, $9.9$ & $7.83$, $3.13$ \\
-the B: final particles (charged) & $11.1$ ($5.0$) & $11.1$ ($4.9$) & $11.0$ ($4.8$) & $15$ ($8$) & $9$ \\
+the B: final particles (charged) & $11.1$ ($5.0$) & $11.1$ ($4.9$) & $11.0$ ($4.8$) & $15$ ($8$) & $9$ ($3$) \\
 the B: semileptonic $e$ / $\mu$ / $\tau$ [\%] & $9.5$ / $10.0$ / $4.0$ & $13.0$ / $11.0$ / $1.2$ & $10.9$ / $11.4$ / $3.4$ & hadronic & $e$ \\
-the B: $E_\nu$ [GeV], share of $E_B$ & $13.8$, $0.084$ & $16.4$, $0.099$ & $18.6$, $0.091$ & $0$, $0$ & $96.2$, $0.41$ \\
+the B: $E_\nu$ [GeV], share of $E_B$ & $13.8$, $0.084$ & $16.4$, $0.099$ & $18.6$, $0.091$ & $0$, $0$ & $95.5$, $0.40$ \\
 the B: tracks with $|\dzero|>100\um$, mean $|\dzero|$ [$\mu$m] & $3.0$, $330$ & $3.0$, $362$ & $3.0$, $358$ & $8$, max $1640$ & -- \\
 the B: oscillated [\%] & $3.5$ (flagged) & $16.8$ & $3.7$ (flagged) & no & no \\ \midrule
-$b$, $\dR<0.4$: primaries $\to$ final $\to$ visible \pt [GeV] & $99.23\to98.79\to92.3\pm11.4$ & $99.23\to98.79\to91.1\pm12.2$ & $109.2\to109.3\to101.4$ & $99.23\to99.43\to99.43$ & -- \\
+$b$, $\dR<0.4$: primaries $\to$ final $\to$ visible \pt [GeV] & $99.23\to98.79\to92.3\pm11.4$ & $99.23\to98.79\to91.1\pm12.2$ & $109.2\to109.3\to101.4$ & $99.23\to99.43\to99.43$ & $114.45\to\;\cdot\;\to79.12$ \\
 $b$, $\dR<0.4$: final particles (charged) & $24.6$ ($9.6$) & $24.7$ ($9.5$) & $21.0$ ($9.2$) & $31$ ($16$) & -- \\
 $b$, $\dR<0.4$: charged \pt [GeV], B share & $51.3$, $0.788$ & $49.9$, $0.788$ & $60.6$, $0.799$ & $67.4$, $0.79$ & -- \\
 $b$, $\dR<0.4$: mass, primaries $\to$ final [GeV] & $16.1\to14.1$ & $16.1\to14.2$ & $14.2\to12.3$ & $16.1\to14.6$ & -- \\
 $b$, $\dR<0.8$: final $\to$ visible \pt [GeV] & $107.2\to100.7$ & $107.2\to99.5$ & $119.2\to111.3$ & $108.73\to108.73$ & -- \\ \midrule
 $\bar b$: $L$, \Lxy [mm] & $119$, $7.7$ & $117$, $7.6$ & $152$, $7.4$ & $146.9$, $9.5$ & $117.3$, $5.5$ \\
-$\bar b$, $\dR<0.4$: final $\to$ visible \pt [GeV] & $92.4\to85.7\pm11.3$ & $92.4\to84.7\pm12.7$ & $106.3\to99.1$ & $92.99\to92.99$ & -- \\ \midrule
+$\bar b$, $\dR<0.4$: final $\to$ visible \pt [GeV] & $92.4\to85.7\pm11.3$ & $92.4\to84.7\pm12.7$ & $106.3\to99.1$ & $92.99\to92.99$ & $115.94\to115.94$ \\ \midrule
 $B^0$ at rest ($20\,000$): final / charged / photons & $10.87$ / $4.85$ / $4.50$ & $11.11$ / $4.90$ / $4.77$ & -- & -- & -- \\
 $B^0$ at rest: semileptonic ($e+\mu$) [\%], $\langle E_\ell\rangle$ [GeV] & $20.7$, $1.383$ & $20.5$, $1.396$ & -- & -- & -- \\
 $B^0$ at rest: $D^-$ / $\bar D^0$ / $D^0$ / $D^+$ [\%] & $35$ / $27$ / $11$ / $10$ & $30$ / $28$ / $12$ / $9$ & -- & -- & -- \\
@@ -987,7 +987,7 @@ of \cref{eq:children_producing_grandchildren:va} and with flat phase
 space, drawn with the script's $M$-generator, against \PYTHIA's spectrum
 for the same channel and for all semileptonic decays. (b) The fraction of
 the B~hadron's energy carried by its neutrinos over 400 decays of the two
-hadrons, for the script and \PYTHIA, with the \CMSSW $B^-$ at $0.41$. (c)
+hadrons, for the script and \PYTHIA, with the \CMSSW $B^-$ at $0.40$. (c)
 The \pt of the hardest electron or muon among the descendants of the $b$
 quark's hadron, from the B itself and from the charm cascade, with the
 \CMSSW electron.}
@@ -1059,8 +1059,8 @@ among the mother's descendants in $48.5\%$ of the decays, from the \Bbar
 itself in $25.2$, and when there is one it carries $14.1\GeV$ of \pt on
 average; the $\tau$ channel, $1$ to $4\%$, loses more, two neutrinos from
 the $\tau$ on top of the first. The \CMSSW event is the unlucky case:
-its $B^-$ went to $\bar\nu_e e^-D_0^{*0}$, the neutrino took $96.2$ of the
-hadron's $235.9\GeV$, $f_\nu=0.41$, and the electron kept $5.0\GeV$ of
+its $B^-$ went to $\bar\nu_e e^-D_0^{*0}$, the neutrino took $95.5$ of the
+hadron's $235.9\GeV$, $f_\nu=0.40$, and the electron kept $5.0\GeV$ of
 \pt; the $B^-$ system's visible \pt is $0.60$ of its total. Page~4 of
 \file{theory_hadron_decays.pdf} gives the distributions of $f_\nu$ and of
 the lepton's \pt, page~5 (\cref{fig:children_producing_grandchildren:our_jet_plot})
@@ -1198,90 +1198,122 @@ cone through the stages.}
 \end{figure}
 
 The ledger gets the rows that turn the family into what the detector will
-see, and \cref{fig:children_producing_grandchildren:journey} puts them next to the event display of the
-standalone stage. The first row is the last one of
+see (\cref{tab:children_producing_grandchildren:ledger}), and
+\cref{fig:children_producing_grandchildren:displays} shows the final state
+of the event twice, the standalone record above and the \CMSSW one below.
+The first row of each block is the last one of
 \cref{ch:children_getting_married}; the visible and charged rows are new,
-and the visible one is the first place where the ledger of another seed
-would show a loss.
+and the visible one is where the two blocks part company for good.
 
-\begin{figure}[htbp]\centering
-\begin{minipage}[c]{0.40\textwidth}\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{0.40\linewidth}rrrr@{}}\toprule
-Stage & $\pt$ & $m$ & $n_{\mathrm{const}}$ & $\Delta\pt$ \\
- & [GeV] & [GeV] & & [GeV] \\ \midrule
+\begin{ledgerboth}{The Children Produce Grandchildren}{tab:children_producing_grandchildren:ledger}{``Family''
+means the final particles within $\dR<0.4$ of the last copy of the $b$
+quark; ``visible'' leaves out the neutrinos. The standalone rows are read
+from \file{example/Decay/event_Decay.lhe} (seed~1); the \CMSSW rows from
+the ledger and the analyser log of the \code{06\_Decay} job of
+\code{JitJetSW}, the complete generator event; its family mass follows
+from the energy, \pt and $\eta$ of the cone sum.}
+\ledgerblock{Standalone (seed 1, \file{event_Decay.lhe})}
 \ledgerrow{$b$ family after hadronisation ($\dR<0.4$)}{99.23}{16.08}{6}{--}
 \ledgerrow{$b$ family after this stage ($\dR<0.4$, final)}{99.43}{14.59}{31}{$+0.20$}
 \ledgerrow{\quad of which visible (no neutrino)}{99.43}{14.59}{31}{$0.00$}
 \ledgerrow{\quad of which charged}{67.43}{--}{16}{--}
 \ledgerrow{\quad of which the \Bbar's descendants}{78.26}{5.28}{15}{--}
 \ledgerrow{\quad the same within $\dR<0.8$}{108.73}{42.14}{51}{$+2.75$}
-\bottomrule
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.58\textwidth}\centering
-\includegraphics[width=\linewidth]{Decay/journey_Decay.pdf}
-\end{minipage}
-\caption[The energy ledger and the event after the hadron decays in the $(\eta,\phi)$ plane]{The
-energy ledger at the stage ``The Children Produce Grandchildren'' (left;
-$\Delta\pt$ is relative to the previous row) and the final state of our
-event after the standalone hadron-decay stage (right), drawn by
-\file{example/Decay/plot_journey_Decay.py} from
-\file{example/Decay/event_Decay.lhe} in the layout of \cref{fig:children_producing_grandchildren:cmssw}.
-Red and blue are the 16 and 10 final descendants of the \Bstarbar and the
-\Bstar, magenta their vector sum, purple the 143 primary hadrons that
-survived, grey the other 580 decay products, with the five neutrinos
-hollow; 43 particles beyond $|\eta|=6$ are on the border. The header lists
-the flight distance of each weakly decaying B, the vector sum of all 749
-particles, which vanishes, and the $9.1\GeV$ of missing transverse momentum
-carried by the neutrinos.}
-\label{fig:children_producing_grandchildren:journey}
-\end{figure}
+\ledgerblock{\CMSSW (run 1, event 1; decays on)}
+\ledgerrow{$b$ family after hadronisation ($\dR<0.4$)}{114.45}{20.4}{9}{--}
+\ledgerrow{$b$ family after this stage, visible ($\dR<0.4$)}{79.12}{12.1}{21}{$-35.33$}
+\ledgerrow{\quad the $\bar\nu_e$ of the $B^-$, inside the cone, not counted}{37.46}{0}{1}{--}
+\end{ledgerboth}
 
-\paragraph{The same event in \CMSSW.} The particle listing of the GEN log
-continues after the primary hadrons of \cref{sec:children_getting_married:cmssw}
-with the decay products, status~1 for the stable ones and status~2 for
-those that decayed again, and its vertex columns, in centimetres, now vary
-from row to row. Row~829 is the $B^-$ of \cref{ch:children_getting_married}
-at $94.279\GeV$, status~2 now, with daughters~1434 to~1436: an electron
-antineutrino of $37.457\GeV$, an electron of $4.951$, and a $D_0^{*0}$
-($c\bar u$, the scalar excitation of the $D^0$) of $51.912\GeV$ that decays
-further. Its production vertex is the smeared collision point,
-$(0.028,-0.017,3.112)\,\mathrm{cm}$; its daughters are born at
-$(-0.128,-0.288,2.394)$, so that the $B^-$ walked
-$L=\sqrt{0.156^2+0.271^2+0.718^2}\,\mathrm{cm}=7.83\mm$ with
-$\Lxy=3.13\mm$. The neutrino carries $96.2$ of the hadron's $235.9\GeV$ of
-energy, $f_\nu=0.41$, and $37.5$ of its $94.3\GeV$ of \pt: this is the tail
-of \cref{sec:children_producing_grandchildren:emigrant} in one event. The $\bar b$'s $B^{*+}$ ($u\bar b$),
-row~968, radiated its photon and left a $B^+$ of $112.618\GeV$, row~1503,
-whose five daughters, $\bar D^{*0}\pi^+\pi^0K^0\bar K^{*0}$, are born at
-$(0.322,0.451,-8.604)\,\mathrm{cm}$: $L=117.3\mm$ down the beam pipe,
-$\Lxy=5.53$, sixteen final particles and no neutrino. These are the \CMSSW
-numbers of \cref{tab:children_producing_grandchildren:numbers}.
+\paragraph{The same event in \CMSSW.} In \CMSSW this stop switches on
+\code{HadronLevel:Decay}, the last step of \PYTHIA, and the file it
+writes is the complete generator event that every later stop starts from.
+The parton level and the hadronisation are those of
+\cref{ch:children_getting_married}, entry for entry; what changes is the
+end of the record. Of the $320$ primary hadrons $188$ decay and receive
+status~2, their products are appended, $114$ of those decay again, and
+the record grows from $1230$ to $1846$ entries: $634$ stable particles,
+$132$ of them primary hadrons that survived because their lifetime is
+above the $10\mm$ of \code{ParticleDecays:tau0Max}, and $302$ decays. The
+final state is $273$ photons, almost all from the $131$ neutral pions,
+$303$ charged hadrons, $56$ neutral ones, one electron and one neutrino,
+and it still carries the $13\,600.0\GeV$ of the two protons.
 
-\Cref{fig:children_producing_grandchildren:cmssw} is the analyser's
-stage-5 picture: $634$ stable particles, $132$ of them primary hadrons
-that survived and $477$ decay products, the $B^-$'s nine descendants in
-red at $\eta=-1.57$ and the $B^+$'s sixteen in blue at $\eta=-3.75$, and
-$38$ particles beyond $|\eta|=6$ on the border. Set it next to
-\cref{fig:children_producing_grandchildren:journey}. The two are different
-decays of different hadronisations of different showers of the same hard
-event, and the comparison to make is
+Follow the mother to the end. Entry~829 is the $B^-$ of
+\cref{ch:children_getting_married} at $94.28\GeV$, status~2 now, and its
+decay is semileptonic: $B^-\to e^-\,\bar\nu_e\,D_0^{*0}$, the $D_0^{*0}$
+($c\bar u$, the scalar excitation of the $D^0$) going on to
+$D^0\pi^0$, the $D^0$ to $K^{*-}\rho^+$, and so on down to nine stable
+particles: the antineutrino, the electron, a $K^0_S$, a $\pi^-$, a $\pi^+$
+and four photons. Its production vertex is the smeared collision point,
+$(0.028,-0.017,3.112)\,\mathrm{cm}$, and its daughters are born
+$L=7.83\mm$ away, $\Lxy=3.13\mm$, at $\gamma\beta=44.7$. The antineutrino carries $95.5$ of the hadron's
+$235.9\GeV$ of energy, $f_\nu=0.40$, and $37.5$ of its $94.3\GeV$ of \pt;
+it is the only neutrino of the whole event, and the generator's missing
+transverse momentum, $37.46\GeV$ at $\phi=-2.10$, is exactly it. This is
+the tail of \cref{sec:children_producing_grandchildren:emigrant} in one
+event. The $\bar b$'s $B^{*+}$ ($u\bar b$), entry~968, radiates a photon
+of $33\GeV$ at once and leaves a $B^+$ that decays hadronically into five
+bodies, $\bar D^{*0}\pi^+\pi^0K^0\bar K^{*0}$, born $L=117.3\mm$ down the
+beam pipe with $\Lxy=5.53\mm$; its $\bar D^0$ flies another $141\mm$.
+Sixteen final particles and no neutrino. These are the \CMSSW numbers of
+\cref{tab:children_producing_grandchildren:numbers}.
+
+The ledger reads the cone. The mother's now holds $21$ visible particles
+and $79.12\GeV$, where the nine primary hadrons held $114.45$: eight of
+the nine products of the $B^-$, all within $\dR=0.20$ of the axis, and
+thirteen others, eight photons, four charged pions and a $K^0_S$ from the
+light hadrons around her. The ninth product, the antineutrino, is inside
+the circle too, $\dR=0.02$ from the axis, and is not counted, as a jet
+made of visible particles cannot count it: the $35.3\GeV$ the family lost
+at this stop is the emigrant and nothing else. Our own family, whose
+\Bbar decayed hadronically, lost nothing, and four hundred decays of our
+hadrons lose $7.7\GeV$ on average with a spread of twelve; the \CMSSW
+event is what the upper end of that spread looks like. Decays also move
+particles across the circle, in both directions: a $\pi^+$ of $2.1\GeV$
+inside it comes from the $\Delta^{++}$ that sat just outside at the
+previous stop. The cone of the $\bar b$ shows the opposite case, $18$
+particles and $115.9\GeV$, the $116.0$ of the primary hadrons to
+$0.04\GeV$: a hadron of $2.4\TeV$ decays into a pencil, all sixteen
+products within $\dR=0.20$ and fourteen within $0.075$.
+
+Panel~(b) of \cref{fig:children_producing_grandchildren:displays} is the
+analyser's page for the stage: $634$ stable particles coloured by origin,
+the nine descendants of the $B^-$ in red, the sixteen of the $B^{*+}$ in
+blue, the $132$ surviving primary hadrons in violet and the $477$ other
+decay products in grey, $38$ of them beyond $|\eta|=6$ on the border; the
+two insets magnify the two cones with the name and \pt of their hardest
+particles, the antineutrino in parentheses. Panel~(a) is our record in
+the same layout: the $16$ and $10$ final descendants of the \Bstarbar and
+the \Bstar, $143$ primary hadrons that survived, $580$ other decay
+products with the five neutrinos hollow, $43$ particles on the border,
+and in the header the flight distance of each weakly decaying B and the
+$9.1\GeV$ of missing transverse momentum of the neutrinos. The two are
+different decays of different hadronisations of different showers of the
+same hard event, and the comparison to make is
 \cref{tab:children_producing_grandchildren:numbers}; what the pictures
 share is the structure, a dense cluster of grandchildren where each
 B~hadron was, now a dozen particles instead of one, and a grey background
 of decay products twice as dense as the purple one of the primary hadrons
 was.
 
-\begin{figure}[htbp]\centering
-\includegraphics[page=5,width=\textwidth]{Decay/CMSSW/genPartAnalyzer_ME_PS_MPI_Had_Decay_out.pdf}
-\caption[The event after the hadron decays in \CMSSW]{Stage~5 of our
-event in \CMSSW, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}:
-the stable particles after the decays. Red and blue are the descendants of
-the $B^-$ and the $B^{*+}$, magenta their vector sum, purple the primary
-hadrons that survived and grey the other decay products; particles beyond
-$|\eta|=6$ are drawn on the border. The same stage of the standalone
-record is \cref{fig:children_producing_grandchildren:journey}.}
-\label{fig:children_producing_grandchildren:cmssw}
+\begin{figure}[p]\centering
+\ledgerdisplays
+  {Decay/journey_Decay.pdf}
+  {Standalone: the 749 final particles of \file{example/Decay/event_Decay.lhe} (seed~1), drawn by \file{plot_journey_Decay.py}.}
+  {fig:children_producing_grandchildren:journey}
+  {Decay/CMSSW/genPartAnalyzer_06_Decay.pdf}
+  {\CMSSW: the 634 stable particles of the \code{06\_Decay} job, drawn by the \code{genPartAnalyzer} of \code{JitJetSW}.}
+  {fig:children_producing_grandchildren:cmssw}
+\caption[The event after the hadron decays in the $(\eta,\phi)$ plane,
+standalone and \CMSSW]{The final state of our event after the hadron
+decays, standalone (a) and \CMSSW (b). Red and blue are the final
+descendants of the two B~hadrons, magenta their vector sum, purple the
+primary hadrons that survived and grey the other decay products;
+particles beyond $|\eta|=6$ are drawn on the border. The dashed circles
+are the cones $\dR<0.4$ of the ledger, neutrinos not counted, magnified in
+the insets.}
+\label{fig:children_producing_grandchildren:displays}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
@@ -1486,9 +1518,10 @@ the muon-in-jet correction of \cite{CMS:2018nsn}.
   hardest electron or muon among the mother's descendants, separately for
   leptons from the \Bbar itself and from the charm cascade; what fraction
   is above $5\GeV$, and how does $f_\nu$ correlate with the lepton's \pt?
-\item \textbf{Read the \CMSSW record.} From rows 829 and 1434 to 1436 of
-  \file{step1_GEN_PS_cfg.log} reproduce $L=7.83\mm$, $\Lxy=3.13$ and
-  $f_\nu=0.41$; from rows 968, 1503 and 1752 to 1756 the $B^+$'s
+\item \textbf{Read the \CMSSW record.} From entries 829 and 1434 to 1436 of
+  the \code{genParticles} of the \CMSSW event of this stop (the companion
+  says where the files are) reproduce $L=7.83\mm$, $\Lxy=3.13$ and
+  $f_\nu=0.40$; from rows 968, 1503 and 1752 to 1756 the $B^+$'s
   $117.3\mm$. Which of the two B~hadrons would a $b$ tag find more easily,
   and why?
 \item \textbf{\PYTHIA's first event.} Run \file{plot_journey_Decay.py} on

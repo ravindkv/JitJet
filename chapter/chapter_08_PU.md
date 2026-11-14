@@ -5,10 +5,9 @@ chapter gives the physics; this page says how to run the scripts, how to read wh
 they write, how each number of the official packages was obtained, and lists every
 table the chapter quotes with the command that produced it. All files are in
 [`example/PU/`](../example/PU/) of this repository unless stated otherwise; the CMSSW
-side (the 2024 pileup library and the mixing of one signal event at PU 60) is in
-[JitJetSW](https://github.com/ravindkv/JitJetSW), with its write-ups copied to
-[`example/PU/CMSSW/2024/`](../example/PU/CMSSW/2024/) (and the Phase-2 exercise at
-PU 10 to [`example/PU/CMSSW/Phase2/`](../example/PU/CMSSW/Phase2/)).
+side (the pileup library and the overlay of the in-time collisions on the signal event
+at PU 60) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is written up
+there, see section 4.3.
 
 The crowd is the crowd of Run 3 in 2024: the event of chapters 1 to 7 was born at
 13.6 TeV under Run-3 conditions and stays there: 60 collisions per crossing, the 2024
@@ -26,7 +25,8 @@ option of the script, `--scenario ultimate`, kept for the exercises and the open
 | Learning-mode log | [`example/PU/Standalone/standalone_pileup.log`](../example/PU/Standalone/standalone_pileup.log) (`-v`, seed 1) and its summary [`standalone_pileup.json`](../example/PU/Standalone/standalone_pileup.json) |
 | Validation with FastJet and PYTHIA | [`example/PU/Standalone/validate_pileup_with_fastjet.py`](../example/PU/Standalone/validate_pileup_with_fastjet.py) |
 | The catalogue of the library | [`example/PU/Standalone/minbias_catalogue.py`](../example/PU/Standalone/minbias_catalogue.py), its tables [`minbias_catalogue.txt`](../example/PU/Standalone/minbias_catalogue.txt) / `.json` / `.tex` (the chapter `\input`s the last) |
-| CMSSW write-ups | [`example/PU/CMSSW/2024/PULib.pdf`](../example/PU/CMSSW/2024/PULib.pdf) (the library) and [`PUSIM.pdf`](../example/PU/CMSSW/2024/PUSIM.pdf) (the mixing), CMSSW_15_0_5, 2024 conditions (`auto:phase1_2024_realistic`, era `Run3_2024`), 13.6 TeV |
+| CMSSW figure | [`example/PU/CMSSW/genJetAnalyzer_08_PU.pdf`](../example/PU/CMSSW/genJetAnalyzer_08_PU.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_08_PU.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.tex); technical companion: [`chapter_08_PU.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.md) |
 | Film | scene 8 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -76,7 +76,7 @@ cd example/PU/Standalone
       # -> ../event_PU.lhe, the book's record (mu = 60, bx = -12 ... +3, seed 1): 2 min, almost all of it the anti-kT clustering
 /usr/bin/python3 standalone_pileup.py --no-area              # 20 s: no ghosts, no areas, no jet-median rho
 /usr/bin/python3 standalone_pileup.py --window 0             # the in-time crossing only
-/usr/bin/python3 standalone_pileup.py --window 1 --sequential   # the conditions of the CMSSW exercise (PUSIM: PU 60 in bx = -1 ... +1, the library read in order)
+/usr/bin/python3 standalone_pileup.py --window 1 --sequential   # the conditions of the CMSSW exercise (PU 60 in bx = -1 ... +1, the library read in order)
 /usr/bin/python3 standalone_pileup.py --scenario ultimate    # the HL-LHC crowd: mu = 200 in bx = -3 ... +3, the Phase-2 luminous region (15 min)
 /usr/bin/python3 standalone_pileup.py --repeat 400 --jobs 4 --quiet --history standalone_pileup_stats.json   # 15 s
 ```
@@ -218,6 +218,8 @@ chapter-7 listing and its mixed jet. `read_pileup_tables(path)` reads the four t
 
 ### The (eta, phi) displays
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genJetAnalyzer_08_PU.pdf`](../example/PU/CMSSW/genJetAnalyzer_08_PU.pdf) at the bottom, each on half a page). `journey_PU_signal.pdf`, the same frame without the crowd, is still written by `make figures` but is no longer shown in the chapter, which refers to the photograph of chapter 7 instead.
+
 ```bash
 cd example/PU
 /usr/bin/python3 plot_journey_PU.py                         # -> journey_PU.pdf: the event with the crowd
@@ -315,7 +317,7 @@ cd example/PU/Standalone
 | sum pT [GeV] | 73 (max 518) | 0.5 to 376 |
 | by type: particles (central charged) | ND 230 (16.1), SD 51 (2.5), DD 62 (2.7), CD 28 (1.6) | stable ND 241, SD 70, DD 57, CD 35; primaries handed to GEANT ND 195, SD 55, DD 36, CD 32 |
 
-The CMSSW numbers are those of `PULib.pdf` (sections 3 and 5), whose cross sections are
+The CMSSW numbers are those of the JitJetSW companion (`genstats_08_PU.txt`), whose cross sections are
 exactly the ones above (the same fragment, the same tune, the same energy; PYTHIA 8.311
 there, 8.315 here; the 14 TeV fragment of the Phase-2 exercise gives 55.36, 6.44, 8.88,
 1.29 mb: the tune, not the energy, sets them). The CMSSW library's central count includes
@@ -347,34 +349,65 @@ median, which is measured on the ghost jets themselves, moves by a percent with 
 ghosts (FastJet 70.43 against the standalone's 69.87). The result is
 `validate_pileup_with_fastjet_record.json`.
 
-### 4.3 CMSSW: the 2024 mixing
+### 4.3 CMSSW: the library and the overlay
 
-The CMSSW side of this stop is the exercise of JitJetSW (`test/PU_2024/`,
-`runPileup_mc2024_BBbar.sh`, CMSSW_15_0_5, conditions `auto:phase1_2024_realistic`, era
-`Run3_2024`, geometry `DB:Extended`, beam spot `DBrealistic`, 13.6 TeV), written up in
-`PULib.pdf` (the library: 250 minimum-bias GEN-SIM events, the fragment, the 2024 vertex
-smearing, the seeds 20241 / 20242 / 20243, the products, the statistics, one event drawn
-on the detector) and `PUSIM.pdf` (the mixing: the MixingModule, the CrossingFrames, one
-signal event mixed at mu = 60 in bx = -1 ... +1 with the library read in sequence, the
-three samples drawn station by station, the scaling to the production window). The
-numbers the chapter quotes from them: the beam spot (BetafuncEvtVtxGenerator with the
-payload `SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc`:
-sigma_z = 3.6 cm, beta* = 30 cm, emittance 5.725e-8 cm, sigma_t = sigma_z / c = 120 ps;
-the 250 events: 3.56 cm, 122 ps, z from -9.52 to +10.08 cm); the draws of the mixed event
-(66, 55, 77 collisions for an expectation of 60 per crossing, 198 in all; 31 597 primaries
-against 571 of the signal, 160 per collision; 98 693 SimTracks; 45 890 TrackingParticles
-of which 910 of the signal); the signal vertex (z = 3.11 cm, t = -0.14 ns; three pileup
-vertices within 1 mm of it); the hits (454 311 tracker PSimHits of which 9776 of the
-signal; 106 581 ECAL cells of which 2304 signal-dominated; 11 049 HCAL cells; 204 muon
-hits, none of the signal); the production scenario (`Run3_Flat55To75_PoissonOOTPU`,
-bx = -12 ... +3, about 1040 collisions per signal event, 0.25 GB of library read per
-signal event, which is why the production premixes); the cost (2.45 s of GEANT per
-minimum-bias event, 60 MB for the 250, 82 minutes for the mixing job with the drawing);
-and the energy estimate (62 GeV of ECAL-station energy per collision, about 55 GeV of
-in-time pileup under a jet of area 0.5). The standalone script reproduces the conditions
-of the exercise with `--window 1 --sequential`; the draws differ (different random
-numbers) and the vertex spread, the particles per collision and the per-collision density
-are what can be compared.
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/08_PU/run_08_PU.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): a library of 250 minimum-bias collisions and the overlay of 68 of them on the signal at generator level.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_08_PU.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_08_PU.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
+
+```bash
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./08_PU/run_08_PU.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 08_PU/out/
+```
+
+The page of the analyser that the chapter shows is copied to
+[`example/PU/CMSSW/genJetAnalyzer_08_PU.pdf`](../example/PU/CMSSW/genJetAnalyzer_08_PU.pdf);
+the links are also in [`example/PU/CMSSW/README.md`](../example/PU/CMSSW/README.md).
+
+The job has two parts. The library is one GEN job of 250 minimum-bias collisions
+(`MinBias_14TeV_pythia8_TuneCP5_cfi` at 13.6 TeV, `SoftQCD:inelastic`, seeds 20241 /
+20242 so that its vertices are not those of the signal); JitJetSW runs it with the
+2025 conditions of the release, which at generator level give the same library as the
+2024 ones collision by collision (the beam-spot payload is the 2024 one,
+`SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc`:
+sigma_z = 3.6 cm, sigma_t = 120 ps). The overlay runs the `MixingModule` with no
+digitiser, `mixHepMC` only, on the signal of chapter 7 and library events 72 to 139,
+the 68 collisions that the mixing of the simulation chapters draws for the in-time
+crossing of this event (71, 68 and 54 collisions for bx = -1, 0, +1, the library read
+in sequence), and clusters the sum as `ak4GenJetsPU`.
+
+What the chapter reads from the output (`test/08_PU/out/`):
+
+| number in the chapter | value | file |
+|---|---|---|
+| cross sections, process counts of the 250 | 78.42 mb; 183 ND / 45 SD / 19 DD / 3 CD | `step1_GEN_MinBias_08_PU.log` |
+| per collision: interactions, stable particles, central ones, hardest | 7.0; 193.8 (median 132, 3 to 723); 21.2; 2.2 GeV (max 8.1) | `genstats_08_PU.txt` |
+| vertices of the 250: r.m.s. in z and t | 3.56 cm, 122 ps | `genstats_08_PU.txt` |
+| signal vertex | z = 3.11 cm, t = +0.121 ns | `step1_GEN_01_ME.root` of chapter 1 (the same in every job) |
+| the 68 in-time collisions | 49 ND / 15 SD / 4 DD, 12 993 stable particles (3 to 547) | `genstats_08_PU.txt`, events 72 to 139 |
+| pileup at abs(eta) < 2.5 | 4864 particles, 2179.4 GeV of scalar pT: 69.4 GeV per unit area, 34.9 GeV per circle of R = 0.4 | `ledger_08_PU.txt` |
+| jets above 3 / 20 / 30 / 50 GeV | 266 / 116 / 76 / 9 (27 / 2 / 2 / 2 without pileup) | `genJetPileup_08_PU.log` |
+| the b jet with the crowd | jet [1], 150.895 GeV, mass 51.36 GeV, 114 constituents (24 + 90 from 41 collisions), pileup pT 33.92 GeV | `genJetPileup_08_PU.log`, FWLite |
+| the bbar jet with the crowd | jet [0], 152.028 GeV, 88 constituents (18 + 70 from 32 collisions), pileup pT 36.74 GeV | the same |
+| jets without a signal particle | 87 of 266 | FWLite on `step2_GENJETPU_08_PU.root` |
+
+The mixing with the detector simulation (the 193 collisions of the three crossings,
+their 31 060 primaries, 438 043 tracker hits and 103 808 pileup-dominated ECAL cells
+quoted in the chapter's theory section) is chapter 10 of JitJetSW
+([`chapter_10_SIM.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.tex)).
+The standalone script takes the conditions of the exercise with
+`--window 1 --sequential`; the draws differ (different random numbers and a different
+library), and the vertex spread, the particles per collision and the per-collision
+density are what can be compared.
 
 ## 5. The full tables
 
@@ -385,8 +418,8 @@ The table of the chapter's first section, column by column: PYTHIA's cross secti
 the library from `validate_pileup_with_fastjet.py --mode library`; the standalone numbers
 from `standalone_pileup.log` and `standalone_pileup.json`; the FastJet numbers from
 `validate_pileup_with_fastjet.py --mode record`; the 400 draws from
-`standalone_pileup_stats.json` (`--repeat 400`); the CMSSW numbers from `PULib.pdf`
-and `PUSIM.pdf`.
+`standalone_pileup_stats.json` (`--repeat 400`); the CMSSW numbers from the JitJetSW
+job of section 4.3 (the table there names the file of each).
 
 ### 5.2 Our jet and the bbar jet before and after the crowd
 
@@ -418,13 +451,23 @@ in 5.2, 0.46 GeV of pileup per collision inside it; the pileup inside exceeds 40
 
 | stage | pT [GeV] | m [GeV] | n | delta pT |
 |---|---|---|---|---|
+| **Standalone** (seed 1, `event_PU.lhe`) | | | | |
 | the photograph, ak4 jet [0] (chapter 7) | 99.83 | 14.83 | 31 | |
 | with the crowd: mixed jet [0], mu = 60 | 132.75 | 45.27 | 112 | +32.92 |
 | after the subtraction, pT - rho A | 96.66 | | 112 | -36.09 |
+| **CMSSW** (run 1, event 1; 68 in-time collisions) | | | | |
+| the photograph, ak4 jet [0] (chapter 7) | 117.79 | 16.72 | 24 | |
+| with the crowd: mixed jet [1], mu = 60 | 150.90 | 51.36 | 114 | +33.11 |
+| of which pileup (scalar sum) | 33.92 | | 90 | |
+| minus the mean pedestal of a circle, pT - rho pi R^2 | 116.0 | | 114 | -34.9 |
 
 The 32.92 GeV of the second line are the 33.61 GeV of pileup constituents less the
 difference between the vector sum of the jet and the scalar sums of its constituents;
 the third line is the scalar subtraction, which leaves the mass at its inflated value.
+The CMSSW rows are lines of `genJetPileup_08_PU.log` of JitJetSW (`[1] pt=150.895 ... mass=51.3568
+nConst=114 pileupPt=33.9195`); no subtraction is run in that job, and the last row is arithmetic:
+the mean pileup pT per unit area at abs(eta) < 2.5, 2179.4 / (5 x 2 pi) = 69.4 GeV, times
+pi R^2 = 0.503 is 34.9 GeV, and 150.90 - 34.9 = 116.0 GeV, 1.8 GeV below the photograph.
 
 ### 5.5 The HL-LHC crowd, for the open problems
 

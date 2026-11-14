@@ -17,7 +17,8 @@ otherwise; the CMSSW analysers are in
 | Event record | [`example/MPI/event_MPI.lhe`](../example/MPI/event_MPI.lhe) (seed 1, impact parameter 0.3136 `<b>`, 963 rows) |
 | Learning-mode log | [`example/MPI/Standalone/standalone_multiparton_interactions.log`](../example/MPI/Standalone/standalone_multiparton_interactions.log) (`-v`, 1493 lines) |
 | Validation with PYTHIA | [`example/MPI/Standalone/validate_mpi_with_pythia.py`](../example/MPI/Standalone/validate_mpi_with_pythia.py) |
-| CMSSW figure | [`example/MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf`](../example/MPI/CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf) (page 3); the log is that of chapter 2 |
+| CMSSW figure | [`example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf`](../example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf), the lower panel of the chapter's display |
+| CMSSW write-up (JitJetSW) | physics details: [`chapter_04_MPI.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_04_MPI.tex); technical companion: [`chapter_04_MPI.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_04_MPI.md) |
 | Film | scene 4 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
 
 Contents: [1. Running the standalone script](#1-running-the-standalone-script) ·
@@ -305,6 +306,8 @@ why the figure says 45 MPI partons while the script's summary says 155
 partons from the secondary systems: the two numbers count the same partons
 with different rules.
 
+Since 2026-11-14 the chapter shows this display on one page with the CMSSW one below it (`\ledgerdisplays` of `preamble.tex`: standalone on top, [`CMSSW/genPartAnalyzer_04_MPI.pdf`](../example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf) at the bottom, each on half a page). Like the CMSSW pages, the display draws the cone of the ledger, Delta R < 0.4 around the last copy of each quark, as a dashed circle with its vector pT and the number of particles inside, and magnifies the one around the b in an inset with the name and pT of its hardest members (`cone_of`, `draw_cones` and `draw_zoom` of `plot_journey_PS.py`, shared by the scripts of chapters 2 and 4 to 6); the script also prints one `cone dR < 0.4 around the b axis ...` line per cone, which is the family row of section 5.
+
 ```bash
 python3 example/MPI/plot_journey_MPI.py                 # -> example/MPI/journey_MPI.pdf
 python3 example/MPI/plot_journey_MPI.py -i my.lhe --png
@@ -436,20 +439,36 @@ interleaved showering of the systems, as the chapter explains.
 
 ### 4.2 CMSSW: the rest of the protons inside the GEN step
 
-Nothing new has to be run: the `GEN` step of chapter 1 already produced
-this stage, and JitJetSW's analyser drew it as its third figure. From the
-setup of the [chapter 2 companion](chapter_02_PS.md#42-cmssw-the-shower-inside-the-gen-step):
+The CMSSW side of this stop is one job of
+[JitJetSW](https://github.com/ravindkv/JitJetSW), `test/04_MPI/run_04_MPI.sh`
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the job of chapter 2 with `PartonLevel:MPI = on`; the hadron level off.
+Its commands, configurations, logs and tables are documented there, and this
+page does not repeat them:
+
+- physics details: [`chapter_04_MPI.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_04_MPI.tex): what the stage does to the event, the numbers of
+  the event, its ledger and display;
+- technical companion: [`chapter_04_MPI.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_04_MPI.md): the `cmsDriver.py` commands, the `cmsRun` on the
+  python configuration, the analyser configurations and every table in full.
 
 ```bash
-cd CMSSW_15_0_5/src/JitJetSW/Journey/test
-./runCMSDrivers_mc2024_BBbar_GEN.sh          # GEN step + genPartAnalyzer, one PDF per stage
+cmsrel CMSSW_15_0_5 && cd CMSSW_15_0_5/src && cmsenv
+git clone git@github.com:ravindkv/JitJetSW.git && scram b
+cd JitJetSW/Journey/test
+./04_MPI/run_04_MPI.sh        # cmsDriver.py, cmsRun, the analyser, the ledger; outputs in 04_MPI/out/
 ```
 
-produces `genPartAnalyzer_ME_PS_MPI_out.pdf`, whose third page is the
-chapter's CMSSW figure; the copy in `CMSSW/` is the one used, and the log is
-`example/PS/CMSSW/step1_GEN_PS_cfg.log` of chapter 2.
+The page of the analyser that the chapter shows is copied to
+[`example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf`](../example/MPI/CMSSW/genPartAnalyzer_04_MPI.pdf);
+the links are also in [`example/MPI/CMSSW/README.md`](../example/MPI/CMSSW/README.md).
 
-**Reading the log.** At initialisation (lines 27 and 30),
+What the chapter reads from its output (`test/04_MPI/out/`): the record by status
+group, the final state by region and the two cones from `ledger_04_MPI.txt`; the b
+and bbar copies stage by stage and the members of the cones with the scattering
+each belongs to from `genPartAnalyzer_04_MPI.log`; the 31 interactions, the
+remnants and the ancestry of the partons in the cones from FWLite on
+`step1_GEN_04_MPI.root` (JitJetSW companion, sections 4.5 and 4.6).
+
+**Reading the log** (`step1_GEN_04_MPI.log`). At initialisation,
 
 ```text
  |    pT0 =  1.44 gives sigmaInteraction =   500.67 mb: accepted    |
@@ -484,7 +503,7 @@ the hard process among the "MPI", so the event has 31 secondary
 scatterings, and its 28 initial-state and 64 final-state branchings belong
 to all 32 systems together.
 
-**The drawer's table.** The new status codes appear in the same roles as in
+**The record.** In `genParticles` the new status codes appear in the same roles as in
 the standalone record: 62 rows of status 31 and 62 of status 33 (the
 incoming and outgoing partons of the 31 secondary scatterings); 64 rows of
 status 61 (the initiators of all 32 systems after the remnant kinematics);
@@ -510,21 +529,21 @@ redraw only this stage; PYTHIA redraws everything. Commands:
 (column 2), `validate_mpi_with_pythia.py -n 8000 --impact 0.3136 --window 0.03`
 (column 3), the same `--repeat 400` with `--impact 0.3136` (column 4),
 `standalone_multiparton_interactions.py --impact 0.3136` (column 5), the
-drawer's table of the CMSSW log (column 6).
+ledger, the analyser log and the FWLite counts of the JitJetSW job `test/04_MPI/` (column 6, section 4.2).
 
 | quantity | PYTHIA, b drawn | standalone, b drawn | PYTHIA, b = 0.3136 | standalone, b = 0.3136 | standalone, seed 1 | CMSSW, 1 event |
 |---|---|---|---|---|---|---|
 | interactions, incl. the hard one | 18.0 +- 9.9 | 14.7 +- 7.2 | 27.5 +- 5.4 | 21.4 +- 4.2 | 25 | 32 |
 | b / `<b>`, f(b) | 0.61, 2.26 | 0.63, 2.10 | 0.31, 3.70 | 0.31, 3.63 | 0.31, 3.63 | 0.31, 3.71 |
 | final partons | 125 +- 60 | 138 +- 54 | 181 +- 34 | 190 +- 33 | 211 | 169 |
-| of which from secondary systems | 92 | 88 | 145 | 137 | 155 | -- |
+| of which from secondary systems | 92 | 88 | 145 | 137 | 155 | 142 |
 | of which beam remnants | 10.2 | 9.4 | 13.6 | 12.9 | 16 | 13 |
-| sum pT of the secondary partons [GeV] | 134 | 124 | 212 | 196 | 230 | -- |
+| sum pT of the secondary partons [GeV] | 134 | 124 | 212 | 196 | 230 | 208 |
 | hardest secondary interaction [GeV] | 6.8 | 6.5 | 8.6 | 8.4 | 11.45 | 6.65 |
 | transverse UE density [GeV per unit eta-phi] | 2.21 +- 1.72 | 2.00 +- 1.59 | 3.48 +- 1.54 | 3.23 +- 1.44 | 2.10 | -- |
-| UE sum pT within dR < 0.4 of the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.31 | 1.80 +- 2.43 | 1.60 +- 2.19 | 0.00 | -- |
+| UE sum pT within dR < 0.4 of the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.31 | 1.80 +- 2.43 | 1.60 +- 2.19 | 0.00 | 6.91 |
 | UE sum pT within dR < 0.8 of the b [GeV] | 4.57 +- 5.20 | 3.95 +- 4.05 | 7.32 +- 5.68 | 5.88 +- 4.44 | 3.42 | -- |
-| UE partons within dR < 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.07 / 4.18 | 0 / 3 | -- |
+| UE partons within dR < 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.07 / 4.18 | 0 / 3 | 3 / -- |
 | systems merged by colour reconnection | -- | 13.2 | -- | 19.7 | 23 | -- |
 | string length lambda before -> after | -- | 563 -> 375 | -- | 769 -> 472 | 880 -> 521 | -- |
 
@@ -564,7 +583,7 @@ Standalone: 78.12 GeV at the end of the shower (row 124, status 52);
 62). The family within dR < 0.4 moves from 100.45 to 100.67 GeV with the
 same boost.
 
-CMSSW (the drawer's table of the chapter 2 log): row 182, status 52,
+CMSSW (`genParticles` of the chapter 4 job, `test/04_MPI/out/`): row 182, status 52,
 91.59 GeV, her last shower copy; row 515, status 62, 91.744 GeV, after the
 beam remnants took their share, the same 0.15 GeV primordial-kT boost; row
 824, status 71, 91.74 GeV, the b handed to hadronisation.
@@ -573,7 +592,26 @@ beam remnants took their share, the same 0.15 GeV primordial-kT boost; row
 
 | Stage | pT [GeV] | m [GeV] | n_const | delta pT [GeV] |
 |---|---:|---:|---:|---:|
+| **Standalone** (seed 1, `event_MPI.lhe`) | | | | |
 | b family after the shower (dR < 0.4) | 100.45 | 13.52 | 3 | |
 | b family after this stage (dR < 0.4) | 100.67 | 13.52 | 3 | +0.22 |
 | of which the b quark itself | 78.29 | 4.80 | 1 | |
 | the same within dR < 0.8 (3 UE partons) | 104.09 | 20.17 | 6 | +3.42 |
+| **CMSSW** (run 1, event 1; ISR, FSR and MPI on) | | | | |
+| b family after the shower alone (chapter 2 job) | 113.56 | 13.8 | 6 | |
+| b family after this stage (dR < 0.4) | 127.25 | 17.1 | 9 | +13.70 |
+| of which the hard process and its shower | 120.48 | | 6 | |
+| of which the underlying event (scalar sum) | 6.91 | | 3 | |
+| of which the b quark itself | 91.74 | 4.80 | 1 | |
+
+The standalone family row is printed by `plot_journey_MPI.py` (`cone dR < 0.4 around
+the b axis ...: n = 3, |sum pT| = 100.67 GeV`). The CMSSW rows: `ledger_04_MPI.txt` of
+JitJetSW, `b axis [515] status 1 pT=91.7 ...: n=9 E=325.3 GeV vector pT=127.3 GeV`
+(three decimals from its FWLite: E = 325.336, pT = 127.253), and the stage-3 "cone"
+line of `genPartAnalyzer_04_MPI.log`, `n=9 pt=127.253 eta=-1.58967 ... hard process:
+n=6 pt=120.48 ... UE (MPI + remnants): n=3 scalar sum pT=6.9105`. The mass is not
+printed; it follows from these three numbers,
+m = sqrt(E^2 - pT^2 cosh^2 eta) = sqrt(325.336^2 - (127.253 x 2.55307)^2) = 17.1 GeV.
+The first row is the cone of the chapter 2 job (showers alone), a different draw of
+the shower: 127.253 - 113.555 = +13.70 GeV, of which 6.91 from the underlying event
+and 6.92 from the other shower (120.48 against 113.56).

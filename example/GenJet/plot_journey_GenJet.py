@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Draw the generator-level jets of the event in the (eta, phi) plane, in the layout of the CMSSW
-genJetAnalyzer (stage 6, "GenJets": pages 6 to 8 of CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf).
+genJetAnalyzer (stage 6, "GenJets": CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf for ak4GenJets).
 
 The input is the record written by Standalone/standalone_genjets.py (event_GenJet.lhe): the listing of
 chapter 6 followed by the jet table (one row per jet and collection, with its flavours) and the

@@ -41,7 +41,7 @@
 \textbf{3} \; open for the antiparticle only ($\bar B^0$)\\
 \textbf{0} \; closed};
 \node[lab,anchor=north west,text width=5.5cm,align=left] at (-0.3,2.9) {the two largest partonic channels of the $B^0$ table, $0.316$ each ($b\to c\,\bar u d$ with the spectator, meMode 23), are such a pair: one with mode~2 for the $B^0$, its twin with mode~3 for the $\bar B^0$. Count both and the branching ratios sum to $1.32$, the semileptonic fraction drops by a quarter and the lepton yield of every $b$ jet is wrong.};
-\node[lab,anchor=north west,text width=5.5cm,align=left,text=black!65] at (-0.3,0.55) {the script reads the dumped table as \PYTHIA does: a $\bar B^0$ sees modes 1 and 3, with the products conjugated};
+\node[lab,anchor=north west,text width=5.5cm,align=left,text=black!65] at (-0.3,-0.05) {the script reads the dumped table as \PYTHIA does: a $\bar B^0$ sees modes 1 and 3, with the products conjugated};
 \end{scope}
 % ---------------- (c) partons to hadrons ------------------------------------------------------------
 \begin{scope}[xshift=15.6cm]
@@ -52,7 +52,7 @@
 \node[lab,anchor=west,text=black!65] at (3.6,2.7) {or $(\bar c\,c)(s\,\bar d)$\\ with $P=0.5$};
 \node[box,text width=7.6cm,align=left] (n) at (1.4,1.3) {$m_{\mathrm{diff}}=5.280-0-4.025=1.255\GeV$\\ $\langle n\rangle=\tfrac{0}{2}+\tfrac{4}{4}+4\ln\tfrac{1.255}{0.7}=3.33$\\ Poisson, at least 3: $n=3$ (fifth try)};
 \draw[flow] (s1) -- (n); \draw[flow] (s2) -- (n);
-\node[box] (h1) at (-0.6,-0.2) {$D_s^{*-}$ ($\bar c s$)\\ $2.112\GeV$}; \node[box] (h2) at (2.4,-0.2) {$D^{*0}\;\rho^+$ ($c\bar u$, $u\bar d$)\\ $2.007$, $0.790\GeV$ (the $\rho$: Breit--Wigner)};
+\node[box] (h1) at (-1.4,-0.2) {$D_s^{*-}$ ($\bar c s$)\\ $2.112\GeV$}; \node[box] (h2) at (3.0,-0.2) {$D^{*0}\;\rho^+$ ($c\bar u$, $u\bar d$)\\ $2.007$, $0.790\GeV$ (the $\rho$: Breit--Wigner)};
 \draw[flow] (n) -- (h1); \draw[flow] (n) -- (h2);
 \node[lab,anchor=north west,text width=6.4cm,align=left,text=black!65] at (-1.6,-0.75) {one hadron from the first singlet, two from the second, flavours and spins drawn with chapter 5's \code{StringFlav}; then three-body phase space};
 \end{scope}

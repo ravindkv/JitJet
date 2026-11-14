@@ -10,7 +10,7 @@
   up/.style={cell,fill=red!18},
   down/.style={cell,fill=blue!18},
   mid/.style={cell,fill=gray!10},
-  skip/.style={cell,fill=gray!4,pattern=north east lines,pattern color=gray!40,text=black!60,font=\scriptsize},
+  skip/.style={cell,text width=21mm,inner sep=1pt,fill=gray!4,pattern=north east lines,pattern color=gray!40,text=black!60,font=\scriptsize},
   lab/.style={font=\scriptsize,align=center},
   head/.style={font=\small\bfseries},
   axis/.style={-{Stealth},thick}]
@@ -18,11 +18,11 @@
 % grid: columns mu_R/2, mu_R, 2mu_R ; rows 2mu_F (top), mu_F, mu_F/2 (bottom)
 \node[up]   (c00) at (0,-2.5)  {$406.6\pb$\\$+17.7\%$};
 \node[up]   (c10) at (2.5,2.5){$357.2\pb$\\$+3.4\%$};
-\node[skip] (c20) at (5,-2.5)  {not used\\($\muR\times2$, $\muF\times\tfrac12$\\opposite extremes)};
+\node[skip] (c20) at (5,-2.5)  {not used\\($\muR\times2$, $\muF\times\tfrac12$:\\opposite extremes)};
 \node[up]   (c01) at (0,0)    {$425.3\pb$\\$+23.2\%$};
 \node[mid]  (c11) at (2.5,0)  {\textbf{345.3 pb}\\central};
 \node[down] (c21) at (5,0)    {$288.8\pb$\\$-16.4\%$};
-\node[skip] (c02) at (0,2.5) {not used\\($\muR\times\tfrac12$, $\muF\times2$\\opposite extremes)};
+\node[skip] (c02) at (0,2.5) {not used\\($\muR\times\tfrac12$, $\muF\times2$:\\opposite extremes)};
 \node[down] (c12) at (2.5,-2.5){$330.2\pb$\\$-4.4\%$};
 \node[down] (c22) at (5,2.5) {$298.7\pb$\\$-13.5\%$};
 \draw[axis] (-1.5,-3.9) -- (6.3,-3.9) node[below left,lab] {$\muR$};

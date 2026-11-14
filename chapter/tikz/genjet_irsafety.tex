@@ -29,8 +29,8 @@
 \node[lab,text=green!50!black,anchor=north] at (2.2,-0.65) {a soft gluon\\ $g\to b\bar b$};
 \node[bq] (b1) at (1.75,0.85) {}; \node[bbq] (b2) at (2.65,0.95) {};
 \draw[green!50!black,thin] (2.2,0.4) -- (b1); \draw[green!50!black,thin] (2.2,0.4) -- (b2);
-\node[lab,text=red!80!black,anchor=north east] at (1.75,0.75) {$\bar B^0$ ($b\bar d$)\\ $0.5\,\mathrm{GeV}$};
-\node[lab,text=blue!70!black,anchor=north west] at (2.65,0.85) {$B^0$ ($d\bar b$)\\ $0.5\,\mathrm{GeV}$};
+\node[lab,text=red!80!black,anchor=north] (lb1) at (0.5,-0.15) {$\bar B^0$ ($b\bar d$)\\ $0.5\,\mathrm{GeV}$}; \draw[red!80!black,very thin] (lb1.north) -- (b1);
+\node[lab,text=blue!70!black,anchor=north] (lb2) at (3.9,-0.05) {$B^0$ ($d\bar b$)\\ $0.5\,\mathrm{GeV}$}; \draw[blue!70!black,very thin] (lb2.north) -- (b2);
 \node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {The pair is $0.5$ apart in $\Delta R$ and soft in $p_T$ ($0.5\,\mathrm{GeV}$ in $12$; each meson keeps its mass). Yet: hadronFlavour $0\to5$ for both jets; net flavour $0\to+1\,b$ and $-1\,b$. The labels are not infrared safe: a splitting of vanishing $p_T$ changed them.};
 \end{scope}
 % ---------------- (b) IFN -------------------------------------------------------------------------------
@@ -41,11 +41,11 @@
 \foreach \p/\s in {(3.4,1.35)/4.2,(3.6,1.1)/2.8,(3.15,1.6)/2.4,(3.8,1.6)/1.9,(3.2,0.8)/1.6} {\node[oth,minimum size=\s pt] at \p {};}
 \node[bq] (c1) at (1.75,0.85) {}; \node[bbq] (c2) at (2.65,0.95) {};
 \draw[neut] (c1) -- (c2);
-\node[lab,text=green!50!black,anchor=south] at (2.2,1.05) {$u_{ik}=0.5^2\times0.255=0.064$};
+\node[lab,text=green!50!black,anchor=south] (lu) at (2.2,2.6) {$u_{ik}=0.5^2\times0.255=0.064$}; \draw[green!50!black,very thin] (lu.south) -- (2.2,0.95);
 \node[oth,minimum size=3.2pt] (nb) at (1.95,0.75) {};
-\node[lab,anchor=north,text=black!65] at (1.95,0.68) {$\bar n^0$, $7.4\,\mathrm{GeV}$};
+\node[lab,anchor=north west,text=black!65] (ln) at (2.3,-0.05) {$\bar n^0$, $7.4\,\mathrm{GeV}$}; \draw[black!50,very thin] (ln.north west) -- (nb);
 \draw[-{Stealth[length=1.6mm]},red!80!black,thick,dashed] (c1) -- (nb);
-\node[lab,text=red!80!black,anchor=north east] at (1.75,0.45) {$u_{ij}=7.4^2\times0.0038=0.21$:\\ the merge about to happen};
+\node[lab,text=red!80!black,anchor=north east] at (2.0,-0.05) {$u_{ij}=7.4^2\times0.0038=0.21$:\\ the merge about to happen};
 \node[lab,anchor=north west,text width=5.2cm,align=left] at (-0.4,-1.5) {Before the $\bar B^0$ ($i$, $0.5\,\mathrm{GeV}$) joins the $\bar n^0$ of $7.4\,\mathrm{GeV}$ in jet [9] ($j$, $\Delta R=0.06$), IFN looks for a pseudojet $k$ of opposite flavour with $u_{ik}<u_{ij}$, where with $\alpha=2$ $u=\max(p_{T,i},p_{T,k})^2\,\Omega^2$ and $\Omega^2=2[(\cosh\Delta y-1)-(\cos\Delta\phi-1)]$. The $B^0$: $\Delta y=0.50$, $\Delta\phi=0.02$, $\Omega^2=2[0.1276+0.0001]=0.255$, $u_{ik}=0.25\times0.255=0.064$. The merge: $\Delta y=0.04$, $\Delta\phi=0.04$, $\Omega^2=0.0038$, $u_{ij}=7.42^2\times0.0038=0.21$. $0.064<0.21$: the two flavours cancel and both jets stay flavourless. $u_{ik}$ grows as the pair's $p_T^2$ while $u_{ij}$ is set by the $7.4\,\mathrm{GeV}$ partner: above $0.9\,\mathrm{GeV}$ the pair keeps its flavour, it is then hard enough to be real.};
 \end{scope}
 % ---------------- (c) the three distances -------------------------------------------------------------

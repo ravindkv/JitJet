@@ -33,7 +33,7 @@ x ~ 1e-8 from a proton.
 The first thing the model draws is the impact parameter. For an event with a
 hard process it is distributed as the overlap O(b) of the two protons; seed 1
 lands at b = 1.21 <b> (f = 0.20, one secondary interaction), a quiet event.
-The CMSSW event of `../CMSSW/genPartAnalyzer_ME_PS_MPI_out.pdf` has b = 0.3136 <b>
+The CMSSW event of `../CMSSW/genPartAnalyzer_04_MPI.pdf` has b = 0.3136 <b>
 (f = 3.709, 32 interactions). To walk through a rich event and to compare
 with CMSSW at the same geometry the Makefile fixes `--impact 0.3136` (PYTHIA
 offers the same through `UserHooks::doSetImpactParameter`); the chapter says so,
@@ -55,10 +55,19 @@ and the ensembles below are given both ways.
   and LHAGrid1 readers both do that; letting LHAPDF extrapolate gives 352 mb,
   the chapter-2 grid frozen at x = 1e-3 gives 717 mb).
 * **The impact parameter.** Double-Gaussian protons (coreRadius 0.7634,
-  coreFraction 0.63); n(b) = k O(b) with k fixed by <n>; f(b) = n(b)/<n> =
-  O(b) int P_int d^2b / int O d^2b. f(0.3136 <b>) = 3.63 against PYTHIA's 3.709;
-  <f> = 2.22 for events with a hard process (PYTHIA: 2.26 measured), 1 for
-  minimum bias by construction; f(0) = 4.52.
+  coreFraction 0.63); n(b) = k O(b) with k = 93.0 from k <O>_int = <n>
+  (<O>_int = int P_int O d^2b / int P_int d^2b) and f(b) = O(b) int P_int d^2b /
+  int O d^2b: f(0.3136 <b>) = 3.627, f(0) = 4.52, <f> = 2.22 for events with a
+  hard process and 0.97 for minimum bias. **Known deviation from PYTHIA** (audit
+  2026-11-14, marked in the code, behaviour kept): PYTHIA fixes k by <n> =
+  int k O d^2b / int P_int d^2b (k = 89.7) and uses f(b) = O(b)/<O>_int, which
+  is 1 for minimum bias by construction and larger than the script's f by
+  1/<f>_ND = 2.9 %, of which the script's larger k gives 0.7 % back at our b:
+  f(0.3136 <b>) = 3.704 with the script's sigma_int and 3.709 with CMSSW's
+  500.67 mb (the value in the CMSSW log), f(0) = 4.60, <f>_hard = 2.26 (PYTHIA:
+  2.26 measured), 33.2 expected secondary interactions instead of 32.5. The
+  record keeps the script's value, because changing f would redraw the event
+  and every record built on it.
 * **The chain.** Below pTmax = 113.3 GeV the interactions come from the veto
   algorithm with the overestimate C/(pT^2 + pT0^2)^2, each accepted scale
   giving y3, y4, x1, x2, the flavours (from the depleted densities) and the
@@ -80,7 +89,8 @@ and the ensembles below are given both ways.
   the proton; every system keeps its mass and rapidity and is boosted to the
   frame of its new initiators (status -61 copies, 62 copies of the final
   partons), the remnants (status 63) get what is left, with the exact
-  light-cone solution of PYTHIA. Energy and momentum close to 1e-10.
+  light-cone solution of PYTHIA. Energy and momentum close to 2 MeV, the
+  rounding of the three-decimal input record.
 * **Colour reconnection** (`reconnectMPIs`, range 5.176): P = (R pT0)^2/((R pT0)^2 + pT^2)
   tested from the softest system upwards; the gluons (and q qbar pairs from a
   gluon splitting) of a merged system go onto the dipole of the harder system
@@ -104,8 +114,9 @@ processes, junctions, the newer QCD-based CR model, hadronisation (chapter 5).
 from 6.65 to 0.24 GeV), 211 final partons (155 from the secondary systems with
 their 31 ISR + 76 FSR branchings, 16 beam remnants), 23 systems merged by
 colour reconnection, lambda 880 -> 521, 33 colour-singlet strings. The b quark
-keeps its chapter-2 family (100.45 GeV, 13.52 GeV mass within R = 0.4: no
-underlying-event parton happened to land in that cone); within R = 0.8 the
+keeps its chapter-2 family (100.45 -> 100.67 GeV with the primordial-kT boost,
+13.52 GeV mass within R = 0.4: no underlying-event parton happened to land in
+that cone); within R = 0.8 the
 underlying event adds 3.4 GeV and lifts the mass from 13.5 to 20.2 GeV. The
 transverse-region density (partons not from the hard system, |eta| < 2.5,
 60-120 degrees from the leading b) is 2.1 GeV per unit eta-phi. The `-v` log
@@ -143,19 +154,20 @@ final-state copy of the b quark.
 | b / <b>, f(b) | 0.61, 2.26 | 0.63, 2.10 | 0.3136, 3.70 | 0.3136, 3.63 |
 | final partons | 125 +- 60 | 138 +- 54 | 181 +- 34 | 190 +- 33 |
 | of which from secondary systems | 92 | 88 | 145 | 137 |
-| beam remnants | 10.2 | 9.4 | 13.6 | 12.9 |
+| beam remnants | 10.2 | 9.4 | 13.6 | 12.8 |
 | sum pT of the secondary partons [GeV] | 134 | 124 | 212 | 196 |
 | hardest secondary interaction [GeV] | 6.8 | 6.5 | 8.6 | 8.4 |
 | transverse UE density [GeV per unit eta-phi] | 2.21 +- 1.72 | 2.00 +- 1.59 | 3.48 +- 1.54 | 3.23 +- 1.44 |
-| UE scalar pT in R = 0.4 around the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.31 | 1.80 +- 2.43 | 1.60 +- 2.19 |
-| UE scalar pT in R = 0.8 around the b [GeV] | 4.57 +- 5.20 | 3.95 +- 4.05 | 7.32 +- 5.68 | 5.88 +- 4.44 |
-| UE partons in R = 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.07 / 4.18 |
+| UE scalar pT in R = 0.4 around the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.30 | 1.80 +- 2.43 | 1.60 +- 2.19 |
+| UE scalar pT in R = 0.8 around the b [GeV] | 4.57 +- 5.20 | 3.95 +- 4.05 | 7.32 +- 5.68 | 5.90 +- 4.42 |
+| UE partons in R = 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.08 / 4.20 |
 
 The geometry (b, f), the remnant count, the hardest secondary interaction and
 the underlying-event density agree at the 5-10 % level; the number of
 interactions is 20 % low, mostly the sequential (not interleaved) showering of
 the systems described above, partly the 10 % stronger soft radiation of the
-chapter-2 shower (6.4 partons per secondary system against PYTHIA's 5.4). The
+chapter-2 shower (6.4 partons per secondary system against PYTHIA's 5.4), and
+two points of it the normalisation of f described above. The
 extra pT inside the b cones follows the density. The cone mass is not compared:
 the standalone sample keeps the seed-1 shower (family mass 13.5 GeV), PYTHIA
 reshowers (8.1 GeV on average). Colour reconnection changes no momentum at

@@ -48,15 +48,16 @@ What is implemented (the physics of chapter 7, following CMSSW's GenJet and JetF
         d_iB = the same with kT_B(y_i) = sum_j kT_j [Theta(y_j - y_i) + Theta(y_i - y_j) e^(y_j - y_i)]
   (and d_iBbar with the mirror sum), alpha = 2 by default; the jets are different jets, kT-like.
 * Interleaved flavour neutralisation (IFN; Caola, Grabarczyk, Hutt, Salam, Scyboz, Thaler 2023): the
-  anti-kT clustering unchanged, and before every recombination i + j in which i (or j) carries flavour,
-  the flavour of i is neutralised against the pseudojets k whose neutralisation distance
+  anti-kT clustering unchanged, and before every recombination i + j in which i, the softer of the two,
+  carries flavour, the flavour of i is neutralised against the pseudojets k whose neutralisation distance
         u_ik = max(pT_i, pT_k)^alpha min(pT_i, pT_k)^(2-alpha) Omega_ik^2,
         Omega_ik^2 = 2 [ (cosh(omega dy) - 1) / omega^2 - (cos dphi - 1) ]
   is smaller than u_ij, closest first, each candidate first neutralised against its own closer partners
-  (the recursion of the paper); alpha = 2, omega = 1 for anti-kT. The jets are the anti-kT jets; only
-  the labels change. The candidates k are all pseudojets alive at that step, those already declared jets
-  included (an assumption of this port: the FastJet contrib IFNPlugin is the reference implementation
-  and could not be run here).
+  (the recursion of the paper, with its exclusion set: i and j, then every candidate on the way down);
+  alpha = 2, omega = 3 - alpha = 1. The jets are the anti-kT jets; only the labels change. The candidates
+  k are all flavoured pseudojets of the event, those already declared jets included: that is the paper's
+  rule (its Section 3). The FastJet contrib IFNPlugin is the reference implementation and could not be
+  run here, so the port is checked against the paper's text, not against the code.
 
 What is left out, on purpose: the CMSSW ghost "leptons" collection is built but not used for a label;
 the sign conventions of partonFlavour for a jet with a b and a bbar parton (CMSSW keeps the harder
@@ -76,6 +77,7 @@ Examples
   python3 standalone_genjets.py -v                    # learning mode
   python3 standalone_genjets.py --algorithm kt        # the kT jets instead of anti-kT (also ca)
   python3 standalone_genjets.py --ptmin 10            # a higher jet threshold
+                                                      # (neither writes the book's record: add -o to keep the jets)
   python3 standalone_genjets.py --soft-pair 1.0       # add a soft g -> b bbar pair between two light jets
   python3 standalone_genjets.py --repeat 400 --quiet --history standalone_genjet_stats.json
                                                       # decay the chapter-5 hadrons again and again, cluster each time
@@ -338,12 +340,19 @@ def last_in_chain(ev: Event, rows, flavour: int):
     return out
 
 
+def is_ghost_parton(pid: int) -> bool:
+    """A parton for the flavour ghosts: u, d, s, c, b or a gluon, as CMSSW's CandMCTagUtils::isParton.
+    The diquarks of the beam remnants, which is_parton of the decay script accepts, are not ghosted:
+    a forward jet would otherwise get a partonFlavour such as 2101."""
+    return abs(pid) in (1, 2, 3, 4, 5, 21)
+
+
 def ghost_rows(ev: Event) -> dict:
     """The CMSSW selectedHadronsAndPartons collections, as rows of the record."""
     b_had = last_in_chain(ev, [i for i, q in enumerate(ev.p) if is_hadron(q.id) and heavy_content(q.id) == 5], 5)
     c_had = last_in_chain(ev, [i for i, q in enumerate(ev.p) if is_hadron(q.id) and heavy_content(q.id) == 4], 4)
-    partons = [i for i, q in enumerate(ev.p) if abs(q.status) in PARTON_STATUS and is_parton(q.id)]
-    physics = [i for i, q in enumerate(ev.p) if abs(q.status) == 23 and is_parton(q.id)]
+    partons = [i for i, q in enumerate(ev.p) if abs(q.status) in PARTON_STATUS and is_ghost_parton(q.id)]
+    physics = [i for i, q in enumerate(ev.p) if abs(q.status) == 23 and is_ghost_parton(q.id)]
     heavy = set()
     for r in b_had + c_had:
         heavy.update(dec.descendants(ev, r))
@@ -435,7 +444,7 @@ class JetCollection:
         out["parton_flavour"] = hardest_rule(g["parton"])
         out["physics_flavour"] = hardest_rule(g["physics"])
         # the legacy dR matching: the partons of the final partonic state within DR_LEGACY of the axis
-        near = [r for r, q in enumerate(ev.p) if abs(q.status) in PARTON_STATUS and is_parton(q.id)
+        near = [r for r, q in enumerate(ev.p) if abs(q.status) in PARTON_STATUS and is_ghost_parton(q.id)
                 and dr2(rapidity(q.p), phi(q.p), info["y"], info["phi"]) < DR_LEGACY ** 2]
         out["legacy_flavour"] = hardest_rule(near)
         # the net flavour of the b and c hadrons in the jet, as the record has them (after the oscillations)
@@ -535,13 +544,14 @@ class IFN:
                 alive.discard(i)
                 declared.add(i)
                 continue
-            fi, fj = self.flav.get(i, {}), self.flav.get(j, {})
-            if fi or fj:
+            # the paper's step I1-I2: the softer of the pair is "i"; a flavourless i triggers no search
+            # (i + j simply takes the flavour of j), a flavoured i looks for partners closer than u_ij
+            # among all flavoured pseudojets, the jets declared earlier included, except i and j themselves
+            lo, hi = (i, j) if cl.pt2[i] <= cl.pt2[j] else (j, i)
+            if self.flav.get(lo):
                 pool = sorted(alive | declared)
-                for a, b in ((i, j), (j, i)):
-                    if self.flav.get(a):
-                        u_ab = float(self.u(a, np.array([b]))[0])
-                        self.neutralise(a, u_ab, pool, step, depth=0)
+                u_ij = float(self.u(lo, np.array([hi]))[0])
+                self.neutralise(lo, u_ij, pool, step, depth=0, excluded=frozenset((lo, hi)))
             alive.discard(i)
             alive.discard(j)
             alive.add(k)
@@ -558,10 +568,12 @@ class IFN:
         hi, lo = np.maximum(pti, ptk), np.minimum(pti, ptk)
         return hi ** self.alpha * lo ** (2 - self.alpha) * omega2(self.cl.y[i], self.cl.phi[i], self.cl.y[idx], self.cl.phi[idx], self.omega)
 
-    def neutralise(self, i, threshold, others, step, depth):
+    def neutralise(self, i, threshold, others, step, depth, excluded=frozenset()):
+        """The search N(i, u_max, C, E) of the paper: `others` is the candidate list C, `excluded` the set E
+        ({i, j} at the first call, one more candidate at every level of the recursion)."""
         if not self.flav.get(i) or depth > 50:
             return
-        idx = np.array([k for k in others if k != i and self.flav.get(k)], dtype=int)
+        idx = np.array([k for k in others if k != i and k not in excluded and self.flav.get(k)], dtype=int)
         if idx.size == 0:
             return
         u = self.u(i, idx)
@@ -577,7 +589,7 @@ class IFN:
                     self.log(2, f"      {'  ' * depth}IFN step {step}: candidate {self.label(k)} for {self.label(i)} (u = {uik:.4g} < {threshold:.4g}) cannot cancel {flavour_text(self.flav[i])}")
                 continue
             # k's own closer partners come first (the recursion of the paper)
-            self.neutralise(k, uik, others, step, depth + 1)
+            self.neutralise(k, uik, others, step, depth + 1, excluded | {k})
             if can_cancel(self.flav[i], self.flav.get(k, {})):
                 done = cancel(self.flav[i], self.flav[k])
                 self.events.append((step, i, k, uik, threshold, done))
@@ -763,8 +775,9 @@ def stage_summary(st: Stage) -> dict:
             pb = np.array([b["e"], b["pt"] * math.cos(b["phi"]), b["pt"] * math.sin(b["phi"]), b["pt"] * math.sinh(b["eta"])])
             P = pa + pb
             s["collections"][key]["bb"] = dict(pt=math.hypot(px, py), px=px, py=py, scalar=a["pt"] + b["pt"], dphi=dphi(a["phi"], b["phi"]), m=math.sqrt(max(mass2(P), 0.0)))
-    s["stable_jets"] = [{k: v for k, v in j.items() if k != "const"} | dict(n=len(j["const"])) for j in st.stable_jets[:12]]
-    s["fkt_jets"] = [{k: v for k, v in j.items() if k != "const"} | dict(n=len(j["const"])) for j in st.fkt_jets[:12]]
+    # the twelve leading jets, and every softer one that holds a heavy hadron (a soft charm jet must not drop out of the summary)
+    s["stable_jets"] = [{k: v for k, v in j.items() if k != "const"} | dict(n=len(j["const"])) for n, j in enumerate(st.stable_jets) if n < 12 or j["flavoured"]]
+    s["fkt_jets"] = [{k: v for k, v in j.items() if k != "const"} | dict(n=len(j["const"])) for n, j in enumerate(st.fkt_jets) if n < 12 or j["flavoured"]]
     s["ifn"] = [dict(step=e[0], i=st.labels[e[1]] if e[1] < len(st.labels) else f"pseudojet {e[1]}", k=st.labels[e[2]] if e[2] < len(st.labels) else f"pseudojet {e[2]}",
                      u=e[3], threshold=e[4], cancelled=e[5]) for e in st.ifn.events]
     return s
@@ -831,7 +844,7 @@ def print_summary(st: Stage, s: dict):
     if s["fkt_jets"]:
         print("flavour-kT jets (pT > 10 GeV or flavoured):")
         for j in s["fkt_jets"]:
-            if j["pt"] > 10 or j["flavour"]:
+            if j["pt"] > 10 or j["flavour"] or j["flavoured"]:
                 print(f"  pT = {j['pt']:.2f}, eta = {j['eta']:.2f}, phi = {j['phi']:.2f}, n = {j['n']}: flavour {flavour_text(j['flavour'])}" + (f"  ({' '.join(j['flavoured'])})" if j["flavoured"] else ""))
 
 
@@ -1055,7 +1068,15 @@ def main():
         for j in st.fkt_jets:
             if any(lab.startswith("soft") for lab in j["flavoured"]):
                 print(f"  flavour-kT jet pT = {j['pt']:.2f}: flavour {flavour_text(j['flavour'])} ({' '.join(j['flavoured'])})")
-    write_record = (args.soft_pair is None and args.repeat == 0) or args.output != HERE.parent / "event_GenJet.lhe"
+    # The default output is the record of the book, which chapter 8 reads: it is written only by the
+    # standard configuration (anti-kT, R = 0.4, 3 GeV). An exercise with another algorithm, radius or
+    # threshold needs its own -o, so that it cannot silently replace the record.
+    default_output = args.output == HERE.parent / "event_GenJet.lhe"
+    standard = args.algorithm == "antikt" and args.radius is None and args.ptmin == JET_PT_MIN
+    write_record = (args.soft_pair is None and args.repeat == 0 and standard) or not default_output
+    if default_output and not standard and args.soft_pair is None and args.repeat == 0:
+        print(f"not writing {args.output}: it is the record of the book (anti-kT, R = 0.4, ptmin {JET_PT_MIN:g} GeV); "
+              "give -o to keep the jets of this run")
     if write_record:
         title = "Standalone Event Listing  (generator-level jets: hard process + showers + MPI + beam remnants + colour reconnection + hadronisation + decays, clustered)"
         args.output.parent.mkdir(parents=True, exist_ok=True)

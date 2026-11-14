@@ -33,7 +33,7 @@ dresses it with an interleaved initial- and final-state shower written from
 scratch, following the construction of PYTHIA 8's `SimpleTimeShower` and
 `SimpleSpaceShower`: about a thousand lines of Python needing NumPy and
 SciPy, no LHAPDF, no PYTHIA. The PDF grid (member 0 of NNPDF3.1 on LHAPDF's
-own knots, all flavours, x >= 1e-3, Q up to 140 GeV) is embedded between the
+own knots, all flavours, x >= 1e-3, Q up to 180 GeV) is embedded between the
 markers `BEGIN/END GENERATED TABLES`, produced by `dump_shower_tables.py` in
 an environment that has LHAPDF (`../../ME/Standalone/.venv/bin/python
 dump_shower_tables.py`).
@@ -94,7 +94,7 @@ times with seeds 1..N and writes the per-event quantities of section 5 to
 | `-i`, `-o` | input record, output record | `../../ME/event_ME.lhe`, `../event_PS.lhe` |
 | `--seed` | the random seed | 1 |
 | `--alphas`, `--order` | alpha_s(m_Z) of the shower and its running order | 0.118, 2 (CP5) |
-| `--ptmin-fsr`, `--ptmin-isr` | `TimeShower:pTmin`, `SpaceShower:pTmin` [GeV]; raised to 1.6 and 1.1 Lambda_3 as PYTHIA does | 0.5, 0.2 |
+| `--ptmin-fsr`, `--ptmin-isr` | `TimeShower:pTmin`, `SpaceShower:pTmin` [GeV]; raised to 1.6 Lambda_3 = 0.611 as PYTHIA does, and to 1.1 Lambda_3 = 0.420 by the script alone (PYTHIA keeps 0.2 for ISR; the script misses the 1.6% of ISR emissions below 0.42 GeV) | 0.5, 0.2 |
 | `--pt0` | `SpaceShower:pT0Ref` [GeV] | 2.0 |
 | `--ptmax` | the starting scale [GeV] | sqrt(pTHat^2 + (m3^2 + m4^2)/2) = 113.32 |
 | `--radius` | the family cone | 0.4 |
@@ -268,7 +268,7 @@ log ends with the 38 branchings in pT order:
 ```text
     1 ISR q<-g      side A(+z)  g    -> ubar + u     pT =   53.877  z = 0.779  x -> 2.7914e-03
     2 ISR q<-q      side B(-z)  u    -> u    + g     pT =   51.361  z = 0.850  x -> 4.5920e-01
-    3 ISR g<-g      side A(+z)  g    -> g    + g     pT =   42.157  z = 0.206  x -> 1.3565e-02
+    3 ISR g<-g      side A(+z)  g    -> g    + g     pT =   42.157  z = 0.206  x -> 1.3560e-02
     4 FSR q->qg     bbar  against g          pT =   34.218  z = 0.594  m_virt =   69.84
     5 FSR q->qg     b     against g          pT =   32.070  z = 0.601  m_virt =   65.67
    ...
@@ -502,7 +502,7 @@ where it matters; the error of a mean is 45 times smaller); the third column
 is the one shower with seed 1 that wrote `event_PS.lhe`; the last is the
 single event of the CMSSW job of this chapter (the two showers on, multiparton
 interactions and hadronisation off; its shower partons are counted without the
-four beam remnants). Commands: `validate_shower_with_pythia.py -n 2000`
+four beam remnants, its pT values are those of the final copies, status 1). Commands: `validate_shower_with_pythia.py -n 2000`
 (column 1), `standalone_parton_showering.py --repeat 2000 --quiet --history s.json`
 (column 2), `standalone_parton_showering.py` (column 3), the log, the ledger and the
 FWLite dump of the JitJetSW job `test/02_PS/` (column 4, section 4.2).
@@ -512,26 +512,30 @@ FWLite dump of the JitJetSW job `test/02_PS/` (column 4, section 4.2).
 | ISR branchings | 4.93 +- 2.9 | 4.88 +- 2.9 | 5 | 0 |
 | FSR branchings | 19.1 +- 11 | 20.9 +- 12 | 33 | 5 |
 | final partons (of which gluons) | 26.0 (20.9) | 27.7 (22.0) | 40 (27) | 7 (3) |
-| partons with pT > 20 / 5 / 1 GeV | 2.8 / 7.1 / 18.6 | 2.8 / 7.3 / 19.5 | 8 / 18 / 31 | 3 / 6 / 7 |
-| x after ISR, +z / -z parton | 0.042 / 0.446 | 0.042 / 0.446 | 0.017 / 0.470 | 0.002 / 0.391 |
-| b: pT after the shower [GeV] | 94.6 +- 30 | 93.9 +- 29 | 78.1 | 46.9 |
-| b family: pT / n / m [GeV] | 107.8 / 2.5 / 8.1 | 108.4 / 2.7 / 8.2 | 100.5 / 3 / 13.5 | 113.6 / 6 / 13.8 |
-| bbar: pT after the shower [GeV] | 92.2 | 90.1 | 73.2 | 113.2 |
-| bbar family: pT / n / m [GeV] | 104.8 / 2.4 / 8.0 | 103.4 / 2.7 / 8.0 | 92.1 / 3 / 7.0 | 114.0 / 1 / 4.8 |
+| partons with pT > 20 / 5 / 1 GeV | 2.8 / 7.1 / 18.6 | 2.8 / 7.2 / 19.5 | 8 / 18 / 31 | 3 / 6 / 7 |
+| x after ISR, +z / -z parton | 0.042 / 0.446 | 0.042 / 0.445 | 0.017 / 0.470 | 0.002 / 0.391 |
+| b: pT after the shower [GeV] | 94.6 +- 30 | 93.9 +- 28 | 78.1 | 47.0 |
+| b family: pT / n / m [GeV] | 107.8 / 2.5 / 8.1 | 108.4 / 2.7 / 8.1 | 100.5 / 3 / 13.5 | 113.6 / 6 / 13.8 |
+| bbar: pT after the shower [GeV] | 92.2 | 90.1 | 73.2 | 114.0 |
+| bbar family: pT / n / m [GeV] | 104.8 / 2.4 / 8.0 | 103.4 / 2.6 / 8.0 | 92.1 / 3 / 7.0 | 114.0 / 1 / 4.8 |
 
 ### 5.2 Final-state radiation alone (`--no-isr` on both sides)
 
 Averages over 2000 showers with ISR off (`PartonLevel:ISR = off` for
-PYTHIA), isolating the radiation off the two b quarks:
+PYTHIA), isolating the radiation off the two b quarks (PYTHIA column re-run
+on 2026-11-14 with the PDF given after the tune; with `--no-isr` the script
+also drops the PDF-ratio weight of emissions that recoil against a beam
+parton, which PYTHIA keeps: no change of the FSR count within the 3%
+precision of 1000 showers):
 
 | quantity | PYTHIA | standalone |
 |---|---|---|
-| FSR branchings | 6.74 +- 4.65 | 7.66 +- 4.92 |
-| final partons with pT > 20 GeV | 2.48 +- 0.72 | 2.49 +- 0.70 |
-| final partons with pT > 5 GeV | 4.49 +- 2.11 | 4.84 +- 2.19 |
-| final partons with pT > 1 GeV | 7.39 +- 3.76 | 8.14 +- 3.99 |
-| bbar: pT after / family pT / family mass [GeV] | 93.7 / 105.2 / 7.56 | 90.9 / 104.6 / 7.78 |
-| b: pT after / family pT / family mass [GeV] | 93.8 / 105.9 / 7.54 | 91.8 / 105.1 / 7.74 |
+| FSR branchings | 6.69 +- 4.64 | 7.66 +- 4.92 |
+| final partons with pT > 20 GeV | 2.47 +- 0.71 | 2.49 +- 0.70 |
+| final partons with pT > 5 GeV | 4.49 +- 2.09 | 4.84 +- 2.19 |
+| final partons with pT > 1 GeV | 7.35 +- 3.77 | 8.14 +- 3.99 |
+| bbar: pT after / family pT / family mass [GeV] | 93.3 / 105.2 / 7.56 | 90.9 / 104.6 / 7.78 |
+| b: pT after / family pT / family mass [GeV] | 94.1 / 105.7 / 7.43 | 91.8 / 105.1 / 7.74 |
 
 ### 5.3 What the options are worth
 
@@ -539,7 +543,7 @@ PYTHIA), isolating the radiation off the two b quarks:
 |---|---|
 | `--ptmin-fsr 2` on both sides | a 7% excess of standalone FSR branchings remains (2.16 against 2.01): a normalisation of the soft-emission rate in the last octave above the cut-off |
 | `--no-dampen` (standalone) | the FSR multiplicity more than doubles: PYTHIA's soft radiation off partons colour-connected to the beams is governed by `TimeShower:dampenBeamRecoil` |
-| `--rapidity-order` (PYTHIA's default `SpaceShower:rapidityOrder = on`) | PYTHIA makes 3.4 instead of 5.1 ISR branchings and 16.3 instead of 19.5 FSR branchings; the b families change by less than 1% |
+| `--rapidity-order` (PYTHIA's default `SpaceShower:rapidityOrder = on`) | PYTHIA makes 3.2 instead of 4.9 ISR branchings and 16.0 instead of 19.1 FSR branchings; the b families change by 1.4% at most |
 
 ### 5.4 Kinematics of the two b quarks and their families after the shower
 

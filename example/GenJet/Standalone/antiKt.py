@@ -6,8 +6,8 @@ A playground for the "true jet" section of chapter 7: the same clustering as sta
 instead of 749 so that every distance can be read and every decision followed by hand.
 
 The particles are real rows of the record ../../Decay/event_Decay.lhe (the final state of chapter 6):
-    A, B      the pi+ pi- pair of the Bbar0's chain, the hardest particles of the b jet (0.025 apart)
-    C, D      the K- and the pi- of the D0 decay, the first merge of the whole event (0.006 apart)
+    A, B      the pi+ pi- pair of the Bbar0's chain, A the hardest particle of the b jet (0.025 apart)
+    C, D      the K- and the pi- of the D0 decay, the first merge of our jet (0.006 apart)
     E, F, G   three soft particles at the border of the jet: two photons 0.04 apart (F, G) and a pi+
               0.23 from them (E), the last particle anti-kT added to our real jet
     H         the leading particle of the neighbouring gluon jet [4], 1.1 away

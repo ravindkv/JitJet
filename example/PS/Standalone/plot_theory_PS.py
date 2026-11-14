@@ -24,7 +24,7 @@ line against that log.
                            overestimate, and their ratio (the veto weight)
   page  8  competition     every proposal of every round of our event and the winner (parsed from the -v log)
   page  9  dead cone       the mass correction of the b -> b g kernel and the angular density of soft
-                           gluons around a massive quark, with the mother's three emissions
+                           gluons around a massive quark, with the mother's two emissions
   page 10  runaways        the mother's pT copy by copy, her descendants in (Delta R, pT), and the
                            family pT as a function of the cone radius
 

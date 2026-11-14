@@ -335,7 +335,7 @@ def page_rho(st: Setup):
         vals = cells.ravel()
         a1.hist(vals, bins=np.linspace(0, max(vals) * 1.02, 40), color=COL_PU, alpha=0.6, label=f"the {cells.size} grid cells of {dy:.2f} x {dphi:.2f}: $\\Sigma p_T$ / area")
         a1.axvline(np.median(vals), color=COL_EVENT, lw=2, label=f"median = $\\rho$ = {np.median(vals):.1f} GeV per unit area")
-        a1.axvline(vals.mean(), color=COL_CMSSW, lw=1.2, ls="--", label=f"mean {vals.mean():.1f}: pulled up by the jets")
+        a1.axvline(vals.mean(), color=COL_CMSSW, lw=1.2, ls="--", label=f"mean {vals.mean():.1f}: pulled up by the tail")
         if st.jets:
             a1.text(0.98, 0.55, "the jets sit in the tail: the median\nignores them, the mean does not;\n" + f"jet median (kT, |y| < 4.4): {st.s['rho_kt']:.1f}" if st.s.get("rho_kt") else "",
                     transform=a1.transAxes, ha="right", va="top", fontsize=8.5)
@@ -353,7 +353,11 @@ def page_rho(st: Setup):
         a2.plot(xx, np.polyval(k, xx), "-", color=COL_MODEL, lw=2, label=f"fit: {k[0]:.3f} GeV per collision per unit area, offset {k[1]:+.1f}")
         if st.s:
             a2.plot([st.s["n_in_time"]], [st.s["rho_grid"]], "*", color=COL_SIG, ms=14, mec="white", label=f"our crossing: {st.s['n_in_time']} collisions, $\\rho$ = {st.s['rho_grid']:.1f}", zorder=5)
-        a2.text(0.02, 0.97, f"$\\rho$ = {rho.mean():.1f} $\\pm$ {rho.std():.1f} over the draws\n$\\sqrt{{\\mu}}$ = {math.sqrt(st.mu):.0f} collisions of spread give {k[0] * math.sqrt(st.mu):.1f} of it;\nthe rest is the crowd's own fluctuation",
+        alone = ""
+        if all("rho_grid_pileup" in r for r in st.stats):
+            rho_pu = np.array([r["rho_grid_pileup"] for r in st.stats])
+            alone = f"\nthe crowd alone: {rho_pu.mean():.1f}; the signal raises the median by {(rho - rho_pu).mean():.1f}"
+        a2.text(0.02, 0.97, f"$\\rho$ = {rho.mean():.1f} $\\pm$ {rho.std():.1f} over the draws\n$\\sqrt{{\\mu}}$ = {math.sqrt(st.mu):.0f} collisions of spread give {k[0] * math.sqrt(st.mu):.1f} of it;\nthe rest is the crowd's own fluctuation" + alone,
                 transform=a2.transAxes, ha="left", va="top", fontsize=8.5)
     a2.set_xlabel("in-time collisions in the crossing, $n$")
     a2.set_ylabel(r"$\rho$ (grid median)  [GeV per unit area]")
@@ -364,10 +368,14 @@ def page_rho(st: Setup):
         pu = np.array([r["circle"]["b"]["pt_pileup"] for r in st.stats])
         ra = np.array([r["circle"]["b"]["rho_area"] for r in st.stats])
         lim = (min(pu.min(), ra.min()) * 0.9, max(pu.max(), ra.max()) * 1.05)
-        a3.plot(ra, pu, "o", color=COL_PU, ms=3.5, mec="none", alpha=0.7, label=f"the circle of R = 0.4 around our jet, {len(pu)} draws")
+        a3.plot(ra, pu, "o", color=COL_PU, ms=3.5, mec="none", alpha=0.7, label=f"the circle of R = 0.4 in (y, $\\phi$) around our jet, {len(pu)} draws")
         a3.plot(lim, lim, "-", color=TEXT2, lw=1)
         res = pu - ra
-        a3.text(0.02, 0.97, f"crowd inside the circle: {pu.mean():.1f} $\\pm$ {pu.std():.1f} GeV\n$\\rho\\,\\pi R^2$ estimate: {ra.mean():.1f} $\\pm$ {ra.std():.1f}\nresidual {res.mean():+.1f} $\\pm$ {res.std():.1f} GeV:\nthe subtraction removes the mean,\nthe fluctuation stays",
+        alone = ""
+        if all("rho_area_pileup" in r["circle"]["b"] for r in st.stats):
+            rp = np.array([r["circle"]["b"]["rho_area_pileup"] for r in st.stats])
+            alone = f"\n({(pu - rp).mean():+.1f} with the $\\rho$ of the crowd alone:\nthe signal raises the median)"
+        a3.text(0.02, 0.84, f"crowd inside the circle: {pu.mean():.1f} $\\pm$ {pu.std():.1f} GeV\n$\\rho\\,\\pi R^2$ estimate: {ra.mean():.1f} $\\pm$ {ra.std():.1f}\nresidual {res.mean():+.1f} $\\pm$ {res.std():.1f} GeV:\nthe subtraction removes the mean,\nthe fluctuation stays" + alone,
                 transform=a3.transAxes, ha="left", va="top", fontsize=8.5)
         if st.s and st.s.get("jets", {}).get("b"):
             j = st.s["jets"]["b"]

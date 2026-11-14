@@ -21,8 +21,9 @@ What is implemented (the physics of chapter 8)
   the 2024 simulation mixes at mu = 60 (CMSSW's AVE_60_BX_25ns; the production draws the in-time mean
   from the flat profile Run3_Flat55To75_PoissonOOTPU), the default here.
 * The draw of the MixingModule: for every bunch crossing of the window (bx = -12 ... +3 in the Run-3
-  production, 25 ns apart) a Poisson number of collisions with mean mu, each a library event read at a
-  random position of the library (CMSSW's sequential = False; --sequential reads from the first event
+  production, 25 ns apart) a Poisson number of collisions with mean mu, the library read in order from a
+  random position, wrapping at its end, so that no collision is used twice in an event (CMSSW's
+  sequential = False, RootEmbeddedFileSequence::readOneRandom; --sequential reads from the first event
   on, as the exercise of the CMSSW companion does).
 * The beam spot of 2024 (CMSSW's BetafuncEvtVtxGenerator with the SimBeamSpot payload of the 2024
   global tag, the VtxSmeared of the GEN step): every collision, the signal included, gets a position and
@@ -39,8 +40,10 @@ What is implemented (the physics of chapter 8)
   |y| < 5, FastJet's active_area_explicit_ghosts) and every constituent tagged by its collision.
 * The median energy density rho two ways: the grid median of CMSSW's fixedGridRhoFastjetAll (FastJet's grid
   of 0.56 x 0.57 cells in |y| < 5) and the jet median of Cacciari and Salam (kT jets of R = 0.4 with ghosts,
-  |y| < 4.4), and the area subtraction pT - rho A of every jet (the L1FastJet correction of chapter 17
-  in its generator-level form), compared with the truth, the pT of the pileup constituents of the jet.
+  the rapidity range of CMSSW's kT-jet rho), and the area subtraction pT - rho A of every jet (the L1FastJet
+  correction of chapter 17 in its generator-level form), compared with the truth: the pT of the signal
+  constituents of the jet (the residual of the record), and the pT of its pileup constituents against rho A
+  (the residual of the ensemble, scalar sums on both sides).
 * The vertices the tracker will see: the collisions with at least four charged particles of pT > 0.5
   GeV within |eta| < 2.5, and how far from the signal vertex each one is in z and in t.
 * The pileup profile and its reweighting: the flat profile the Run-3 production mixes with
@@ -133,7 +136,7 @@ GHOST_AREA = 0.01                 # FastJet GhostedAreaSpec default; CMSSW Ghost
 GHOST_MAXRAP = 5.0                # CMSSW Ghost_EtaMax = 5.0
 GHOST_PT = 1e-18                  # the ghosts of chapter 7 (FastJet uses 1e-100; any value far below every particle will do)
 GRID_RAP_MAX, GRID_SPACING = 5.0, 0.55    # fixedGridRhoFastjetAll: GridMedianBackgroundEstimator(5.0, 0.55)
-KT_RHO_RAP_MAX = 4.4              # the kt6-style jet median: rapidity range |y| < 4.4 (CMSSW Rho_EtaMax = 4.4)
+KT_RHO_RAP_MAX = 4.4              # the jet median of kT jets: rapidity range |y| < 4.4 (CMSSW Rho_EtaMax = 4.4)
 VISIBLE_NCH, VISIBLE_PT, VISIBLE_ETA = 4, 0.5, 2.5   # a vertex the tracker can reconstruct: >= 4 charged tracks of pT > 0.5 within |eta| < 2.5
 MATCH_DR = 0.2                    # the matching of a mixed jet to the chapter-7 jet
 
@@ -392,10 +395,10 @@ def reweight(mu_true: float, p_target, p_sample, edges) -> float:
 def grid_rho(p4, rap_max=GRID_RAP_MAX, spacing=GRID_SPACING, use_rapidity=True):
     """fixedGridRhoFastjetAll: CMSSW's FixedGridRhoProducerFastjet wraps FastJet's GridMedianBackgroundEstimator(5.0, 0.55),
     the median over the cells of a grid in (y, phi) of the summed pT per unit area: rapidity, phi from 0 to 2 pi, and as
-    many cells of at least the requested spacing as fit (18 x 11 here). use_rapidity=False fills the grid in eta instead
+    many cells as come closest to the requested spacing (18 x 11 here). use_rapidity=False fills the grid in eta instead
     (the older FixedGridRhoProducer, fixedGridRhoAll)."""
-    ny = int(2 * rap_max / spacing)
-    nphi = int(2 * math.pi / spacing)
+    ny = max(1, int(2 * rap_max / spacing + 0.5))          # FastJet's RectangularGrid: the nearest integer, not the floor
+    nphi = max(1, int(2 * math.pi / spacing + 0.5))
     dy, dphi = 2 * rap_max / ny, 2 * math.pi / nphi
     ptv = np.hypot(p4[:, 1], p4[:, 2])
     yv = np.array([rapidity(p) if use_rapidity else eta(p) for p in p4])
@@ -429,7 +432,7 @@ class TiledClustering(gj.Clustering):
     """Chapter 7's sequential recombination with FastJet's tiled search (the N2Tiled strategy).
 
     A pair with Delta R > R is never merged: d_ij = min(pT_i^2p, pT_j^2p) Delta R^2 / R^2 is then larger than the
-    d_iB of the softer of the two, which becomes a jet first. So the nearest neighbour of a pseudojet lies within
+    smaller of the two beam distances (that of the softer for kT, of the harder for anti-kT), and that one becomes a jet first. So the nearest neighbour of a pseudojet lies within
     R of it, and the (y, phi) plane is tiled in cells of side R: a nearest neighbour is searched in the 3 x 3 tiles
     around the pseudojet, and only the pseudojets of those tiles need a new neighbour when it merges. The result is
     the same as the plain search of chapter 7, step by step; the cost is what makes thirty thousand particles and
@@ -576,10 +579,12 @@ class MixedJets:
         self.jets = [dict(j, rank=r) for r, j in enumerate(sorted(self.jets, key=lambda j: -j["pt"]))]
         self.jet_of = {i: j["rank"] for j in self.jets for i in j["const"]}
 
-    def matched(self, eta0, phi0, maxdr=MATCH_DR):
+    def matched(self, y0, phi0, maxdr=MATCH_DR):
+        """The mixed jet nearest to (y0, phi0), in rapidity: the plane the clustering lives in. In pseudorapidity a jet
+        that only gained mass (14.8 -> 45 GeV for ours) would seem to have moved, eta - y growing with m/pT."""
         best = None
         for j in self.jets:
-            d = math.sqrt(gj.dr2(j["eta"], j["phi"], eta0, phi0))
+            d = math.sqrt(gj.dr2(j["y"], j["phi"], y0, phi0))
             if d < maxdr and (best is None or d < best[0]):
                 best = (d, j)
         return best
@@ -650,10 +655,12 @@ class Stage:
         a = self.args
         self.n_bx = {bx: int(self.rng.poisson(self.mu)) for bx in self.bxs}
         n_total = sum(self.n_bx.values())
-        if a.sequential:
-            idx = np.arange(n_total) % len(self.lib)
-        else:
-            idx = self.rng.integers(0, len(self.lib), n_total)
+        # CMSSW's RootEmbeddedFileSequence::readOneRandom opens the file at a random entry and reads on from
+        # there in order, wrapping at the end: no collision is used twice until the whole file has been read.
+        # Drawing every position at random instead would stack the same collision twice in most crossings
+        # of a library of this size.
+        self.lib_start = 0 if a.sequential else int(self.rng.integers(0, len(self.lib)))
+        idx = (self.lib_start + np.arange(n_total)) % len(self.lib)
         self.collisions = []            # dicts: k (1..), bx, event (library index), lib event dict
         k = 0
         pos = 0
@@ -666,7 +673,7 @@ class Stage:
         self.log(1, banner("2  the draw of the MixingModule: Poisson(mu) collisions per bunch crossing"))
         self.log(1, "  " + ", ".join(f"bx {bx:+d}: {n}" for bx, n in self.n_bx.items()) + f"; {n_total} collisions for an expectation of {len(self.bxs) * self.mu:g} "
                     f"(Poisson: {self.mu:g} +- {math.sqrt(self.mu):.1f} per crossing)")
-        self.log(1, f"  library: {len(self.lib)} events, read at {'the first ' + str(n_total) + ' positions in order' if a.sequential else 'random positions, with replacement'}; "
+        self.log(1, f"  library: {len(self.lib)} events, read in order from {'its first event' if a.sequential else 'a random position (event ' + str(self.lib_start + 1) + '), wrapping at the end'}; "
                     f"{len(set(c['lib'] for c in self.collisions))} distinct events used")
         kinds = {}
         for c in self.collisions:
@@ -717,7 +724,7 @@ class Stage:
                     f"z from {vz.min():.1f} to {vz.max():.1f} cm")
         s = self.signal_vertex
         self.log(1, f"  the signal vertex: x = {s[0]:.1f} um, y = {s[1]:.1f} um, z = {s[2]:.2f} cm, t = {s[3] * 1e3:.0f} ps; the out-of-time crossings are shifted by "
-                    f"{BUNCH_SPACING:g} ns x bx (the CMSSW signal event of the companion sits at z = 3.11 cm, t = -140 ps)")
+                    f"{BUNCH_SPACING:g} ns x bx (the CMSSW signal event of the companion sits at z = 3.11 cm, t = +121 ps)")
 
     # -- 4 the stacking -------------------------------------------------------------------------------
     def stack(self):
@@ -766,7 +773,7 @@ class Stage:
         self.ref = {key: self.genjets["ak4"][k] for key, k in (("b", 0), ("bbar", 1))}
         self.ours = {}
         for key, ref in self.ref.items():
-            best = m.matched(ref["eta"], ref["phi"])
+            best = m.matched(ref["y"], ref["phi"])
             self.ours[key] = best
             if best is None:
                 self.log(1, f"  the {key} jet: no mixed jet within {MATCH_DR} of the chapter-7 jet [{ref['rank']}]")
@@ -787,7 +794,7 @@ class Stage:
                     p = self.input_p4[i]
                     tg = int(self.input_tags[i])
                     lab = name(self.ev.p[int(self.input_rows[i])].id) + f"[{int(self.input_rows[i])}]" if tg == 0 else name(int(self.in_time[tg - self.in_time[0]['k']]['ev']['ids'][int(self.input_rows[i])]))
-                    self.log(2, f"      {'signal' if tg == 0 else 'k=' + str(tg):>8s}  {lab:>14s}  {pt(p):8.3f}  {math.sqrt(gj.dr2(eta(p), phi(p), j['eta'], j['phi'])):.3f}")
+                    self.log(2, f"      {'signal' if tg == 0 else 'k=' + str(tg):>8s}  {lab:>14s}  {pt(p):8.3f}  {math.sqrt(gj.dr2(rapidity(p), phi(p), j['y'], j['phi'])):.3f}")
 
     def ref_rows(self, coll, rank):
         return [r for r, k in self.genjets_of[coll].items() if k == rank]
@@ -800,8 +807,10 @@ class Stage:
         ny, nphi = self.grid_cells.shape
         self.log(1, f"  grid median (fixedGridRhoFastjetAll): {ny} x {nphi} cells of {dy:.3f} x {dphi:.3f} = {dy * dphi:.3f} in |y| < {GRID_RAP_MAX:g}, phi from 0; "
                     f"rho = {self.rho_grid:.2f} GeV per unit area (cells from {self.grid_cells.min():.1f} to {self.grid_cells.max():.1f}, mean {self.grid_cells.mean():.2f})")
-        self.rho_grid_signal = grid_rho(self.input_p4[self.input_tags == 0])[0]
-        self.log(1, f"  the same grid on the signal alone: rho = {self.rho_grid_signal:.2f} (the underlying event of chapter 4, and nothing in most cells)")
+        self.rho_grid_signal, cells_sig, _ = grid_rho(self.input_p4[self.input_tags == 0])
+        self.rho_grid_pileup = grid_rho(self.input_p4[self.input_tags != 0])[0]
+        self.log(1, f"  the same grid on the signal alone: rho = {self.rho_grid_signal:.2f} (median; mean {cells_sig.mean():.2f}, {int((cells_sig == 0).sum())} of {cells_sig.size} cells empty); "
+                    f"on the crowd alone: rho = {self.rho_grid_pileup:.2f}, so the signal raises the median by {self.rho_grid - self.rho_grid_pileup:.2f}")
         if a.no_area:
             self.rho_kt, self.kt = None, None
             return
@@ -812,18 +821,22 @@ class Stage:
         self.log(1, f"  per collision: {self.rho_grid / max(1, len(self.in_time)):.3f} (grid) and {self.rho_kt / max(1, len(self.in_time)):.3f} (jets) GeV per unit area")
 
     def quick_density(self):
-        """The ensemble: the grid rho and the pileup inside the circle of the photograph, no clustering."""
+        """The ensemble: the grid rho and the pileup inside the circle of the photograph, no clustering. The circle is
+        drawn in (y, phi) around the rapidity of the chapter-7 jet, the plane of the clustering, of rho and of pi R^2."""
         self.rho_grid = grid_rho(self.input_p4)[0]
+        self.rho_grid_pileup = grid_rho(self.input_p4[self.input_tags != 0])[0]
         self.rho_kt, self.mixed, self.kt = None, None, None
         self.ref = {key: self.genjets["ak4"][k] for key, k in (("b", 0), ("bbar", 1))}
         self.circle = {}
         for key, ref in self.ref.items():
-            d2 = np.array([gj.dr2(eta(p), phi(p), ref["eta"], ref["phi"]) for p in self.input_p4])
+            d2 = np.array([gj.dr2(rapidity(p), phi(p), ref["y"], ref["phi"]) for p in self.input_p4])
             inside = d2 < self.args.radius ** 2
             ptv = np.hypot(self.input_p4[:, 1], self.input_p4[:, 2])
             pu = inside & (self.input_tags != 0)
             self.circle[key] = dict(pt_pileup=float(ptv[pu].sum()), n_pileup=int(pu.sum()), pt_signal=float(ptv[inside & (self.input_tags == 0)].sum()),
-                                    rho_area=self.rho_grid * math.pi * self.args.radius ** 2)
+                                    n_collisions=len(set(int(t) for t in self.input_tags[pu])),
+                                    rho_area=self.rho_grid * math.pi * self.args.radius ** 2,
+                                    rho_area_pileup=self.rho_grid_pileup * math.pi * self.args.radius ** 2)
 
     # -- 7 the subtraction ------------------------------------------------------------------------------------
     def subtract(self):
@@ -833,7 +846,8 @@ class Stage:
         for j in self.mixed.jets:
             j["pt_sub"] = j["pt"] - rho * j["area"]
             j["rho_area"] = rho * j["area"]
-            j["residual"] = j["pt_sub"] - j["pt_signal"]
+            j["residual"] = j["pt_sub"] - j["pt_signal"]            # the record's: the jet's (vector) pT - rho A against the scalar sum of the signal inside
+            j["residual_pileup"] = j["pt_pileup"] - j["rho_area"]   # the ensemble's: the scalar sum of the pileup inside against rho A
         self.log(1, f"  rho = {rho:.2f} (grid); for every jet pT_sub = pT - rho A, and the truth is the signal pT inside the jet")
         self.log(1, f"  {'jet':>4s} {'pT':>8s} {'A':>6s} {'rho A':>7s} {'pT_sub':>8s} {'signal':>8s} {'pileup':>8s} {'resid':>7s}  {'n':>4s} {'n_pu':>5s}  eta    phi")
         for j in self.mixed.jets[:12]:
@@ -849,7 +863,9 @@ class Stage:
             ref = self.ref["b"]
             self.log(1, f"  our jet: {ref['pt']:.2f} (photograph) -> {j['pt']:.2f} with the crowd; rho A = {rho:.2f} x {j['area']:.3f} = {j['rho_area']:.2f}; "
                         f"pT_sub = {j['pt_sub']:.2f}; the crowd put {j['pt_pileup']:.2f} inside, the subtraction took {j['rho_area']:.2f} out: residual {j['residual']:+.2f} GeV "
-                        f"on the signal's {j['pt_signal']:.2f}")
+                        f"on the signal's {j['pt_signal']:.2f} (pileup inside - rho A = {j['residual_pileup']:+.2f}, the definition of the ensemble: scalar sums on both sides; "
+                        f"with the rho of the crowd alone, {self.rho_grid_pileup:.2f}, the two read {j['pt'] - self.rho_grid_pileup * j['area'] - j['pt_signal']:+.2f} and "
+                        f"{j['pt_pileup'] - self.rho_grid_pileup * j['area']:+.2f})")
 
     # -- 8 the visible vertices ---------------------------------------------------------------------------
     def visible_vertices(self):
@@ -916,6 +932,7 @@ def stage_summary(st: Stage) -> dict:
     s = dict(scenario=st.args.scenario, mu=st.mu, mu_formula=st.mu_formula, n_bunch=st.n_bunch, window=st.window, bunches=list(st.bunches), n_bx=dict(st.n_bx),
              n_total=len(st.collisions), n_in_time=len(st.in_time),
              n_pu_particles=st.n_pu_particles, n_pu_in=st.n_pu_in, n_signal_in=st.n_signal_in, rho_grid=st.rho_grid, rho_kt=st.rho_kt,
+             rho_grid_pileup=st.rho_grid_pileup,
              signal_vertex=[float(v) for v in st.signal_vertex], vertex_rms=st.vertex_rms, region_model=st.region.name, region=st.region_moments,
              n_visible=st.n_visible, nearest=st.nearest, kinds={}, library=len(st.lib),
              profile=dict(mu_fill_mean=st.mu_fill_mean, mu_year_mean=st.mu_year_mean, mu_hllhc_mean=st.mu_hl_mean, w_fixed=st.w_fixed, w_flat=st.w_flat,
@@ -936,7 +953,7 @@ def stage_summary(st: Stage) -> dict:
             d, j = best
             s["jets"][key] = dict(rank=j["rank"], dr=d, pt=j["pt"], area=j["area"], rho_area=j["rho_area"], pt_sub=j["pt_sub"], pt_signal=j["pt_signal"],
                                   pt_pileup=j["pt_pileup"], n=j["n"], n_signal=j["n_signal"], n_pileup=j["n_pileup"], n_collisions=len(j["collisions"]),
-                                  residual=j["residual"], m=j["m"], eta=j["eta"], phi=j["phi"], ref_pt=ref["pt"], ref_n=ref["n"])
+                                  residual=j["residual"], residual_pileup=j["residual_pileup"], m=j["m"], y=j["y"], eta=j["eta"], phi=j["phi"], ref_pt=ref["pt"], ref_n=ref["n"])
     else:
         s["circle"] = st.circle
     return s
@@ -956,7 +973,7 @@ def pileup_tables(st: Stage) -> str:
     s = st.signal_vertex
     out.append(f"  signal vertex: x = {s[0]:.2f} um, y = {s[1]:.2f} um, z = {s[2]:.3f} cm, t = {s[3]:.4f} ns")
     out.append(f"  in-time final particles: {st.n_pu_particles} ({st.n_pu_in} within |eta| < {ETA_MAX:g}); signal {len(st.signal_rows)} ({st.n_signal_in})")
-    out.append(f"  rho: grid median {st.rho_grid:.3f} GeV per unit area" + (f", jet median {st.rho_kt:.3f}" if st.rho_kt is not None else "") + f"; signal alone {st.rho_grid_signal:.3f}")
+    out.append(f"  rho: grid median {st.rho_grid:.3f} GeV per unit area" + (f", jet median {st.rho_kt:.3f}" if st.rho_kt is not None else "") + f"; signal alone {st.rho_grid_signal:.3f}, crowd alone {st.rho_grid_pileup:.3f}")
     out.append(f"  visible in-time vertices (>= {VISIBLE_NCH} charged, pT > {VISIBLE_PT:g}, |eta| < {VISIBLE_ETA:g}): {st.n_visible} of {len(st.in_time)}")
     out.append(f" --------  End {t0}  " + "-" * max(10, 133 - len(t0) - 18))
     t1 = "Standalone Pileup Vertex Listing  (k = 0 the signal; bx, library event, process, final particles, central charged, visible; vertex x y [um], z [cm], t [ns] with the 25 ns x bx offset)"
@@ -983,14 +1000,14 @@ def pileup_tables(st: Stage) -> str:
     out.append(f" --------  End {t2}  " + "-" * max(10, 133 - len(t2) - 18))
     if st.mixed is not None:
         t3 = (f"Standalone Pileup Jet Listing  (anti-kT R = {a.radius:g} on signal + in-time pileup within |eta| < {ETA_MAX:g}, pT > {a.ptmin:g}; A = active area (ghosts); "
-              f"rho = {st.rho_grid:.3f} (grid); pTsub = pT - rho A; sig/pu = pT of the signal / pileup constituents; genjet = matched chapter-7 ak4 jet)")
+              f"rho = {st.rho_grid:.3f} (grid); pTsub = pT - rho A; sig/pu = pT of the signal / pileup constituents; genjet = matched chapter-7 ak4 jet, dR in (y, phi))")
         out += ["", f" --------  {t3}  " + "-" * max(10, 133 - len(t3) - 14), " ",
                 f"{'mixjet':>8s}{'pT':>10s}{'A':>8s}{'rhoA':>9s}{'pTsub':>10s}{'sig':>10s}{'pu':>10s}{'y':>8s}{'eta':>8s}{'phi':>8s}{'m':>8s}{'n':>5s}{'nsig':>6s}{'npu':>5s}{'ncol':>5s}{'genjet':>8s}{'dR':>7s}"]
         gen = st.genjets["ak4"]
         for j in st.mixed.jets:
             best = None
             for g in gen:
-                d = math.sqrt(gj.dr2(g["eta"], g["phi"], j["eta"], j["phi"]))
+                d = math.sqrt(gj.dr2(g["y"], g["phi"], j["y"], j["phi"]))        # in rapidity, as Stage.cluster matches
                 if d < MATCH_DR and (best is None or d < best[0]):
                     best = (d, g)
             out.append(f"{'mix':>4s} {j['rank']:3d}{j['pt']:10.3f}{j['area']:8.3f}{j['rho_area']:9.3f}{j['pt_sub']:10.3f}{j['pt_signal']:10.3f}{j['pt_pileup']:10.3f}{j['y']:8.3f}{j['eta']:8.3f}"
@@ -1076,7 +1093,7 @@ def one_repeat(seed: int) -> dict:
     args.seed = seed
     ev, st = run(args, verbose=0, full=False, lib=_REPEAT.lib_obj)
     s = stage_summary(st)
-    return dict(seed=seed, n_in_time=s["n_in_time"], rho_grid=s["rho_grid"], n_visible=s["n_visible"], nearest=s["nearest"], kinds=s["kinds"],
+    return dict(seed=seed, n_in_time=s["n_in_time"], rho_grid=s["rho_grid"], rho_grid_pileup=s["rho_grid_pileup"], n_visible=s["n_visible"], nearest=s["nearest"], kinds=s["kinds"],
                 circle=s["circle"], n_pu_in=s["n_pu_in"], signal_vertex=s["signal_vertex"])
 
 
@@ -1118,13 +1135,22 @@ def main():
             results = [one_repeat(s) for s in seeds]
         hist = args.history or HERE / "standalone_pileup_stats.json"
         hist.write_text(json.dumps(dict(args={k: str(v) for k, v in vars(args).items() if k != "lib_obj"}, results=results), indent=1))
-        pu = np.array([r["circle"]["b"]["pt_pileup"] for r in results])
-        ra = np.array([r["circle"]["b"]["rho_area"] for r in results])
         rho = np.array([r["rho_grid"] for r in results])
         n = np.array([r["n_in_time"] for r in results])
+        rho_pu = np.array([r["rho_grid_pileup"] for r in results])
         print(f"{len(results)} draws in {time.time() - t0:.0f} s: in-time collisions {n.mean():.1f} +- {n.std():.1f}; rho {rho.mean():.2f} +- {rho.std():.2f} "
-              f"({rho.mean() / n.mean():.3f} per collision); pileup inside the circle of our jet {pu.mean():.2f} +- {pu.std():.2f}; rho A {ra.mean():.2f} +- {ra.std():.2f}; "
-              f"residual {(pu - ra).mean():+.2f} +- {(pu - ra).std():.2f} GeV; wrote {hist}")
+              f"({rho.mean() / n.mean():.3f} per collision); rho of the crowd alone {rho_pu.mean():.2f} +- {rho_pu.std():.2f}")
+        for key in ("b", "bbar"):
+            pu = np.array([r["circle"][key]["pt_pileup"] for r in results])
+            ra = np.array([r["circle"][key]["rho_area"] for r in results])
+            rp = np.array([r["circle"][key]["rho_area_pileup"] for r in results])
+            npu = np.array([r["circle"][key]["n_pileup"] for r in results])
+            nco = np.array([r["circle"][key]["n_collisions"] for r in results])
+            sig = np.array([r["circle"][key]["pt_signal"] for r in results])
+            print(f"  the circle of the {key} jet (R = {args.radius:g} in y-phi, signal inside {sig.mean():.2f}): pileup {pu.mean():.2f} +- {pu.std():.2f} GeV in "
+                  f"{npu.mean():.1f} particles from {nco.mean():.1f} collisions; rho pi R^2 {ra.mean():.2f} +- {ra.std():.2f}; "
+                  f"residual {(pu - ra).mean():+.2f} +- {(pu - ra).std():.2f} GeV ({(pu - rp).mean():+.2f} +- {(pu - rp).std():.2f} with the rho of the crowd alone)")
+        print(f"wrote {hist}")
         return
     ev, st = run(args, verbose=args.verbose, log=logf)
     s = stage_summary(st)

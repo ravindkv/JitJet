@@ -38,13 +38,15 @@ What is implemented (the physics of chapter 2)
 * alpha_s: PYTHIA's AlphaStrong (second order, alpha_s(MZ) = 0.118, flavour
   thresholds at mc = 1.5, mb = 4.8, mt = 171 GeV), reproduced analytically;
   the veto algorithm samples with the first-order form and corrects.
-* Starting scale pTmax^2 = pTHat^2 + (m3^2 + m4^2)/2, PYTHIA's factorisation
-  scale for a 2 -> 2 QCD process; cut-offs pTmin(FSR) = max(0.5, 1.6 Lambda3)
-  = 0.611 GeV and pTmin(ISR) = max(0.2, 1.1 Lambda3) = 0.42 GeV as in the
-  CMSSW log of this event.
+* Starting scale pTmax^2 = pTHat^2 + (m3^2 + m4^2)/2, which for two quarks of
+  equal mass is PYTHIA's factorisation scale for a 2 -> 2 QCD process,
+  min(mT3^2, mT4^2); cut-offs pTmin(FSR) = max(0.5, 1.6 Lambda3) = 0.611 GeV
+  as in the CMSSW log of this event, and pTmin(ISR) = max(0.2, 1.1 Lambda3)
+  = 0.42 GeV, a floor of this script that is stricter than PYTHIA's (which
+  keeps 0.2 GeV; about 1.6 percent of its ISR emissions lie below 0.42 GeV).
 
-What is left out, on purpose: multiparton interactions (chapter 5),
-hadronisation (chapter 3), the rapidity-ordering option of PYTHIA's ISR,
+What is left out, on purpose: multiparton interactions (chapter 4),
+hadronisation (chapter 5), the rapidity-ordering option of PYTHIA's ISR,
 QED radiation, matrix-element corrections and azimuthal spin correlations.
 
 How close is it to PYTHIA? validate_shower_with_pythia.py showers the same
@@ -52,8 +54,8 @@ hard event 2000 times with PYTHIA 8.315 (same settings, MPI and hadronisation
 off). The hard structure agrees: number of partons above 20 GeV, pT and mass
 of the family of each b quark (final partons within dR < 0.4), number of ISR
 branchings and the x of the incoming partons after ISR all agree within 1-3
-percent. The standalone shower makes about 10 percent more soft (1-5 GeV)
-final-state branchings, which is the level at which this reimplementation of
+percent. The standalone shower makes about 9 percent more final-state
+branchings, soft ones, which is the level at which this reimplementation of
 the soft-emission machinery (beam-recoil damping, cut-off region) differs from
 the real code. See README.md for the tables.
 
@@ -387,11 +389,17 @@ def read_event(path: Path) -> Event:
 
 
 def on_shell(parts, in_a, in_b):
-    """Undo the 3-decimal rounding of a printed record: E from |p| and m, then the incoming
-    partons from the outgoing sum (massless, along the beam), so that E and p balance exactly."""
+    """Undo the 3-decimal rounding of a printed record: E from |p| and m, then, for the bare hard
+    process only, the incoming partons from the outgoing sum (massless, along the beam), so that
+    E and p balance exactly. In a showered record the hard-process rows are left as they are."""
     out = [q for q in parts if q.status > 0]
     for q in out:
         q.p[0] = math.sqrt(float(q.p[1] ** 2 + q.p[2] ** 2 + q.p[3] ** 2) + q.m * q.m)
+    # Only for the bare hard process: in a showered record the final partons balance the last
+    # copies of the initiators (status -41, -53), not the hard-process rows (status -21), which
+    # must keep the x of the matrix element (the later stages copy them into their records).
+    if any(q.status in (-41, -42, -53, -61) for q in parts):
+        return
     psum = sum((q.p for q in out), np.zeros(4))
     ea, eb = 0.5 * (psum[0] + psum[3]), 0.5 * (psum[0] - psum[3])
     parts[in_a].p = np.array([ea, 0.0, 0.0, ea])
@@ -457,6 +465,9 @@ class Shower:
         self.n_proposals = {"FSR": 0, "ISR": 0}   # accepted proposals (not all of them win the competition)
         lam3 = math.sqrt(alpha.lambda2(3))
         self.pT2min_fsr = max(ptmin_fsr, LAMBDA3_MARGIN_FSR * lam3) ** 2
+        # Known deviation from PYTHIA (audit 2026-11-14): SimpleSpaceShower keeps SpaceShower:pTmin = 0.2 GeV here,
+        # because with pT0 = 2 GeV in the argument of alpha_s there is no pole to stay away from; the floor
+        # 1.1 Lambda_3 = 0.42 GeV below costs about 1.6% of the ISR emissions. Kept: changing it changes event_PS.lhe.
         self.pT2min_isr = max(ptmin_isr, LAMBDA3_MARGIN_ISR * lam3) ** 2
         self.pT20 = pt0_isr ** 2
         self.do_isr, self.do_fsr = do_isr and pdf is not None, do_fsr
@@ -1345,6 +1356,8 @@ def main():
     args = ap.parse_args()
 
     alpha = AlphaStrong(args.alphas, args.order)
+    # Known deviation from PYTHIA (audit 2026-11-14): without a PDF the FSR emissions that recoil against a beam
+    # parton lose their PDF-ratio weight, which PYTHIA keeps with PartonLevel:ISR = off (no visible effect on n_FSR).
     pdf = None if args.no_isr else TablePDF(TABLES)
     if not args.quiet:
         print(f"alpha_s(MZ) = {args.alphas} at order {args.order}: Lambda3 = {math.sqrt(alpha.lambda2(3)):.4f}, "

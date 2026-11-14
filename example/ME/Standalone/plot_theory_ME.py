@@ -282,8 +282,10 @@ def page_pdfs(st, ev):
     a2.set_title(r"(b) the $\mu_{\mathrm{F}}$ dependence at our two $x$ values")
     for fac, lab in ((0.25, r"$Q^2/4$"), (1.0, r"$Q^2$"), (4.0, r"$4Q^2$")):
         a2.axvline(q2 * fac, color=TEXT2, lw=0.8, ls=":")
-        j = np.searchsorted(q2s, q2 * fac)
-        a2.annotate("%s\n%+.1f%%\n%+.1f%%" % (lab, 100 * (xf1q[j] / xf1 - 1), 100 * (xf2q[j] / xf2 - 1)),
+        # evaluated at the scale itself, not at the nearest point of the curve's grid
+        r1 = float(st.pdf.xf(np.array([ev["x1"]]), np.array([q2 * fac]))[1][i_u][0]) / xf1
+        r2 = float(st.pdf.xf(np.array([ev["x2"]]), np.array([q2 * fac]))[0][i_u][0]) / xf2
+        a2.annotate("%s\n%+.1f%%\n%+.1f%%" % (lab, 100 * (r1 - 1), 100 * (r2 - 1)),
                     xy=(q2 * fac, 0.97), xycoords=("data", "axes fraction"), xytext=(3, 0), textcoords="offset points",
                     fontsize=9.5, va="top", color=TEXT2)
     a2.set_ylim(0.8, 1.2)

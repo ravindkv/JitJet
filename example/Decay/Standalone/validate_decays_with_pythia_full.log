@@ -13,8 +13,8 @@ n_final_central                         204.3115   89.5004
 n_charged_central                        90.9710   40.3436
 e_neutrinos                             170.5146  266.7866
 pt_neutrinos                             12.2238   15.2600
-n_decays                                205.0420   78.9744
-n_oscillated                              0.1825    0.3990
+n_decays                                221.0635   83.1048
+n_oscillated                              0.2575    0.4735
 bbar tau_ps                               1.5435    1.5080
 bbar L                                  152.2656  159.8304
 bbar Lxy                                  7.4062    7.7163
@@ -32,7 +32,7 @@ bbar n_tracks_d0_100um                    2.8905    1.9213
 bbar max_d0                               0.7936    0.9813
 bbar L_charm                             64.5093   92.8261
 bbar d0 of the tracks                     0.3428    0.5801
-bbar oscillated                           0.0325    0.1773
+bbar oscillated                           0.1275    0.3335
 bbar lepton from the B                    0.1920    0.3939
 bbar R=0.4 primaries pt                 106.7043   20.1733
 bbar R=0.4 primaries m                   15.7481    6.5268
@@ -82,7 +82,7 @@ b n_tracks_d0_100um                       2.9564    1.9870
 b max_d0                                  0.8208    0.9952
 b L_charm                                 8.1137   12.5694
 b d0 of the tracks                        0.3578    0.5966
-b oscillated                              0.0371    0.1890
+b oscillated                              0.1232    0.3286
 b lepton from the B                       0.2136    0.4098
 b R=0.4 primaries pt                    109.1654   27.4919
 b R=0.4 primaries m                      14.1945    5.3249

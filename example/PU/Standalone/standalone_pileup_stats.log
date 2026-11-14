@@ -1,1 +1,4 @@
-400 draws in 11 s: in-time collisions 59.9 +- 7.4; rho 59.03 +- 11.51 (0.986 per collision); pileup inside the circle of our jet 27.80 +- 8.38; rho A 29.67 +- 5.79; residual -1.87 +- 6.65 GeV; wrote standalone_pileup_stats.json
+400 draws in 48 s: in-time collisions 59.9 +- 7.4; rho 58.59 +- 10.44 (0.979 per collision); rho of the crowd alone 52.38 +- 10.25
+  the circle of the b jet (R = 0.4 in y-phi, signal inside 100.07): pileup 28.34 +- 8.10 GeV in 68.1 particles from 29.8 collisions; rho pi R^2 29.45 +- 5.25; residual -1.11 +- 6.05 GeV (+2.01 +- 6.09 with the rho of the crowd alone)
+  the circle of the bbar jet (R = 0.4 in y-phi, signal inside 94.30): pileup 26.73 +- 7.45 GeV in 64.0 particles from 28.6 collisions; rho pi R^2 29.45 +- 5.25; residual -2.72 +- 6.07 GeV (+0.40 +- 6.09 with the rho of the crowd alone)
+wrote standalone_pileup_stats.json

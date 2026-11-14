@@ -48,11 +48,11 @@ A map of the file, with the steps of the chapter's flow chart:
 | Function or method | What it does |
 |---|---|
 | `open_channels`, `can_decay` | who decays: a table, `mayDecay`, and c tau0 below `tau0Max` = 10 mm |
-| `Decayer.draw_lifetime`, `decay_vertex` | the clock, tau = -tau0 ln r, and the walk x_prod + tau p/m |
+| `Decayer.draw_lifetime`, `decay_vertex` | the clock, tau = -tau0 ln(1 - r), and the walk x_prod + tau p/m |
 | the mixing step inside `Decayer.decay` | P(oscillated) = sin^2(x tau / 2 tau0); the id is flipped and the products get status 92 |
 | `pick_channel`, `mass_sel`, `pick_hadrons` | the roll of the dice against the cumulative branching ratios with the `onMode` filter; Breit-Wigner masses; the partonic channels paired into singlets, the Poisson multiplicity, the hadrons from chapter 5's flavour machinery |
 | `two_body`, `mgenerator`, `me_weight`, `dalitz` | two bodies isotropic; the Raubold-Lynch M-generator; the matrix-element weights by `meMode`; the Kroll-Wada lepton pair |
-| `run`, `verify` | the queue of unstable particles in order of laboratory decay time; the conservation checks |
+| `run`, `verify` | the loop over the rows of the record (decay products are appended and reached in their turn); the conservation checks |
 | `summarise` | the two B hadrons, their vertices, tracks and neutrinos; the cones around the two b quarks before and after the decays and with and without the neutrinos |
 
 ```bash
@@ -215,7 +215,7 @@ The mother's Bbar0, the block the chapter's theory quotes:
   born at (0.0000, 0.0000, 0.0000) mm, decays at (-9.1302, -3.9335, -18.5075) mm, t = 21.0192 mm/c
   mixing: x = Delta m / Gamma = 0.776: P(oscillated) = sin^2(x tau / 2 tau0) = sin^2(0.567) = 0.289; r = 0.519 -> no oscillation
   channel: r x (BR sum 1.0000) -> channel 850 of 870: Bbar0 -> cbar s c dbar (BR 0.07400 = 7.40% of the decays; meMode 43: partons -> hadrons, Poisson, at least 3)
-  partons cbar s c dbar as the singlets (cbar s) (c dbar); mDiff = 5.280 - 0.000 (known) - 4.025 (constituent masses) = 1.255 GeV: <n> = 0/2 + 4/4 + 4 ln(1.255/0.7) = 3.33; Poisson -> 3 hadrons
+  partons cbar s c dbar as the singlets (cbar s) (c dbar); mDiff = 5.280 - 0.000 (known) - 4.025 (constituent masses) = 1.255 GeV: <n> = 0/2 + 4/4 + 4 ln(1.255/0.7) = 3.33; Poisson -> 3 hadrons (at least 3) after 5 tries
      cbar ... s -> 1 hadron(s): D*_s-
      c ... dbar -> 2 hadron(s): D*0 rho+
   masses: D*_s- 2.112, D*0 2.007, rho+ 0.790 (Breit-Wigner)
@@ -310,15 +310,16 @@ algorithm gathers the grandchildren.
 4. **cascade**: the decay tree of the mother's hadron grows generation by
    generation in the (eta, phi) plane down to the sixteen stable particles.
 5. **emigrant**: the V-A lepton spectrum fills up against phase space over
-   four thousand decays; then the semileptonic decay of seed 4,
-   `Bbar0 -> D*+ mu- nubar`, in which the neutrino takes 19.8 GeV out of
-   the cone and the visible pT drops from 99.2 to 89.7 GeV.
+   four thousand decays; then the semileptonic decay of seed 4, in which
+   the Bbar0 oscillates and decays as `B0 -> nu_mu mu+ D*-`: the neutrino
+   takes 19.8 GeV of energy and 9.5 GeV of pT out of the cone and the
+   visible pT drops from 99.2 to 89.7 GeV.
 6. **event**: the 365 primary hadrons decay in the order of their
    laboratory decay times until 749 particles are left, with the counters.
 7. **ensemble**: the same hadrons decayed with seeds 1, 2, 3, ...; the
    flight distance fills the stretched exponential (mean 14.5 mm) and the
-   visible-to-primary ratio of the cone stays at one in four decays out of
-   five and drops by 10 to 50% when a neutrino leaves.
+   visible-to-primary ratio of the cone stays within 5% of one in 61% of
+   the decays and drops by up to half (58%) in the other 39.
 
 ```bash
 cd example/Decay/Standalone
@@ -395,6 +396,25 @@ section 5.1.
 | `--standalone-stats` | the `.stats.json` of the standalone `--repeat` (or the `--single --history` file), printed side by side |
 | `--output`, `--listing` | the JSON file and the first event's listing |
 
+**Known deviations from PYTHIA (audit 2026-11-14).** The record of the book is
+kept, so four differences of the port are documented and not corrected; each
+is marked `KNOWN DEVIATION` in `standalone_hadron_decays.py` and listed in the
+caveats of the chapter:
+
+| Where | The script | PYTHIA 8.315 | Size, and where it is in the seed-1 record |
+|---|---|---|---|
+| `two_body`, meMode 2 | cos^2 theta for every vector meson from a two-body decay of a pseudoscalar | cos^2 theta only beside a pseudoscalar sister, sin^2 theta beside a photon, isotropic otherwise | `<cos^2 theta>`: eta' -> rho0 gamma 0.61 (PYTHIA 0.20), D_s -> K* K* 0.61 (0.33), D_s -> phi pi 0.60 (correct); rows 2209 and 2210, the K*- and K*0 of the D_s- |
+| `pick_hadrons`, meMode 22/23 | the colour rearrangement is drawn before the spectator pair is collapsed; the collapsed hadron is listed last | the last two partons (cbar + spectator) collapse first, always; the collapsed hadron is first and takes the weight x (3 - 2x) | the charm hadron of the 0.316 channel is (cbar d) in 72.5% of 20000 draws instead of all: D- 29.6% against 35.1% for a B0 at rest; row 1584 (its "spectator" hadron is a rho0); mDiff 2.705 instead of 2.76 or 2.62 GeV |
+| `decay`, mixing | the id of an oscillated row is flipped | the id is kept, only the products get status 92 | row 1590 reads Bbar0 below a B*0 |
+| `mass_sel`, `pick_hadrons`, `me_weight` | non-relativistic Breit-Wigner; Poisson n < 10; V-A maximum 0.375 M^4 | relativistic with a threshold factor (`modeBreitWigner = 4`); n <= 10; M^4/16 | heavier low-mass tails; negligible; six times slower, unbiased |
+
+The oscillated fraction is the same in both codes, 16.5% (PYTHIA) against
+16.8% for the b quark's hadron and 19.5% against 20.8% for the bbar's. A
+product of an oscillated B0 that decays in its turn carries status -92:
+the first version of the validation tested `status() == 92` on the first
+daughter and saw 3.5%, which the chapter used to call a convention of
+PYTHIA; the script now tests `statusAbs()`.
+
 ### 4.2 CMSSW: decays inside the GEN step
 
 The CMSSW side of this stop is one job of
@@ -449,7 +469,7 @@ and a D*_00 of 51.912 GeV that decays further at rows 1725 and 1726. Its
 production vertex is the smeared collision point, (0.028, -0.017, 3.112) cm;
 its daughters are born at (-0.128, -0.288, 2.394), so that the B- walked
 L = sqrt(0.156^2 + 0.271^2 + 0.718^2) cm = 7.83 mm with L_xy = 3.13 mm. The
-neutrino carries 96.2 of the hadron's 235.9 GeV of energy (f_nu = 0.41) and
+neutrino carries 95.5 of the hadron's 235.9 GeV of energy (f_nu = 0.40) and
 37.5 of its 94.3 GeV of pT. The bbar's B*+, row 968, radiated its photon
 (row 1504) and left a B+ of 112.618 GeV (row 1503) whose daughters at rows
 1752 to 1756, `Dbar*0 pi+ pi0 K0 Kbar*0`, are born at (0.322, 0.451, -8.604)
@@ -478,7 +498,7 @@ and `--single 511 --repeat 20000`.
 |---|---|---|---|---|---|
 | final particles | 739 +- 12 | 740 +- 12 | 459 +- 175 | 749 | 634 |
 | charged / photons / neutrinos | 331 / 329 / 2.9 | 331 / 330 / 3.1 | 210 / 211 / 1.3 | 338 / 327 / 5 | 304 / 273 / 1 |
-| decays performed | 371 | 372 | 205 | 376 | 302 |
+| decays performed | 371 | 372 | 221 | 376 | 302 |
 | primary hadrons that survive | 143 | 143 | 86 | 143 | 132 |
 | the B: tau [ps] | 1.41 +- 1.40 | 1.55 +- 1.46 | 1.59 +- 1.60 | 2.24 | -- |
 | the B: L, L_xy [mm] | 13.2, 6.2 | 14.5, 6.8 | 18.7, 7.9 | 21.0, 9.9 | 7.83, 3.13 |
@@ -486,7 +506,7 @@ and `--single 511 --repeat 20000`.
 | the B: semileptonic e / mu / tau [%] | 9.5 / 10.0 / 4.0 | 13.0 / 11.0 / 1.2 | 10.9 / 11.4 / 3.4 | hadronic | e |
 | the B: E_nu [GeV], share of E_B | 13.8, 0.084 | 16.4, 0.099 | 18.6, 0.091 | 0, 0 | 95.5, 0.40 |
 | the B: tracks with abs(d0) > 100 um, mean abs(d0) [um] | 3.0, 330 | 3.0, 362 | 3.0, 358 | 8, max 1640 | -- |
-| the B: oscillated [%] | 3.5 (flagged) | 16.8 | 3.7 (flagged) | no | no |
+| the B: oscillated [%] | 16.5 | 16.8 | 12.3 | no | no |
 | b, dR < 0.4: primaries -> final -> visible pT [GeV] | 99.23 -> 98.79 -> 92.3 +- 11.4 | 99.23 -> 98.79 -> 91.1 +- 12.2 | 109.2 -> 109.3 -> 101.4 | 99.23 -> 99.43 -> 99.43 | 114.45 -> . -> 79.12 |
 | b, dR < 0.4: final particles (charged) | 24.6 (9.6) | 24.7 (9.5) | 21.0 (9.2) | 31 (16) | -- |
 | b, dR < 0.4: charged pT [GeV], B share | 51.3, 0.788 | 49.9, 0.788 | 60.6, 0.799 | 67.4, 0.79 | -- |
@@ -501,15 +521,23 @@ and `--single 511 --repeat 20000`.
 Everything the detector will see agrees within the statistics of 400
 decays: the multiplicities to 0.2%, the flight distances, the neutrino
 energy, the impact parameters, the cone momenta to 0.1 GeV (final) and
-1 GeV (visible). The one bookkeeping difference: PYTHIA marks an oscillated
-B0 with status 92 in only a third of the cases where its charm hadron has
-the wrong sign; the script marks all of them.
+1 GeV (visible), and the oscillated fractions (section 4.1). The one
+difference beyond statistics is the charm split of the B0 at rest, the
+spectator deviation of section 4.1.
 
 ### 5.2 Kinematics of the two b quarks, their hadrons and their cones after the decays
 
-From `event_Decay.lhe` as printed by `standalone_hadron_decays.py`. The
-primary-hadron rows are those of the chapter 5 companion; "final" counts
-every particle with a positive status, "visible" excludes the neutrinos.
+As `standalone_hadron_decays.py` prints them for `event_Decay.lhe` from the
+event in memory. The primary-hadron rows are those of the chapter 5
+companion; "final" counts every particle with a positive status,
+"visible" excludes the neutrinos. Two effects of the three decimals of the
+records: the script reads the rounded `event_Had.lhe` and prints the
+primary-hadron values 16.09, 105.97, 35.88 and 7.59 where chapter 5 has
+16.08, 105.98, 35.87 and 7.58 (the table and the ledger keep chapter 5's);
+and a reader that sums the rows of `event_Decay.lhe`, as
+`plot_journey_Decay.py` does, finds the mass of the b cone 14.55 instead of
+14.59 GeV and 18 particles with 93.02 GeV, m = 13.9, in the bbar cone,
+where a photon of 0.03 GeV sits on the border.
 
 | | | pT [GeV] | m [GeV] | n | E [GeV] |
 |---|---|---:|---:|---:|---:|
@@ -528,7 +556,7 @@ every particle with a positive status, "visible" excludes the neutrinos.
 | | final particles within dR < 0.4 | 92.99 | 13.78 | 17 (8 charged) | |
 | | primary hadrons within dR < 0.8 | 116.92 | 47.92 | 11 | |
 | | final particles within dR < 0.8 | 111.19 | 40.75 | 37 (18 charged) | |
-| all final particles | | 0.02 | 13600 | 749 | 13600 |
+| all final particles | | 0.00 | 13600 | 749 | 13600 |
 
 ### 5.3 The two B hadrons of our event, decay by decay
 

@@ -21,7 +21,7 @@ option of the script, `--scenario ultimate`, kept for the exercises and the open
 | Standalone script | [`example/PU/Standalone/standalone_pileup.py`](../example/PU/Standalone/standalone_pileup.py) |
 | The library | [`example/PU/pileup_library.lhe.gz`](../example/PU/pileup_library.lhe.gz), 2000 minimum-bias collisions at 13.6 TeV made once by [`make_pileup_library.py`](../example/PU/Standalone/make_pileup_library.py) with PYTHIA (its log: [`pileup_library.log`](../example/PU/pileup_library.log)) |
 | Input | [`example/GenJet/event_GenJet.lhe`](../example/GenJet/event_GenJet.lhe), the final state and the generator-level jets of chapter 7 |
-| Event record | [`example/PU/event_PU.lhe`](../example/PU/event_PU.lhe) (the chapter-7 record plus the summary, the vertex listing of the 960 collisions, the particles of the in-time crossing, the mixed jets and the signal constituents; 1.5 MB) |
+| Event record | [`example/PU/event_PU.lhe`](../example/PU/event_PU.lhe) (the chapter-7 record plus the summary, the vertex listing of the 960 collisions, the particles of the in-time crossing, the mixed jets and the signal constituents; 1.7 MB) |
 | Learning-mode log | [`example/PU/Standalone/standalone_pileup.log`](../example/PU/Standalone/standalone_pileup.log) (`-v`, seed 1) and its summary [`standalone_pileup.json`](../example/PU/Standalone/standalone_pileup.json) |
 | Validation with FastJet and PYTHIA | [`example/PU/Standalone/validate_pileup_with_fastjet.py`](../example/PU/Standalone/validate_pileup_with_fastjet.py) |
 | The catalogue of the library | [`example/PU/Standalone/minbias_catalogue.py`](../example/PU/Standalone/minbias_catalogue.py), its tables [`minbias_catalogue.txt`](../example/PU/Standalone/minbias_catalogue.txt) / `.json` / `.tex` (the chapter `\input`s the last) |
@@ -41,7 +41,7 @@ Contents: [1. Running the standalone script](#1-running-the-standalone-script) Â
 crossing of 2024, with every piece of CMSSW's mixing written out: mu from the
 luminosity, mu = L sigma_inel / (n_b f_rev); the Poisson draw of the MixingModule for
 every crossing of the production window bx = -12 ... +3; the library of minimum-bias
-collisions it reads at random positions; the beam spot of CMSSW's BetafuncEvtVtxGenerator
+collisions it reads in order from a random position; the beam spot of CMSSW's BetafuncEvtVtxGenerator
 (the SimBeamSpot payload of the 2024 global tag: a Gaussian of 3.6 cm along the beam, an
 independent Gaussian of 120 ps in time, 9 um across with the hourglass of beta* = 30 cm)
 and the 25 ns offsets of the out-of-time crossings; the stacking of the in-time collisions
@@ -60,12 +60,12 @@ A map of the file, with the steps of the chapter's flow chart:
 |---|---|
 | `mu_of`, `SCENARIOS`, `parse_window` | step 1: mu = L sigma_inel / (n_b f_rev), the three scenarios (`run3`, `nominal`, `ultimate`) with their bunches, windows and vertex generators |
 | `Library` | the minimum-bias collisions of the library file, with their multiplicities |
-| `Stage.draw_crowd` | step 2: the Poisson draw per crossing and the library events read |
+| `Stage.draw_crowd` | step 2: the Poisson draw per crossing and the library events read, in order from a random position, wrapping at the end (CMSSW's `readOneRandom`: no collision twice in an event) |
 | `BeamSpot` (`LuminousRegion` for `--region hllhc`) | step 3: the 2024 beam spot of BetafuncEvtVtxGenerator (the HL-LHC overlap of two crabbed bunches), its moments, and the drawing of vertices |
 | `Stage.stack` | step 4: the mixed final state (signal + in-time crowd, abs(eta) < 5, no neutrinos) |
 | `TiledClustering`, `MixedJets`, `ghost_grid` | step 5: chapter 7's anti-kT with FastJet's tiled search, the ghosts, every constituent tagged by its collision |
 | `grid_rho`, `jet_median_rho` | step 6: the two estimators of rho |
-| `Stage.subtract` | step 7: pT - rho A for every jet against the signal pT inside it |
+| `Stage.subtract` | step 7: pT - rho A for every jet against the signal pT inside it (`residual`), and the pileup pT inside against rho A (`residual_pileup`, the ensemble's definition) |
 | `Stage.visible_vertices`, `fill_profile`, `year_profile`, `flat_profile`, `reweight` | step 8: the collisions the tracker can see; the profiles and the weight |
 | `pileup_tables`, `read_pileup_tables` | step 9: the tables of the record and their reader |
 | `stage_summary`, `one_repeat` | the summary JSON and the worker of `--repeat` |
@@ -87,8 +87,9 @@ the 2024 beam spot; 140 and 200 in bx = -3 ... +3 with the HL-LHC luminous regio
 `--window N|MIN,MAX` and `--region run3|hllhc` to override them, `--sequential` to read
 the library from its first event on (CMSSW's `sequential = True`), `--seed`, `--radius`,
 `--ptmin`, `--no-area`, `--repeat N --jobs J --history FILE` for the ensemble (the
-in-time crowd drawn N times on the photograph; no clustering: the grid rho and the
-pileup inside the circle of R = 0.4 around our jet and the bbar jet), `--summary FILE`
+in-time crowd drawn N times on the photograph; no clustering: the grid rho, with and
+without the signal, and the pileup inside the circle of R = 0.4 in (y, phi) around our jet
+and the bbar jet), `--summary FILE`
 for the JSON the plots read. The library is made once:
 
 ```bash
@@ -126,22 +127,26 @@ the 960 drawn); the means per kind close it. The `.tex` holds the three tables a
 per second over 2.64e7 crossings per second, 59.3, or 60.5 with 80 mb; mixed at 60; the
 production's flat 55 ... 75 profile and its 1040 collisions per signal event); the
 sixteen Poisson draws (60, 56, 68, 61, 66, 56, 55, 50, 53, 66, 61, 60, **63**, 63, 59,
-63) and the library events read (763 distinct of 2000; ND 667, SD 162, DD 115, CD 16);
+63) and the library events read (in order from event 430, 960 distinct; ND 698, SD 158,
+DD 86, CD 18);
 the payload of the beam spot (centre (0.0285, -0.0166, 0.416) cm, sigma_z = 3.6 cm,
 beta* = 30 cm, emittance 5.725e-8 cm: sigma_xy = 9.3 um, sigma_t = 120 ps) and the
-vertices drawn (r.m.s. 3.79 cm, 119 ps, 9 um; the signal at z = -0.17 cm, t = -121 ps);
-the stacking crossing by crossing (651 signal particles, 9033 of the crowd within
-abs(eta) < 5 without neutrinos; 860 charged in the tracker against 93); the clustering
-(9684 particles + 6300 ghosts, 15 984 steps, 117 s; 173 jets, 62 above 30 GeV) and our
-jet (112 particles, 31 + 81 from 34 collisions, A = 0.529); the two medians (68.28 grid,
-69.87 kT; the signal alone 3.42); the subtraction of the twelve leading jets against the
-truth; the visible vertices (43 of 63; the nearest 0.06 mm and 5 ps away; 4 within 1 mm,
-7 within 30 ps); the profiles (one fill: mean 57, 72% levelled; the year: mean 59; the
-flat profile reweighted: w from 0 to 1.62, 1.54 at 60; a fixed-mu sample: 0.07) and, for
-comparison, the levelled HL-LHC fill. `-vv` adds every collision with its vertex and
-every constituent of our jet with its collision, pT and distance to the axis. The seed-1
-log is committed as `standalone_pileup.log`; every number quoted in the chapter's theory
-is in it.
+vertices drawn (r.m.s. 3.56 cm, 124 ps, 9 um; the signal at z = +0.16 cm, t = +94 ps);
+the stacking crossing by crossing (651 signal particles, 10 045 of the crowd within
+abs(eta) < 5 without neutrinos; 995 charged in the tracker against 93); the clustering
+(10 696 particles + 6300 ghosts, 16 996 steps, 157 s; 175 jets, 82 above 30 GeV)
+and our jet (mixed jet [1], 115 particles, 31 + 84 from 33 collisions, A = 0.529, 0.012
+from the photograph's axis in (y, phi)); the medians (75.47 grid, 78.50 kT; the signal
+alone 3.42 with a mean of 11.08 and 17 of 198 cells empty; the crowd alone 69.93); the
+subtraction of the twelve leading jets against the truth, with both residuals of our jet
+(-6.43 on the signal's sum, -5.32 as pileup inside minus rho A; -3.50 and -2.39 with the
+rho of the crowd alone); the visible vertices (40 of 63; the nearest 0.01 mm and 0.3 ps
+away; 3 within 1 mm, 7 within 30 ps); the profiles (one fill: mean 57, 72% levelled; the
+year: mean 59; the flat profile reweighted: w from 0 to 1.62, 1.54 at 60; a fixed-mu
+sample: 0.07) and, for comparison, the levelled HL-LHC fill. `-vv` adds every collision
+with its vertex and every constituent of our jet with its collision, pT and distance to
+the axis in (y, phi). The seed-1 log is committed as `standalone_pileup.log`; every number
+quoted in the chapter's theory is in it.
 
 ## 2. Reading the record
 
@@ -155,11 +160,11 @@ jet listing and the constituent listing: see the
  --------  Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2024; seed 1)  ----------
   mu from L sigma/(n_b f_rev): 59.35; mixed at mu = 60
   collisions per bunch crossing: bx -12: 60, bx -11: 56, bx -10: 68, bx -9: 61, bx -8: 66, bx -7: 56, bx -6: 55, bx -5: 50, bx -4: 53, bx -3: 66, bx -2: 61, bx -1: 60, bx +0: 63, bx +1: 63, bx +2: 59, bx +3: 63; 960 in all, 63 in time
-  beam spot: sigma_z = 3.60 cm, sigma_t = 120 ps (model); drawn r.m.s. z 3.79 cm, t 119 ps, x 9.2 um, y 9.4 um
-  signal vertex: x = 285.90 um, y = -164.13 um, z = -0.168 cm, t = -0.1214 ns
-  in-time final particles: 12113 (9033 within |eta| < 5); signal 744 (651)
-  rho: grid median 68.276 GeV per unit area, jet median 69.873; signal alone 3.420
-  visible in-time vertices (>= 4 charged, pT > 0.5, |eta| < 2.5): 43 of 63
+  beam spot: sigma_z = 3.60 cm, sigma_t = 120 ps (model); drawn r.m.s. z 3.56 cm, t 124 ps, x 8.9 um, y 9.6 um
+  signal vertex: x = 287.13 um, y = -155.09 um, z = 0.157 cm, t = 0.0940 ns
+  in-time final particles: 13456 (10045 within |eta| < 5); signal 744 (651)
+  rho: grid median 75.468 GeV per unit area, jet median 78.499; signal alone 3.420, crowd alone 69.933
+  visible in-time vertices (>= 4 charged, pT > 0.5, |eta| < 2.5): 40 of 63
 ```
 
 ### The vertex listing
@@ -168,13 +173,14 @@ One row per collision, the signal first (k = 0), 961 rows:
 
 ```
      k   bx    lib  proc  nfin  nch  cen  vis     x[um]     y[um]     z[cm]     t[ns]
-     0    0      0   sig   744  338   93    1    285.90   -164.13    -0.168   -0.1214
-     1  -12    430    ND   381  192   36    1    287.81   -155.01     3.328 -299.9956
+     0    0      0   sig   744  338   93    1    287.13   -155.09     0.157    0.0940
+     1  -12    430    ND   381  192   36    1    283.49   -171.07    -2.985 -300.3093
    ...
 ```
 
 `k` numbers the collisions through the window (the CMSSW `EncodedEventId(bx, k)` counts
-within a crossing instead), `bx` the crossing, `lib` the library event, `proc` its type,
+within a crossing instead), `bx` the crossing, `lib` the library event (430 to 1389 in
+order: the library is opened at a random event and read on), `proc` its type,
 `nfin` its final particles, `nch` its charged ones, `cen` its charged ones within
 abs(eta) < 2.5 with pT > 0.5 GeV, `vis` whether it has at least four of them (the proxy
 of a vertex the tracker can reconstruct), then the vertex: x and y in microns (around
@@ -184,11 +190,11 @@ of its 744 (no neutrinos).
 
 ### The particle listing
 
-Every final particle of the 63 in-time collisions, 12 113 rows:
+Every final particle of the 63 in-time collisions, 13 456 rows:
 
 ```
      k       id  name                px          py          pz           e  mixjet
-   608      211  pi+             0.1234     -0.4567     12.3456     12.3578      -1
+   713     -211  pi-                 0.5799     -0.2054      6.6442      6.6741     104
 ```
 
 with `mixjet` the mixed anti-kT jet that holds the particle (-1: none, or outside
@@ -198,18 +204,21 @@ uses them.
 
 ### The jet listing and the signal constituent listing
 
-One row per mixed jet, 173 rows, pT-ordered:
+One row per mixed jet, 175 rows, pT-ordered (ours is the second in this crossing):
 
 ```
-   mixjet        pT       A     rhoA     pTsub       sig        pu       y     eta     phi       m    n  nsig  npu ncol  genjet     dR
-     mix  0   132.747   0.529   36.090    96.657   100.070    33.611  -1.431  -1.480  -2.718  45.269  112    31   81   34       0  0.042
+  mixjet        pT       A     rhoA     pTsub       sig        pu       y     eta     phi       m    n  nsig  npu ncol  genjet     dR
+ mix   0   136.774   0.489   36.881    99.893    94.329    43.420  -3.429  -3.476   0.580  43.093  101    19   82   33       1  0.014
+ mix   1   133.533   0.529   39.891    93.642   100.070    34.573  -1.434  -1.479  -2.701  43.206  115    31   84   33       0  0.012
 ```
 
 `A` is the active area (ghosts x 0.01), `rhoA` the product with the grid median,
 `pTsub = pT - rhoA`, `sig` and `pu` the scalar sums of the pT of the signal and of the
 pileup constituents (the truth), `n`, `nsig`, `npu` their numbers, `ncol` the number of
 collisions the pileup constituents came from, `genjet` the chapter-7 ak4 jet matched
-within dR < 0.2 (-1 if none) and `dR` the distance to it. The signal constituent listing
+within dR < 0.2 in (y, phi), the plane of the clustering (-1 if none), and `dR` the
+distance to it (in pseudorapidity our jet would seem to have moved by 0.04, only
+because its mass grew from 14.8 to 43 GeV at fixed rapidity). The signal constituent listing
 has one row per signal particle that entered the clustering (651 rows): its row in the
 chapter-7 listing and its mixed jet. `read_pileup_tables(path)` reads the four tables back
 (the summary lines, the collisions, the particles, the jets and the signal map).
@@ -303,8 +312,8 @@ cd example/PU/Standalone
 | | PYTHIA sigma [mb] at 13.6 TeV | expected share | library (2000) | CMSSW library (250) |
 |---|---|---|---|---|
 | non-diffractive (101) | 55.42 | 70.7% | 1425 = 71.2% | 183 = 73.2% |
-| single diffractive (103 + 104) | 2 x 6.43 | 16.4% | 319 = 16.0% | 45 = 18.0% |
-| double diffractive (105) | 8.85 | 11.3% | 219 = 11.0% | 19 = 7.6% |
+| single diffractive (103 + 104) | 2 x 6.43 | 16.4% | 319 = 15.9% | 45 = 18.0% |
+| double diffractive (105) | 8.85 | 11.3% | 219 = 10.9% | 19 = 7.6% |
 | central diffractive (106) | 1.29 | 1.6% | 37 = 1.9% | 3 = 1.2% |
 | inelastic | 78.42 | | 2000 | 250 |
 
@@ -333,20 +342,24 @@ cd example/PU/Standalone
 ../../ME/Standalone/.venv/bin/python validate_pileup_with_fastjet.py --mode record
 ```
 
-The mixed final state of the record (the 651 signal particles and the 9033 in-time
+The mixed final state of the record (the 651 signal particles and the 10 045 in-time
 pileup particles within abs(eta) < 5 without neutrinos, exactly the input of the
 standalone clustering) is clustered by FastJet 3.5.2 with anti-kT R = 0.4 and the active
 area (`active_area_explicit_ghosts`, ghost area 0.01, abs(y) < 5), the
 `GridMedianBackgroundEstimator(5.0, 0.55)` that CMSSW's `fixedGridRhoFastjetAll` wraps,
 and the `JetMedianBackgroundEstimator` on kT jets of R = 0.4 with areas within abs(y) <
-4.4. The jets agree exactly (the same particles, the same algorithm: all 173 jets with
+4.4. The jets agree exactly (the same particles, the same algorithm: all 175 jets with
 identical constituents, the momenta to the last digit, max |dpT| = 0.0005 GeV); the grid
-median agrees to the last digit (68.2765 both: the standalone grid is FastJet's, in
+median agrees to the last digit (75.4682 both: the standalone grid is FastJet's, in
 rapidity with phi from 0; the same grid filled in eta, the older `fixedGridRhoAll`, gives
-68.84); the areas differ by the placement of the ghosts (FastJet scatters its own: mean
-difference +0.001, r.m.s. 0.025 over the 173 jets, max 0.07; our jet 0.529 both); the jet
-median, which is measured on the ghost jets themselves, moves by a percent with the
-ghosts (FastJet 70.43 against the standalone's 69.87). The result is
+75.07); the areas differ by the placement of the ghosts (FastJet scatters its own: mean
+difference -0.000, r.m.s. 0.026 over the 175 jets, max 0.07; our jet 0.539 against 0.529);
+the jet median, which is measured on the ghost jets themselves, moves by a percent with
+the ghosts (FastJet 79.53 against the standalone's 78.50). The same placement noise is in
+the script's own areas: re-clustering the record with five ghost seeds gives our jet
+A = 0.519, 0.529 (the record), 0.539, 0.469 and 0.529, the jets and their constituents
+unchanged, and a rigid circle of R = 0.4 on the script's jittered ghost grid measures
+0.505 +- 0.021; at rho = 75 that is +- 1.5 GeV on pT - rho A. The result is
 `validate_pileup_with_fastjet_record.json`.
 
 ### 4.3 CMSSW: the library and the overlay
@@ -429,23 +442,46 @@ From the jet listing of the record (rows `mix 0` and `mix 1`), the chapter-7 jet
 | | pT | m | n | A | rho A | pT - rho A | residual |
 |---|---|---|---|---|---|---|---|
 | b: photograph (ak4 [0]) | 99.830 | 14.826 | 31 | | | | |
-| b: mixed jet [0] | 132.747 | 45.269 | 112 (31 + 81 from 34 collisions) | 0.529 | 36.090 | 96.657 | -3.41 (against 100.070 of signal inside; 33.611 of pileup) |
-| b: the circle, 400 draws | | | 65 pileup | 0.503 | 29.67 +- 5.79 | | -1.87 +- 6.65 (pileup inside 27.80 +- 8.38) |
+| b: mixed jet [1] | 133.533 | 43.206 | 115 (31 + 84 from 33 collisions) | 0.529 | 39.891 | 93.642 | -6.43 (against 100.070 of signal inside); -5.32 as pileup inside (34.573) minus rho A |
+| b: the circle, 400 draws | | | 68.1 pileup from 29.8 collisions | 0.503 | 29.45 +- 5.25 | | -1.11 +- 6.05 (pileup inside 28.34 +- 8.10); +2.01 +- 6.09 with the rho of the crowd alone |
 | bbar: photograph (ak4 [1]) | 94.093 | 17.825 | 18 | | | | |
-| bbar: mixed jet [1] | 124.706 | 44.328 | 98 (18 + 80 from 36) | 0.499 | 34.047 | 90.659 | -3.64 (94.295 of signal inside; 31.256 of pileup) |
-| bbar: the circle, 400 draws | | | | 0.503 | 29.67 | | -1.49 +- 5.90 (pileup inside 28.18 +- 7.70) |
+| bbar: mixed jet [0] | 136.774 | 43.093 | 101 (19 + 82 from 33) | 0.489 | 36.881 | 99.893 | +5.56 (94.329 of signal inside); +6.54 as pileup inside (43.420) minus rho A |
+| bbar: the circle, 400 draws | | | 64.0 pileup from 28.6 collisions | 0.503 | 29.45 +- 5.25 | | -2.72 +- 6.07 (pileup inside 26.73 +- 7.45); +0.40 +- 6.09 with the rho of the crowd alone |
+
+The two residuals are two definitions. The record's is the jet's pT, a vector sum, minus
+rho A, minus the scalar sum of the signal particles inside; the ensemble's is the scalar
+sum of the pileup inside the circle minus rho pi R^2. For one jet they differ by what the
+vector sum loses to the spread of the particles (1.1 GeV for ours, 0.8 GeV on average
+over seeds 1 to 9); the `-v` log and the JSON give both (`residual`, `residual_pileup`).
+The circle is drawn in (y, phi) around the rapidity of the photograph's jet, the plane of
+the clustering, of the rho grid and of pi R^2; the signal inside it is then exactly the
+signal of the mixed jet (100.07, and 94.30 for the bbar jet, whose mixed jet picked up one
+more signal particle of 0.03 GeV in this crossing).
 
 ### 5.3 The ensemble
 
 `standalone_pileup.py --repeat 400 --jobs 4 --quiet --history standalone_pileup_stats.json`
-(13 s): in-time collisions 59.9 +- 7.4, 7949 particles within abs(eta) < 5; rho (grid)
-59.03 +- 11.51, 0.986 per collision (a linear fit: 0.939 per collision, offset +2.8, the
-signal's own underlying event; sqrt(60) collisions of Poisson spread give 7.3 of the
-11.5); visible vertices 37.4 +- 5.8 (62%); the nearest crowd vertex to the signal's:
-median 0.98 mm in z and 2.6 ps in t, at least one within 1 mm in 51% of the draws, 8.6
-within 30 ps on average; the signal vertex r.m.s. 3.74 cm and 119 ps; our jet's circle as
-in 5.2, 0.46 GeV of pileup per collision inside it; the pileup inside exceeds 40 GeV in
-7% of the draws and the residual exceeds 10 GeV in magnitude in 12%.
+(15 s): in-time collisions 59.9 +- 7.4, 7882 particles within abs(eta) < 5; rho (grid)
+58.59 +- 10.44, 0.979 per collision (a linear fit: 0.967 per collision, offset +0.7;
+sqrt(60) collisions of Poisson spread give 7.5 of the 10.4); the same grid on the crowd
+alone 52.38 +- 10.25 (fit: 0.952 per collision, offset -4.6): the signal raises the
+median by 6.2 +- 0.9 GeV per unit area, 3.1 GeV per jet, which is why the residual is
+negative with the full rho and positive with the crowd's own; visible vertices
+37.4 +- 6.0 (62%); the nearest crowd vertex to the signal's: median 0.82 mm in z and
+2.5 ps in t, at least one within 1 mm in 56% of the draws, 8.3 within 30 ps on average;
+the signal vertex r.m.s. 3.61 cm and 117 ps; our jet's circle as in 5.2, 0.47 GeV of
+pileup per collision inside it; the pileup inside exceeds 40 GeV in 9% of the draws and
+the residual exceeds 10 GeV in magnitude in 9%.
+
+Nine full records (seeds 1 to 9, `--seed N -o` elsewhere, each clustered with ghosts) say
+what one crossing can do: rho from 51.6 to 75.5; mixed jets above 30 GeV 82, 54, 48, 33,
+37, 37, 64, 41, 30, of which the crowd's own 76, 49, 42, 27, 31, 31, 58, 34, 23 before the
+subtraction and 1, 1, 0, 1, 0, 0, 2, 0, 0 after it (five in all, none in five crossings);
+the record's residual of our jet -6.43, -5.89, -3.05, +1.81, -1.74, -2.62, -1.16, -6.77,
++0.46 (mean -2.8, r.m.s. 3.1) and of the bbar jet +5.56, -10.81, -13.96, -1.44, -5.27,
++4.04, +1.30, +2.68, -5.35 (mean -2.6, r.m.s. 6.8); the area of our jet from 0.469 to
+0.529; our jet keeps its 31 particles in all nine and is the leading mixed jet in seven
+(the bbar jet leads in seeds 1 and 8, and picks up one signal particle in seeds 1 and 7).
 
 ### 5.4 The energy ledger
 
@@ -453,15 +489,15 @@ in 5.2, 0.46 GeV of pileup per collision inside it; the pileup inside exceeds 40
 |---|---|---|---|---|
 | **Standalone** (seed 1, `event_PU.lhe`) | | | | |
 | the photograph, ak4 jet [0] (chapter 7) | 99.83 | 14.83 | 31 | |
-| with the crowd: mixed jet [0], mu = 60 | 132.75 | 45.27 | 112 | +32.92 |
-| after the subtraction, pT - rho A | 96.66 | | 112 | -36.09 |
+| with the crowd: mixed jet [1], mu = 60 | 133.53 | 43.21 | 115 | +33.70 |
+| after the subtraction, pT - rho A | 93.64 | | 115 | -39.89 |
 | **CMSSW** (run 1, event 1; 68 in-time collisions) | | | | |
 | the photograph, ak4 jet [0] (chapter 7) | 117.79 | 16.72 | 24 | |
 | with the crowd: mixed jet [1], mu = 60 | 150.90 | 51.36 | 114 | +33.11 |
 | of which pileup (scalar sum) | 33.92 | | 90 | |
 | minus the mean pedestal of a circle, pT - rho pi R^2 | 116.0 | | 114 | -34.9 |
 
-The 32.92 GeV of the second line are the 33.61 GeV of pileup constituents less the
+The 33.70 GeV of the second line are the 34.57 GeV of pileup constituents less the
 difference between the vector sum of the jet and the scalar sums of its constituents;
 the third line is the scalar subtraction, which leaves the mass at its inflated value.
 The CMSSW rows are lines of `genJetPileup_08_PU.log` of JitJetSW (`[1] pt=150.895 ... mass=51.3568
@@ -474,8 +510,15 @@ pi R^2 = 0.503 is 34.9 GeV, and 150.90 - 34.9 = 116.0 GeV, 1.8 GeV below the pho
 `standalone_pileup.py --scenario ultimate` mixes the same family at mu = 200 in
 bx = -3 ... +3 with the luminous region of CMSSW's HLLHCEvtVtxGenerator (two 9 cm bunches
 crossing at 510 urad, crab-rotated by 380 urad at 400 MHz, beta* = 20 cm: sigma_z =
-4.27 cm, sigma_t = 193 ps against the generator's nominal 4.3 cm and 190 ps); with the
-14 TeV library of the Phase-2 production (`make_pileup_library.py --ecm 14000`) and seed 1
-it gave, in the first version of this chapter, 1405 collisions, rho = 181.9 GeV per unit
-area, our jet 99.83 -> 195.87 -> 101.53 and a residual of +7.9 +- 13.7 GeV over 400
-draws; the record takes 15 minutes (`--no-area` one).
+4.27 cm, sigma_t = 193 ps against the generator's nominal 4.3 cm and 190 ps; head-on the
+region would be 6.36 cm long, with the crossing angle alone 2.14 cm). With the committed
+script and the 13.6 TeV library, seed 1 (written to a scratch file, not committed) gives
+1405 collisions, 202 of them in time with 35 369 particles, 26 488 + 6300 pseudojets
+clustered in 32 788 steps, rho = 182.21 GeV per unit area (kT jets 185.08, the crowd
+alone 174.31), 185 jets of which 137 above 30 GeV, our jet (mixed jet [1], A = 0.539)
+99.83 -> 187.40 -> 89.26 with 214 strangers from 93 collisions, a residual of -10.81 GeV
+(-9.08 as pileup minus rho A), and 136 pileup jets above 30 GeV before the subtraction, 8
+after; `--scenario ultimate --repeat 400` gives rho = 187.4 +- 17.8, 94.8 +- 14.2 GeV of
+pileup in the circle of our jet and a residual of +0.6 +- 13.1 GeV (+4.4 +- 13.0 with the
+rho of the crowd alone; -4.2 +- 12.6 for the bbar jet). The record takes 15 minutes
+(`--no-area` one).

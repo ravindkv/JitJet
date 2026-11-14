@@ -2,8 +2,9 @@
 % The impact parameter. Left: the two protons in the transverse plane, each a
 % double-Gaussian matter distribution (CP5: 63 % of the matter in a core of
 % 0.76 of the radius), displaced by b; the overlap O(b) is the hatched region.
-% Right: the enhancement factor f(b) = n(b)/<n> of the -v log ("the impact
-% parameter" section) with our event and the averages marked.
+% Right: the script's enhancement factor f(b) of the -v log ("the impact
+% parameter" section; not PYTHIA's normalisation, see the chapter's caveats)
+% with our event and the averages marked.
 % ---------------------------------------------------------------------------
 \begin{tikzpicture}[x=1cm,y=1cm,
   every node/.style={font=\footnotesize},
@@ -33,7 +34,7 @@
 \node[lab,anchor=north] at (-0.2,-2.6) {hatched: the overlap $O(b)=\int\rho_A(\vec r)\,\rho_B(\vec r-\vec b)\,\mathrm{d}^2r$\\the number of scatterings is Poisson with mean $n(b)=k\,O(b)$};
 % ---------------- (b) f(b) --------------------------------------------------------------------
 \begin{scope}[xshift=7.4cm,yshift=-2.7cm]
-\node[head,anchor=west] at (-0.3,6.0) {(b) the enhancement $f(b)=n(b)/\langle n\rangle$};
+\node[head,anchor=west] at (-0.3,6.0) {(b) the script's enhancement $f(b)$};
 \draw[-{Stealth}] (0,0) -- (6.6,0) node[right] {$b/\langle b\rangle$};
 \draw[-{Stealth}] (0,0) -- (0,5.4) node[above,font=\scriptsize] {$f(b)$};
 \foreach \x/\l in {0/0,1.5/0.5,3/1,4.5/1.5,6/2} {\draw (\x,0) -- (\x,-0.1) node[below] {\l};}
@@ -42,7 +43,7 @@
 \draw[very thick,teal!80!black] plot[smooth] coordinates {(0,4.969) (0.75,4.321) (1.5,2.853) (2.25,1.447) (3.0,0.574) (3.75,0.183) (4.5,0.048) (6.0,0.002)};
 \draw[dashed,red!80!black] (0.941,0) -- (0.941,3.99);
 \node[circle,fill=red!80!black,inner sep=2pt] at (0.941,3.99) {};
-\node[font=\scriptsize,text=red!80!black,anchor=west,align=left] at (1.05,4.3) {our event: $b=0.3136\,\langle b\rangle$\\$f=3.63$ (\CMSSW: $3.71$), $n(b)=32.5$};
+\node[font=\scriptsize,text=red!80!black,anchor=west,align=left] at (1.05,4.3) {our event: $b=0.3136\,\langle b\rangle$\\$f=3.63$ (\CMSSW: $3.71$), $f\langle n\rangle=32.5$};
 \draw[dotted,black!60] (0,2.44) -- (6.4,2.44) node[pos=0.98,above left,font=\scriptsize,text=black!65] {$\langle f\rangle_{\mathrm{hard}}=2.22$};
 \draw[dotted,black!60] (0,1.07) -- (6.4,1.07) node[pos=0.45,above left,font=\scriptsize,text=black!65] {$\langle f\rangle_{\mathrm{ND}}=0.97$};
 \node[font=\scriptsize,text=teal!80!black,anchor=south west] at (0.1,4.97) {$f(0)=4.52$};

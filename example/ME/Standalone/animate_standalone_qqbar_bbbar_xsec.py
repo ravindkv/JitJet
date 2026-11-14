@@ -728,7 +728,7 @@ class ConvergeScene(Scene):
                    "the $1/\\sqrt{N}$ of random points; $u\\bar u$ and $d\\bar d$ dominate.")
         else:
             cap = (f"After $2^{{{st.power}}}$ points this pass gives {self.total[-1]:.4f} nb; eight scrambled passes give "
-                   f"{REPEATS8_NB} $\\pm$ 0.00005 nb, Pythia's own Monte Carlo {Pythia_NB} $\\pm$ {Pythia_ERR_NB:.4f} nb.")
+                   f"{REPEATS8_NB} $\\pm$ 0.000001 nb, Pythia's own Monte Carlo {Pythia_NB} $\\pm$ {Pythia_ERR_NB:.4f} nb.")
         chrome(fig, self.number, self.title, cap)
 
 

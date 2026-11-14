@@ -33,12 +33,12 @@
 % ---------------- (b) the numbers --------------------------------------------------------------------
 \begin{scope}[xshift=12.4cm]
 \node[head,anchor=west] at (-3.2,3.4) {(b) how long, how wide: the payload and three checks};
-\foreach \y/\t/\v/\w in {2.6/{the 2024 payload}/3.60/2.88, 1.9/{our 960 vertices}/3.79/3.03, 1.2/{\CMSSW library (250)}/3.56/2.85, 0.5/{the HL-LHC model}/4.27/3.42} {
+\foreach \y/\t/\v/\w in {2.6/{the 2024 payload}/3.60/2.88, 1.9/{our 960 vertices}/3.56/2.85, 1.2/{\CMSSW library (250)}/3.56/2.85, 0.5/{the HL-LHC model}/4.27/3.42} {
   \draw[fill=green!30] (0,\y-0.18) rectangle (\w,\y+0.18);
   \node[lab,anchor=west] at (\w+0.1,\y) {\v\ cm};
   \node[lab,anchor=east] at (-0.1,\y) {\t};
 }
 \draw[-{Stealth}] (0,0.1) -- (4.3,0.1) node[below left,lab] {$\sigma_z$ [cm], 0.8 cm per cm};
-\node[lab,anchor=north west,text width=7.6cm,align=left] at (-3.2,-0.5) {In time the same four read $120$, $119$, $122$ and $193$ ps. The payload is a fit to the early-2024 data: centre $(0.03,-0.02,0.42)$ cm, $\sigma_z=3.6$ cm, $\beta^*=30$ cm, emittance $5.7\times10^{-8}$ cm, hence $\sigma_{xy}=\sqrt{\epsilon\beta^*/2}=9\,\mu$m at the focus. The HL-LHC region is longer because the crab cavities give back what its larger crossing angle takes.};
+\node[lab,anchor=north west,text width=7.6cm,align=left] at (-3.2,-0.5) {In time the same four read $120$, $124$, $122$ and $193$ ps. The payload is a fit to the early-2024 data: centre $(0.03,-0.02,0.42)$ cm, $\sigma_z=3.6$ cm, $\beta^*=30$ cm, emittance $5.7\times10^{-8}$ cm, hence $\sigma_{xy}=\sqrt{\epsilon\beta^*/2}=9\,\mu$m at the focus. The HL-LHC region is longer because the crab cavities give back what its larger crossing angle takes.};
 \end{scope}
 \end{tikzpicture}

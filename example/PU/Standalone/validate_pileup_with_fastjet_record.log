@@ -11,26 +11,26 @@
 # It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code,
 # CGAL and 3rd party plugin jet algorithms. See COPYING file for details.
 #--------------------------------------------------------------------------
-the mixed final state of the record: 651 signal + 9033 pileup particles
-rho (grid median, |y| < 5, 0.55, phi from 0): FastJet 68.2765, standalone 68.2765 (record: 68.2760) GeV per unit area; the two middle cells of the 198: 67.9562, 68.5968
-   the same grid in eta (the older fixedGridRhoAll): 68.8434
-rho (jet median, kT R = 0.4, |y| < 4.4): FastJet 70.4339, standalone 69.8730
+the mixed final state of the record: 651 signal + 10045 pileup particles
+rho (grid median, |y| < 5, 0.55, phi from 0): FastJet 75.4682, standalone 75.4682 (record: 75.4680) GeV per unit area; the two middle cells of the 198: 75.2943, 75.6421
+   the same grid in eta (the older fixedGridRhoAll): 75.0716
+rho (jet median, kT R = 0.4, |y| < 4.4): FastJet 79.5289, standalone 78.4990
   fj        pT    A_fj   sa     pT_sa    A_sa      dpT      dA    n  n_sa  same
-   0   132.747   0.529    0   132.747   0.529  -0.0002  -0.000  112   112  yes
-   1   124.706   0.499    1   124.706   0.499   0.0001  -0.000   98    98  yes
-   2    84.227   0.479    2    84.227   0.519  -0.0002  -0.040  115   115  yes
-   3    83.086   0.499    3    83.086   0.509   0.0000  -0.010   95    95  yes
-   4    77.285   0.479    4    77.285   0.489   0.0004  -0.010   95    95  yes
-   5    76.485   0.529    5    76.485   0.509  -0.0001   0.020   95    95  yes
-   6    57.214   0.529    6    57.214   0.559   0.0003  -0.030   97    97  yes
-   7    53.524   0.519    7    53.524   0.529  -0.0005  -0.010   96    96  yes
-   8    49.603   0.499    8    49.603   0.539  -0.0002  -0.040  109   109  yes
-   9    49.186   0.489    9    49.186   0.519  -0.0004  -0.030   89    89  yes
-  10    48.826   0.499   10    48.826   0.519  -0.0001  -0.020   96    96  yes
-  11    48.671   0.539   11    48.671   0.529   0.0000   0.010   86    86  yes
-  12    48.608   0.559   12    48.608   0.529  -0.0000   0.030   86    86  yes
-  13    48.504   0.469   13    48.504   0.499   0.0002  -0.030  100   100  yes
-  14    47.878   0.539   14    47.878   0.519  -0.0001   0.020   95    95  yes
-173 FastJet jets above 3 GeV against 173 standalone: 173 with identical constituents; max |dpT| = 0.0005 GeV, max |dA| = 0.070 (the ghosts are placed differently)
-area differences over the identical jets: mean +0.0010, r.m.s. 0.0253
+   0   136.774   0.479    0   136.774   0.489   0.0002  -0.010  101   101  yes
+   1   133.533   0.539    1   133.533   0.529   0.0004   0.010  115   115  yes
+   2    96.397   0.489    2    96.397   0.499   0.0002  -0.010   95    95  yes
+   3    85.874   0.479    3    85.874   0.529  -0.0004  -0.050  105   105  yes
+   4    77.863   0.499    4    77.863   0.519  -0.0003  -0.020  101   101  yes
+   5    75.990   0.549    5    75.990   0.489  -0.0003   0.060  114   114  yes
+   6    75.500   0.509    6    75.500   0.509  -0.0003  -0.000   93    93  yes
+   7    63.761   0.539    7    63.761   0.559  -0.0002  -0.020  122   122  yes
+   8    61.903   0.588    8    61.903   0.588   0.0001   0.000  106   106  yes
+   9    61.610   0.598    9    61.610   0.568   0.0005   0.030  126   126  yes
+  10    59.172   0.529   10    59.172   0.529  -0.0004  -0.000  114   114  yes
+  11    55.968   0.549   11    55.968   0.519  -0.0000   0.030   98    98  yes
+  12    55.527   0.529   12    55.527   0.539   0.0001  -0.010   99    99  yes
+  13    54.352   0.539   13    54.352   0.598  -0.0005  -0.059  122   122  yes
+  14    54.217   0.559   14    54.217   0.539  -0.0004   0.020  108   108  yes
+175 FastJet jets above 3 GeV against 175 standalone: 175 with identical constituents; max |dpT| = 0.0005 GeV, max |dA| = 0.070 (the ghosts are placed differently)
+area differences over the identical jets: mean -0.0002, r.m.s. 0.0261
 wrote /Users/ravindrakumar/rverma/JME/JitJet/example/PU/Standalone/validate_pileup_with_fastjet_record.json

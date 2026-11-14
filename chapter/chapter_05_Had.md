@@ -45,10 +45,10 @@ A map of the file, with the steps of the chapter's flow chart:
 
 | Function or class | What it does |
 |---|---|
-| `colour_singlets` | follows every colour tag from a quark or antidiquark through the gluons to an antiquark or diquark; joins partons closer than `mJoin` = 0.3 GeV; sorts strings from ministrings |
+| `colour_singlets`, `join_nearby`, `Hadroniser.collect` | follows every colour tag from a quark or antidiquark through the gluons to an antiquark or diquark; joins partons closer than `mJoin` = 0.3 GeV; sorts strings from ministrings |
 | `StringFlav`, `StringPT` | what comes out of the vacuum at a break: the flavour, diquark and spin weights, the Gaussian kick |
 | `StringZ` | the Lund symmetric, Lund-Bowler and Peterson fragmentation functions |
-| `StringSystem`, `place_vertex` | the regions of the world sheet and the proper-time rule for a vertex that crosses a kink |
+| `StringSystem`, `Region`, `produce`, `solve_vertex` | the regions of the world sheet and the proper-time rule for a vertex that crosses a kink |
 | `fragment`, `final_two`, `MiniString` | the iteration from both ends, the stop at W_min, the last two hadrons, the ministrings |
 | `summarise` | the two B hadrons with their x_E, x_pT, x_+ and the hadron-level cones around the two b quarks |
 
@@ -82,9 +82,9 @@ The output with `--seed 1` is byte-for-byte the committed record. With
 `--history` the strings and the summary go to a JSON file as well; with
 `--repeat N` the script hadronises the same partons N times with seeds 1..N
 and writes the per-event quantities of section 5.1 to `<history>.stats.json`
-(`standalone_had_stats.stats.json`, `..._rfactb0.stats.json` and
-`..._peterson.stats.json` are the committed 400-event runs, three minutes
-each; `standalone_had_stats.log` is the printout).
+(`standalone_had_stats.stats.json` is the committed 400-event run, three
+minutes; `..._rfactb0.stats.json` and `..._peterson.stats.json` are 200-event
+runs, `--repeat 200`; `standalone_had_stats.log` is the printout).
 
 | Option | Meaning | Default (Monash, kept by CP5) |
 |---|---|---|
@@ -124,7 +124,8 @@ hadron level to those of the [chapter 4 companion](chapter_04_MPI.md#status-code
 When a colour singlet is collected, every one of its partons is copied with
 status `-71`; two partons that are joined because their pair mass is within
 `mJoin` = 0.3 GeV of their masses become one row with status `-73` and two
-mothers; a string that absorbs the recoil of a collapsing ministring would
+mothers (7 of the 41 rows hold three partons: the columns then show the
+first and the last, and all three point to the row as their daughter); a string that absorbs the recoil of a collapsing ministring would
 be copied with status `-72` (none in our event). The hadrons are positive:
 `82` for the two hadrons of a ministring (`81` for a single one), `83` for a
 hadron produced from the colour end of a string and `84` from its
@@ -141,7 +142,7 @@ chapter 6 decays them.
 ### The rows the chapter reads
 
 The b quark's string, rows 1006 to 1011 (status `-71` and `-73`; row 1009 is
-two gluons joined), and its first hadron, the B*bar0 (row 1012, status `83`,
+three gluons joined, rows 713, 842 and 894), and its first hadron, the B*bar0 (row 1012, status `83`,
 mothers 1006 to 1011):
 
 ```text
@@ -185,7 +186,7 @@ The opening lines, the parameters the chapter quotes:
   flavours: s/u = 0.217 (tunnelling exp(-pi m^2/kappa): m_s = 0.5 GeV would give 0.106), diquark/quark = 0.081, strange diquark x 0.915, spin-1 diquark x 3 x 0.0275
   vector/pseudoscalar: u,d 0.5, s 0.55, c 0.88, b 2.2; eta x 0.6, eta' x 0.12
   stop: W_min = m_q1 + m_q2 + 1.0 + 2.0 m_qlast, smeared +-20%; ministring below m_q1 + m_q2 + 1.0 GeV; partons joined below 0.3 GeV
-  f(z) for u -> pi (mT = m_pi)   : <z> = 0.328, maximum at z = 0.118
+  f(z) for u -> pi               : <z> = 0.328, maximum at z = 0.118
   f(z) for u -> rho              : <z> = 0.529, maximum at z = 0.449
   f(z) for b -> B (Lund-Bowler)  : <z> = 0.888, maximum at z = 0.931
 ```
@@ -216,7 +217,12 @@ antidiquark draw that made the Sigmabar0 and its Sigma0 partner, the eta'
 across a kink in region (1,3) at Gamma = 1.600 GeV^2, the remaining mass
 after fourteen hadrons (1.209 GeV below W_min = 2.750 smeared to 2.998),
 the final d dbar pair, and the orientation draw (ln(f+ f-) = -1.74 forward
-against -0.02 reversed, reversed with P = 0.848).
+against -0.02 reversed, reversed with P = 0.848). The three `f(z)` lines
+of the opening are evaluated at mT^2 = m^2 + sigma^2. The `Gamma` line
+prints (1 - z)(Gamma_old + mT^2/z) with the true proper time of the end's
+previous vertex as Gamma_old: that is the value printed one step earlier
+while the end is alone in its first region and after a vertex placed
+across a kink, and a larger one otherwise (section 4.1, known deviations).
 
 ## 3. Drawing the event and rendering the film
 
@@ -357,6 +363,51 @@ PYTHIA's first hadronisation of our partons is in
 full-chain event in `..._full_event1.txt`, both in the standalone format,
 so that `plot_journey_Had.py` draws them. The tables are in section 5.1.
 
+**Known deviations of the script from PYTHIA (audit 2026-11-14).** The
+record of the book is kept as the script wrote it; the places where the
+port departs from PYTHIA are marked `KNOWN DEVIATION` in
+`standalone_hadronisation.py` and were checked against PYTHIA's source
+(`StringFragmentation.cc`, `FragmentationFlavZpT.cc`, `FragmentationSystems.cc`).
+The sizes were measured with switchable copies of the script on seeds
+1..100 and with PYTHIA on the same partons (400 events each):
+
+- *The simple step in every region.* PYTHIA takes "z of the own piece" only
+  in the first region of an end (`iPosOld + iNegOld == iMax`) and of the
+  end's own remainder (`xDirHad = zHad * xDirOld`); the script takes it in
+  every region and of the remainder shared by both ends. 88 of the 299
+  vertices of seed 1 then have a Gamma other than the logged one; hadrons
+  per event 402.5 (script), 387.5 (first region only), 398.1 (own
+  remainder), 385.9 (both), PYTHIA 383.3 +- 0.5.
+- *Gamma beyond the first region.* True proper time in the script, PYTHIA's
+  sum over regions (`cGam1..4`) in PYTHIA; they differ next to a massive
+  quark. x_E of the b: 0.891 -> 0.906 with PYTHIA's sum, 0.90 to 0.91 with
+  the two rules above as well; PYTHIA 0.913 (+- 0.007 per variant).
+- *Diquarks.* uu_1, dd_1 and ss_1 come at half the rate of ud_1 (measured
+  uu_1/ud_0 = 0.039 for ud_1/ud_0 = 0.082; PYTHIA: `qBM[uu1] = 6 qBB[uu1]`
+  against `3 qBB[ud1]` per ordering). Baryons per event: script 38.8;
+  PYTHIA 44.0, 46.7 with `StringFlav:popcornRate = 0`, 45.0 with
+  `StringZ:useOldAExtra = off`, 46.8 with both: the missing popcorn is not
+  the reason for the deficit. Delta++ and Delta-: 0.56 and 0.61 per event
+  against 1.24 and 1.18 in PYTHIA without popcorn.
+- *Redraws and restarts.* A hadron that fits nowhere is redrawn (7% of the
+  hadrons; 11.5% of the rejected trials are baryons, 7.9% of their
+  replacements), where PYTHIA goes to the final two; 13% of the strings
+  end with more than W_min left (median 5.5 GeV, 13.3 GeV for string 14 of
+  seed 1); 10.9 string restarts per event (11 in seed 1, in 7 strings).
+  Without the redraw the event has 281 hadrons.
+- *Masses and W_min.* The script uses m0 (0.33, 0.33, 0.5, 1.5, 4.8 GeV;
+  diquarks 0.58 to 1.09), PYTHIA `constituentMass` (0.325, 0.325, 0.5, 1.6,
+  5.0; diquarks 0.65, 0.825, 1.0) for the ministring threshold and W_min:
+  the u ud_1 system (2.04 GeV) is a ministring here and a string there, 29
+  + 4 (8 hadrons of status 82) against 30 + 3 (6). The script's W_min is
+  mT_q1 + mT_q2 + 1.0 + 2.0 m_qlast with the ends' pT and the flavour of
+  the previous break; PYTHIA's has plain constituent masses and the flavour
+  about to be made: the 2.05 and 2.17 GeV strings make 3.00 hadrons here,
+  2.12 and 2.23 there.
+- *Not the same in the reference either.* PYTHIA draws Breit-Wigner masses
+  (`mSel`), the script pole masses; PYTHIA 8.315 runs Monash with
+  `StringZ:useOldAExtra = on`, the script has the corrected a_old/a_new.
+
 | Option | Meaning |
 |---|---|
 | `--mode record` / `full` | hadronise the 211 partons of chapter 4 / run the full CP5 chain from the hard event |
@@ -428,7 +479,7 @@ x_E = 0.980 of the 116.36 GeV quark. The cone numbers are in section 5.1.
 "Same partons" means the 211 final partons of `event_MPI.lhe` with their
 colour tags, hadronised 400 times by PYTHIA 8.315 with the Monash
 fragmentation parameters that CP5 keeps, and 400 times by the standalone
-script; "full chain" means PYTHIA from the hard event of chapter 1 with the
+script (200 for its plain-Lund and Peterson rows); "full chain" means PYTHIA from the hard event of chapter 1 with the
 CP5 settings, 2000 events with b drawn and 526 with
 abs(b/`<b>` - 0.3136) < 0.03; hadron decays are off everywhere, so every
 hadron is primary. The spread of a single event follows +-. Cones are drawn
@@ -451,7 +502,7 @@ log and the FWLite counts of the JitJetSW job `test/05_Had/` (column 6, section 
 | b: x_E, plain Lund (r_b = 0) | 0.963 +- 0.038 | 0.952 +- 0.048 | -- | -- | -- | -- |
 | b: x_E, Peterson (epsilon_b = 0.005) | 0.870 +- 0.120 | 0.839 +- 0.132 | -- | -- | -- | -- |
 | bbar: x_E | 1.033 +- 0.049 | 1.025 +- 0.072 | 0.941 +- 0.095 | 0.936 +- 0.094 | 1.154 | 0.980 |
-| b: pT of its hadron [GeV] | 71.1 +- 5.0 | 69.4 +- 5.2 | 87.8 +- 26.7 | 87.7 +- 27.3 | 78.56 | 94.28 |
+| b: pT of its hadron [GeV] | 71.1 +- 5.0 | 68.7 +- 6.2 | 87.8 +- 26.7 | 87.7 +- 27.3 | 78.56 | 94.28 |
 | b: B*bar0 : B*- : Bbar0 : B- : B*_sbar0 [%] | 31:28:14:12:8 | 31:32:13:12:6 | 29:29:13:15:6 | 30:29:14:14:4 | B*bar0 | B- |
 | b, dR < 0.4: partons pT [GeV] | 100.67 | 100.67 | 109.7 | 109.7 | 100.67 | 127.25 |
 | b, dR < 0.4: hadrons pT [GeV] | 98.0 +- 2.2 | 96.8 +- 3.1 | 109.6 | 109.8 | 99.23 | 114.45 |
@@ -464,9 +515,13 @@ log and the FWLite counts of the JitJetSW job `test/05_Had/` (column 6, section 
 On identical partons the standalone script makes 5% more hadrons (the
 excess sits in the gluon-rich strings: 46 against 43 hadrons from the
 108 GeV string with 21 partons, 24 against 21 from the 95 GeV one; the
-two-parton strings agree to 2%), 11% fewer baryons (no popcorn), and its B
-hadron keeps 0.03 less of the quark's energy; the Bowler, plain-Lund and
-Peterson variants move both implementations the same way.
+two-parton strings above 3 GeV agree to 2%), 12% fewer baryons (17% fewer
+than PYTHIA without popcorn), and its B hadron keeps 0.03 less of the
+quark's energy with the Bowler and Peterson functions and 0.01 less with
+the plain Lund one. The causes are the known deviations of section 4.1.
+"With strangeness" counts every hadron with an s or sbar among its valence
+quarks (phi and eta' included, eta not) in the first five columns, and
+kaons, K* and strange baryons in the CMSSW column.
 
 ### 5.2 Kinematics of the two b quarks, their hadrons and their cones
 

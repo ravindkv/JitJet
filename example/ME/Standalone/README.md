@@ -17,8 +17,9 @@ required.
 
 - `qqbar_bbbar_xsec.py`: main integrator and command-line options.
 - `export_pythia_xsec.h`: exports the actual generator settings and alpha_s.
-- `pythia_log_defaults.json`: parameters inferred from your log and standard defaults.
-- `validated_default_result.json`: full numerical result, flavour breakdown and configuration.
+- `pythia_log_defaults.json`: parameters of the original pTHat >= 30 GeV run, inferred from the PYTHIA log and standard defaults.
+- `validated_default_result.json`: full numerical result of that 30 GeV run, flavour breakdown and configuration.
+- `result.json`: the same for the default pTHat >= 100 GeV cut of the book.
 - `example_pt_scan.json`: example lower-cut scan with numerical errors.
 - `test_integrator.py`: independent normalization and phase-space checks.
 - `standalone_qqbar_bbbar_xsec.py`: the same calculation with NumPy and SciPy
@@ -143,7 +144,8 @@ python3 standalone_qqbar_bbbar_xsec.py --repeats 8  # adds an integration error
 
 With the same Sobol seed the standalone and full-environment integrals agree (345.32 vs 345.322 pb for the first repeat). Regenerate the
 tables with the full environment if the PDF set, alpha_s settings, or the
-kinematic range change:
+kinematic range change (the tables are dumped from pTHat = 30 GeV upwards, so
+that the pT scan and the 30 and 50 GeV rows of the chapter keep working):
 
 ```bash
 .venv/bin/python dump_standalone_tables.py
@@ -191,18 +193,21 @@ another hard-process record (PYTHIA listing or LHE block).
 python qqbar_bbbar_xsec.py --output result.json
 ```
 
-Equivalently:
+The original 30 GeV setup (PYTHIA reference 18.440 +/- 0.097 nb) is kept as a
+configuration file; it reproduces `validated_default_result.json`, so do not
+write it to `result.json`:
 
 ```bash
-python qqbar_bbbar_xsec.py --config pythia_log_defaults.json --output result.json
+python qqbar_bbbar_xsec.py --config pythia_log_defaults.json --output validated_30GeV.json
 ```
 
-Defaults: sqrt(s)=13600 GeV, mb=4.8 GeV, pTHatMin=30 GeV, no upper cut,
+Defaults: sqrt(s)=13600 GeV, mb=4.8 GeV, pTHatMin=100 GeV, no upper cut,
 alpha_s(MZ)=0.118, PYTHIA alphaSorder=2, alphaSnfmax=6, five incoming flavours,
 muR^2=muF^2=pTHat^2+mb^2, Kfactor=1, PDF central member 0.
 
 The included run used 8 independently scrambled Sobol sequences, each with
-65536 integration points. Its estimated integration error is 0.000047 nb.
+65536 integration points. Its estimated integration error is 0.0000007 nb
+(0.0007 pb; it was 0.000047 nb for the 30 GeV cut).
 This describes numerical integration only, not the physical prediction's
 uncertainty. The output includes each repeat and each initial-flavour result.
 

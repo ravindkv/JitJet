@@ -183,7 +183,7 @@ A cross section is a number; a shower is a random process. The same hard
 event showered twice gives two different families, and the spread between
 them is not an error but physics: our event, showered once with the
 standalone script, leaves the mother at $78\GeV$, while two thousand showers
-of the same event leave her at $94\pm29\GeV$ on average, and the two \CMSSW
+of the same event leave her at $94\pm28\GeV$ on average, and the two \CMSSW
 runs of this book left her at $47\GeV$ with the showers alone and at
 $92\GeV$ once the multiparton interactions of \cref{ch:uninvited_cousins}
 are interleaved with them. The four numbers are one distribution. What can be
@@ -212,18 +212,18 @@ number of partons above $20\GeV$, the \pt and mass of each $b$ family, the
 number of initial-state branchings and the momentum fractions after them,
 all within one to three percent, which is the level at which the standalone
 tables and interpolations differ from LHAPDF. The disagreement is in the soft
-tail: the standalone shower makes $7\%$ more final-state branchings, all
-between $1$ and $5\GeV$, and $14\%$ more when only the two $b$ quarks
-radiate; raising the FSR cut-off to $2\GeV$ on both sides leaves a $7\%$
+tail: the standalone shower makes $9\%$ more final-state branchings, soft
+ones (above $5\GeV$ the parton counts differ by $2\%$), and $14\%$ more when
+only the two $b$ quarks radiate; raising the FSR cut-off to $2\GeV$ on both sides leaves a $7\%$
 excess in the last octave, so this is a normalisation of the soft-emission
 rate near the cut-off, where the coupling is $0.3$ to $0.5$ and no two
 implementations of the infrared region agree exactly. Two further numbers
 teach more than the agreement does. With the beam-recoil damping of
 \cref{eq:mother_gives_birth:dampen} switched off the standalone shower makes
 twice as many final-state branchings; and with \PYTHIA's default rapidity
-ordering of the initial state switched back on, \PYTHIA itself makes $3.4$
-instead of $5.1$ initial-state branchings and $16$ instead of $20$
-final-state ones, with the $b$ families unchanged to a percent. The softest
+ordering of the initial state switched back on, \PYTHIA itself makes $3.2$
+instead of $4.9$ initial-state branchings and $16$ instead of $19$
+final-state ones, with the $b$ families moving by about a percent. The softest
 activity of a shower is a matter of options; the hard structure is not.
 \label{sec:mother_gives_birth:cmssw}
 
@@ -256,7 +256,8 @@ shower is quoted after $\pm$ where it matters; the error of a mean is 45
 times smaller); the third column is the one shower with seed~1 that wrote
 \file{example/PS/event_PS.lhe}; the last is the single event of the \CMSSW
 job with the two showers on and multi-parton interactions and hadronisation
-off, its shower partons counted without the four beam remnants. All
+off, its shower partons counted without the four beam remnants and its
+\pt read from the final copies (status~1). All
 runs use the CP5 shower settings of \cref{sec:mother_gives_birth:cp5}.}
 \label{tab:mother_gives_birth:numbers}
 \footnotesize
@@ -266,12 +267,12 @@ runs use the CP5 shower settings of \cref{sec:mother_gives_birth:cp5}.}
 ISR branchings & $4.93\pm2.9$ & $4.88\pm2.9$ & $5$ & $0$ \\
 FSR branchings & $19.1\pm11$ & $20.9\pm12$ & $33$ & $5$ \\
 final partons (of which gluons) & $26.0$ ($20.9$) & $27.7$ ($22.0$) & $40$ ($27$) & $7$ ($3$) \\
-partons with $\pt>20$ / $5$ / $1\GeV$ & $2.8$ / $7.1$ / $18.6$ & $2.8$ / $7.3$ / $19.5$ & $8$ / $18$ / $31$ & $3$ / $6$ / $7$ \\
-$x$ after ISR, $+z$ / $-z$ parton & $0.042$ / $0.446$ & $0.042$ / $0.446$ & $0.017$ / $0.470$ & $0.002$ / $0.391$ \\ \midrule
-$b$: \pt after the shower [GeV] & $94.6\pm30$ & $93.9\pm29$ & $78.1$ & $46.9$ \\
-$b$ family: \pt / $n$ / $m$ [GeV] & $107.8$ / $2.5$ / $8.1$ & $108.4$ / $2.7$ / $8.2$ & $100.5$ / $3$ / $13.5$ & $113.6$ / $6$ / $13.8$ \\
-$\bar b$: \pt after the shower [GeV] & $92.2$ & $90.1$ & $73.2$ & $113.2$ \\
-$\bar b$ family: \pt / $n$ / $m$ [GeV] & $104.8$ / $2.4$ / $8.0$ & $103.4$ / $2.7$ / $8.0$ & $92.1$ / $3$ / $7.0$ & $114.0$ / $1$ / $4.8$ \\
+partons with $\pt>20$ / $5$ / $1\GeV$ & $2.8$ / $7.1$ / $18.6$ & $2.8$ / $7.2$ / $19.5$ & $8$ / $18$ / $31$ & $3$ / $6$ / $7$ \\
+$x$ after ISR, $+z$ / $-z$ parton & $0.042$ / $0.446$ & $0.042$ / $0.445$ & $0.017$ / $0.470$ & $0.002$ / $0.391$ \\ \midrule
+$b$: \pt after the shower [GeV] & $94.6\pm30$ & $93.9\pm28$ & $78.1$ & $47.0$ \\
+$b$ family: \pt / $n$ / $m$ [GeV] & $107.8$ / $2.5$ / $8.1$ & $108.4$ / $2.7$ / $8.1$ & $100.5$ / $3$ / $13.5$ & $113.6$ / $6$ / $13.8$ \\
+$\bar b$: \pt after the shower [GeV] & $92.2$ & $90.1$ & $73.2$ & $114.0$ \\
+$\bar b$ family: \pt / $n$ / $m$ [GeV] & $104.8$ / $2.4$ / $8.0$ & $103.4$ / $2.6$ / $8.0$ & $92.1$ / $3$ / $7.0$ & $114.0$ / $1$ / $4.8$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -293,7 +294,7 @@ gluon that is emitted costs one power of \alphas, which over the scales of
 our shower lies between $0.11$ and $0.2$. Three emissions should then be
 suppressed by $\alphas^3\approx10^{-3}$ relative to the Born process, and
 the $38$ branchings of our event by $\alphas^{38}\approx10^{-33}$. Yet
-every event looks like ours: \PYTHIA averaged $5$ initial- and $20$
+every event looks like ours: \PYTHIA averaged $5$ initial- and $19$
 final-state branchings over the $2000$ showers of
 \cref{sec:mother_gives_birth:pythia}. Why does a chain that is suppressed
 at every link go on for dozens of links? Because \alphas never comes alone.
@@ -377,7 +378,7 @@ price of keeping only the collinear and soft parts of each matrix element.
 numbers. The propagator factor of a massless quark grows as $2/\theta^2$
 without limit; for our mother it saturates at $1/(1-\beta_b)=5515$ below
 $\theta_0=0.019$. And the $38$ branchings of our event, counted per octave
-of the evolution variable, rise from one or two per octave at the top to
+of the evolution variable, rise from two to five per octave over most of the range to
 sixteen in the last octave above the cut-off, where the coupling has grown
 from $0.11$ to $0.5$: the first ten branchings span three octaves, the
 last eighteen less than one.
@@ -411,7 +412,7 @@ our event it is louder than the mother's own.
 
 Set the stage before the formulas. After the three initial-state branchings
 of our event there are five final-state partons and seven dipole ends;
-after thirty there are forty partons and sixty-seven ends, and at every
+after all thirty-eight there are forty partons and sixty-seven ends, and at every
 round each of them may branch in one of several ways. A quark can only emit
 a gluon. A gluon may emit a gluon or split into a quark--antiquark pair of
 any flavour light enough at that scale. An incoming parton may be found to
@@ -528,7 +529,8 @@ $\mathrm{d}\theta^2/\theta^2$ measure of
 that grows from $0.14$ at $30\GeV$ to $0.53$ at $1\GeV$: the number of
 branchings per octave rises as the scale falls. Who branches is decided by
 the kernels. Every branching adds a gluon to the final state, and a gluon
-radiates with $C_A$ rather than $C_F$ from each of its two colour lines, so
+radiates with $C_A/2$ from each of its two colour lines, $C_A$ in all
+against the quark's $C_F$, so
 down the ladder the gluons take over the radiating: at rung 25 twenty of
 the 27 partons are gluons, at the end 27 of 40, and 19 of the 38
 branchings are $g\to gg$. The finite $P_{qg}$ keeps the $g\to q\bar q$
@@ -954,9 +956,10 @@ of the lower chain, radiates against the gluon \#18 that the $-z$ beam
 emitted in branching~2, a dipole of only $80.6\GeV$. Panel~(d) is the same
 picture two branchings later and is the one to keep in mind for the rest
 of the section: the emitted gluons sit \emph{between} their radiator and
-recoiler on the chain, every new parton brings two new dipole ends, and
-the number of competitors in a round grows by two with every final-state
-branching, from seven ends to eleven here and to sixty-seven at the end.
+recoiler on the chain, every new gluon brings two new dipole ends, and
+the number of competitors in a round grows by two with every emitted gluon
+(a $g\to q\bar q$ splitting adds none), from seven ends to eleven here and
+to sixty-seven at the end.
 
 A branching $a\to bc$ of the radiator is parametrised by its virtuality
 $m_a$ and the energy fraction $z$ kept by $b$ in the dipole rest frame, and
@@ -1051,7 +1054,8 @@ therefore includes small shifts from final-state emissions too. Second,
 \end{equation}
 with $\ptrad$ the transverse momentum of the radiator itself,
 which suppresses large virtualities of a parton whose colour partner is a
-beam. For the mother's round-1 proposal, $\ptrad=113.2\GeV$,
+beam (this is the form that reproduces \PYTHIA's multiplicities; its manual
+quotes $4\ptrad^2/(4\ptrad^2+m_a^2)$). For the mother's round-1 proposal, $\ptrad=113.2\GeV$,
 $\ptevol=5.24\GeV$ and $m_a=39.6\GeV$, it is
 $593/(593+1567)=0.275$, the smallest of the four factors in the weight of
 \cref{sec:mother_gives_birth:veto}. This one factor turns out to be the single most sensitive ingredient
@@ -1103,7 +1107,7 @@ where $Q^2$ is the spacelike virtuality of $a$, and $p_{\mathrm{T}0}=2\GeV$
 $\alphas(\pt^2)\to\alphas(\pt^2+p_{\mathrm{T}0}^2)$, so that the evolution can be
 continued to $\pt^{\min}=0.42\GeV$ without the coupling diverging: at
 $\ptevol=1\GeV$ the coupling is evaluated at $\sqrt5=2.24\GeV$ and is
-$0.29$ instead of $0.53$, and the measure is a quarter of $\mathrm{d}\pt^2/\pt^2$. The
+$0.29$ instead of $0.53$, and the measure is a fifth of $\mathrm{d}\pt^2/\pt^2$. The
 four channels [\code{isr\_channels}] are $q\leftarrow q$ (a gluon is
 emitted), $q\leftarrow g$ (an antiquark is emitted), $g\leftarrow g$ and
 $g\leftarrow q$ (a quark is emitted and the gluon continues). After the
@@ -1112,8 +1116,8 @@ $x/z$, the emitted parton $c$ takes the transverse momentum, and the whole
 downstream system, the other incoming parton untouched, is boosted and
 rotated so that everything balances [\code{isr\_kinematics}]. The
 \emph{recoil is taken by the entire event}: every final-state parton, the
-mother included, shifts. We will see her \pt jump by $20\GeV$ three times
-before she has emitted anything herself.
+mother included, shifts. We will see her \pt jump by $20\GeV$ twice, down
+and up again, before she has emitted anything herself.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/ps_isr_backward}}
@@ -1228,8 +1232,10 @@ are interleaved in the same way, which is why the \CMSSW log quotes one
 \end{figure}
 
 The starting scale is \PYTHIA's factorisation scale of the $2\to2$ process,
+the smaller of the two squared transverse masses (the script takes their
+mean, the same number for two quarks of equal mass),
 \begin{equation}
-  \pt^{\max}=\sqrt{\pthat^2+\tfrac12(m_3^2+m_4^2)}=\sqrt{113.22^2+4.8^2}=113.32\GeV ,
+  \pt^{\max}=\sqrt{\min\bigl(m_{\mathrm{T}3}^2,m_{\mathrm{T}4}^2\bigr)}=\sqrt{113.22^2+4.8^2}=113.32\GeV ,
   \label{eq:mother_gives_birth:ptmax}
 \end{equation}
 printed in the log as ``Max pT scale for MPI = 1.133e+02, ISR = 1.133e+02,
@@ -1247,7 +1253,11 @@ where $\Lambda_3=0.382\GeV$ is the three-flavour $\Lambda$ of the shower's
 coupling. The first is the origin of the warning
 ``\code{SimpleTimeShower::init: pTmin too low, raised to 0.611}'' at the top
 of every CP5 log: the tune asks for $0.5\GeV$, and \PYTHIA refuses to go
-closer than a factor $1.6$ to the Landau pole. Below the cut-off the
+closer than a factor $1.6$ to the Landau pole. The second is the script's
+floor, stricter than \PYTHIA's: with $p_{\mathrm{T}0}$ in the argument of
+the coupling \PYTHIA keeps the initial-state cut-off at $0.2\GeV$, and
+the script misses the $1.6\%$ of initial-state emissions made below
+$0.42\GeV$. Below the cut-off the
 shower stops and hadronisation (\cref{ch:children_getting_married}) takes over.
 The cut-offs apply to the evolution variable, not to what ends up in the
 record: the last branching of our event, number~38, is a $\bar d$ emitting
@@ -1258,7 +1268,8 @@ quantities. Nor does the last emission sit at the cut-off: in round~39
 nobody proposed anything above it, and that, not reaching $0.611\GeV$, is
 what stops the shower. The flavour thresholds of the running coupling,
 $m_c=1.5$ and $m_b=4.8\GeV$, also sit inside the evolution range: above
-$4.8\GeV$ a gluon may split into $\bbbar$, and in our event one does, at
+$4.8\GeV$ the script lets a gluon split into $\bbbar$ (\PYTHIA asks only
+for a pair mass above $2\mb$), and in our event one does, at
 branching~10, with $\ptevol=5.967\GeV$ and $z=0.350$. Its pair mass,
 $\sqrt{35.60/(0.350\times0.650)}=12.51\GeV$, clears the threshold
 $2\mb=9.6\GeV$; the two new quarks have $27.2$ and $40.1\GeV$ in the
@@ -1269,9 +1280,10 @@ says where it came from.
 
 \Cref{fig:mother_gives_birth:interleaving_plot} draws the ladder against the
 round number together with the thresholds and cut-offs, and counts the
-competitors of every round from the \code{-v} log: seven dipole ends and
-two beams in round~1, growing by two with every final-state branching to
-sixty-nine in round~39, where all of them are silent.
+competitors of every round from the \code{-v} log: two dipole ends and
+two beams in round~1, seven ends after the three initial-state branchings,
+then two more with every emitted gluon up to sixty-nine competitors in
+round~39, where all of them are silent.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=6,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
@@ -1327,7 +1339,8 @@ either \PYTHIA default or left out of the standalone version; the list is in
 uses, with its thresholds and the values quoted above, next to the
 first-order form that the veto algorithm overestimates it with; their ratio
 is the coupling factor of \cref{eq:mother_gives_birth:veto_weight}, between
-$0.73$ and $0.87$ over the shower and above one only in the last octave.
+$0.71$ and $0.87$ over most of the shower and above one only below
+$0.63\GeV$, just above the cut-off.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=7,width=\textwidth]{PS/Standalone/theory_parton_showering.pdf}
@@ -1429,7 +1442,7 @@ For our event the sequence is 38 branchings long, and its first five are
 worth reading in order, because they set everything that follows:
 \begin{enumerate}[nosep]
   \item ISR on the $+z$ side at $\pt=53.9\GeV$: the $\bar u$ is resolved as
-    coming from a gluon, $g\to\bar u+u$, and a $u$ quark of $54\GeV$ enters
+    coming from a gluon, $g\to\bar u+u$, and a $u$ quark of $45\GeV$ enters
     the final state; the incoming fraction rises from $2.17\times10^{-3}$ to
     $2.79\times10^{-3}$.
   \item ISR on the $-z$ side at $51.4\GeV$: the valence $u$ came from a $u$
@@ -1597,7 +1610,7 @@ fractions are not in the record yet; they arrive in
 $92.1\GeV$. At $\eta=-3.4$ she is deep in the forward calorimeter, and the
 gluon she radiated at $34\GeV$ split into a second $\bbbar$ pair,
 so that the final state contains two $b$ and two $\bar b$ quarks. The
-shower does this in a few percent of events, and at the registry office
+shower does this in about one percent of events, and at the registry office
 (\cref{ch:registry_office}) it is one of the reasons a ``$b$ jet'' needs a
 definition rather than a label: which of the two $b$ quarks at
 $\eta\approx-3.3$ is the jet's flavour? Keep the question.
@@ -1682,7 +1695,7 @@ and three members, of which one, the $1.8\GeV$ gluon, would not survive
 the detector thresholds of the later chapters. Her twin at $\eta=-3.4$ is
 in the forward calorimeter with two extra $b$ quarks for company. Between
 the two, in the backward hemisphere at $\eta\approx-2.4$ and
-$\phi\approx-2.5$, sits a third cluster of four partons within $\dR<0.25$
+$\phi\approx-2.5$, sits a third cluster of four partons within $\dR<0.3$
 of each other: the $u\bar u$ pair from the mother's first gluon, $17.8$ and
 $14.9\GeV$, and two initial-state gluons of $10.6$ and $6.7\GeV$. Half of
 it is the mother's family by ancestry and half is not, and nothing but the
@@ -1851,7 +1864,7 @@ chapter and of \cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
 \begin{pitfalls}
 \begin{itemize}[nosep]
   \item \textbf{One shower is not a prediction.} $78$, $92$ and $94\GeV$
-    for the mother's \pt are one distribution with a width of $29\GeV$.
+    for the mother's \pt are one distribution with a width of $28\GeV$.
     Compare averages between codes, never single events, and never ``fix''
     a seed to match another program.
   \item \textbf{$\ptevol$ is not the gluon's \pt.} The evolution
@@ -1951,10 +1964,11 @@ chapter and of \cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
   $b$ is $z=0.601$ and that
   \cref{eq:mother_gives_birth:pt_evol_fsr} gives $32.07\GeV$ with
   $m_a=65.67\GeV$.
-\item \textbf{The dead cone by numbers.} For the mother's three emissions
+\item \textbf{The dead cone by numbers.} For the mother's two emissions
   evaluate the two terms of \cref{eq:mother_gives_birth:dead_cone_kernel}
-  and confirm the suppressions of $0.3\%$, $2\%$ and $25\%$. Then find, in
-  the record, the emission of the $\bar b$ closest to the dead-cone limit.
+  and confirm the suppressions of $0.3\%$ and $2\%$. Then find, in
+  the record, the emission of a $\bar b$ closest to the dead-cone limit
+  and confirm its $25\%$.
   Modify the kernel weight in \code{pT2next\_fsr} to drop the mass term,
   rerun with \code{--repeat 500} and \code{--no-isr}, and measure the change
   in the number of FSR branchings and in the family mass.
@@ -1987,8 +2001,8 @@ chapter and of \cite{Mangano:2006rw,Frederix:2012ps,Lonnblad:2001iq}.
   initial or final state, and roughly at what \pt. Then run
   \code{--scene sudakov --no-dampen} and describe what happened to the red
   and blue curves.
-\item \textbf{Two fates, continued.} The $\bar b$ family at $\eta=-3.4$
-  now contains three $b$-flavoured quarks. Which of them will the forward
+\item \textbf{Two fates, continued.} Within $\dR<1$ of the $\bar b$ at $\eta=-3.4$
+  there are now three $b$-flavoured quarks. Which of them will the forward
   calorimeter see as one object, and can any detector tell that the
   cluster is heavy-flavoured? Keep the answer for \cref{ch:registry_office}.
 \item \textbf{Read the competition.} In the \code{-v} log, list for rounds
@@ -2034,13 +2048,13 @@ started with the scripts of this chapter.
     equivalent to rerunning with \code{--alphas}, and where does it break
     down, in particular when the weight of \cref{eq:mother_gives_birth:veto_weight}
     would have to exceed one?
-  \item \textbf{The last octave.} The $7\%$ excess of soft branchings in
+  \item \textbf{The last octave.} The $9\%$ excess of soft branchings in
     \cref{sec:mother_gives_birth:pythia} is invisible at parton level and
     may not be after hadronisation. CMS has already used jet-substructure
     observables in $\ttbar$ events to constrain the shower
     coupling~\cite{CMS:2018ypj}, and a Phase-2 measurement of constituent
     multiplicity at $\pt\sim100\GeV$ will have a statistical error far
-    below $7\%$. Which hadron-level observables are sensitive to the shower
+    below $9\%$. Which hadron-level observables are sensitive to the shower
     cut-off region and which are protected by hadronisation? Groomed
     observables such as the soft-drop mass isolate the collinear
     dynamics~\cite{Anderle:2020mxj}; the answer decides what a Run-4 tune

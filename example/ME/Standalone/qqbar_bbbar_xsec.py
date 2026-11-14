@@ -71,8 +71,10 @@ class Config:
     power: int = 16  # 2**power Sobol points per independently scrambled repeat
     repeats: int = 8
     seed: int = 24680
-    reference_pb: float = 18440.0
-    reference_error_pb: float = 97.17
+    # PYTHIA in CMSSW for the default cut pTHat >= 100 GeV (JitJetSW, 1000 events); the
+    # original 30 GeV setup had 18440 +/- 97.17 pb and is kept in pythia_log_defaults.json.
+    reference_pb: float = 348.6
+    reference_error_pb: float = 6.0
 
     def validate(self):
         for key, val in asdict(self).items():
@@ -328,7 +330,7 @@ def integrate(cfg, raw_pdf=None, progress=True):
         "pdf_frozen_calls": pdf.frozen_calls,
         "negative_pdf_values": pdf.negative_values,
         "alpha_s_at_Q2_1178": alpha(1178.0),
-        "reference_note": "18.44 nb applies only to the original settings. "
+        "reference_note": "The reference applies only to the settings it was generated with. "
                           "Cut/parameter scans need new matching PYTHIA runs.",
     }
 
@@ -399,7 +401,7 @@ def main():
     for cut in cuts:
         replace(cfg, ptmin=cut).validate()
     print(f"PDF: {cfg.pdf}/{cfg.member}; eCM={cfg.ecm:g}; mb={cfg.mb:g}; alpha_s={cfg.alpha_backend}")
-    print("Reference 18.44 nb is meaningful only for matching the original PYTHIA settings.")
+    print(f"Reference {cfg.reference_pb:g} pb is meaningful only for the PYTHIA settings it was generated with.")
     results = []
     for cut in cuts:
         print(f"\npTHat >= {cut:g} GeV; pTHat upper limit={cfg.ptmax}", flush=True)

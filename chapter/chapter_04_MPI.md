@@ -174,8 +174,8 @@ the colour tags of the log:
 
 The outgoing gluons have p_x = +-3.302 and p_y = +-10.967 GeV, that is
 pT = 11.453 GeV; the incoming gluons carry p_z = 3.317 and -103.979 GeV,
-that is x_1 = 4.88e-4 and x_2 = 1.53e-2 of 6800 GeV. The next hundred rows
-are its shower and the 23 further scatterings with theirs. From row 702 the
+that is x_1 = 4.88e-4 and x_2 = 1.53e-2 of 6800 GeV. The next 55 rows
+are its shower, and the 23 further scatterings follow with theirs. From row 702 the
 stage writes the boosted copies; 702 and 703 are the hard system's
 initiators after their kicks (status `-61`):
 
@@ -239,7 +239,7 @@ pT0 = 1.4417 GeV, sigma_int = 497.33 mb, sigma_ND = 55.42 mb, <n> = 8.974; f(b) 
 ```
 
 ```text
-  double-Gaussian proton (coreRadius 0.7634, coreFraction 0.63): k = 93.005 so that <n> = 8.974; <b>_ND = 1.2398; f(0) = 4.517, <f>_ND = 0.973, <f>_hard = 2.218
+  double-Gaussian proton (coreRadius 0.7634, coreFraction 0.63): k = 93.005 from k <O>_int = <n> = 8.974 (not PYTHIA's condition, see Overlap); <b>_ND = 1.2398; f(0) = 4.517, <f>_ND = 0.973, <f>_hard = 2.218
      b/<b>     O(b)    f(b)  P_int(b)    n(b)
       0.00   0.4479   4.517    1.0000   41.65
       0.25   0.3895   3.928    1.0000   36.23
@@ -253,6 +253,20 @@ pT0 = 1.4417 GeV, sigma_int = 497.33 mb, sigma_ND = 55.42 mb, <n> = 8.974; f(b) 
   proton A(+z) gave g at x = 1.7140e-02 to the hard system (gluon); X = 0.9829 is left
   proton B(-z) gave u at x = 4.6999e-01 to the hard system (valence); X = 0.5300 is left
 ```
+
+In the overlap table `P_int(b)` and `n(b)` are 1 - exp(-k O) and k O(b) with
+the script's k, and `f(b)` is the script's O(b) int P_int d^2b / int O d^2b;
+the chain uses the rate f(b) `<n>` = 0.973 k O(b). This is a **known deviation
+from PYTHIA** (audit of 2026-11-14, marked `KNOWN DEVIATION` in the class
+`Overlap`, behaviour kept so that the record stays as it is): PYTHIA solves
+`<n>` = int k O d^2b / int P_int d^2b for k (89.7 instead of 93.0) and uses
+f(b) = O(b)/`<O>`_int, with `<O>`_int = int P_int O d^2b / int P_int d^2b. That
+form is larger by 1/`<f>`_ND = 2.9%, of which the script's larger k gives 0.7%
+back at our b: f(0.3136 `<b>`) = 3.704 with the script's sigma_int and 3.709
+with the 500.67 mb of the CMSSW log, against the script's 3.627; 33.2 expected
+secondary interactions against 32.5; f(0) = 4.60, `<f>`_hard = 2.26 and
+`<f>`_ND = 1. PYTHIA's form reproduces the enhancement factor of each of the
+2537 events of `validate_mpi_with_pythia_{sampled,fixedb}.json` to 1e-5.
 
 The first rung of the chain, every number of which the chapter's chain
 sketch reproduces:
@@ -276,7 +290,7 @@ The remnants and the colour reconnection:
     remnant partons: ud_0 (valence, m = 0.579), u, u, ubar, sbar, s, ubar (companions)
   proton B(-z) gave away 25 partons: ... valence left: u x1, d x1; remaining momentum fraction X = 0.2657
     remnant partons: ud_1 (valence, m = 0.771), u, u, sbar, u, sbar, ubar, sbar, d (companions)
-  primordial kT: width sigma = [(Q_half sigma_soft + Q sigma_hard)/(Q_half + Q)] m/(m + m_half), Q_half = 1.5, sigma_soft = 0.9, sigma_hard = 1.8, m_half = 1.0
+  primordial kT: width sigma = [(Q_half sigma_soft + Q sigma_hard)/(Q_half + Q)] m/(m + m_half y_damp), Q_half = 1.5, sigma_soft = 0.9, sigma_hard = 1.8, m_half = 1.0
     system 0 (hard, Q = 113.32, m = 1220.63 GeV): sigma_kT = 1.786 GeV; kT given: A (-1.767, +1.652), B (-1.113, -1.838)
     system 1 (MPI, Q = 11.45, m = 110.99 GeV): sigma_kT = 1.676 GeV; kT given: A (-0.897, +1.012), B (-1.960, +0.096)
 ==== colour reconnection (MPI-based model, range = 5.176) ====
@@ -288,6 +302,10 @@ The remnants and the colour reconnection:
     system 1  (pT = 11.45 GeV):  P = 0.298  -> not merged
   string length lambda = 879.6 -> 520.8; 33 colour-singlet strings
 ```
+
+The log prints the kT widths of the first six systems only. With
+y_damp = (E/m)^0.5 the softest, system 24 (Q = 0.43 GeV, m = 2.83 GeV,
+E = 50.7 GeV), gets 0.44 GeV, not the 1.10 GeV of the first factor alone.
 
 ## 3. Drawing the event and rendering the film
 
@@ -537,13 +555,13 @@ ledger, the analyser log and the FWLite counts of the JitJetSW job `test/04_MPI/
 | b / `<b>`, f(b) | 0.61, 2.26 | 0.63, 2.10 | 0.31, 3.70 | 0.31, 3.63 | 0.31, 3.63 | 0.31, 3.71 |
 | final partons | 125 +- 60 | 138 +- 54 | 181 +- 34 | 190 +- 33 | 211 | 169 |
 | of which from secondary systems | 92 | 88 | 145 | 137 | 155 | 142 |
-| of which beam remnants | 10.2 | 9.4 | 13.6 | 12.9 | 16 | 13 |
+| of which beam remnants | 10.2 | 9.4 | 13.6 | 12.8 | 16 | 13 |
 | sum pT of the secondary partons [GeV] | 134 | 124 | 212 | 196 | 230 | 208 |
 | hardest secondary interaction [GeV] | 6.8 | 6.5 | 8.6 | 8.4 | 11.45 | 6.65 |
 | transverse UE density [GeV per unit eta-phi] | 2.21 +- 1.72 | 2.00 +- 1.59 | 3.48 +- 1.54 | 3.23 +- 1.44 | 2.10 | -- |
-| UE sum pT within dR < 0.4 of the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.31 | 1.80 +- 2.43 | 1.60 +- 2.19 | 0.00 | 6.91 |
-| UE sum pT within dR < 0.8 of the b [GeV] | 4.57 +- 5.20 | 3.95 +- 4.05 | 7.32 +- 5.68 | 5.88 +- 4.44 | 3.42 | -- |
-| UE partons within dR < 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.07 / 4.18 | 0 / 3 | 3 / -- |
+| UE sum pT within dR < 0.4 of the b [GeV] | 1.21 +- 2.48 | 0.85 +- 1.30 | 1.80 +- 2.43 | 1.60 +- 2.19 | 0.00 | 6.91 |
+| UE sum pT within dR < 0.8 of the b [GeV] | 4.57 +- 5.20 | 3.95 +- 4.05 | 7.32 +- 5.68 | 5.90 +- 4.42 | 3.61 | -- |
+| UE partons within dR < 0.4 / 0.8 | 0.75 / 2.99 | 0.72 / 2.87 | 1.20 / 4.75 | 1.08 / 4.20 | 0 / 3 | 3 / -- |
 | systems merged by colour reconnection | -- | 13.2 | -- | 19.7 | 23 | -- |
 | string length lambda before -> after | -- | 563 -> 375 | -- | 769 -> 472 | 880 -> 521 | -- |
 
@@ -563,7 +581,7 @@ shower; "UE" the partons of the secondary systems and the remnants.
 | | hard system within dR < 0.4 | 100.67 | 13.52 | 3 | |
 | | all partons within dR < 0.4 | 100.67 | 13.52 | 3 | 0 |
 | | hard system within dR < 0.8 | 100.67 | 13.52 | 3 | |
-| | all partons within dR < 0.8 | 104.09 | 20.17 | 6 | 3 (3.42 GeV) |
+| | all partons within dR < 0.8 | 104.09 | 20.17 | 6 | 3 (3.61 GeV scalar, +3.42 in the vector sum) |
 | bbar | after the kick (status 62) | 72.50 | 4.80 | 1 | |
 | | all partons within dR < 0.4 | 93.88 | 7.75 | 4 | 1 (2.66 GeV) |
 | | all partons within dR < 0.8 | 116.07 | 41.61 | | 3 |
@@ -574,7 +592,12 @@ shower; "UE" the partons of the secondary systems and the remnants.
 Partons not descending from the hard system, |eta| < 2.5, azimuth relative
 to the leading b: toward 49.47 GeV, transverse 21.99 GeV (21 partons), away
 47.67 GeV; transverse density 21.99 / (5 x 2 pi / 3) = 2.10 GeV per unit
-eta-phi; all-azimuth density of the secondary partons 3.79 GeV.
+eta-phi; all-azimuth density of the secondary partons 3.79 GeV. No parton of
+the hard system, its initial-state radiation included, enters these sums
+(`summarise` skips every final parton of system 0); the two hardest rungs
+alone put 24.4 GeV into the toward region. Read from the three-decimal record
+the sums are 49.47, 21.94 (20 partons) and 47.72 GeV: one parton of 0.05 GeV
+sits on a region boundary. With all partons they are 201.7, 116.0 and 85.6 GeV.
 
 ### 5.4 The mother copy by copy, in both records
 
@@ -585,7 +608,7 @@ same boost.
 
 CMSSW (`genParticles` of the chapter 4 job, `test/04_MPI/out/`): row 182, status 52,
 91.59 GeV, her last shower copy; row 515, status 62, 91.744 GeV, after the
-beam remnants took their share, the same 0.15 GeV primordial-kT boost; row
+beam remnants took their share, a primordial-kT boost of 0.15 GeV (ours: 0.17 GeV); row
 824, status 71, 91.74 GeV, the b handed to hadronisation.
 
 ### 5.5 The energy ledger
@@ -594,7 +617,7 @@ beam remnants took their share, the same 0.15 GeV primordial-kT boost; row
 |---|---:|---:|---:|---:|
 | **Standalone** (seed 1, `event_MPI.lhe`) | | | | |
 | b family after the shower (dR < 0.4) | 100.45 | 13.52 | 3 | |
-| b family after this stage (dR < 0.4) | 100.67 | 13.52 | 3 | +0.22 |
+| b family after this stage (dR < 0.4) | 100.67 | 13.52 | 3 | +0.21 |
 | of which the b quark itself | 78.29 | 4.80 | 1 | |
 | the same within dR < 0.8 (3 UE partons) | 104.09 | 20.17 | 6 | +3.42 |
 | **CMSSW** (run 1, event 1; ISR, FSR and MPI on) | | | | |

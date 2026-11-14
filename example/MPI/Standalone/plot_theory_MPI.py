@@ -215,7 +215,7 @@ def page_overlap(st: Setup):
     a2.plot(b, ov.O(ov.b) / ov.O(0.0), color=COL_MPI, lw=2, label=r"$O(b)/O(0)$ (overlap of the two protons)")
     a2.plot(b, ov.p_int, color=COL_A, lw=1.8, label=r"$P_{\rm int}(b) = 1 - e^{-n(b)}$")
     a2b = a2.twinx()
-    a2b.plot(b, ov.O(ov.b) * ov.p_int_total, color=COL_EVENT, lw=1.6, ls="-.", label=r"$f(b) = n(b)/\langle n\rangle$")
+    a2b.plot(b, ov.O(ov.b) * ov.p_int_total, color=COL_EVENT, lw=1.6, ls="-.", label=r"$f(b)$ of the script")
     a2b.set_ylabel(r"enhancement factor $f(b)$", color=COL_EVENT)
     a2b.grid(False)
     a2b.set_ylim(0, 5)

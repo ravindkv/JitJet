@@ -282,13 +282,21 @@ def learn(args, pdf, alpha, event_path):
         print(f"    x f(x, Q^2) [TablePDF.xf]           at x1 = {x1:.4e}        at x2 = {x2:.4f}")
         for i, n in enumerate(names):
             print(f"      {n:>2s}: {q1[i,0]:.5f}    {n}bar: {qb1[i,0]:.5f}      {n:>2s}: {q2v[i,0]:.5f}    {n}bar: {qb2[i,0]:.5f}")
+        # The densities of the two partons that actually came in: row iq of the tables is the
+        # event's flavour, and the sign of each PDG id says whether it is the quark or the antiquark.
+        iq = abs(a["id"]) - 1
+        def dens(q, qb, pid):
+            return float((q if pid > 0 else qb)[iq, 0])
+        f1, f2 = dens(q1, qb1, a["id"]), dens(q2v, qb2, b["id"])
+        g1, g2 = dens(q1, qb1, -a["id"]), dens(q2v, qb2, -b["id"])      # the mirrored orientation
         for fac, lab in ((0.25, "Q^2/4"), (4.0, "4 Q^2")):
             qv1, qbv1 = pdf.xf(np.array([x1]), np.array([q2 * fac]))
             qv2, qbv2 = pdf.xf(np.array([x2]), np.array([q2 * fac]))
-            print(f"    at {lab:5s}: x1 f_{nm(a['id'])} = {qbv1[1,0]:.5f} ({qbv1[1,0]/qb1[1,0]-1:+.1%}),  x2 f_{nm(b['id'])} = {qv2[1,0]:.5f} ({qv2[1,0]/q2v[1,0]-1:+.1%}),"
-                  f"  product {qbv1[1,0]*qv2[1,0]/(qb1[1,0]*q2v[1,0])-1:+.1%}   (the mu_F dependence at this point)")
-        print(f"    the Jacobian cancellation (eq. xf): f_{nm(a['id'])}(x1) = xf/x1 = {qb1[1,0]/x1:.2f}, f_{nm(b['id'])}(x2) = {q2v[1,0]/x2:.4f};"
-              f"\n      f f tau = {qb1[1,0]/x1*q2v[1,0]/x2*tau:.5f} = [x1 f][x2 f] = {qb1[1,0]*q2v[1,0]:.5f}")
+            f1v, f2v = dens(qv1, qbv1, a["id"]), dens(qv2, qbv2, b["id"])
+            print(f"    at {lab:5s}: x1 f_{nm(a['id'])} = {f1v:.5f} ({f1v/f1-1:+.1%}),  x2 f_{nm(b['id'])} = {f2v:.5f} ({f2v/f2-1:+.1%}),"
+                  f"  product {f1v*f2v/(f1*f2)-1:+.1%}   (the mu_F dependence at this point)")
+        print(f"    the Jacobian cancellation (eq. xf): f_{nm(a['id'])}(x1) = xf/x1 = {f1/x1:.2f}, f_{nm(b['id'])}(x2) = {f2/x2:.4f};"
+              f"\n      f f tau = {f1/x1*f2/x2*tau:.5f} = [x1 f][x2 f] = {f1*f2:.5f}")
         dsig = float(dsigma_dcostheta(np.array([shat]), np.array([cos]), args.mb, als)[0])
         sig_hat = 4 * math.pi * als**2 * beta * (2 + rho) / (27 * shat) * GEV2_TO_PB
         prim = lambda z: (1 + rho) * z + (1 - rho) * z**3 / 3
@@ -304,7 +312,7 @@ def learn(args, pdf, alpha, event_path):
         for i, n in enumerate(names):
             print(f"      w_{n} = {j1*j2*j3:.3f} x {dsig:.3f} pb x ({q1[i,0]:.5f} x {qb2[i,0]:.5f} + {qb1[i,0]:.5f} x {q2v[i,0]:.5f}) = {w[i]:.3f} pb")
         print(f"    sum_q w_q = {w.sum():.3f} pb at this point  (the cross section is the average of such weights over the cube)")
-        print(f"    the {nm(a['id'])}(x1) {nm(b['id'])}(x2) orientation alone: {j1*j2*j3*dsig*qb1[1,0]*q2v[1,0]:.3f} pb, {qb1[1,0]*q2v[1,0]/(q1[1,0]*qb2[1,0]+qb1[1,0]*q2v[1,0]):.1%} of w_u")
+        print(f"    the {nm(a['id'])}(x1) {nm(b['id'])}(x2) orientation alone: {j1*j2*j3*dsig*f1*f2:.3f} pb, {f1*f2/(f1*f2+g1*g2):.1%} of w_{names[iq]}")
 
     print("\n[3] One Sobol pass: the running average (integrate, repeat 1)")
     pts = qmc.Sobol(d=3, scramble=True, seed=args.seed).random_base2(args.power)
@@ -360,6 +368,9 @@ def main():
     q2min = args.ptmin**2 + args.mb**2
     if q2min < TABLES["q2_knots"][0] or args.ecm**2 / 4 > TABLES["q2_knots"][-1]:
         sys.exit(f"Embedded PDF table covers Q^2 in [{TABLES['q2_knots'][0]:.0f}, {TABLES['q2_knots'][-1]:.3g}] "
+                 "GeV^2 only; re-run dump_standalone_tables.py for other kinematics")
+    if q2min < alpha.q2[0] or args.ecm**2 / 4 > alpha.q2[-1]:
+        sys.exit(f"Embedded alpha_s table covers Q^2 in [{alpha.q2[0]:.0f}, {alpha.q2[-1]:.3g}] "
                  "GeV^2 only; re-run dump_standalone_tables.py for other kinematics")
     print(f"Standalone tables: {TABLES['pdf_set']}/{TABLES['member']} (LHAPDF {TABLES['lhapdf_version']}), "
           f"PYTHIA alpha_s order {TABLES['pythia_alpha_s']['order']}, alphaS(MZ)={TABLES['pythia_alpha_s']['alphas_mz']}")

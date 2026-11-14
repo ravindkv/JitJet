@@ -5,47 +5,47 @@
   collections: ak4GenJets R = 0.4 (749 particles); ak4GenJetsNoNu R = 0.4, no neutrinos (744 particles); ak8GenJets R = 0.8 (749 particles); jets kept above pT = 3 GeV
   ghosts (momentum x 1e-18): b hadrons Lambda_bbar0 [1005] pT 35.52 eta -3.41 phi 1.49, Bbar0 [1527] pT 78.26 eta -1.38 phi -2.73, Bbar0 [1584] pT 24.93 eta -3.36 phi 1.34, Bbar0 [1590] pT 81.97 eta -3.43 phi 0.58
           c hadrons D- [1337] 1.28, D_s+ [1708] 0.92, D+ [1727] 0.11, Dbar0 [1797] 0.83, Dbar0 [1965] 14.95, Xi_c0 [2001] 71.43, D_s- [2177] 27.28, D0 [2179] 26.98, D+ [2189] 10.07
-          163 partons with status 71-79 (the strings' partons), 2 hard-process partons: bbar [5] pT 113.22, b [6] pT 113.22; 3 leptons from heavy hadrons
+          161 partons with status 71-79 (the strings' partons), 2 hard-process partons: bbar [5] pT 113.22, b [6] pT 113.22; 3 leptons from heavy hadrons
 
 ==== the b quark's ak4 jet, merge by merge ===========================================================
-  the jet is pseudojet 1006; 36 merges built it (of 930 steps of the whole event); step = position in the event's sequence
+  the jet is pseudojet 1004; 36 merges built it (of 928 steps of the whole event); step = position in the event's sequence
    step         merge        d_ij     dR     pT_i     pT_j     pT_k  what joined
      12   715 +   742   1.736e-06  0.006   10.567    4.451   15.018  pi-[2241] 4.45 GeV joins K-[2211] 10.57 GeV
-     16   697 +   941    2.73e-06  0.010    3.059   15.018   18.077  gamma[2178] 3.06 GeV joins pseudojet 941
-     20   760 +   945   5.953e-06  0.018    0.000   18.077   18.077  ghost chad D0[2179] joins pseudojet 945
-     23   698 +   949   7.429e-06  0.020    4.084   18.077   22.160  gamma[2180] 4.08 GeV joins pseudojet 949
-     24   750 +   952   1.238e-05  0.031    0.000   22.160   22.160  ghost bhad Bbar0[1527] joins pseudojet 952
-     27   781 +   953   1.685e-05  0.036    0.000   22.160   22.160  ghost parton b[1006] joins pseudojet 953
-     28   717 +   956   1.827e-05  0.038    1.113   22.160   23.273  gamma[2214] 1.11 GeV joins pseudojet 956
+     16   697 +   939    2.73e-06  0.010    3.059   15.018   18.077  gamma[2178] 3.06 GeV joins pseudojet 939
+     20   760 +   943   5.953e-06  0.018    0.000   18.077   18.077  ghost chad D0[2179] joins pseudojet 943
+     23   698 +   947   7.429e-06  0.020    4.084   18.077   22.160  gamma[2180] 4.08 GeV joins pseudojet 947
+     24   750 +   950   1.238e-05  0.031    0.000   22.160   22.160  ghost bhad Bbar0[1527] joins pseudojet 950
+     27   781 +   951   1.685e-05  0.036    0.000   22.160   22.160  ghost parton b[1006] joins pseudojet 951
+     28   717 +   954   1.827e-05  0.038    1.113   22.160   23.273  gamma[2214] 1.11 GeV joins pseudojet 954
      29   699 +   740   1.907e-05  0.025   14.269    5.414   19.683  pi-[2239] 5.41 GeV joins pi+[2181] 14.27 GeV
-     30   744 +   958   7.788e-06  0.022    8.987   19.683   28.669  K_S0[2245] 8.99 GeV joins pseudojet 958
-     31   759 +   959   5.433e-06  0.027    0.000   28.669   28.669  ghost chad D_s-[2177] joins pseudojet 959
-     32   746 +   960    1.24e-05  0.040    3.424   28.669   32.093  gamma[2247] 3.42 GeV joins pseudojet 960
-     33   957 +   961   1.843e-05  0.055   23.273   32.093   55.354  pseudojet 957 joins pseudojet 961
-     34   745 +   962   1.252e-05  0.078    2.927   55.354   58.275  gamma[2246] 2.93 GeV joins pseudojet 962
-     35   739 +   963   1.051e-05  0.076    8.546   58.275   66.820  K+[2238] 8.55 GeV joins pseudojet 963
-     36   738 +   964   1.228e-05  0.094    4.335   66.820   71.154  pi-[2237] 4.34 GeV joins pseudojet 964
-     37   741 +   965   1.596e-05  0.114    2.257   71.154   73.409  pi+[2240] 2.26 GeV joins pseudojet 965
-     38   716 +   966   1.685e-05  0.121    3.383   73.409   76.768  pi+[2213] 3.38 GeV joins pseudojet 966
-     39   166 +   967   1.586e-05  0.122    0.301   76.768   77.070  gamma[1528] 0.30 GeV joins pseudojet 967
-     40   718 +   968   1.693e-05  0.127    1.499   77.070   78.563  gamma[2215] 1.50 GeV joins pseudojet 968
-     44   154 +   969     3.4e-05  0.183    0.172   78.563   78.734  pi-[1506] 0.17 GeV joins pseudojet 969
-     48    49 +   973   4.514e-05  0.212    0.364   78.734   79.097  pi+[1183] 0.36 GeV joins pseudojet 973
-     49   224 +   977   4.578e-05  0.214    0.132   79.097   79.228  pi-[1603] 0.13 GeV joins pseudojet 977
-     50   701 +   978   4.554e-05  0.214    0.606   79.228   79.828  gamma[2184] 0.61 GeV joins pseudojet 978
-     51   168 +   979   4.583e-05  0.216    3.061   79.828   82.869  pi-[1530] 3.06 GeV joins pseudojet 979
-     53   505 +   980   5.105e-05  0.237    4.491   82.869   87.324  pi-[1973] 4.49 GeV joins pseudojet 980
-     54   172 +   982   4.712e-05  0.240    3.306   87.324   90.570  pi+[1536] 3.31 GeV joins pseudojet 982
-     55   504 +   983   4.974e-05  0.256    1.821   90.570   92.387  pi+[1972] 1.82 GeV joins pseudojet 983
-     56   783 +   984   4.701e-05  0.253    0.000   92.387   92.387  ghost parton g[1008] joins pseudojet 984
-     58   174 +   985   5.479e-05  0.274    1.896   92.387   94.278  gamma[1539] 1.90 GeV joins pseudojet 985
-     59   509 +   987   5.872e-05  0.289    0.309   94.278   94.586  gamma[1978] 0.31 GeV joins pseudojet 987
-     65   167 +   988   6.267e-05  0.300    1.025   94.586   95.599  pi+[1529] 1.03 GeV joins pseudojet 988
-     66   782 +   994   6.291e-05  0.303    0.000   95.599   95.599  ghost parton g[1007] joins pseudojet 994
-     67   700 +   995   6.671e-05  0.312    0.969   95.599   96.563  gamma[2183] 0.97 GeV joins pseudojet 995
-     72   173 +   996   7.283e-05  0.330    1.857   96.563   98.416  gamma[1538] 1.86 GeV joins pseudojet 996
-     76   508 +  1001   7.886e-05  0.350    0.765   98.416   99.157  gamma[1977] 0.76 GeV joins pseudojet 1001
-     77    58 +  1005   9.211e-05  0.381    0.680   99.157   99.830  pi+[1217] 0.68 GeV joins pseudojet 1005
+     30   744 +   956   7.788e-06  0.022    8.987   19.683   28.669  K_S0[2245] 8.99 GeV joins pseudojet 956
+     31   759 +   957   5.433e-06  0.027    0.000   28.669   28.669  ghost chad D_s-[2177] joins pseudojet 957
+     32   746 +   958    1.24e-05  0.040    3.424   28.669   32.093  gamma[2247] 3.42 GeV joins pseudojet 958
+     33   955 +   959   1.843e-05  0.055   23.273   32.093   55.354  pseudojet 955 joins pseudojet 959
+     34   745 +   960   1.252e-05  0.078    2.927   55.354   58.275  gamma[2246] 2.93 GeV joins pseudojet 960
+     35   739 +   961   1.051e-05  0.076    8.546   58.275   66.820  K+[2238] 8.55 GeV joins pseudojet 961
+     36   738 +   962   1.228e-05  0.094    4.335   66.820   71.154  pi-[2237] 4.34 GeV joins pseudojet 962
+     37   741 +   963   1.596e-05  0.114    2.257   71.154   73.409  pi+[2240] 2.26 GeV joins pseudojet 963
+     38   716 +   964   1.685e-05  0.121    3.383   73.409   76.768  pi+[2213] 3.38 GeV joins pseudojet 964
+     39   166 +   965   1.586e-05  0.122    0.301   76.768   77.070  gamma[1528] 0.30 GeV joins pseudojet 965
+     40   718 +   966   1.693e-05  0.127    1.499   77.070   78.563  gamma[2215] 1.50 GeV joins pseudojet 966
+     44   154 +   967     3.4e-05  0.183    0.172   78.563   78.734  pi-[1506] 0.17 GeV joins pseudojet 967
+     48    49 +   971   4.514e-05  0.212    0.364   78.734   79.097  pi+[1183] 0.36 GeV joins pseudojet 971
+     49   224 +   975   4.578e-05  0.214    0.132   79.097   79.228  pi-[1603] 0.13 GeV joins pseudojet 975
+     50   701 +   976   4.554e-05  0.214    0.606   79.228   79.828  gamma[2184] 0.61 GeV joins pseudojet 976
+     51   168 +   977   4.583e-05  0.216    3.061   79.828   82.869  pi-[1530] 3.06 GeV joins pseudojet 977
+     53   505 +   978   5.105e-05  0.237    4.491   82.869   87.324  pi-[1973] 4.49 GeV joins pseudojet 978
+     54   172 +   980   4.712e-05  0.240    3.306   87.324   90.570  pi+[1536] 3.31 GeV joins pseudojet 980
+     55   504 +   981   4.974e-05  0.256    1.821   90.570   92.387  pi+[1972] 1.82 GeV joins pseudojet 981
+     56   783 +   982   4.701e-05  0.253    0.000   92.387   92.387  ghost parton g[1008] joins pseudojet 982
+     58   174 +   983   5.479e-05  0.274    1.896   92.387   94.278  gamma[1539] 1.90 GeV joins pseudojet 983
+     59   509 +   985   5.872e-05  0.289    0.309   94.278   94.586  gamma[1978] 0.31 GeV joins pseudojet 985
+     65   167 +   986   6.267e-05  0.300    1.025   94.586   95.599  pi+[1529] 1.03 GeV joins pseudojet 986
+     66   782 +   992   6.291e-05  0.303    0.000   95.599   95.599  ghost parton g[1007] joins pseudojet 992
+     67   700 +   993   6.671e-05  0.312    0.969   95.599   96.563  gamma[2183] 0.97 GeV joins pseudojet 993
+     72   173 +   994   7.283e-05  0.330    1.857   96.563   98.416  gamma[1538] 1.86 GeV joins pseudojet 994
+     76   508 +   999   7.886e-05  0.350    0.765   98.416   99.157  gamma[1977] 0.76 GeV joins pseudojet 999
+     77    58 +  1003   9.211e-05  0.381    0.680   99.157   99.830  pi+[1217] 0.68 GeV joins pseudojet 1003
   then d_iB = 1/pT^2 = 0.0001003 is the smallest distance left for it: the jet is declared, pT = 99.830 GeV, eta = -1.439, phi = -2.712, m = 14.83, 31 constituents
   the cone of R = 0.4 around the quark holds 99.43 GeV in 31 particles; the jet's axis is 0.062 from the quark (dR in eta, phi);
     in the cone but not in the jet: pi+[1678] 0.15 GeV, gamma[2134] 0.26 GeV
@@ -86,7 +86,7 @@
       flavour-kT: 519 (+1 b, pT 24.93) + 895 (-1 b, pT 35.75) -> 1193 (none), d_ij = 208.6, dR = 0.162
 
 ==== summary =========================================================================================
-749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 163 partons (status 71-79), 2 hard-process partons, 3 leptons from heavy hadrons
+749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 161 partons (status 71-79), 2 hard-process partons, 3 leptons from heavy hadrons
 ak4GenJets (antikt, R = 0.4, pT > 3 GeV): 42 jets, 368 of 749 particles clustered; 11 jets above 10 GeV, 6 above 30; hadronFlavour 5: 3, 4: 2
    jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
      0    99.83   -1.44   -2.71   14.83   31   17    5    +5     0    +5  Bbar0 D0 D_s- | b g g
@@ -165,6 +165,8 @@ anti-kT jets with the heavy hadrons kept, net and IFN flavour (pT > 10 GeV or fl
   [7] pT = 12.79, eta = -0.69, phi = 0.77: net none, IFN none
   [8] pT = 12.02, eta = 0.02, phi = 2.85: net none, IFN none
   [9] pT = 10.64, eta = 0.66, phi = 2.87: net none, IFN none
+  [13] pT = 7.10, eta = 5.60, phi = -0.62: net -1 c, IFN -1 c  (Dbar0[1797])
+  [36] pT = 3.29, eta = 6.27, phi = -1.81: net -1 c, IFN -1 c  (D-[1337])
 flavour-kT jets (pT > 10 GeV or flavoured):
   pT = 99.83, eta = -1.44, phi = -2.71, n = 17: flavour +1 b  (Bbar0[1527])
   pT = 94.49, eta = -3.45, phi = 0.59, n = 12: flavour +1 b  (Bbar0[1590])
@@ -175,4 +177,6 @@ flavour-kT jets (pT > 10 GeV or flavoured):
   pT = 22.38, eta = 0.59, phi = 1.38, n = 23: flavour none
   pT = 14.53, eta = -0.64, phi = 0.78, n = 9: flavour none
   pT = 11.72, eta = 0.03, phi = 2.85, n = 5: flavour none
+  pT = 7.10, eta = 5.60, phi = -0.62, n = 6: flavour -1 c  (Dbar0[1797])
+  pT = 3.29, eta = 6.27, phi = -1.81, n = 4: flavour -1 c  (D-[1337])
 wrote ../event_GenJet.lhe (2251 rows, 749 final particles, 114 jets in three collections)

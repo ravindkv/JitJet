@@ -29,11 +29,13 @@ What is implemented (the physics of chapter 4)
   "sigmaNonDiffractive = 55.42 mb"; this script recomputes both.
 * The impact parameter. The protons are double Gaussians (bProfile = 2,
   coreRadius = 0.7634, coreFraction = 0.63) and the number of interactions at
-  impact parameter b is Poisson with mean f(b) <n>, f(b) = O(b)/<O> the
-  overlap enhancement. An event with a hard process picks its b with weight
+  impact parameter b is Poisson with mean f(b) <n>, f(b) the overlap
+  enhancement. An event with a hard process picks its b with weight
   O(b) and so is more central than a minimum-bias event: the CMSSW log says
   "Impact parameter b = 0.3136 gives enhancement factor = 3.709" and
-  "Number of MPI = 32".
+  "Number of MPI = 32". (This script's f(b) is normalised differently from
+  PYTHIA's and is 2 % lower at that b, 3.627: see the KNOWN DEVIATION notes
+  in the class Overlap.)
 * The chain of interactions. Below the hard scale (113.3 GeV) the secondary
   scatterings are generated in order of decreasing pT with a Sudakov form
   factor, exactly as the shower emissions of chapter 2, down to pTmin = 0.2
@@ -128,7 +130,9 @@ ECM, ECM_REF = 13600.0, 7000.0
 PT0_REF, ECM_POW, PTMIN_MPI = 1.41, 0.03344, 0.2
 CORE_RADIUS, CORE_FRACTION = 0.7634, 0.63
 SIGMA_TOT, SIGMA_EL = 100.309, 21.89
-SIGMA_DIFF = {"XB": 8.0, "AX": 8.0, "XX": 4.0, "AXB": 3.0}   # SigmaTotal:mode = 0 defaults; CD at 13.6 TeV with zeroAXB = off
+# Only the sum, 23.0 mb, is used (sigma_ND = 55.42 mb as in the CMSSW log). The split is nominal: PYTHIA with
+# the CP5 settings (SigmaDiffractive:mode = 1) has XB = AX = 6.432, XX = 8.848, AXB = 1.285 mb, sum 22.997.
+SIGMA_DIFF = {"XB": 8.0, "AX": 8.0, "XX": 4.0, "AXB": 3.0}
 CR_RANGE, CR_M0 = 5.176, 0.3
 # BeamRemnants defaults
 KT_HARD, KT_SOFT, KT_REMNANT = 1.8, 0.9, 0.4
@@ -784,14 +788,24 @@ class Overlap:
     in PYTHIA's units (a1^2 = 1/2):  O(b) = (1-beta)^2 e^{-b^2} + 2 beta (1-beta) e^{-b^2/rB^2}/rB^2
     + beta^2 e^{-b^2/rC^2}/rC^2 with rB^2 = (1 + a2^2)/2, rC^2 = a2^2, normalised to int O d^2b = 1.
 
-    Given <n> = sigma_int / sigma_ND the normalisation k of the mean number of interactions
-    n(b) = k O(b) follows from
-        <n> = int d^2b k O(b) / int d^2b [1 - exp(-k O(b))]
-    (interactions happen at every b, events only where at least one happened), the enhancement
-    factor is f(b) = n(b)/<n> = O(b) int d^2b P_int(b) / int d^2b O(b), and an event with a hard
+    Given <n> = sigma_int / sigma_ND, the normalisation k of n(b) = k O(b) is solved here from
+        <n> = k <O>_int,   <O>_int = int d^2b P_int(b) O(b) / int d^2b P_int(b),   P_int = 1 - exp(-k O),
+    and the enhancement factor is taken as f(b) = O(b) int d^2b P_int(b) / int d^2b O(b); the rate
+    of the chain is f(b) <n>, which with this k is <f>_ND k O(b) = 0.973 k O(b). An event with a hard
     process has its b distributed as O(b) d^2b (times the probability of no harder interaction,
     which is 1 - 1e-4 for our 113 GeV). PYTHIA quotes b in units of its average over
     non-diffractive events, <b> = int d^2b b P_int(b) / int d^2b P_int(b), and so does this class.
+
+    KNOWN DEVIATION from PYTHIA (audit 2026-11-14). PYTHIA's overlapInit solves k from
+        <n> = int d^2b k O(b) / int d^2b P_int(b)
+    (interactions happen at every b, events only where at least one happened) and uses
+    f(b) = O(b) / <O>_int, so that <f> = 1 over non-diffractive events. With sigma_int = 497.33 mb
+    that gives k = 89.69, <b> = 1.2349, f(0) = 4.604, f(0.3136 <b>) = 3.7035, <f>_hard = 2.261, against
+    k = 93.00, 1.2398, 4.517, 3.627, 2.218 here; with PYTHIA's 500.67 mb it gives the 3.709 of the
+    CMSSW log, and it reproduces the f of every event of validate_mpi_with_pythia_*.json to 1e-5.
+    The two forms of f differ by the constant 1/<f>_ND = 1.029, of which the larger k here gives
+    0.7 % back at b = 0.3136 <b>. The code is left as it is on purpose: changing f changes every
+    trial scale of the chain, hence example/MPI/event_MPI.lhe and all records built on it.
     """
 
     def __init__(self, n_avg: float, core_radius: float = CORE_RADIUS, core_fraction: float = CORE_FRACTION):
@@ -802,7 +816,9 @@ class Overlap:
         self.b = np.linspace(0.0, 8.0, 4001)
         self.norm = 1.0 / self.integral(self.O(self.b))
         self.n_avg = n_avg
-        # solve k from <n> = k int O (1 - ...) : iterate k <- <n> / <O>_k
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): this iterates k <- <n> / <O>_int, i.e. it solves
+        # <n> = k int P_int O / int P_int, whereas PYTHIA solves <n> = k int O / int P_int (k = 89.69 instead
+        # of 93.00). Kept unchanged so that the committed records stay as they are; see the class docstring.
         k = n_avg
         for _ in range(200):
             pint = 1.0 - np.exp(-k * self.O(self.b))
@@ -827,7 +843,11 @@ class Overlap:
         return float(np.trapz(2.0 * math.pi * self.b * fb, self.b))
 
     def f(self, b) -> float:
-        """Enhancement factor n(b)/<n> at the (internal) impact parameter b."""
+        """Enhancement factor O(b) int P_int d^2b / int O d^2b at the (internal) impact parameter b.
+
+        KNOWN DEVIATION from PYTHIA (audit 2026-11-14): PYTHIA uses O(b) / <O>_int, larger by 1/<f>_ND
+        = 1.029 (and with its own k: 3.704 instead of 3.627 at b = 0.3136 <b>). Kept unchanged, see the
+        class docstring."""
         return float(self.O(b) * self.p_int_total)
 
     def n_mean(self, b) -> float:
@@ -838,7 +858,7 @@ class Overlap:
         return self.integral(self.O(self.b) ** 2) * self.p_int_total
 
     def f_avg_minbias(self) -> float:
-        """<f> over non-diffractive events (weight P_int(b) d^2b)."""
+        """<f> over non-diffractive events (weight P_int(b) d^2b): 0.973 here, 1 with PYTHIA's f."""
         return self.integral(self.p_int * self.O(self.b)) / self.p_int_total * self.p_int_total
 
     def sample_hard(self, rng, sudakov=None) -> float:
@@ -1145,6 +1165,13 @@ class Generator:
             if u <= 0.0:
                 break
         m3, m4 = ps.QUARK_MASS.get(abs(id3), 0.0), ps.QUARK_MASS.get(abs(id4), 0.0)
+        # The matrix elements treat c and b as massless, the record gives them their masses: below
+        # the mass threshold there is no such final state (two_to_two would return a parton of
+        # negative energy), so the trial is dropped, as PYTHIA's final2KinMPI does.
+        if m3 + m4 > 0.0 and tr["s"] <= (m3 + m4) ** 2:
+            self.say(1, f"  rejected at pT = {pT:.3f} GeV: sqrt(s_hat) = {math.sqrt(tr['s']):.3f} GeV is below the mass "
+                        f"threshold {m3 + m4:.2f} GeV of {proc}")
+            return None
         kin = two_to_two(pT, tr["y3"], tr["y4"], m3, m4, self.ecm, 2.0 * math.pi * rng.random())
         flow = colour_flow(proc, id1, id2, id3, id4, tr["s"], tr["t"], tr["u"], rng)
         tags = {}
@@ -1287,9 +1314,11 @@ class Generator:
                 self.say(1, "  no further interaction above pTmin: the chain stops")
                 break
             sysrec = self.scatter(tr)
+            pT2 = tr["pT2"]
+            if sysrec is None:                 # below a heavy-quark threshold: evolve on from this scale
+                continue
             if not self.args.no_shower:
                 self.shower_system(sysrec)
-            pT2 = tr["pT2"]
         return self.systems
 
     # ---- beam remnants: flavours, primordial kT, kinematics (BeamRemnants::setKinematics) --------
@@ -1861,7 +1890,7 @@ def explain_setup(gen: Generator, si: SigmaInt, ov: Overlap, alpha: AlphaStrong,
     say(f"  overestimate of the veto algorithm: (pT^2 + pT0^2)^2 dsigma/dpT^2 <= {si.pt4dsigma_max:.1f} mb GeV^2")
     say(banner("the impact parameter"))
     say(f"  double-Gaussian proton (coreRadius {CORE_RADIUS}, coreFraction {CORE_FRACTION}): overlap O(b) with rB^2 = {ov.rB2:.4f}, "
-        f"rC^2 = {ov.rC2:.4f}; k = {ov.k:.3f} so that <n> = {si.total / gen.sigma_nd:.3f}; <b>_ND = {ov.b_avg:.4f}; "
+        f"rC^2 = {ov.rC2:.4f}; k = {ov.k:.3f} from k <O>_int = <n> = {si.total / gen.sigma_nd:.3f} (not PYTHIA's condition, see Overlap); <b>_ND = {ov.b_avg:.4f}; "
         f"f(0) = {ov.f_max:.3f}, <f>_ND = {ov.f_avg_minbias():.3f}, <f>_hard = {ov.f_avg_hard():.3f}")
     say(f"  {'b/<b>':>8s} {'O(b)':>8s} {'f(b)':>7s} {'P_int(b)':>9s} {'n(b)':>7s}")
     for bb in (0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 2.5):

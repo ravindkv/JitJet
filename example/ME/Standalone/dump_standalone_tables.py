@@ -15,9 +15,12 @@ import numpy as np
 import lhapdf
 
 PDF, MEMBER = "NNPDF31_nnlo_as_0118", 0
-ECM, MB, PTMIN = 13600.0, 4.8, 100.0
+# PTMIN is the lowest pTHat cut the tables must serve, not the default cut of the
+# integrator (100 GeV): the pT scan of the chapter starts at 30 GeV and the last line
+# of every run evaluates alpha_s at Q^2 = 1178 GeV^2, so the tables are dumped from 30.
+ECM, MB, PTMIN = 13600.0, 4.8, 30.0
 ALPHAS_MZ, ALPHA_ORDER, ALPHA_NFMAX = 0.118, 2, 6
-XMIN_KEEP = 1e-6          # tau_min ~2e-5 for pTHat>=100; keep some margin below
+XMIN_KEEP = 1e-6          # tau_min ~2e-5 for pTHat>=30 (2.2e-4 for 100); keep some margin below
 BEGIN, END = "# BEGIN GENERATED TABLES", "# END GENERATED TABLES"
 
 

@@ -22,8 +22,8 @@
 \draw[ring] (1.0,1.2) circle (1.2); \draw[ring] (3.4,1.3) circle (1.2);
 \foreach \p/\s in {(1.0,1.25)/4.5,(0.8,1.0)/3,(1.3,1.4)/2.6,(0.6,1.5)/2,(1.2,0.7)/1.8,(1.5,1.0)/1.5,(0.4,0.9)/1.3} {\node[oth,minimum size=\s pt] at \p {};}
 \foreach \p/\s in {(3.4,1.35)/4.2,(3.6,1.1)/2.8,(3.15,1.6)/2.4,(3.8,1.6)/1.9,(3.2,0.8)/1.6,(3.9,1.0)/1.4,(3.5,1.9)/1.2} {\node[oth,minimum size=\s pt] at \p {};}
-\node[lab,anchor=south] at (1.0,2.45) {jet [8], $12.0\,\mathrm{GeV}$};
-\node[lab,anchor=south] at (3.4,2.55) {jet [9], $10.6\,\mathrm{GeV}$};
+\node[lab,anchor=south] at (1.0,2.45) {jet [9], $10.6\,\mathrm{GeV}$};
+\node[lab,anchor=south] at (3.4,2.55) {jet [8], $12.0\,\mathrm{GeV}$};
 % the gluon splitting between them
 \draw[glu] (2.2,-0.6) -- (2.2,0.4);
 \node[lab,text=green!50!black,anchor=north] at (2.2,-0.65) {a soft gluon\\ $g\to b\bar b$};
@@ -31,7 +31,7 @@
 \draw[green!50!black,thin] (2.2,0.4) -- (b1); \draw[green!50!black,thin] (2.2,0.4) -- (b2);
 \node[lab,text=red!80!black,anchor=north east] at (1.75,0.75) {$\bar B^0$ ($b\bar d$)\\ $0.5\,\mathrm{GeV}$};
 \node[lab,text=blue!70!black,anchor=north west] at (2.65,0.85) {$B^0$ ($d\bar b$)\\ $0.5\,\mathrm{GeV}$};
-\node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {The pair is $0.5$ apart in $\Delta R$ and changes nothing in the event ($0.5\,\mathrm{GeV}$ in $12$). Yet: hadronFlavour $0\to5$ for both jets; net flavour $0\to+1\,b$ and $-1\,b$. The labels are not infrared safe: an emission of vanishing energy changed them.};
+\node[lab,anchor=north west,text width=5.0cm,align=left] at (-0.4,-1.5) {The pair is $0.5$ apart in $\Delta R$ and soft in $p_T$ ($0.5\,\mathrm{GeV}$ in $12$; each meson keeps its mass). Yet: hadronFlavour $0\to5$ for both jets; net flavour $0\to+1\,b$ and $-1\,b$. The labels are not infrared safe: a splitting of vanishing $p_T$ changed them.};
 \end{scope}
 % ---------------- (b) IFN -------------------------------------------------------------------------------
 \begin{scope}[xshift=7.2cm]

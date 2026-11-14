@@ -1,8 +1,8 @@
 % ---------------------------------------------------------------------------
 % The heavy end of the string. (a) A massless quark end moves on the light
 % cone; a b quark of mass 4.8 GeV moves on a hyperbola, slower, so the
-% string area between the quark and the first vertex is larger and the area
-% law exp(-bA) adds the Bowler factor z^(-r_b b m_b^2) to f(z): the B hadron
+% string area between the quark and the first vertex is smaller and the area
+% law exp(-b kappa^2 A) adds the Bowler factor z^(-r_b b m_b^2) to f(z): the B hadron
 % must take most of the quark's momentum. (b) The three fragmentation
 % functions the script offers and the mean energy fraction they give on
 % the same partons (standalone --repeat 400 and the PYTHIA validation).
@@ -27,7 +27,7 @@
 \draw[black!70] (1.4,2.6) -- ++(0.9,0.9); \draw[black!70] (1.4,2.6) -- ++(-0.9,0.9);
 \node[lab,anchor=west] at (1.6,2.45) {first vertex};
 \fill[pattern=north east lines,pattern color=red!60] (0,0) -- plot[domain=0:3.5,samples=36] ({sqrt(\x*\x+1.69)-1.3},\x) -- (2.3,3.5) -- (1.4,2.6) -- cycle;
-\node[lab,anchor=north west,text width=5.6cm] at (-0.3,-0.35) {the hatched area $A$ between the quark's world line and the first vertex is what the area law weights, $P\propto e^{-bA}$; for a massive quark it is larger by $\frac{m_Q^2}{\kappa^2}\ln\frac1z$, hence the factor $z^{-r_Q b m_Q^2}$};
+\node[lab,anchor=north west,text width=5.6cm] at (-0.3,-0.35) {the hatched area $A$ between the quark's world line and the first vertex is what the area law weights, $P\propto e^{-b\kappa^2A}$; for a massive quark it is smaller by $\frac{m_Q^2}{\kappa^2}\ln\frac1z$, hence the factor $z^{-r_Q b m_Q^2}$};
 \end{scope}
 % ---------------- (b) the three functions -------------------------------------------------------
 \begin{scope}[xshift=8.2cm]
@@ -48,6 +48,6 @@
 \node[lab,anchor=west] at (7.15,0.85) {$0.963$};
 \node[lab,anchor=east,text=red!80!black] at (2.1,0.4) {Peterson: $0.839$};
 \node[lab,anchor=west] at (3.6,0.4) {$0.870$};
-\node[lab,anchor=north west,text=black!65,text width=8.6cm] at (-0.3,-0.95) {the two implementations differ by $0.03$ for every choice and move together; our event's $\bar B^{*0}$ sits at $x_E=1.004$, in the upper tail};
+\node[lab,anchor=north west,text=black!65,text width=8.6cm] at (-0.3,-0.95) {the two implementations differ by $0.03$ with Bowler and Peterson and by $0.01$ with the plain Lund function; our event's $\bar B^{*0}$ sits at $x_E=1.004$, in the upper tail};
 \end{scope}
 \end{tikzpicture}

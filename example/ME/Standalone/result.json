@@ -30,16 +30,16 @@
       "power": 16,
       "repeats": 8,
       "seed": 24680,
-      "reference_pb": 18440.0,
-      "reference_error_pb": 97.17
+      "reference_pb": 348.6,
+      "reference_error_pb": 6.0
     },
     "sigma_pb": 345.3240029295087,
     "error_pb": 0.0007161656680141963,
     "sigma_nb": 0.3453240029295087,
     "error_nb": 7.161656680141963e-07,
     "relative_error_percent": 0.0002073894840609698,
-    "ratio_to_reference": 0.01872689820658941,
-    "difference_over_combined_integration_error": -186.21669235956608,
+    "ratio_to_reference": 0.9906024180421936,
+    "difference_over_combined_integration_error": -0.5459995078591153,
     "by_flavour_pb": {
       "d": {
         "sigma": 118.56811305601876,
@@ -75,6 +75,6 @@
     "pdf_frozen_calls": 0,
     "negative_pdf_values": 1402959,
     "alpha_s_at_Q2_1178": 0.1385339926863751,
-    "reference_note": "18.44 nb applies only to the original settings. Cut/parameter scans need new matching PYTHIA runs."
+    "reference_note": "The reference applies only to the settings it was generated with. Cut/parameter scans need new matching PYTHIA runs."
   }
 ]

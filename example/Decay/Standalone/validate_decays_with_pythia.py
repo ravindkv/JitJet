@@ -165,7 +165,7 @@ def analyse(e, pd, b_rows, primaries, parton_rows, quark_axes, parton_cones=None
              n_charged_central=sum(1 for i in fin if abs(e[i].eta()) < 2.5 and e[i].isCharged()),
              e_neutrinos=float(sum(e[i].e() for i in fin if is_neutrino(e[i].id()))),
              n_decays=sum(1 for i in range(e.size()) if e[i].status() < 0 and e[i].statusAbs() in (81, 82, 83, 84, 91, 92)),
-             n_oscillated=len({e[i].mother1() for i in range(e.size()) if e[i].status() == 92}),
+             n_oscillated=len({e[i].mother1() for i in range(e.size()) if e[i].statusAbs() == 92}),   # -92 once the product has decayed itself
              species={}, b={})
     p_nu = sum((p4(e[i]) for i in fin if is_neutrino(e[i].id())), np.zeros(4))
     s["pt_neutrinos"] = math.hypot(p_nu[1], p_nu[2])
@@ -196,7 +196,7 @@ def analyse(e, pd, b_rows, primaries, parton_rows, quark_axes, parton_cones=None
                    hadron=hw.name(), hadron_id=hw.id(), pt_hadron=hw.pT(), e_hadron=hw.e(), m_hadron=hw.m(), gamma=hw.e() / hw.m(),
                    tau=tau, tau_ps=tau / 0.299792458, tau0=hw.tau0(), tau_over_tau0=(tau / hw.tau0() if hw.tau0() > 0 else 0.0),
                    L=float(np.linalg.norm(vdec - vprod)), Lxy=float(math.hypot(vdec[0] - vprod[0], vdec[1] - vprod[1])), vertex=[float(v) for v in vdec],
-                   oscillated=bool(decays and e[hw.daughter1()].status() == 92), decays=bool(decays), cls=cls,
+                   oscillated=bool(decays and e[hw.daughter1()].statusAbs() == 92), decays=bool(decays), cls=cls,
                    channel=" ".join(e[d].name() for d in hw.daughterList()) if decays else "",
                    n_direct=len(hw.daughterList()) if decays else 0, n_final=len(fin_desc),
                    n_charged_final=sum(1 for d in fin_desc if e[d].isCharged()), n_photons_final=sum(1 for d in fin_desc if e[d].id() == 22),

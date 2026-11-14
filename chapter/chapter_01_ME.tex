@@ -197,7 +197,7 @@ Before any formula, a question to guess at. The two protons bring
 $13\,600\GeV$ into the collision. How much of it did the hard process of our
 event get to use? If your instinct says ``most of it'', look at the record in
 \cref{sec:ancestral_home:our_jet}: the pair of $b$ quarks has a mass of
-$396\GeV$, under three per cent of the beam energy, and one of the two
+$396\GeV$, under three per cent of the collision energy, and one of the two
 colliding partons carried only $15\GeV$. That is the normal case, not an
 accident, and the reason is the subject of this section: a proton is not a
 particle you can scatter, it is a bag of partons, each carrying a small and
@@ -469,9 +469,7 @@ quarter and at four times the scale $Q^2=12\,842\GeV^2$. At $Q^2/4$ the sea
 antiquark density is $x_1f_{\bar u}=1.0450$, $8.8\%$ below its central value,
 while the valence density is $x_2f_u=0.2322$, $10.2\%$ above; at $4Q^2$ the
 two move the other way, by $+8.0\%$ and $-8.5\%$. Their product, which is
-what the cross section sees, moves by only $+0.6\%$ and $-1.1\%$: the two
-flows of the DGLAP equation nearly cancel at our event, and that is the
-origin of the small $\muF$ rows of \cref{tab:ancestral_home:variations}.
+what the cross section sees, moves by only $+0.6\%$ and $-1.1\%$: the two flows of the DGLAP equation nearly cancel at our event, with the valence slightly ahead, so that here a larger $\muF$ lowers the weight. Integrated over the sample the rising sea wins instead, and the $\muF$ rows of \cref{tab:ancestral_home:variations} are of the same small size but of the opposite sign.
 \Cref{fig:ancestral_home:pdf_plot} draws the whole table at the event's
 scale and the two densities as functions of $Q^2$.
 
@@ -488,7 +486,7 @@ scale and the two densities as functions of $Q^2$.
 
 How large is a cross section of $30\pb$? Guess before you compute: a
 picobarn is $10^{-40}\,\mathrm{m}^2$, so $30\pb$ is a disc of radius
-$10^{-19}\,\mathrm{m}$, a ten-thousandth of the proton's size. That is the
+$3\times10^{-20}\,\mathrm{m}$, about a thirty-thousandth of the proton's radius. That is the
 area a $u\bar u$ pair of $396\GeV$ presents for turning into a $\bbbar$ pair,
 and it is small for two reasons that the one-line formula below makes
 explicit: two powers of a coupling of $0.11$, and a $1/\shat$ that says a
@@ -549,8 +547,7 @@ Section~[2] of the log prints both numbers to more digits, from the very
 function the integrator calls: $\mathrm{d}\hat\sigma/\mathrm{d}\cos\theta=18.916\pb$
 at $\cos\theta^*=-0.8203$, and $\hat\sigma=30.157\pb$, with $\rho=5.87\times10^{-4}$
 and $\beta=0.99971$: at this energy the $b$ mass is invisible in the matrix
-element, and the massless $8\pi\alphas^2/(27\shat)$ would be off by three
-parts in ten thousand.
+element, and although $\beta$ alone is three parts in ten thousand below one, $\beta(2+\rho)/2=1-\tfrac38\rho^2+\dots$, so the massless $8\pi\alphas^2/(27\shat)$ would be off by only one part in ten million.
 
 \paragraph{Kinematics of the two quarks.} In the partonic frame the two
 quarks share the energy equally, $E_b=\sqrt{\shat}/2$, so each has momentum
@@ -569,8 +566,7 @@ $\pt=p^{*}\sin\theta$. Squaring,
 \end{equation}
 with $m_{\mathrm{T}}^2=\pt^2+\mb^2$. Rapidities add under boosts along the
 beam, which is why the lab rapidities of the two quarks are just $Y$ plus and
-minus the rapidity $y^{*}$ each has in the partonic frame
-(\cref{app:kinematics} proves this). At Born level the two quarks have equal
+minus the rapidity $y^{*}$ each has in the partonic frame (\cref{app:kinematics} proves this). In \cref{eq:ancestral_home:kinematics} $\theta$ is measured from the $+z$ axis; when the quark comes from $-z$, as ours does, $\cos\theta=-\cos\hat\theta$. At Born level the two quarks have equal
 and opposite transverse momentum, so ``$\pthat$'' is the \pt of either.
 
 Now watch what the generator cut does. A cut $\pthat\ge\pthat^{\min}$
@@ -696,7 +692,7 @@ then read on.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/me_scales}}
-\caption[Where the two scales enter, and the scales of our event on a logarithmic ladder]{The scales of the hard process. (a) Where $\muF$ and $\muR$ enter the factorised picture: $\muF$ decides which radiation is counted as part of the proton and which as part of $\hat\sigma$, $\muR$ is the argument of the two powers of $\alphas$. (b) The scales of our event on a logarithmic ladder, with the coupling at each from section~[2] of the \code{-v} log and from the embedded table: the hard process lives one decade above $\mb$ and four above $\Lambda_{\mathrm{QCD}}$, and a factor of two in $\muR$ moves $\alphas^2$ by about $20\%$.}
+\caption[Where the two scales enter, and the scales of our event on a logarithmic ladder]{The scales of the hard process. (a) Where $\muF$ and $\muR$ enter the factorised picture: $\muF$ decides which radiation is counted as part of the proton and which as part of $\hat\sigma$, $\muR$ is the argument of the two powers of $\alphas$. (b) The scales of our event on a logarithmic ladder, with the coupling at each from section~[2] of the \code{-v} log and from the embedded table: the hard process lives a decade and a half above $\mb$ and nearly three above $\Lambda_{\mathrm{QCD}}$, and a factor of two in $\muR$ moves $\alphas^2$ by about $20\%$.}
 \label{fig:ancestral_home:scales_sketch}
 \end{figure}
 
@@ -746,9 +742,7 @@ interactions. Using an NNLO PDF set does not make the matrix element NNLO,
 and in general using the PDF set's own $\alphas$ would not reproduce
 \PYTHIA. At our event the two happen to coincide,
 $\alphas(12\,842\GeV^2)=0.1143$ either way
-(\cref{tab:ancestral_home:pdf_values}), because both are second-order
-runnings from the same $\alphas(m_Z)$ and the scale is close to $m_Z$;
-at the $30\GeV$ draft's $Q^2=1178\GeV^2$ they differed in the third digit.
+(\cref{tab:ancestral_home:pdf_values}), because both start from $\alphas(m_Z)=0.118$: although the set's coupling runs at three loops with at most five flavours and \PYTHIA's at two loops with six, the two agree to $10^{-4}$ everywhere below the top threshold, $0.13854$ against $0.13853$ even at the $30\GeV$ draft's $Q^2=1178\GeV^2$. They part above it, where \PYTHIA switches to six flavours: at $4Q^2$ the set gives $0.1038$ and \PYTHIA $0.1042$, and the whole integral with the set's coupling is $0.10\%$ lower (\cref{tab:ancestral_home:variations}).
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=6,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
@@ -947,7 +941,7 @@ $\muF$ matters more, and in which direction each moves the rate.
 \end{figure}
 
 \begin{table}[htbp]\centering
-\caption[Scale, flavour, mass and PDF-convention variations]{Variations of
+\caption[Scale, flavour, mass, PDF-convention and coupling variations]{Variations of
 the default calculation, computed with \file{qqbar_bbbar_xsec.py} ($2^{15}$
 Sobol points, two repeats; integration errors below $0.002\%$). The central
 value is $345.32\pb$.}
@@ -963,6 +957,7 @@ $\muR,\muF\times\tfrac12$  & \code{--mur-factor 0.5 --muf-factor 0.5} & $406.61$
 no incoming $b$            & \code{--nquark 4}                       & $339.85$ & $-1.6\%$ \\
 $\mb=4.7\GeV$              & \code{--mb 4.7}                         & $345.37$ & $+0.01\%$ \\
 negative PDFs kept         & \code{--signed-pdfs}                    & $345.04$ & $-0.08\%$ \\
+$\alphas$ of the PDF set   & \code{--alpha-backend lhapdf}           & $344.99$ & $-0.10\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -978,14 +973,13 @@ $\mathrm{d}\alphas/\mathrm{d}\ln\mu^2=-\beta_0\alphas^2/(4\pi)$,
   \quad\text{for }\muR=2\mu_0,\ \tfrac12\mu_0 .
   \label{eq:ancestral_home:scale_estimate}
 \end{equation}
-The full integrator gives $-16.4\%$ and $+23.2\%$: the two-loop running is
-slower than the one-loop estimate above $\mu_0$ and faster below it, which
-is what the exact ratios $0.831$ and $1.239$ of the log already said, and the
+The full integrator gives $-16.4\%$ and $+23.2\%$. The asymmetry is what the
+linear estimate leaves out: $\alphas$ runs as $1/\ln\mu^2$, so even at one loop
+$\alphas^2$ changes by the factors $0.831$ and $1.226$; two loops give the
+$0.831$ and $1.239$ of the log, and the
 rest is the spread of $Q$ over the sample (\cref{fig:ancestral_home:scales_plot}).
 The $\muF$ rows cannot be estimated this simply because they are the
-difference of two DGLAP flows; at our event the log gives $+0.6\%$ and
-$-1.1\%$ for the product of the two densities, and the integrated result,
-$+3.4\%$ and $-4.4\%$, is of the same small size and the same sign. The
+difference of two DGLAP flows; at our event the log gives $+0.6\%$ at $\muF\times\tfrac12$ and $-1.1\%$ at $\muF\times2$ for the product of the two densities, while the integrated result is $-4.4\%$ and $+3.4\%$: of the same small size but of the opposite sign, because at $x_2=0.39$ our valence quark loses more under evolution than the sea antiquark gains, while over the sample as a whole the sea wins. The
 envelope of the seven points is then
 \begin{equation}
   \sigma_{\mathrm{LO}}=345.3\,^{+80.0}_{-56.5}\pb
@@ -997,13 +991,12 @@ curves behind it look between the extremes.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=8,width=\textwidth]{ME/Standalone/theory_qqbar_bbbar.pdf}
-\caption[Scale variations of the leading-order cross section]{Scale variations of the leading-order cross section, computed with the full integrator through \file{scan_scales.py} and drawn by \file{plot_theory_ME.py}. (a) The cross section against the scale factor for $\muR$ alone, $\muF$ alone and both together, on a logarithmic axis in the factor; the band is the \PYTHIA result with its $1.8\%$ statistical error. (b) The same seven values on the $(\muR,\muF)$ grid, coloured by the change.}
+\caption[Scale variations of the leading-order cross section]{Scale variations of the leading-order cross section, computed with the full integrator through \file{scan_scales.py} and drawn by \file{plot_theory_ME.py}. (a) The cross section against the scale factor for $\muR$ alone, $\muF$ alone and both together, on a logarithmic axis in the factor; the band is the \PYTHIA result with its $1.7\%$ statistical error. (b) The same seven values on the $(\muR,\muF)$ grid, coloured by the change.}
 \label{fig:ancestral_home:scale_variation_plot}
 \end{figure}
 
 Three lessons are in the table. First, the scale uncertainty of this
-leading-order number is of order $20\%$, three orders of magnitude larger
-than the integration errors and ten times the statistical error of the
+leading-order number is of order $20\%$, four orders of magnitude larger than the integration errors and ten times the statistical error of the
 \CMSSW run; agreement between leading-order codes at a percent or better says
 nothing about agreement with nature. Second, $\muR$ and $\muF$ pull in
 opposite directions: a larger $\muR$ lowers $\alphas$, while a larger $\muF$
@@ -1068,9 +1061,9 @@ show what the record means. The two quarks are exactly back to back in the
 transverse plane ($\Delta\phi=\pi$) with $\pt=113.22\GeV$ each, just above
 the $100\GeV$ generator cut, as most events in a steeply falling spectrum
 are. The pair mass is $m_{\bbbar}=\sqrt{\shat}=396.1\GeV$, and
-$\shat=x_1x_2s=2.174\times10^{-3}\times0.3901\times13600^2=156\,895\GeV^2$
+$\shat=x_1x_2s=4E_{\bar u}E_u=4\times14.785\times2652.934\GeV^2=156\,895\GeV^2$
 checks against the momentum sum. The pair rapidity $Y=-2.595$ and the decay
-rapidity $y^{*}=\operatorname{artanh}(\beta\cos\hat\theta)=1.157$ give
+rapidity $y^{*}=-\operatorname{artanh}(\beta\cos\hat\theta)=1.157$ (the sign because our quark came from $-z$) give
 $y_b=Y+y^{*}=-1.438$ and $y_{\bar b}=Y-y^{*}=-3.752$, in agreement with the
 table. Two quarks of identical \pt will have completely different fates. The
 mother, the $b$, is born at $\eta=-1.44$: inside the barrel, where the
@@ -1234,8 +1227,7 @@ direction numbers of \cite{Joe:2008}.
   \item \textbf{Which $\alphas$?} The matrix element, each shower, the
     multi-parton interactions and the PDF set each have their own coupling.
     Check \code{SigmaProcess:alphaSvalue} and \code{alphaSorder}, not
-    \code{Tune:pp}. That they agree at our event is luck of the scale, not a
-    rule.
+    \code{Tune:pp}. That they agree at our event is because both start from $0.118$ and the scale is below the top threshold; above $m_t$, or for a set with another $\alphas(m_Z)$, they part.
   \item \textbf{$\mb=4.8\GeV$} is \PYTHIA's default mass for the $b$ in the
     matrix element; \MG's is $4.7\GeV$. Neither is the pole mass nor the
     $\overline{\mathrm{MS}}$ mass in the Particle Data Group tables, and
@@ -1303,9 +1295,7 @@ direction numbers of \cite{Joe:2008}.
   to the much larger $\muF$ dependence at $\pthat\ge30\GeV$, where
   $x_1$ was ten times smaller.
 \item \textbf{Scale variation with one line.} In \code{born\_weights} the
-  line \code{q2 = pt2 + mb2} sets both scales. Change it to
-  \code{4*(pt2 + mb2)} and to \code{0.25*(pt2 + mb2)} and reproduce the two
-  ``both scales'' rows of \cref{tab:ancestral_home:variations}. Why can the
+  line \code{q2 = pt2 + mb2} sets both scales. Change it to \code{0.25*(pt2 + mb2)} and reproduce the ``both scales $\times\tfrac12$'' row of \cref{tab:ancestral_home:variations}. Then try \code{4*(pt2 + mb2)}: the script stops, because the embedded tables end at $Q^2=s/4$; what would you change in \file{dump_standalone_tables.py}? Why can the
   standalone script not reproduce the single-scale rows without a larger
   change? (Look at what \code{TablePDF.xf} and \code{TableAlphaS} are called
   with.)
@@ -1409,8 +1399,7 @@ generator authors and the CMS generator group would like to hear about.
     the simulation CPU it wastes per unit of statistical precision, and ask
     which of the remedies is usable in a CMS production.
   \item \textbf{Slicing the spectrum.} \Cref{tab:ancestral_home:ptscan}
-    falls by four orders of magnitude between $30$ and $300\GeV$, with the
-    local power $n$ rising from $3$ to $5$
+    falls by three and a half orders of magnitude between $30$ and $300\GeV$, with the local power $n$ rising from $3$ to $4$ there and above $5$ by $700\GeV$
     (\cref{fig:ancestral_home:flavours_plot}). A single sample cannot serve
     both ends, so HL-LHC productions are sliced in $\pthat$ or biased in
     \pt. Using \code{--ptmin} and \code{--ptmax}, design a set of $\pthat$

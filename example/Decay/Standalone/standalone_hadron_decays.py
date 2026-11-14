@@ -25,7 +25,7 @@ What is implemented (the physics of chapter 6, following PYTHIA 8's ParticleDeca
   tensor mesons, the Delta and Sigma* baryons, the charm and bottom hadrons and the tau
   lepton decay; pi+-, K+-, K_S0, K_L0, Lambda, Sigma+-, Xi, Omega, n, p, mu and the
   photons, electrons and neutrinos are left for the detector (or for GEANT).
-* Lifetime and flight. tau = -tau0 ln r, the decay vertex x_dec = x_prod + tau p/m: a
+* Lifetime and flight. tau = -tau0 ln(1 - r), the decay vertex x_dec = x_prod + tau p/m: a
   B hadron with gamma = E/m = 30 and c tau0 = 0.46 mm flies 14 mm on average; this
   flight, seen through the impact parameters of the tracks, is the b tag of chapter 12.
 * B0 and B_s0 mixing. With probability sin^2(x tau / 2 tau0), x_d = 0.776, x_s = 26.05,
@@ -86,6 +86,29 @@ Examples
   python3 standalone_hadron_decays.py --no-limit-tau0      # also decay K_S0, Lambda, ... (PYTHIA's default)
   python3 standalone_hadron_decays.py --repeat 400 --quiet --history standalone_decay_stats.json
   python3 standalone_hadron_decays.py --single 511 --repeat 20000   # B0 at rest, the decay table in action
+
+Known deviations from PYTHIA (audit 2026-11-14)
+-----------------------------------------------
+The record of the book (../event_Decay.lhe, seed 1) is kept, so the following differences from
+PYTHIA 8.315 are documented and NOT corrected; each is marked "KNOWN DEVIATION" in the code:
+* meMode 2: the cos^2 theta weight is given to every vector meson whose mother is a pseudoscalar
+  with two daughters, whatever the sister. PYTHIA uses it only for PS -> PS + V, a sin^2 theta
+  weight for PS -> gamma + V and no weight otherwise. Measured <cos^2 theta>: eta' -> rho0 gamma
+  0.61 (PYTHIA 0.20), D_s -> K* K* 0.61 (PYTHIA 0.33), D_s -> phi pi 0.60 (correct). In the record
+  it acted twice, on the K*- and K*0 of rows 2209 and 2210 (D_s- -> K*- K*0), both times wrongly.
+* meMode 22, 23 with four partons: the colour rearrangement is drawn before the spectator pair is
+  collapsed, where PYTHIA always collapses the last two partons (cbar + spectator) first. For the
+  0.316 channel of the B0 the charm hadron is (cbar d) in 72.5% of the decays instead of all (row
+  1584 of the record: the "spectator" hadron is a rho0 from d dbar). Side effects: the collapsed
+  hadron is listed last, so the hadronic weak weight x (3 - 2x) acts on a hadron of the W system
+  and not on the charm hadron, and only for three bodies; mDiff subtracts the constituent masses
+  of all four partons instead of the mass of the collapsed hadron plus those of the W pair.
+* An oscillated B0 or B_s0 has the id of its row flipped (row 1590 of the record reads Bbar0 below
+  a B*0); PYTHIA keeps the id and only gives the products status 92.
+* Product masses come from a truncated non-relativistic Breit-Wigner (PYTHIA's default,
+  ParticleData:modeBreitWigner = 4, is relativistic with a threshold factor: lighter low-mass
+  tails); the Poissonian multiplicity stops at 9 (PYTHIA: 10); the maximum of the V-A weight is
+  0.375 M^4 (the true one, and PYTHIA's, is M^4/16: unbiased, six times slower).
 
 All energies in GeV, lengths in mm, times in mm/c (1 ps = 0.2998 mm/c).
 """
@@ -320,6 +343,10 @@ class Decayer:
 
     def mass_sel(self, pid: int) -> float:
         """A product mass: nominal, or a Breit-Wigner between mMin and mMax for a broad resonance."""
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): a truncated non-relativistic Breit-Wigner, linear in m
+        # (PYTHIA's modeBreitWigner = 1); PYTHIA's default is 4, relativistic with a threshold factor, which
+        # suppresses the low-mass tail (a rho0 of 0.36 GeV, as in row 1584's decay, is rarer there). Kept: a
+        # change would move every mass drawn, and with it the record.
         a = abs(pid)
         if a not in PART:
             return m0(pid)
@@ -382,11 +409,21 @@ class Decayer:
         # a weak decay (meMode 22, 23) written as W partons + spectator: the spectator pair (the last two
         # partons, or the rearranged pair that holds the spectator) collapses to one hadron, as PYTHIA's
         # pickHadrons does ("nSpec = 1"); only the W system makes a variable number of hadrons
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): PYTHIA collapses the LAST TWO partons of the channel
+        # (cbar + spectator) first, always, and never rearranges colours in meMode 22/23; here colRearrange was
+        # drawn above, so that in half of the tries "pairs[1]" is the other pairing, e.g. (d dbar) for the 0.316
+        # channel u dbar cbar d of the B0. Measured over 20000 draws of that channel: the charm hadron is
+        # (cbar d) in 72.5% of the decays (PYTHIA: 100%), the rest Dbar0, D*bar0, D_s-, Lambda_cbar from the
+        # (u cbar) chain; row 1584 of the record is such a case (spectator hadron rho0). This is the D- / Dbar0
+        # shift of the B0 at rest against PYTHIA (29.6 / 28.4% against 35.1 / 27.2%). Kept: see the docstring.
         spec_pair = None
         if me in (22, 23) and n_pairs == 2:
             spec_pair = pairs[1]
             pairs = [pairs[0]]
             n_pairs = 1
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14), meMode 22/23 only: PYTHIA subtracts the mass of the
+        # collapsed spectator hadron and the constituent masses of the W partons, here the constituent masses of
+        # all four partons are subtracted (2.705 instead of 2.76 or 2.62 GeV for the 0.316 channel of the B0).
         m_diff = m_mother - m_known - sum(const_mass(p) for p in partons)
         if m_diff <= 0:
             return None, f"no mass left for the partons (mDiff = {m_diff:.3f})"
@@ -421,6 +458,7 @@ class Decayer:
                     return None, f"fixed multiplicity {fixed} below the minimum {n_known + n_pairs}"
             else:
                 n_tot = int(self.rng.poisson(mean))
+                # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): PYTHIA's truncated Poissonian includes n = 10
                 if n_tot < max(n_min, n_known + n_pairs + n_spec) or n_tot >= 10:
                     continue
             n_new = n_tot - n_known - n_spec
@@ -437,6 +475,8 @@ class Decayer:
                     break
                 new += chain
             if ok and spec_pair:
+                # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): PYTHIA lists the collapsed hadron first among
+                # the new hadrons, here it comes last (see the hadronic weak weight in me_weight)
                 h = self.chain(spec_pair[0], spec_pair[1], 1)
                 if h is None:
                     ok = False
@@ -455,7 +495,7 @@ class Decayer:
                 if mode == "poisson":
                     text.append(f"partons {' '.join(name(p) for p in partons)} as the singlets {pairs_txt}; mDiff = {m_mother:.3f} - {m_known:.3f} (known) - "
                                 f"{sum(const_mass(p) for p in partons):.3f} (constituent masses) = {m_diff:.3f} GeV: "
-                                f"<n> = {n_known}/2 + {n_partons}/4 + {MULT_INCREASE_WEAK if me == 23 else MULT_INCREASE:g} ln({m_diff:.3f}/{MULT_REF_MASS}) "
+                                f"<n> = {f'({n_known} + {n_spec})' if n_spec else n_known}/2 + {n_partons}/4 + {MULT_INCREASE_WEAK if me == 23 else MULT_INCREASE:g} ln({m_diff:.3f}/{MULT_REF_MASS}) "
                                 f"{'+ ' + str(MULT_G_OFFSET) + ' ' if from_loop else ''}= {mean:.2f}; Poisson -> {n_tot} hadrons (at least {n_min})"
                                 + (f" after {ntry + 1} tries" if ntry else ""))
                 else:
@@ -552,9 +592,15 @@ class Decayer:
             for k in range(3, len(p)):
                 p2 = float(np.dot(p[k][1:], p[k][1:]))
                 wt *= math.exp(-p2 / SIGMA_SOFT ** 2)
+            # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): the maximum is M^4 / 16 (PYTHIA's bound, reached for
+            # massless products; the largest weight seen is 0.0624 M^4); 0.375 M^4 is a valid bound, six times
+            # less efficient and unbiased. Kept: the accept/reject draws would change, and with them the record.
             return wt, 0.375 * M ** 4
         if me in (22, 23) and len(p) == 3:
             # a hadronic weak three-body decay: PYTHIA weights the first product's momentum with x (3 - 2x)
+            # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): in PYTHIA the first product is the collapsed
+            # spectator (charm) hadron and the weight is applied for any multiplicity; here p[0] is a hadron of
+            # the W system (the charm hadron is never first: 0 of 20000) and four and more bodies get no weight.
             x1 = 2 * math.sqrt(float(np.dot(p[0][1:], p[0][1:]))) / M
             return x1 * (3 - 2 * x1), 1.125
         return 1.0, 0.0
@@ -564,6 +610,13 @@ class Decayer:
         pseudoscalar's two-body decay, with theta measured from the direction of its sister."""
         pk = pstar(M, masses[0], masses[1])
         axis = None
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): the sister is not looked at. PYTHIA keeps meMode 2 only
+        # when the sister is a pseudoscalar meson (cos^2 theta) or a photon (a weight that is sin^2 theta) and
+        # decays isotropically otherwise; here every vector from a two-body decay of a pseudoscalar gets
+        # cos^2 theta. Measured <cos^2 theta>: eta' -> rho0 gamma 0.61 (PYTHIA and physics 0.20), D_s -> K* K*
+        # 0.61 (PYTHIA 0.33), D_s -> phi pi 0.60 (correct). In the seed-1 record the weight acted twice, on rows
+        # 2209 (K*-) and 2210 (K*0) from D_s- -> K*- K*0, both times where PYTHIA is isotropic. A mother at row 0
+        # (--single) never gets the weight. Kept: see the docstring.
         if me == 2:
             q = self.ev.p[mother_row]
             gm = q.m1
@@ -663,6 +716,9 @@ class Decayer:
             if oscillated:
                 pid_dec, status = -pid, 92
                 self.n_osc += 1
+                # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): PYTHIA keeps the id of the row and only gives
+                # the products status 92 (573 oscillated B0 of 3000 at rest: the row stays 511); here the row is
+                # renamed, so that row 1590 of the record reads Bbar0 below a B*0. Kept: see the docstring.
                 q.id = pid_dec
         # the channel, the products, the masses, the kinematics
         chans, total = open_channels(pid_dec)

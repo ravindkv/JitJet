@@ -11,7 +11,7 @@
 # It uses T. Chan's closest pair algorithm, S. Fortune's Voronoi code,
 # CGAL and 3rd party plugin jet algorithms. See COPYING file for details.
 #--------------------------------------------------------------------------
-749 final particles of event_Decay.lhe; ghosts: 4 b hadrons, 9 c hadrons, 163 partons, 2 hard-process partons
+749 final particles of event_Decay.lhe; ghosts: 4 b hadrons, 9 c hadrons, 161 partons, 2 hard-process partons
 FastJet 3.5.2.0: Longitudinally invariant anti-kt algorithm with R = 0.4 and E scheme recombination
 #--------------------------------------------------------------------------
 #                     FastJet release 3.4.3 [fjcore]

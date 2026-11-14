@@ -379,7 +379,7 @@ PARTICLES = (
     ("A", 14.269, -1.3358, -2.7211),   # pi+ [2181], the hardest particle of the b jet
     ("B", 5.414, -1.3592, -2.7120),    # pi- [2239], 0.025 from A
     ("C", 10.567, -1.3893, -2.7700),   # K- [2211], the D0's kaon
-    ("D", 4.451, -1.3832, -2.7698),    # pi- [2241], 0.006 from C: the first merge of the whole event
+    ("D", 4.451, -1.3832, -2.7698),    # pi- [2241], 0.006 from C: the first merge of our jet
     ("E", 0.680, -1.8008, -2.8491),    # pi+ [1217], the last particle anti-kT added to our real jet
     ("F", 1.857, -1.7408, -2.6406),    # gamma [1538], at the border
     ("G", 0.969, -1.7131, -2.6160),    # gamma [2183], 0.037 from F

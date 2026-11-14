@@ -29,7 +29,7 @@
 \node[lab,text=red!80!black,anchor=west] at (3.65,0.75) {our jet};
 \draw[-{Stealth}] (0,-0.25) -- (7.2,-0.25) node[below left,lab] {$y$: $-5$ to $5$};
 \draw[-{Stealth}] (-0.25,0) -- (-0.25,3.3) node[above,lab] {$\phi$};
-\node[lab,anchor=north west,text width=7.4cm,align=left] at (-0.3,-0.65) {Every particle's $p_T$ goes to its cell; the cell's value is $\Sigma p_T/(\Delta y\,\Delta\phi)$. At $\mu=60$ a typical cell holds $\sim22$ GeV in $0.32$ units of area, 68 GeV per unit area; the cells with a jet hold up to 360.};
+\node[lab,anchor=north west,text width=7.4cm,align=left] at (-0.3,-0.65) {Every particle's $p_T$ goes to its cell; the cell's value is $\Sigma p_T/(\Delta y\,\Delta\phi)$. At $\mu=60$ a typical cell holds $\sim24$ GeV in $0.32$ units of area, 75 GeV per unit area; the cells with a jet hold up to 360.};
 \end{scope}
 % ---------------- (b) the median --------------------------------------------------------------------
 \begin{scope}[xshift=8.6cm]
@@ -39,11 +39,11 @@
 % a sorted distribution: flat-ish middle, a tail of jets at the right
 \draw[olive!60!brown,very thick] plot[domain=0:5.7,samples=80] (\x,{0.25+1.2*\x/5.7+0.25*(\x/5.7)^3+2.2*exp(-(5.7-\x)*(5.7-\x)/0.25)});
 \draw[red!80!black,thick,dashed] (2.85,0) -- (2.85,2.6);
-\node[lab,text=red!80!black,anchor=south] at (2.85,2.65) {median: $\rho=68$};
+\node[lab,text=red!80!black,anchor=south] at (2.85,2.65) {median: $\rho=75$};
 \draw[black!60,dashed] (0,1.25) -- (5.7,1.25);
 \node[lab,text=black!60,anchor=west] at (0.1,1.45) {mean, pulled up by the tail};
 \node[lab,text=olive!60!brown,anchor=east] at (5.6,3.2) {the jets};
-\node[lab,anchor=north west,text width=6.4cm,align=left] at (-0.4,-0.65) {$\rho=\mathrm{median}_{\rm cells}\,[\,p_T/A\,]$. The median is what the crowd puts in a cell with nothing else in it; the jets are the top few percent and do not move it. Cacciari and Salam's original uses $k_T$ jets of $R=0.4$ with their areas in place of the cells: $\rho_{\rm jets}$ a few percent above the grid ($69.9$ against $68.3$ here).};
+\node[lab,anchor=north west,text width=6.4cm,align=left] at (-0.4,-0.65) {$\rho=\mathrm{median}_{\rm cells}\,[\,p_T/A\,]$. The median is what the crowd puts in a cell with nothing else in it; the jets are the top few percent and do not move it. Cacciari and Salam's original uses $k_T$ jets with their areas in place of the cells ($R=0.4$ here): $\rho_{\rm jets}$ a few percent above the grid ($78.5$ against $75.5$ here).};
 \end{scope}
 % ---------------- (c) the area ------------------------------------------------------------------------
 \begin{scope}[xshift=16.2cm]
@@ -59,6 +59,6 @@
 \foreach \i in {1,...,22} {\pgfmathsetmacro{\r}{1.15*0.5*rnd*rnd} \pgfmathsetmacro{\a}{360*rnd} \node[fam] at ({2.7+\r*cos(\a)},{1.65+\r*sin(\a)}) {};}
 \pgfmathsetseed{17}
 \foreach \i in {1,...,40} {\pgfmathsetmacro{\xx}{0.2+5.0*rnd} \pgfmathsetmacro{\yy}{0.15+3.0*rnd} \node[crowd] at (\xx,\yy) {};}
-\node[lab,anchor=north west,text width=6.0cm,align=left] at (-0.4,-0.1) {A grid of ghosts, $p_T=10^{-18}$, one per $0.01$ of the plane, is clustered with the particles. They move nothing (anti-$k_T$ never sees their $p_T$) but they are caught like any soft particle: $A=0.01\times n_{\rm ghosts}$ in the jet. For a lone hard jet $A\simeq\pi R^2=0.503$; a neighbour steals part of it. Then $p_T^{\rm sub}=p_T-\rho\,A$: the \code{L1FastJet} correction of \cref{ch:paying_for_uninvited} in its generator-level form.};
+\node[lab,anchor=north west,text width=6.0cm,align=left] at (-0.4,-0.1) {A grid of ghosts, $p_T=10^{-18}$, one per $0.01$ of the plane, is clustered with the particles. They move nothing (anti-$k_T$ never sees their $p_T$) but they are caught like any soft particle: $A=0.01\times n_{\rm ghosts}$ in the jet. For a lone hard jet $A=\pi R^2=0.503$, which the ghosts measure to $\pm0.02$. Then $p_T^{\rm sub}=p_T-\rho\,A$: the \code{L1FastJet} correction of \cref{ch:paying_for_uninvited} in its generator-level form.};
 \end{scope}
 \end{tikzpicture}

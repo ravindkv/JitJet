@@ -125,7 +125,7 @@ def page_lifetimes(st: Setup):
             mark(a1, r["tau_ps"], f"our event: {r['tau_ps']:.2f} ps ({r['tau_over_tau0']:.2f} $\\tau_0$)", color=col, y=0.55 if key == "b" else 0.45)
     a1.set_xlabel("proper lifetime $t$ drawn for the B hadron  [ps]")
     a1.set_ylabel("probability density  [1/ps]")
-    a1.set_title("(a) the decay law: $t = -\\tau_0 \\ln r$, the same at rest and at 1 TeV", fontsize=10.5)
+    a1.set_title("(a) the decay law: $t = -\\tau_0 \\ln(1-r)$, the same at rest and at 1 TeV", fontsize=10.5)
     a1.legend(loc="upper right", fontsize=8.5)
     a1.text(0.98, 0.42, "a B hadron has no clock:\nthe probability to survive\nthe next ps never changes", transform=a1.transAxes,
             ha="right", va="top", fontsize=8.5, color=TEXT2)
@@ -411,7 +411,7 @@ def page_semileptonic(st: Setup):
     a3.set_ylabel("B decays")
     a3.set_title(f"(c) the soft lepton in a {st.b['pt_quark']:.0f} GeV $b$ jet", fontsize=10.5)
     a3.legend(loc="upper right", fontsize=8)
-    fig.suptitle("Semileptonic decays: a hard lepton, a harder neutrino, and the energy the jet will never recover (page 4)", fontsize=12)
+    fig.suptitle("Semileptonic decays: a hard lepton, a softer neutrino, and the energy the jet will never recover (page 4)", fontsize=12)
     fig.tight_layout()
     return fig
 

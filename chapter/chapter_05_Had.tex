@@ -99,7 +99,7 @@ generic rope snapshot by snapshot with its world sheet in light-cone
 coordinates; and the mother's rope break by break from the \code{-v} log,
 down to the final two. The last five follow the record: a $28\GeV$
 two-parton string of our event breaking in its rest frame, its vertices
-appearing at their proper times between one and three fermi; the $b$
+appearing at their proper times of up to one and a half fermi; the $b$
 quark's string producing its sixteen hadrons from both ends in the
 $(\eta,\phi)$ plane, the \Bstarbar the second of them with $z=0.984$; the
 two ends walking through the regions of the world sheet and jumping a cell
@@ -180,7 +180,8 @@ the last, and every other quark came out of the vacuum at a break.}
 sharpest column pair is new: for the first time the standalone script and
 \PYTHIA can be run on \emph{identical} input, the 211 partons of
 \file{event_MPI.lhe} with their colour tags, so that the comparison is
-between two implementations of the same model and nothing else. The two
+between two implementations of the same model, up to the departures
+listed in \cref{sec:children_getting_married:caveats}. The two
 agree on the hadron multiplicity to $5\%$, on the B~hadron's energy fraction
 to $0.03$, and on what the detector will see, the hadron-level cone around
 the $b$, to $1.2\GeV$ at $R=0.4$. The other columns are \PYTHIA's full chain
@@ -208,19 +209,23 @@ partons of \file{event_MPI.lhe} and their colour tags, hadronising them
 four hundred times with the Monash fragmentation parameters that CP5
 keeps and decays off, against the standalone script doing the same. Read
 the first two columns of the table together. \PYTHIA finds the same $33$
-colour singlets and joins the same $48$ partons. It makes $383$ hadrons
-where the script makes $402$, and the $5\%$ excess has an address: the
-gluon-rich strings, $46$ against $43$ hadrons from the $108\GeV$ string
-with $21$ partons, while the two-parton strings agree to $2\%$; the region
-bookkeeping of \cref{sec:children_getting_married:kinks} is where the two
-implementations differ in detail. The script makes $11\%$ fewer baryons
-because it has no popcorn mechanism, \PYTHIA's option of putting a meson
-between a baryon and its antibaryon. The B~hadron keeps $0.03$ less of the
-quark's energy, for every choice of fragmentation function. What the
+colour singlets and joins the same $48$ partons, and treats $30$ of them
+as strings and $3$ as ministrings where the script has $29$ and $4$. It
+makes $383$ hadrons where the script makes $402$, and the $5\%$ excess has
+an address and a cause: the gluon-rich strings, $46$ against $43$ hadrons
+from the $108\GeV$ string with $21$ partons, while the two-parton strings
+above $3\GeV$ agree to $2\%$, because the script takes the simple step of
+\cref{sec:children_getting_married:kinks} in every region and \PYTHIA in
+the first only; with \PYTHIA's rules the script makes $386$. The script
+makes $12\%$ fewer baryons, and not for want of popcorn, \PYTHIA's option
+of putting a meson between a baryon and its antibaryon: without it \PYTHIA
+makes more of them, $46.7$ against $38.8$. The B~hadron keeps $0.03$ less
+of the quark's energy with the Lund--Bowler and the Peterson function and
+$0.01$ less with the plain Lund one. What the
 detector will see agrees better than any of these: the hadron-level \pt
 within $\dR<0.4$ of the $b$ differs by $1.2\GeV$ between the two and within
-$\dR<0.8$ by $0.4\GeV$, the cone masses agree to $0.5\GeV$, and the species
-to a percent. The full chain with $b$ drawn gives $226\pm87$ hadrons, a
+$\dR<0.8$ by $0.4\GeV$, the cone masses agree to $0.4$ and $0.9\GeV$, and
+the species to a percent. The full chain with $b$ drawn gives $226\pm87$ hadrons, a
 wide distribution because the number of secondary scatterings is wide; at
 the \CMSSW impact parameter it gives $306\pm52$, and the \CMSSW event's
 $320$ sits inside.
@@ -245,11 +250,15 @@ together with the full tables behind every number quoted below.
 ways. ``Same partons'' means the 211 final partons of
 \file{example/MPI/event_MPI.lhe} with their colour tags, hadronised $400$
 times by \PYTHIA~8.315 with the Monash fragmentation parameters that CP5
-keeps, and $400$ times by the standalone script; ``full chain'' means
+keeps, and $400$ times by the standalone script ($200$ for its plain Lund
+and Peterson rows); ``full chain'' means
 \PYTHIA from the hard event of \cref{ch:ancestral_home} with the CP5
 settings, $2000$ events with $b$ drawn and $526$ with
 $|b/\langle b\rangle-0.3136|<0.03$; hadron decays are off everywhere, so
-every hadron is primary. The spread of a single event follows $\pm$. Cones
+every hadron is primary. ``With strangeness'' counts every hadron with an
+$s$ or $\bar s$ among its valence quarks, the $\phi$ ($s\bar s$) and the
+$\eta'$ included and the $\eta$ not; the \CMSSW entry counts kaons, $K^*$
+and strange baryons. The spread of a single event follows $\pm$. Cones
 are drawn around the final copy of the $b$ quark; the $B$ share is the
 hadron's \pt over the cone's. The species row lists $\bar B^{*0}$ and
 $\bar B^0$ ($b\bar d$), $B^{*-}$ and $B^-$ ($b\bar u$) and $\bar B_s^{*0}$
@@ -271,7 +280,7 @@ $b$: $\xE=E_B/E_b$ (Lund--Bowler) & $0.913\pm0.062$ & $0.882\pm0.078$ & $0.941\p
 $b$: \xE, plain Lund ($r_b=0$) & $0.963\pm0.038$ & $0.952\pm0.048$ & -- & -- & -- & -- \\
 $b$: \xE, Peterson ($\epsilon_b=0.005$) & $0.870\pm0.120$ & $0.839\pm0.132$ & -- & -- & -- & -- \\
 $\bar b$: \xE & $1.033\pm0.049$ & $1.025\pm0.072$ & $0.941\pm0.095$ & $0.936\pm0.094$ & $1.154$ & $0.980$ \\
-$b$: \pt of its hadron [GeV] & $71.1\pm5.0$ & $69.4\pm5.2$ & $87.8\pm26.7$ & $87.7\pm27.3$ & $78.56$ & $94.28$ \\
+$b$: \pt of its hadron [GeV] & $71.1\pm5.0$ & $68.7\pm6.2$ & $87.8\pm26.7$ & $87.7\pm27.3$ & $78.56$ & $94.28$ \\
 $b$: $\bar B^{*0}\!:\!B^{*-}\!:\!\bar B^0\!:\!B^-\!:\!\bar B_s^{*0}$ [\%] & $31:28:14:12:8$ & $31:32:13:12:6$ & $29:29:13:15:6$ & $30:29:14:14:4$ & \Bstarbar & $B^-$ \\ \midrule
 $b$, $\dR<0.4$: partons \pt [GeV] & $100.67$ & $100.67$ & $109.7$ & $109.7$ & $100.67$ & $127.25$ \\
 $b$, $\dR<0.4$: hadrons \pt [GeV] & $98.0\pm2.2$ & $96.8\pm3.1$ & $109.6$ & $109.8$ & $99.23$ & $114.45$ \\
@@ -424,7 +433,7 @@ rest follows from it: the probability of a given set of break-ups is
 proportional to the exponential of the space-time area the string swept
 before it broke,
 \begin{equation}
-  P\propto\exp(-bA),
+  P\propto\exp(-b\,\kappa^2A),
   \label{eq:children_getting_married:area_law}
 \end{equation}
 the \emph{area law}, which is what a string decaying at a constant rate per
@@ -432,9 +441,11 @@ unit area would give, and which the string's own classical dynamics
 suggests~\cite{Artru:1974hr}. Three things follow. The vertices cluster
 near a hyperbola $\Gamma=\mathrm{const}$: the distribution of $\Gamma$ is
 $P(\Gamma)\propto\Gamma^a e^{-b\Gamma}$, with a mean of $(1+a)/b$. The
-hadrons are produced ``inside out'', the ones nearest the ends first in
-time, so that a hadron's rank from the end has no relation to its
-production time. And the number of hadrons grows only logarithmically with
+hadrons are produced ``inside out'': a vertex at rapidity $y$ lies at the
+time $\tau\cosh y$ in the string's rest frame, so that the slow hadrons in
+the middle form first and the fast ones near the ends last, the reverse of
+the order of rank in which they are drawn; the vertices are space-like
+separated, and either order is allowed. And the number of hadrons grows only logarithmically with
 the mass of the string, because the vertices are spread uniformly in
 rapidity along the hyperbola with a density fixed by $\kappa$ and the
 hadron masses: a string twice as heavy makes a constant number more
@@ -456,11 +467,13 @@ neighbours. The $1036\GeV$ string made 18 hadrons, the $554\GeV$ one 20,
 the $107\GeV$ $s\bar s$ one 8: the logarithm of
 \cref{eq:children_getting_married:area_law} in action, and panel~(c) of
 \cref{fig:children_getting_married:string_plot} fits the two-parton strings
-of the ensemble with $n\approx0.1+3.0\ln(W/\GeV)$. The vertices of the $b$
+of the ensemble with $n\approx0.1+2.55\ln(W/\GeV)$. The vertices of the $b$
 quark's string, which \cref{sec:children_getting_married:fragmentation_function}
-follows one by one, have $\Gamma$ between $0.45$ and $25\GeV^2$, that is
-proper times between $0.7$ and $5\,\mathrm{fm}$, and $(1+a)/b=1.7\GeV^2$ is
-where most of them sit.
+follows one by one, have $\Gamma$ between $0.45$ and $8.7\GeV^2$, that is
+proper times between $0.7$ and $3\,\mathrm{fm}$, with a median of
+$2.1\GeV^2$ next to the $(1+a)/b=1.7\GeV^2$ of a long chain; the two
+larger values the log prints, $25$ and $22\GeV^2$, are an artefact of the
+script.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=1,width=\textwidth]{Had/Standalone/theory_hadronisation.pdf}
@@ -572,7 +585,7 @@ numbers of the \code{-v} log.}
 drawn from the $\bar u$ end. The log prints the flavour draw, a quark
 rather than a diquark with $P=1/(1+0.081)=0.925$, then $u$ among
 $d:u:s=1:1:0.217$; the hadron, $u\bar u$ with the pseudoscalar chosen with
-$1/2$ and $\pi^0$ among the $\pi^0$, $\eta$, $\eta'$ mixtures with weights
+$P=1/1.5=0.667$ and $\pi^0$ among the $\pi^0$, $\eta$, $\eta'$ mixtures with weights
 $0.5$, $0.296$, $0.204$; and the kick, $(-0.603,-0.143)\GeV$ from the
 Gaussian of width $0.237$, a $2.5\sigma$ draw in $p_x$, which gives the pion
 $\mT=0.634\GeV$. Two hadrons later the diquark branch fires with its
@@ -583,11 +596,12 @@ $\bar\Sigma^0$ ($\bar u\bar d\bar s$), and the next hadron from that end
 must be its baryon partner, $\Sigma^0$. The $b$ end draws $\bar d$ and a vector
 with $P=2.2/3.2=0.688$: \Bstarbar. Over the whole event the 365 hadrons are
 125 pions, 65 $\rho$, 20 $\omega$ (the spin-1 $u\bar u+d\bar d$), 17
-$\eta$, 50 kaons, 25 $K^*$ (the spin-1 kaons) and 52 baryons, 94 with strangeness; \PYTHIA on the same partons makes $38\%$ pions, $18\%$
+$\eta$, 50 kaons, 25 $K^*$ (the spin-1 kaons) and 52 baryons, 94 with an $s$ or $\bar s$ in them; \PYTHIA on the same partons makes $38\%$ pions, $18\%$
 $\rho$, $6\%$ $\omega$, $5\%$ $\eta$, $12\%$ kaons and $6\%$ $K^*$, and
 panel~(c) of \cref{fig:children_getting_married:breakup_plot} puts the two
-side by side. The 580 kick components of the event have a root mean
-square of $0.231\GeV$ against the $0.237$ of the input, and the hadrons'
+side by side. The 598 kick components of the event have a root mean
+square of $0.251\GeV$ against the $0.237$ of the input ($0.240$ with the
+one break in a hundred of twice the width), and the hadrons'
 $\langle\pt^2\rangle$ relative to the string is $2\sigma^2=0.224\GeV^2$.
 
 \begin{figure}[htbp]\centering
@@ -637,19 +651,32 @@ string, and its proper time follows from the previous one by
   \Gamma_{\mathrm{new}}=(1-z)\left(\Gamma_{\mathrm{old}}+\frac{\mT^2}{z}\right),
   \label{eq:children_getting_married:gamma_step}
 \end{equation}
-with $\Gamma=0$ at the ends. The iteration cannot go on for ever: when the
+with $\Gamma=0$ at the ends. The log prints this $\Gamma_{\mathrm{new}}$
+for every hadron, with the true proper time of the end's previous vertex
+as $\Gamma_{\mathrm{old}}$. While an end is alone in its first region, and
+after a vertex placed by the rule of
+\cref{sec:children_getting_married:kinks}, that is the value printed one
+step earlier, and the recursion can be followed line by line; after a
+simple step in a region beyond the first, or in a piece the other end has
+bitten into, it is not, and the next $\Gamma$ comes out too large
+(\cref{sec:children_getting_married:caveats}). The iteration cannot go on
+for ever: when the
 invariant mass of what is left between the two current ends falls below
 \begin{equation}
-  \Wmin=m_{q_1}+m_{q_2}+\mathrm{stopMass}+\mathrm{stopNewFlav}\;m_{q_{\mathrm{last}}}
-  =m_{q_1}+m_{q_2}+1.0+2.0\,m_{q_{\mathrm{last}}},
+  \Wmin=m_{\mathrm{T},q_1}+m_{\mathrm{T},q_2}+\mathrm{stopMass}+\mathrm{stopNewFlav}\;m_{q_{\mathrm{last}}}
+  =m_{\mathrm{T},q_1}+m_{\mathrm{T},q_2}+1.0+2.0\,m_{q_{\mathrm{last}}},
   \label{eq:children_getting_married:wmin}
 \end{equation}
+with $m_{\mathrm{T},q}^2=m_q^2+\pt^2$ from the mass of each end flavour
+and the kick it carries, and $q_{\mathrm{last}}$ the heavier of the
+flavours made at the last break of the two ends,
 smeared by $\pm20\%$ so that the stop does not leave a scar in the
 spectrum, the two chains are joined: one last pair is created, the two
 final hadrons share what is left with the transverse momentum of that
 break, and the orientation along the string, which hadron goes forward, is
-drawn with the product of the two ends' fragmentation functions. If no
-hadron fits at all the string is restarted with new random numbers.
+drawn with the product of the two ends' fragmentation functions. A hadron
+that fits nowhere is drawn again, and a string whose final two do not fit
+is restarted with new random numbers, eleven times in our event.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/had_iteration}}
@@ -676,15 +703,17 @@ the draw is $z=0.9843$, $\Gamma=0.453\GeV^2$, and the hadron takes
 $166.0$ of the quark's $165.4\GeV$ of energy, more than all of it because
 its region reaches into the first gluon. The remaining mass drops from
 $68.8$ to $29.0\GeV$ in that one step. Twelve more hadrons follow, with
-$z$ between $0.24$ and $0.76$ and $\Gamma$ between $1.1$ and $25\GeV^2$,
-until after the fourteenth the remaining $1.209\GeV$ is below
+$z$ between $0.24$ and $0.76$ and $\Gamma$ between $1.1$ and $8.7\GeV^2$,
+but for the $25$ and $22\GeV^2$ of the fourth and fifth hadron of the $b$
+end, which follow simple steps in region $(1,3)$ and are the artefact
+described above, until after the fourteenth the remaining $1.209\GeV$ is below
 $\Wmin=2.750$ smeared to $2.998\GeV$; the final pair is $d\bar d$, the
 final two are a $\rho^+$ ($u\bar d$) from the $b$ side and a $\pi^-$ ($d\bar u$)
 from the other,
 and the orientation draw, $\ln(f^+f^-)=-1.74$ forward against $-0.02$
 reversed, reverses them with $P=0.848$. Sixteen hadrons, momentum
 conserved to $10^{-12}\GeV$. Over the whole event the 293 light-flavour
-hadrons drew a mean $z$ of $0.486$ against the $0.472$ the functions
+hadrons drew a mean $z$ of $0.488$ against the $0.472$ the functions
 predict for their masses, and panel~(c) of
 \cref{fig:children_getting_married:fragmentation_plot} shows the remaining
 mass of the $b$ string falling step by step towards \Wmin.
@@ -724,7 +753,7 @@ the piece on either side, and the world sheet becomes a set of
 \emph{regions} $(i,k)$ spanned by the $p^+$ of piece $i$ from the $q$ side
 and the $p^-$ of piece $k$ from the $\bar q$ side, with mass
 \begin{equation}
-  W_{ik}^2=p_i^+\,p_k^-,
+  W_{ik}^2=(p_i^++p_k^-)^2=2\,p_i^+\!\cdot p_k^-,
   \qquad
   p_{\mathrm{had}}=\sum_{\text{regions crossed}}
   \left(x^+_{i}\,p_i^+ + x^-_{k}\,p_k^-\right)+\vec p_{\mathrm{T}},
@@ -740,6 +769,10 @@ hold, two bilinear equations and a quadratic, scanning first the regions on
 the end's own side outwards and then those on the other side. The gluon
 halves between the old and the new vertex are swallowed whole, and that is
 how a hadron forms \emph{across a kink}, taking momentum from both pieces.
+\PYTHIA takes the simple step in the first region of an end only and
+solves the two equations everywhere else; the script takes it wherever the
+hadron fits, the largest of its departures
+(\cref{sec:children_getting_married:caveats}).
 Get this rule wrong, by letting the hadron take $z$ of the current piece
 and simply stepping the other side forward, and a hadron with a small $z$
 swallows half a gluon that was never its to take: the string ends after
@@ -819,9 +852,9 @@ a string end moves on the light cone; a $b$ quark of $4.8\GeV$ pulled by a
 string tension of $1\GeV/\mathrm{fm}$ moves on a hyperbola, slower, and
 bends inward while the string grows (\cref{fig:children_getting_married:bowler_sketch}).
 The area swept between the quark's world line and the first vertex is
-larger than for a massless quark by $(m_Q^2/\kappa^2)\ln(1/z)$, and the
-exponential of \cref{eq:children_getting_married:area_law} turns that into
-a factor $z^{-b\,m_Q^2}$ in the fragmentation function. Bowler derived
+smaller than for a massless quark by $(m_Q^2/\kappa^2)\ln(1/z)$, and the
+exponential of \cref{eq:children_getting_married:area_law} turns the area
+saved into a factor $z^{-b\,m_Q^2}$ in the fragmentation function. Bowler derived
 it~\cite{Bowler:1981sb}; the tune multiplies the exponent by a fitted
 $r_Q$ and the Lund--Bowler function is
 \begin{equation}
@@ -851,7 +884,7 @@ than Bowler's. Both are tried on the same partons below.
 \resizebox{\textwidth}{!}{\input{chapter/tikz/had_bowler}}
 \caption[The heavy end of the string and the three fragmentation
 functions]{Left: a massless quark end moves on the light cone, a $b$ quark
-on a hyperbola, and the larger area between its world line and the first
+on a hyperbola, and the smaller area between its world line and the first
 vertex is what the area law turns into the Bowler factor of
 \cref{eq:children_getting_married:bowler}. Right: the three functions the
 script offers and the mean energy fraction each gives the $b$ quark's
@@ -867,9 +900,13 @@ end of the $\bar b$'s string, string~3, drew $z=0.9077$ for its own
 the 400 hadronisations of the same partons the $b$ quark's hadron keeps
 $\xE=0.882\pm0.078$ of its energy, against \PYTHIA's $0.913\pm0.062$;
 with \code{--rfactb 0} the two give $0.952$ and $0.963$, with
-\code{--peterson} $0.839$ and $0.870$. The three choices move the two
-implementations by the same amounts, so the $0.03$ between them is in the
-rest of the construction, not in $f_Q(z)$. The species follow the weights
+\code{--peterson} $0.839$ and $0.870$. Bowler and Peterson leave the two
+implementations $0.03$ apart and the plain Lund function $0.01$, so the
+difference is not in $f_Q(z)$; the part of it that was traced is in where
+a vertex beyond the first region is put: for its $\Gamma$ the script takes the true proper time,
+\PYTHIA a sum over the regions between the vertex and the string end, and
+the two differ next to a massive quark. With \PYTHIA's sum the script's
+$0.891$ on the first hundred seeds becomes $0.906$. The species follow the weights
 of \cref{sec:children_getting_married:breakup}: a vector $B^*$ in
 $69\%$ of the hadronisations ($2.2/3.2=0.688$), $B_s$ ($b\bar s$) in $8\%$, a
 $b$ baryon in $4\%$; our event's \Bstarbar is the most common outcome.
@@ -905,8 +942,10 @@ difference. The four fractions this chapter uses are
 \end{equation}
 with $b$ the final copy of the quark after the shower and the
 primordial-$k_{\mathrm{T}}$ boost, $B$ its primary hadron, and $x_+$ the
-light-cone fraction along the quark direction, which is the $z$ the string
-actually drew when the hadron is the first from that end. LEP measures
+light-cone fraction along the quark direction, the nearest of the four to
+the $z$ the string drew when the hadron is the first from that end ($z$
+itself counts the quark's massless piece in its region, $0.984$ in our
+event). LEP measures
 something else: the energy of the \emph{weakly decaying} B~hadron, after
 $B^*\to B\gamma$ and the other strong decays, divided by the \emph{beam}
 energy, so that every gluon the $b$ radiated before the string formed is
@@ -979,7 +1018,9 @@ too light to fragment, below $m_{q_1}+m_{q_2}+1\GeV$, becomes two hadrons
 along its first parton with the \pt of a single break, or, if even two do
 not fit, one hadron whose mass difference is borrowed from the string
 system with the smallest pair mass. Our event has four of them, $1.5$ to
-$2.7\GeV$, all of which made two hadrons.
+$2.7\GeV$, all of which made two hadrons; \PYTHIA has three, because it
+measures the $2.04\GeV$ system of a $u$ and a $ud$ diquark against
+constituent masses and fragments it as a string.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/had_flow}}
@@ -1001,7 +1042,8 @@ level to those of \cref{sec:uninvited_cousins:record_format}: when a colour
 singlet is collected, every one of its partons is copied with status $-71$;
 two partons that are joined because their pair mass is within
 $m_{\mathrm{join}}=0.3\GeV$ of their masses become one row with status
-$-73$ and two mothers; the hadrons are positive, $82$ for the two hadrons of
+$-73$ and two mothers (when a third parton joins them, in seven of the
+$41$ rows, the columns keep the first and the last); the hadrons are positive, $82$ for the two hadrons of
 a ministring, $83$ for a hadron produced from the colour end of a string
 and $84$ from its anticolour end, with the string's partons as the mother
 range. The first $963$ rows are the record of \cref{ch:uninvited_cousins}
@@ -1009,8 +1051,9 @@ with every final parton's status negated, then $122$ rows of status $-71$
 and $41$ of status $-73$ (the $48$ joins leave $163$ string partons), then
 $170$ hadrons of status $83$, $187$ of status $84$ and $8$ of status $82$,
 the $365$ primary hadrons. The $b$ quark's string begins at row~1006, the
-mother's string copy at the momentum of row~719; row~1009 holds the two
-gluons whose pair mass was within $0.043\GeV$ of zero, and row~1012 is the
+mother's string copy at the momentum of row~719; row~1009 holds three
+gluons, rows~713, 842 and~894, joined at pair masses of $0.043$ and
+$0.124\GeV$, and row~1012 is the
 \Bstarbar at $(p_x,p_y,p_z,E)=(-72.156,-31.074,-146.183,166.042)\GeV$, that
 is $\pt=78.56\GeV$ against the quark's $78.29$, with rows~1006 to~1011 as
 its mothers. Fifteen more hadrons of status~83 and~84 follow up to
@@ -1054,7 +1097,7 @@ the ledger, and the lesson is that hadronisation conserves energy but not
 the energy of a cone. The three partons within $\dR<0.4$ of the mother, her
 two children and herself, carried $100.67\GeV$; the six primary hadrons
 there carry $99.23$. Nothing was lost: the $b$ quark's string runs from her
-to a $\bar u$ at $\eta=-2.5$, well outside the cone, and its sixteen
+to a $\bar u$ at $\eta=-2.4$, well outside the cone, and its sixteen
 hadrons are spread along the string, some inside the cone and some out,
 while the strings of the underlying event that cross the cone put a few of
 their hadrons in. The balance, $-1.44\GeV$ in our event, is
@@ -1196,12 +1239,51 @@ ledger, around the last quark copies in (a) and around the B~hadrons in
 \label{sec:children_getting_married:caveats}
 
 The agreement in \cref{tab:children_getting_married:numbers} was obtained
-by porting the model's construction, not by tuning to \PYTHIA's output, and
-the disagreements are understood. Each omission is a caveat to carry:
+by porting the model's construction, not by tuning to \PYTHIA's output.
+Most of the disagreements were traced, after the record was made, to
+places where the port departs from \PYTHIA; the record of this book is
+kept as the script wrote it, and each departure is a caveat to carry:
 \begin{itemize}
-  \item \textbf{No popcorn.} A baryon and its antibaryon are always
-    neighbours here; \PYTHIA can put a meson between them, which is why it
-    makes $11\%$ more baryons at the same diquark weight.
+  \item \textbf{The simple step in every region.} \PYTHIA lets a hadron
+    take $z$ of its own piece only in the first region of an end, and $z$
+    of what that end has left; the script does it wherever the hadron
+    fits, and with what both ends have left. Then
+    \cref{eq:children_getting_married:gamma_step} fails, for $88$ of the
+    $299$ vertices of our event, and the strings with gluons make too many
+    hadrons: $402.5$ on the first hundred seeds against \PYTHIA's $383.3$,
+    and $385.9$ with \PYTHIA's two rules.
+  \item \textbf{$\Gamma$ beyond the first region.} The script's $\Gamma$ is
+    the true proper time of the vertex, \PYTHIA's a sum over the regions
+    between the vertex and the string end. They differ next to a massive
+    quark, and with \PYTHIA's sum the $b$ quark's \xE moves from $0.891$
+    to $0.906$ on the same seeds, and to between $0.90$ and $0.91$ with
+    the two rules above as well; \PYTHIA has $0.913$.
+  \item \textbf{No popcorn, and too few baryons.} A baryon and its
+    antibaryon are always neighbours here. That is not why baryons are
+    missing: without popcorn \PYTHIA makes $46.7$ of them, the script
+    $38.8$. Two parts are known: $uu$, $dd$ and $ss$ diquarks of spin~$1$
+    come at half the rate isospin asks for, and with them the
+    $\Delta^{++}$ ($uuu$) and the $\Delta^-$ ($ddd$), and the redraw below
+    costs one baryon per event. The rest is not understood.
+  \item \textbf{Redraws and restarts.} A hadron that fits nowhere is drawn
+    again, $7\%$ of them, where \PYTHIA goes to the final two at once;
+    $13\%$ of the strings still end with more than \Wmin left, $13\GeV$
+    for the $108\GeV$ string of our record, and a string is restarted
+    eleven times per event.
+  \item \textbf{Masses and \Wmin.} The script takes the quark masses of
+    the particle table where \PYTHIA takes constituent masses, hence its
+    $29$ strings, $4$ ministrings and $8$ hadrons of status~$82$ against
+    $30$, $3$ and $6$; and \PYTHIA's \Wmin has no \pt in it and takes for
+    $q_{\mathrm{last}}$ the flavour about to be made, so that our strings
+    of $2.05$ and $2.17\GeV$ always make three hadrons here and, as a
+    rule, two there.
+  \item \textbf{Pole masses, and the corrected $a$.} Every hadron has its
+    pole mass, where \PYTHIA draws a Breit--Wigner one, a $\rho$ anywhere
+    between $0.6$ and $1.5\GeV$. And
+    \cref{eq:children_getting_married:lund} is the corrected form:
+    \PYTHIA~8.315 keeps for Monash, as \code{StringZ:useOldAExtra}, an
+    older one with $a_{\mathrm{old}}$ and $a_{\mathrm{new}}$ exchanged in
+    $(1-z)^a$, which moves the baryons' $z$ and not their number.
   \item \textbf{No junctions.} Three colour lines meeting at a point, the
     baryon-number-carrying topology of \PYTHIA's remnants and of its
     QCD-based colour reconnection~\cite{Sjostrand:2002ip,Christiansen:2015yqa},
@@ -1210,10 +1292,6 @@ the disagreements are understood. Each omission is a caveat to carry:
     remaining momentum with the \pt of the final break and the direction
     of the positive end, the orientation drawn with the area law; \PYTHIA's
     construction is more careful about the transverse momentum balance.
-  \item \textbf{The region bookkeeping differs in detail.} The $5\%$ excess
-    of hadrons in the gluon-rich strings is where the two implementations
-    of \cref{sec:children_getting_married:kinks} part company; the
-    two-parton strings agree to $2\%$.
   \item \textbf{No thermal model, no ropes, no close packing.} The thermal
     \pt alternative of \cite{Fischer:2016zzs} and the interactions between
     overlapping strings~\cite{Bierlich:2014xba} are the open problems below.
@@ -1285,9 +1363,10 @@ review remains \cite{Buckley:2011ms}. Junctions are
   \item \textbf{All pieces must be massless.} The $b$ quark's piece is
     massless in the string's light-cone construction; its mass is carried
     by the pairing of adjacent regions, not by the piece.
-  \item \textbf{``No room'' is not a failure.} When an end finds no region
-    that can hold its hadron the chain ends with the final two; only a
-    string that fails ten times is restarted ($0.5\%$ of the
+  \item \textbf{``No room'' is routine.} A hadron that fits nowhere is
+    drawn again, an end that still finds no room ends the chain with the
+    final two, and a string whose final two do not fit is restarted; only
+    the two-hadron fallback after ten failures is rare ($0.5\%$ of the
     hadronisations have one).
   \item \textbf{A rejected $\eta$ is a new flavour.} The $\eta$ and
     $\eta'$ suppressions and the rejected part of the SU(6) weights do
@@ -1318,14 +1397,16 @@ review remains \cite{Buckley:2011ms}. Junctions are
 \item \textbf{The rope.} With $\kappa=1\GeV/\mathrm{fm}$, how long can the
   $27.5\GeV$ string of \cref{sec:children_getting_married:string} get in
   its rest frame if it does not break, and how long does that take? Its
-  seven hadrons have proper times of $1$ to $3\,\mathrm{fm}$: estimate the
+  vertices have proper times of $0.1$ to $1.5\,\mathrm{fm}$ in the
+  \code{-vv} log: estimate the
   string's length at the time of the first break and compare with the
   hadron size.
 \item \textbf{The area law.} Derive $P(\Gamma)\propto\Gamma^ae^{-b\Gamma}$
   from \cref{eq:children_getting_married:lund,eq:children_getting_married:gamma_step}
-  for a long chain, and verify with the $\Gamma$ values of the $b$ string
-  in the log, $0.45$ to $25\GeV^2$, that their mean is near $(1+a)/b$. Why
-  are the two largest, $25$ and $22\GeV^2$, both from the $b$ end?
+  for a long chain, and compare $(1+a)/b$ with the $\Gamma$ values of the
+  $b$ string in the log: twelve lie between $0.45$ and $8.7\GeV^2$ with a
+  median of $2.1$. Which $\Gamma_{\mathrm{old}}$ do the other two, $25$
+  and $22\GeV^2$, imply, and why are they not proper times of the model?
 \item \textbf{Tunnelling.} Reproduce $s/u=0.106$ from
   \cref{eq:children_getting_married:tunnelling} with constituent masses,
   then find the mass $m_s$ that gives the tune's $0.217$ with $m_u=0.33$.
@@ -1336,16 +1417,20 @@ review remains \cite{Buckley:2011ms}. Junctions are
   relative to the string is the vector sum of two kicks; compute the rms of
   the components and compare with $0.237\GeV$.
 \item \textbf{The mean of $f(z)$.} Integrate
-  \cref{eq:children_getting_married:lund} numerically for $\mT=m_\pi$,
-  $m_\rho$ and $m_{B^*}$ (the last with and without the Bowler factor) and
-  reproduce the means $0.328$, $0.529$, $0.888$ and $0.95$ of the log's
-  opening lines.
-\item \textbf{The chain by hand.} Starting from the $b$ string's $W=69.34\GeV$,
-  take the $z$, \mT and end of each hadron from the log and reproduce the
-  $\Gamma$ of every vertex with \cref{eq:children_getting_married:gamma_step}
-  and the \Wmin of every step with \cref{eq:children_getting_married:wmin}
-  (the smearing is a uniform $\pm20\%$ draw). At which step would the
-  chain have stopped without the smearing?
+  \cref{eq:children_getting_married:lund} numerically for a pion, a $\rho$
+  and a $B$ at $\mT^2=m^2+\sigma^2$ (the last with and without the Bowler
+  factor) and reproduce the means $0.328$, $0.529$ and $0.888$ of the
+  log's opening lines and the $0.947$ of the plain Lund function. What
+  does $\mT=m_\pi$ give?
+\item \textbf{The chain by hand.} For the $b$ string take the $z$, \mT and
+  end of each hadron from the log and reproduce with
+  \cref{eq:children_getting_married:gamma_step} the $\Gamma$ of the first
+  six vertices of the $\bar u$ end and the first three of the $b$ end. The
+  $1.971$ of the $K^+$ and the $25.212\GeV^2$ of the fourth hadron of the
+  $b$ end do not follow from the line before: which $\Gamma_{\mathrm{old}}$
+  do they imply? Then reproduce the last \Wmin, $2.750\GeV$ before the
+  smearing, with \cref{eq:children_getting_married:wmin} from the kicks
+  of the last break of each end.
 \item \textbf{Regions.} From the momenta of the six partons of rows 1006 to
   1011 of \file{event_Had.lhe}, boost to the string's rest frame, build
   the light-cone pieces and the region masses $W_{ik}$ of

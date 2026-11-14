@@ -16,7 +16,7 @@ otherwise; the CMSSW analysers are in
 | The three photographers on nine particles | [`antiKt.py`](../example/GenJet/Standalone/antiKt.py), [`caKt.py`](../example/GenJet/Standalone/caKt.py), [`hotVR.py`](../example/GenJet/Standalone/hotVR.py) |
 | Input | [`example/Decay/event_Decay.lhe`](../example/Decay/event_Decay.lhe), the 749 final particles of chapter 6 |
 | Event record | [`example/GenJet/event_GenJet.lhe`](../example/GenJet/event_GenJet.lhe) (the chapter 6 record plus a jet listing and a constituent listing) |
-| Learning-mode log | [`example/GenJet/Standalone/standalone_genjets.log`](../example/GenJet/Standalone/standalone_genjets.log) (`-v`, 178 lines) |
+| Learning-mode log | [`example/GenJet/Standalone/standalone_genjets.log`](../example/GenJet/Standalone/standalone_genjets.log) (`-v`, 182 lines) |
 | Validation with FastJet and SlowJet | [`example/GenJet/Standalone/validate_genjets_with_fastjet.py`](../example/GenJet/Standalone/validate_genjets_with_fastjet.py) |
 | CMSSW figure | [`example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf`](../example/GenJet/CMSSW/genJetAnalyzer_07_GenJet_AK4.pdf), the lower panel of the chapter's display |
 | CMSSW write-up (JitJetSW) | physics details: [`chapter_07_GenJet.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.tex); technical companion: [`chapter_07_GenJet.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_07_GenJet.md) |
@@ -62,7 +62,7 @@ cd example/GenJet/Standalone
 python3 standalone_genjets.py                       # -> ../event_GenJet.lhe (the book's record)
 python3 standalone_genjets.py -v                    # learning mode: the b jet merge by merge, the labels, IFN
 python3 standalone_genjets.py -vv                   # ... every merge of the ak4 clustering
-python3 standalone_genjets.py --algorithm kt        # kT jets instead of anti-kT (also ca); --ptmin 10
+python3 standalone_genjets.py --algorithm kt        # kT jets instead of anti-kT (also ca); --ptmin 10; add -o to keep the jets
 python3 standalone_genjets.py --soft-pair 0.5       # the infrared test: a soft B0 Bbar0 pair between two light jets
 python3 standalone_genjets.py --repeat 400 --jobs 4 --quiet --history standalone_genjet_stats.json
 ```
@@ -71,14 +71,14 @@ The first command clusters the record in fifteen seconds (2 s per
 collection, 8 s of it the flavour-kT clustering) and prints
 
 ```text
-749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 163 partons (status 71-79),
+749 final particles (5 neutrinos); ghosts: 4 b hadrons, 9 c hadrons, 161 partons (status 71-79),
   2 hard-process partons, 3 leptons from heavy hadrons
 ak4GenJets (antikt, R = 0.4, pT > 3 GeV): 42 jets, 368 of 749 particles clustered; 11 jets above 10 GeV,
   6 above 30; hadronFlavour 5: 3, 4: 2
    jet       pT     eta     phi       m    n  nch  had  part  phys  dR.3  heavy hadrons / partons in the jet
      0    99.83   -1.44   -2.71   14.83   31   17    5    +5     0    +5  Bbar0 D0 D_s- | b g g
      1    94.09   -3.45    0.59   17.83   18    8    5    -5     0    -5  Bbar0 Xi_c0 | bbar g g g
-     2    60.45   -3.39    1.43   11.79   29   14    5    -5     0    -5  Lambda_bbar0 Bbar0 D+ Dbar0 | bbar b g
+     2    60.45   -3.39    1.43   11.79   29   14    5    -5     0    -5  Bbar0 Lambda_bbar0 D+ Dbar0 | bbar b g
      3    48.12    0.28   -0.77    9.75   17    7    0    +2     0    +2   | u ubar g
   ...
 b quark (row 719): pT = 78.29 GeV, eta = -1.38, phi = -2.73; its Bbar0 (row 1527) pT = 78.26
@@ -90,12 +90,20 @@ b quark (row 719): pT = 78.29 GeV, eta = -1.38, phi = -2.73; its Bbar0 (row 1527
     hadronFlavour 5, partonFlavour 5, physics 0, dR<0.3 5, net +1 b; b hadrons: Bbar0; c hadrons: D0 D_s-
   ak8GenJets      : jet [1] pT = 105.79 GeV, eta = -1.46, phi = -2.71, m = 27.43, n = 47 (25 charged); ...
   heavy hadrons kept : anti-kT jet [0] pT = 99.83: net flavour +1 b, IFN flavour +1 b
-  flavour-kT         : jet pT = 99.83, eta = -1.44, phi = -2.71, n = 17, dR = 0.054: flavour +1 b
+  flavour-kT         : jet pT = 99.83, eta = -1.44, phi = -2.71, n = 17, dR = 0.062: flavour +1 b
 ak4GenJets: b jet + bbar jet: |pT(b) + pT(bbar)| = 16.89 GeV, Sigma|pT| = 193.92, dphi = 2.98, m = 302.9 GeV
 IFN: no neutralisation in this event (every flavoured hadron keeps its flavour)
 ```
 
-The output with the defaults is byte-for-byte the committed record. With
+The output with the defaults is byte-for-byte the committed record; a run
+with another algorithm, `--radius` or `--ptmin` does not write the default
+record (chapter 8 reads it) and needs its own `-o`. The record carries
+three decimals and the readers recompute E from the mass: a pi- of 0.27 GeV
+on the R = 0.8 border (row 1607) is in the record's ak8 jet [1] (105.79 GeV,
+47 particles) and outside it at full precision, so entry 0 of the
+`--repeat` statistics, the same decay clustered before rounding, has
+105.51 GeV and 46 particles (and 367 instead of 368 particles in ak4 jets,
+m = 14.82 instead of 14.83 for the b jet). With
 `--history` the summary goes to a JSON file as well (`standalone_genjets.json`);
 with `--repeat N` the script decays the primary hadrons of chapter 5 N
 times with the script of chapter 6, seeds 1..N, clusters each result and
@@ -124,7 +132,7 @@ the merged one, and what joined; the declaration of the jet and the two
 particles that differ between the jet and the cone; the labels of the two
 b jets with the ghosts behind each; the IFN pass over the event with the
 neutralisation distance of every candidate; and the flavoured merges of
-flavour-kT. `-vv` adds every one of the 930 steps of the ak4 clustering.
+flavour-kT. `-vv` adds every one of the 928 steps of the ak4 clustering.
 The `-v` log for seed 1 is committed as `standalone_genjets.log`, and every
 number quoted in the theory section of the chapter is taken from it.
 
@@ -242,24 +250,24 @@ over the whole event` and `summary`. The ghosts:
 ```text
   ghosts (momentum x 1e-18): b hadrons Lambda_bbar0 [1005] pT 35.52 eta -3.41 phi 1.49, Bbar0 [1527] pT 78.26 eta -1.38 phi -2.73, Bbar0 [1584] pT 24.93 eta -3.36 phi 1.34, Bbar0 [1590] pT 81.97 eta -3.43 phi 0.58
           c hadrons D- [1337] 1.28, D_s+ [1708] 0.92, D+ [1727] 0.11, Dbar0 [1797] 0.83, Dbar0 [1965] 14.95, Xi_c0 [2001] 71.43, D_s- [2177] 27.28, D0 [2179] 26.98, D+ [2189] 10.07
-          163 partons with status 71-79 (the strings' partons), 2 hard-process partons: bbar [5] pT 113.22, b [6] pT 113.22; 3 leptons from heavy hadrons
+          161 partons with status 71-79 (the strings' partons), 2 hard-process partons: bbar [5] pT 113.22, b [6] pT 113.22; 3 leptons from heavy hadrons
 ```
 
-The first merges of the b quark's jet (36 of the 930 steps of the event;
+The first merges of the b quark's jet (36 of the 928 steps of the event;
 the chapter's theory reads the first, the ghosts' and the last):
 
 ```text
    step         merge        d_ij     dR     pT_i     pT_j     pT_k  what joined
      12   715 +   742   1.736e-06  0.006   10.567    4.451   15.018  pi-[2241] 4.45 GeV joins K-[2211] 10.57 GeV
-     16   697 +   941    2.73e-06  0.010    3.059   15.018   18.077  gamma[2178] 3.06 GeV joins pseudojet 941
-     20   760 +   945   5.953e-06  0.018    0.000   18.077   18.077  ghost chad D0[2179] joins pseudojet 945
-     23   698 +   949   7.429e-06  0.020    4.084   18.077   22.160  gamma[2180] 4.08 GeV joins pseudojet 949
-     24   750 +   952   1.238e-05  0.031    0.000   22.160   22.160  ghost bhad Bbar0[1527] joins pseudojet 952
-     27   781 +   953   1.685e-05  0.036    0.000   22.160   22.160  ghost parton b[1006] joins pseudojet 953
+     16   697 +   939    2.73e-06  0.010    3.059   15.018   18.077  gamma[2178] 3.06 GeV joins pseudojet 939
+     20   760 +   943   5.953e-06  0.018    0.000   18.077   18.077  ghost chad D0[2179] joins pseudojet 943
+     23   698 +   947   7.429e-06  0.020    4.084   18.077   22.160  gamma[2180] 4.08 GeV joins pseudojet 947
+     24   750 +   950   1.238e-05  0.031    0.000   22.160   22.160  ghost bhad Bbar0[1527] joins pseudojet 950
+     27   781 +   951   1.685e-05  0.036    0.000   22.160   22.160  ghost parton b[1006] joins pseudojet 951
      ...
-     33   957 +   961   1.843e-05  0.055   23.273   32.093   55.354  pseudojet 957 joins pseudojet 961
+     33   955 +   959   1.843e-05  0.055   23.273   32.093   55.354  pseudojet 955 joins pseudojet 959
      ...
-     56   783 +   984   4.701e-05  0.253    0.000   92.387   92.387  ghost parton g[1008] joins pseudojet 984
+     56   783 +   982   4.701e-05  0.253    0.000   92.387   92.387  ghost parton g[1008] joins pseudojet 982
 ```
 
 The labels of the two b jets:
@@ -316,7 +324,7 @@ subsection:
 |---|---|---|
 | 1 | the choices | the pT within R of the quark for the cone and the jet, with and without neutrinos; the 36 merges of our jet with the dR of each; the number of jets above a threshold |
 | 2 | the ghosts | the ghosts over the jets; the six labels of every jet above 5 GeV; the B hadron against the axis over 400 decays |
-| 3 | infrared-safe flavour | the soft-pair scan of the labels of jets [8] and [9]; Omega^2 against dy; flavour-kT against anti-kT |
+| 3 | infrared-safe flavour | the soft-pair scan of the labels of jets [8] and [9] (flavour-kT makes one flavourless jet of the two at every pT); Omega^2 against dy; flavour-kT against anti-kT |
 | 4 | our jet at this stage | the family through the stages and its three photographs; what the ak4 jet is made of; the response over 400 decays and the PYTHIA chain |
 
 `plot_algorithms_GenJet.py` runs the three rules on the 749 particles
@@ -394,7 +402,7 @@ chapter.
 ### 4.1 The same particles with FastJet and SlowJet
 
 `validate_genjets_with_fastjet.py` has two modes. In mode `record` (the
-default) it builds the 749 particles of `event_Decay.lhe` and the same 181
+default) it builds the 749 particles of `event_Decay.lhe` and the same 179
 ghosts as FastJet `PseudoJet`s, clusters them with
 `JetDefinition(antikt_algorithm, R)` and the E scheme for the three
 collections, and compares jet by jet with the standalone classes: the
@@ -558,9 +566,9 @@ definitions, and the net b flavour.
 | | its Bbar0 (row 1590, oscillated) | 81.97 | 5.28 | 1 | 0.02 | | |
 | | the cone dR < 0.4 | 93.02 | | 18 | | 1.283 | |
 | | ak4GenJets jet [1] | 94.09 | 17.83 | 18 (8 charged) | 0.035 | 1.298 | 5, -5, 0, -5, +1 |
-| | ak4GenJets jet [2], the gluon's pair | 60.45 | 11.79 | 29 (14 charged) | 0.87 | | 5, -5, 0, -5, 0 |
+| | ak4GenJets jet [2], the gluon's pair | 60.45 | 11.79 | 29 (14 charged) | 0.86 | | 5, -5, 0, -5, 0 |
 | | ak8GenJets jet [0], both of the above | 147.69 | 75.40 | 57 (28 charged) | 0.361 | 2.037 | 5, -5, -5, 21, +1 |
-| b jet + bbar jet (ak4GenJets) | abs(sum pT), Sigma abs(pT), dphi, m | 16.9, 193.9 | 302 | | | 2.98 | |
+| b jet + bbar jet (ak4GenJets) | abs(sum pT), Sigma abs(pT), dphi, m | 16.9, 193.9 | 303 | | | 2.98 | |
 
 ### 5.3 The three photographers on the whole event
 

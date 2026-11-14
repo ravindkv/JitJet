@@ -123,7 +123,7 @@ class Physics:
         self.pu = {k: np.array(v) for k, v in self.pu.items()}
         self.order = [c["k"] for c in self.in_time]
         # the running rho: the grid cells per collision, cumulated
-        ny, nphi = int(2 * core.GRID_RAP_MAX / core.GRID_SPACING), int(2 * math.pi / core.GRID_SPACING)
+        ny, nphi = max(1, int(2 * core.GRID_RAP_MAX / core.GRID_SPACING + 0.5)), max(1, int(2 * math.pi / core.GRID_SPACING + 0.5))   # as grid_rho: the nearest integer
         self.dy, self.dphi = 2 * core.GRID_RAP_MAX / ny, 2 * math.pi / nphi
 
         def cells_of(arr, yv):
@@ -142,11 +142,11 @@ class Physics:
             self.cells_cum.append(self.cells_cum[-1] + cells_of(arr, arr[:, 4] if len(arr) else np.zeros(0)))
         self.rho_run = [float(np.median(c)) for c in self.cells_cum]
         self.n_run = [0] + [sum(len(self.pu.get(k, [])) for k in self.order[:n + 1]) for n in range(len(self.order))]
-        # the pileup inside the circle of our jet, cumulated
+        # the pileup inside the circle of our jet, cumulated: the circle in (y, phi), the plane of the clustering
         self.circle_run = [0.0]
         for k in self.order:
-            arr = self.pu.get(k, np.zeros((0, 4)))
-            inside = dr2v(arr[:, 0], arr[:, 1], self.ref["eta"], self.ref["phi"]) < 0.16 if len(arr) else np.zeros(0, dtype=bool)
+            arr = self.pu.get(k, np.zeros((0, 5)))
+            inside = dr2v(arr[:, 4], arr[:, 1], self.ref["y"], self.ref["phi"]) < 0.16 if len(arr) else np.zeros(0, dtype=bool)
             self.circle_run.append(self.circle_run[-1] + float(arr[inside, 2].sum()) if len(arr) else self.circle_run[-1])
         self.region = core.region_of(self.s.get("region_model", "run3"))
         # one library event of each kind for scene 3, and the means per kind (the catalogue of minbias_catalogue.py)
@@ -658,7 +658,7 @@ class EnsembleScene(Scene):
         if k < self.k_fill:
             cap = f"{n} draws of the crowd on the same photograph: the pileup inside the circle of our jet and the estimate rho pi R^2."
         else:
-            cap = (f"Over {len(self.pu)} draws the crowd puts {self.pu.mean():.1f} +- {self.pu.std():.1f} GeV inside the circle; rho A estimates {self.ra.mean():.1f} +- {self.ra.std():.1f}; "
+            cap = (f"Over {len(self.pu)} draws the crowd puts {self.pu.mean():.1f} +- {self.pu.std():.1f} GeV inside the circle; rho pi R^2 estimates {self.ra.mean():.1f} +- {self.ra.std():.1f}; "
                    f"the residual is {res.mean():+.1f} +- {res.std():.1f} GeV. The subtraction removes the average; the {res.std():.0f} GeV of spread is the price of the crowd, "
                    f"and the next chapters will try to lower it with tracks and time.")
         chrome(fig, self.number, self.title, cap)
@@ -729,7 +729,7 @@ def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
                          f"proportions of their cross sections; and on average a collision brings {nf.mean():.0f} particles, "
                          f"{np.mean([int(((e['pt'] > 0.5) & (np.abs(e['eta']) < 2.5)).sum()) for e in phys.lib.events]):.0f} of them in the tracker's reach, and nothing above a few GeV."),
         "member_library": (f"The library: two thousand collisions generated once with Pythia at thirteen point six T e V, {nf.mean():.0f} particles on average, a median of {np.median(nf):.0f}, "
-                           f"from three to {nf.max()}. The crowd is soft, and very uneven. The mixing reads them at random, as the production does."),
+                           f"from three to {nf.max()}. The crowd is soft, and very uneven. The mixing opens the library at a random collision and reads on from there, as the production does."),
         "median_grid": ("How much does the crowd put in one unit of area? Cut the plane into cells, add the transverse momentum of every particle to its cell, "
                         "and watch the cells fill as the collisions stack."),
         "median_median": (f"The median of the cells is rho: {s['rho_grid']:.0f} GeV per unit area. The mean would be higher, because the jets sit in the tail; "

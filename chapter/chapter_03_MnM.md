@@ -38,9 +38,12 @@ python3 standalone_parton_showering.py --repeat 2000 --quiet --history default.j
 ```
 
 `--ptmax 396` starts the shower at the kinematic limit, sqrt(sHat), instead
-of the factorisation scale 113.32 GeV; the `--history` JSON lists every
-branching of every shower with its pT, so the share of events with a
-branching above a merging scale Q_cut is one line of Python over it.
+of the factorisation scale 113.32 GeV (the embedded PDF grid ends at
+Q = 180 GeV and is frozen above it). With `--repeat` the `.stats.json`
+next to the `--history` file holds the per-shower branching counts and
+family numbers; the branchings themselves, with their pT, are in the
+`--history` JSON of a single shower, so the share of events with a
+branching above a merging scale Q_cut is a loop over `--seed`.
 
 ## 2. Reading the record
 
@@ -55,12 +58,12 @@ in the `-v` log of chapter 2, against a merging scale of 30 GeV:
     3 ISR g<-g      side A(+z)  g    -> g    + g     pT =   42.157   above
     4 FSR q->qg     bbar  against g          pT =   34.218   above
     5 FSR q->qg     b     against g          pT =   32.070   above
-    6 FSR g->gg     g     against g          pT =   25.620   below: the shower's
+    6 FSR g->gg     g     against g          pT =   25.615   below: the shower's
    ...
    38 FSR q->qg     dbar  against g          pT =    0.644   below
 ```
 
-Five branchings above 30 GeV, 33 below, 32 of them below 6 GeV.
+Five branchings above 30 GeV, 33 below, 29 of them below 6 GeV.
 
 ## 3. Drawing the event and rendering the film
 
@@ -109,7 +112,7 @@ fragment.
 
 | Recipe | Where it is set | Settings named in the chapter | CMS use |
 |---|---|---|---|
-| plain 2 -> 2 showering (our event) | PYTHIA | `PTmaxMatch = 1`: the shower stops at the factorisation scale (the CMSSW default); `= 2` is the power shower to the kinematic limit | `HardQCD` multijet samples |
+| plain 2 -> 2 showering (our event) | PYTHIA | `SpaceShower:pTmaxMatch`, `TimeShower:pTmaxMatch`: at PYTHIA's defaults (0 and 1), which CMSSW leaves untouched, the shower of a final state of quarks and gluons stops at the factorisation scale; `= 2` is the power shower to the kinematic limit | `HardQCD` multijet samples |
 | MLM | MadGraph `run_card.dat` + PYTHIA | `xqcut` (MadGraph), `JetMatching:scheme = 1`, `JetMatching:qCut` (19 to 30 GeV), `JetMatching:nJetMax` | leading-order MadGraph multijet, Drell-Yan, W+jets |
 | CKKW-L, UMEPS | PYTHIA `Merging:` block | `Merging:doKTMerging`, `Merging:TMS`, `Merging:nJetMax`, `Merging:Process` | not in CMS production samples |
 | MC@NLO | MadGraph5_aMC@NLO | `--` (the subtraction is built into the NLO event file; negative weights in `genWeight`) | NLO samples of MadGraph5_aMC@NLO |
@@ -141,5 +144,5 @@ the winning branchings sorted by pT_evol, against Q_cut = 30 GeV:
 | region | branchings | which |
 |---|---:|---|
 | above 30 GeV (a matrix element's in a merged sample) | 5 | ISR 53.9, 51.4, 42.2 GeV; the twins' first gluons 34.2, 32.1 GeV |
-| 6 to 30 GeV | 1 | the g -> gg at 25.6 GeV |
-| below 6 GeV | 32 | the rest of the shower |
+| 6 to 30 GeV | 4 | the g -> gg at 25.6, 22.1, 13.4 and 10.6 GeV |
+| below 6 GeV | 29 | the rest of the shower |

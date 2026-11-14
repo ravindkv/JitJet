@@ -9,7 +9,7 @@ TOTAL = 0.345320 +/- nan nb
   s sbar: 0.030267 +/- nan nb
   c cbar: 0.012696 +/- nan nb
   b bbar: 0.005473 +/- nan nb
-Ratio to reference 0.3451 nb: 1.000638
+Ratio to reference 0.3486 nb: 0.990591
 alpha_s(Q^2=1178 GeV^2) = 0.13853399
 Single repeat: no integration error estimate; use --repeats 8 for one.
 Errors are integration errors, not QCD scale/PDF uncertainties.

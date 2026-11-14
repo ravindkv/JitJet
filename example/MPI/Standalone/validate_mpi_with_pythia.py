@@ -22,9 +22,10 @@ summed pT of the MPI partons are recorded and averaged. With
 standalone_multiparton_interactions.py --repeat N --history FILE.json) both
 sets of averages are printed side by side.
 
---impact B fixes the impact parameter b/<b> through a UserHooks object, as the
-standalone script's --impact does, so that both can be compared at the same
-collision geometry (the CMSSW event: b = 0.3136).
+--impact B keeps only the events whose b/<b> lies within --window (default 0.03)
+of B: the pythia8mc wheel offers no UserHooks override to fix the impact
+parameter as the standalone script's --impact does, so both are compared at
+the same collision geometry by selection (the CMSSW event: b = 0.3136).
 
 Two things worth knowing about this script: the tune must be set before the
 PDF, because Tune:pp resets PDF:pSet; and PYTHIA writes its initialisation

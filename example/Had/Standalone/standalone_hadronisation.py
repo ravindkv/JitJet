@@ -67,7 +67,17 @@ record has none), the thermal pT model, the closely-related rope and
 close-packing effects, hadron decays (chapter 6), and the exact details of
 PYTHIA's final-two joining (here the last two hadrons share the remaining
 momentum with the pT of the final break and the direction of the positive
-end, the orientation chosen with the area law).
+end, the orientation chosen with the area law), and the Breit-Wigner masses
+PYTHIA draws for the resonances (every hadron has its pole mass here).
+
+Known deviations from PYTHIA (audit 2026-11-14; each is marked "KNOWN
+DEVIATION" in the code with its measured size, and kept because the book's
+record, seed 1, is built on this behaviour): the simple z step is used in
+every region and with the remainder shared by the two ends; Gamma beyond the
+first region is the true proper time; uu_1, dd_1 and ss_1 diquarks come at
+half the rate of ud_1; a hadron that does not fit is redrawn; thresholds and
+W_min use m0 instead of the constituent masses, and W_min is built
+differently.
 
 How close is it to PYTHIA? validate_hadronisation_with_pythia.py lets
 PYTHIA 8.315 hadronise exactly the same parton configuration (the strings of
@@ -145,7 +155,14 @@ M_JOIN = 0.3                         # FragmentationSystems:mJoin
 NTRY_STRING = 10                     # attempts before a string is given up and fragmented as a ministring
 NTRY_HADRON = 20                     # attempts to place one hadron (new flavour, pT, z) before the string is restarted
 
-QUARK_M0 = {1: 0.33, 2: 0.33, 3: 0.5, 4: 1.5, 5: 4.8}      # constituent masses for W_min
+# KNOWN DEVIATION from PYTHIA (audit 2026-11-14): these are ParticleData m0 values (the generated table
+# overwrites them with pd.m0). PYTHIA uses constituentMass() for the ministring threshold
+# (ColConfig::insert) and for W_min (StringFragmentation::energyUsedUp): 0.325 (u, d), 0.5 (s), 1.6 (c),
+# 5.0 (b), 0.65 / 0.825 / 1.0 for diquarks with 0 / 1 / 2 s quarks; m0 is right only for the Bowler factor.
+# Measured: the u ud_1 system of the record (W = 2.04 GeV) is a ministring here (threshold 2.10) and a
+# normal string in PYTHIA (1.975), so 29 strings + 4 ministrings (8 hadrons of status 82) here are
+# 30 + 3 (6) there; with the constituent masses seed 1 changes in rows 1455-1456 only.
+QUARK_M0 = {1: 0.33, 2: 0.33, 3: 0.5, 4: 1.5, 5: 4.8}      # m0, used for the thresholds, W_min and Bowler
 DIQUARK_M0 = {1103: 0.77133, 2101: 0.57933, 2103: 0.77133, 2203: 0.77133, 3101: 0.80473, 3103: 0.92953,
               3201: 0.80473, 3203: 0.92953, 3303: 1.09361}
 DIQUARK_NAME = {1103: "dd_1", 2101: "ud_0", 2103: "ud_1", 2203: "uu_1", 3101: "sd_0", 3103: "sd_1",
@@ -219,6 +236,8 @@ def pname(pid: int) -> str:
 
 
 def hadron_mass(pid: int) -> float:
+    # the pole mass for every hadron; PYTHIA draws a Breit-Wigner mass for the resonances (mSel in
+    # StringEnd::newHadron: its rho of our partons range from 0.60 to 1.50 GeV)
     return HADRONS[abs(pid)][2]
 
 
@@ -290,6 +309,12 @@ class StringFlav:
             q = self.pick_quark(self.quark_w)
             self.log = [("flavour", f"quark (P = 1/(1 + probQQtoQ) = {1 / (1 + self.prob_qq):.3f}), d : u : s = 1 : 1 : {self.prob_s} -> {pname(-sign * q)}")]
             return -sign * q
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): a pair of equal flavours is accepted with the same
+        # probability with which a pair of different flavours becomes spin 1, so uu_1, dd_1 and ss_1 come at
+        # half the rate of ud_1 per flavour pair. Isospin wants uu_1 : ud_1 : dd_1 = 1 : 1 : 1, and PYTHIA has
+        # it (StringFlav::initDerived: qBM[uu1] = 6 qBB[uu1] against qBM[ud1] = 3 qBB[ud1] per ordering).
+        # Measured: this loop gives uu_1/ud_0 = 0.039 for ud_1/ud_0 = 0.082; Delta++ and Delta- come 0.56 and
+        # 0.61 times per event against 1.24 and 1.18 in PYTHIA without popcorn, on the same partons.
         while True:
             q1 = self.pick_quark(self.dq_quark_w)
             q2 = self.pick_quark(self.dq_quark_w)
@@ -410,7 +435,9 @@ class StringZ:
         self.a, self.b, self.a_dq, self.a_s = a, b, a_dq, a_s
         self.r = {4: r_c, 5: r_b}
         self.peterson, self.eps = peterson, {4: eps_c, 5: eps_b}
-        self.z = np.linspace(0.0, 1.0, n_grid + 1)[1:-1] - 0.5 / n_grid     # cell centres in (0, 1)
+        # cell centres in (0, 1); the last cell, z > 1 - 1/n_grid, is not in the grid and is never drawn
+        # (0.05% of the Lund-Bowler function for a B, 0.25% of the plain Lund one)
+        self.z = np.linspace(0.0, 1.0, n_grid + 1)[1:-1] - 0.5 / n_grid
         self.dz = 1.0 / n_grid
         self.last = {}
 
@@ -584,6 +611,14 @@ class StringSystem:
         return self.origin(i, k) + t_plus * self.p_plus[i] + t_minus * self.p_minus[k]
 
     # --- one hadron from one end -------------------------------------------------------------------------
+    # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): Gamma beyond the first region. Here the Gamma of a
+    # vertex in region (i, k) is its true proper time squared, (origin + t+ p+_i + t- p-_k)^2. PYTHIA
+    # (StringEnd::kinematicsHadron, cGam1..4) sums the regions between the vertex and the string end,
+    # Gamma = t+ t- w(i,k) + t+ sum_j w(i,j) + t- sum_j w(j,k) + sum_{i<a<b<k} w(a,b), w(a,b) = 2 p+_a.p-_b.
+    # The two agree for massless partons and differ next to a massive quark, where the two massless halves
+    # of the neighbouring gluon are unequal (9.7 and 2.2 GeV next to our b). Measured on seeds 1..100: x_E of
+    # the b quark's hadron is 0.891 here and 0.906 with PYTHIA's sum (0.90 to 0.91 together with the two
+    # rule changes of produce(); PYTHIA 0.913; +-0.007 each).
     def origin(self, i: int, k: int):
         """kappa times the space-time origin of region (i, k): the turning points of the gluons in between."""
         return sum((0.5 * (self.p_plus[j] + self.p_minus[j]) for j in range(i + 1, k)), np.zeros(4))
@@ -639,6 +674,17 @@ class StringSystem:
         the pieces in between, as the point with the proper time Gamma_new = (1 - z)(Gamma_old + mT^2/z) at
         which the hadron is on shell (Sjostrand 1984); the first region, scanning the end's own side
         outwards and then the other side, in which that point lies inside the region is taken.
+
+        KNOWN DEVIATION from PYTHIA (audit 2026-11-14), two parts, both in the "same region" branch below.
+        (a) The simple step, z of the own piece and mT^2/(z w2) of the other, is used in whatever region the
+        end sits; PYTHIA uses it in the lowest regions only (k = i + 1; `iPosOld + iNegOld == iMax` in
+        StringEnd::kinematicsHadron) and solves the (mass shell, Gamma) system everywhere else. In a region
+        with a non-zero origin the simple step does not keep the vertex on the recursion.
+        (b) z multiplies rem_dir, the remainder of the piece shared by both ends; PYTHIA multiplies the end's
+        own coordinate (xDirHad = zHad * xDirOld), which is what the recursion needs.
+        Measured: 88 of the 299 vertices of seed 1 have a Gamma (info['gamma'], the value the next step
+        uses) that differs from the logged one (info['gamma_lund']); on seeds 1..100 the event has 402.5
+        hadrons as it is, 387.5 with (a) changed, 398.1 with (b), 385.9 with both; PYTHIA 383.3 +- 0.5.
         """
         n = self.n
         pos = end.sign > 0
@@ -711,6 +757,14 @@ class StringSystem:
                 if placed is not None:
                     break
             if placed is None:
+                # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): a hadron that fits nowhere is redrawn (new
+                # flavour, pT and z, up to NTRY_HADRON times); PYTHIA goes to the final two at once
+                # (`if (pHad.e() < 0.) break;`) and restarts the string if they fail. Measured on seeds 1..40
+                # (the baryon fractions on 1..100): 7% of the hadrons are placed after a redraw, and the redraw prefers light hadrons (11.5% of
+                # the rejected trials are baryons, 7.9% of their replacements); 13% of the strings still end
+                # here with more than W_min left (median 5.5 GeV, 0.9 strings per event above 10 GeV; 13.3
+                # GeV for string 14 of seed 1); a string is restarted 10.9 times per event. Without the
+                # redraw the event has 281 hadrons instead of 402.
                 if n_solved == 0 or attempt == NTRY_HADRON - 1:
                     self.n_fail += 1
                     return False                       # the string is used up: no room
@@ -841,6 +895,14 @@ class StringSystem:
 
     # --- the whole string --------------------------------------------------------------------------------
     def w_min(self):
+        # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): W_min here is mT_q1 + mT_q2 + stopMass +
+        # stopNewFlav m_last with mT = sqrt(m0^2 + pT^2) of each end and m_last the heavier of the flavours
+        # made at the previous break of either end (nothing before the first break). PYTHIA
+        # (StringFragmentation::energyUsedUp) has the constituent masses of the two ends without pT and
+        # stopNewFlav times the constituent mass of the flavour just drawn for the next hadron, from the
+        # first step on. Measured: the 2.05 and 2.17 GeV strings of the record always make 3 hadrons here
+        # and 2.12 and 2.23 on average in PYTHIA; the last W_min of string 1 is 2.750 here, 2.32 from the
+        # plain masses.
         m_last = flav_m0(self.pos.last_new) if self.pos.last_new else 0.0
         if self.neg.last_new:
             m_last = max(m_last, flav_m0(self.neg.last_new)) if self.pos.last_new else flav_m0(self.neg.last_new)
@@ -1130,6 +1192,7 @@ class Hadroniser:
             p_tot = sum((p for _, p, _, _ in partons), np.zeros(4))
             w = math.sqrt(max(mass2(p_tot), 0.0))
             m_ends = 0.0 if closed else flav_m0(partons[0][0]) + flav_m0(partons[-1][0])
+            # KNOWN DEVIATION from PYTHIA (audit 2026-11-14): m0, not constituent masses; see QUARK_M0
             kind = "mini" if w < m_ends + M_STRING_MIN else "string"
             self.strings.append(dict(rows=rows, partons=partons, closed=closed, w=w, kind=kind, notes=notes, joined=joined,
                                      p_tot=p_tot, hadrons=None, has_b=any(i in self.b_rows for i in rows)))
@@ -1210,7 +1273,8 @@ class Hadroniser:
                           verbose=v, label=str(j))
         had = st.fragment(say)
         if had is None:
-            # fall back: split into two hadrons like a ministring
+            # fall back: split into two hadrons like a ministring, whatever the mass of the string
+            # (n_failed: one string in 0.5% of the hadronisations; restarts themselves are routine)
             ms = MiniString([(pid, p, m) for pid, p, m, _ in s["partons"]], self.rng, self.flav, self.ptfun)
             had = ms.to_two(say)
             self.n_failed += 1
@@ -1231,7 +1295,10 @@ class Hadroniser:
         for s in self.strings:
             if s["hadrons"] is None:
                 continue
-            # copies of the partons (status -71; -72 if the string took a ministring's recoil; -73 joined)
+            # copies of the partons (status -71; -72 if the string took a ministring's recoil; -73 joined).
+            # A -73 row can hold three partons (7 of the 41 of seed 1): its mother columns then carry the
+            # first and the last only, while all three point to it as their daughter. PYTHIA writes one row
+            # per join (48 rows of status 73 for the same partons).
             first = len(ev.p)
             for pid, p, m, rows in s["partons"]:
                 st = -73 if len(rows) > 1 else (-72 if s.get("recoil") else -71)
@@ -1305,6 +1372,9 @@ def cone_sum(ev, rows, axis, R):
 
 
 def summarise(ev: Event, had: Hadroniser, radius=0.4) -> dict:
+    # n_strange counts every hadron with an s or sbar among its valence quarks, open or hidden: kaons, K*,
+    # strange baryons, D_s, and also phi and eta' (id 331), but not the eta (id 221). The validation
+    # script counts PYTHIA's hadrons with the same rule.
     hrows = had.hadron_rows
     s = dict(n_strings=sum(1 for x in had.strings if x["kind"] == "string"),
              n_mini=sum(1 for x in had.strings if x["kind"] == "mini"),
@@ -1401,7 +1471,8 @@ def explain_setup(args, had: Hadroniser):
         f"m_q1 + m_q2 + {M_STRING_MIN} GeV; partons joined below {M_JOIN} GeV")
     mt2 = hadron_mass(-521) ** 2 + 2 * (args.sigma / math.sqrt(2)) ** 2
     zf = had.zfun
-    for lab, fo, fn, m2 in (("u -> pi (mT = m_pi)", 2, -1, hadron_mass(211) ** 2 + args.sigma ** 2),
+    # all three at mT^2 = m^2 + sigma^2, a hadron with one kick of the tune's width
+    for lab, fo, fn, m2 in (("u -> pi", 2, -1, hadron_mass(211) ** 2 + args.sigma ** 2),
                             ("u -> rho", 2, -1, hadron_mass(213) ** 2 + args.sigma ** 2),
                             ("b -> B (Lund-Bowler)", 5, -2, mt2)):
         lf = zf.logf(fo, fn, m2)

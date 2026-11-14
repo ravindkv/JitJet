@@ -17,6 +17,6 @@ TOTAL = 0.345322 +/- 0.000001 nb
   s sbar: 0.030267 +/- 0.000000 nb
   c cbar: 0.012696 +/- 0.000000 nb
   b bbar: 0.005473 +/- 0.000000 nb
-Ratio to reference 0.3451 nb: 1.000642
+Ratio to reference 0.3486 nb: 0.990595
 alpha_s(Q^2=1178 GeV^2) = 0.13853399
 Errors are integration errors, not QCD scale/PDF uncertainties.

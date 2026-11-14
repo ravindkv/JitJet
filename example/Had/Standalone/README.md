@@ -30,7 +30,8 @@ make, the constituent masses of quarks and diquarks) is embedded between
 
 * **Strings.** The colour tags are followed from every quark or antidiquark
   through the gluons to an antiquark or diquark; the record has 33 colour
-  singlets (29 strings and 4 ministrings with W below m_q1 + m_q2 + 1 GeV, no
+  singlets (29 strings and 4 ministrings with W below m_q1 + m_q2 + 1 GeV;
+  PYTHIA, with constituent masses, has 30 and 3; no
   closed gluon loops), 3071 GeV of string mass in all. As PYTHIA, two
   colour-connected partons whose pair mass (gluons at half momentum) exceeds
   the endpoint masses by less than mJoin = 0.3 GeV are joined: 48 partons of
@@ -51,7 +52,8 @@ make, the constituent masses of quarks and diquarks) is embedded between
   quadratic, scanning the end's own side outwards and then the other side;
   the gluon halves in between are swallowed, which is how a hadron forms
   across a kink. The chain stops when the remaining mass falls below
-  W_min = m_q1 + m_q2 + stopMass + stopNewFlav m_qlast (1.0, 2.0; smeared by
+  W_min = mT_q1 + mT_q2 + stopMass + stopNewFlav m_qlast (1.0, 2.0; mT with
+  the pT each end carries, q_last from the previous break; smeared by
   20 %), or when an end finds no room; the last two hadrons share what is
   left, with the orientation chosen by the fragmentation functions of both
   ends. A string that fails ten times is split into two hadrons (0.5 % of
@@ -78,7 +80,8 @@ make, the constituent masses of quarks and diquarks) is embedded between
   the string system with the smallest pair mass (its partons are boosted;
   their copies carry status -72).
 
-Left out on purpose: popcorn, junctions (the record has none), the thermal
+Left out on purpose: popcorn, the Breit-Wigner masses of the resonances
+(every hadron has its pole mass), junctions (the record has none), the thermal
 pT model, ropes and close packing, hadron decays (chapter 6).
 
 ## The record (seed 1)
@@ -114,7 +117,8 @@ $PY validate_hadronisation_with_pythia.py --mode full -n 8000 --impact 0.3136 --
 Mode `record` (the sharp test): PYTHIA 8.315 hadronises exactly the 211
 partons of `event_MPI.lhe` with their colour tags (`ProcessLevel:all = off`,
 Monash fragmentation, decays off) 400 times; the standalone script
-hadronises them 400 times with `--repeat`. Same strings, two Lund
+hadronises them 400 times with `--repeat` (200 times for the plain-Lund
+and Peterson rows). Same strings, two Lund
 implementations. Mode `full`: the full CP5 chain from the hard event, as in
 chapter 4, decays off, with and without the impact-parameter window.
 
@@ -129,7 +133,7 @@ chapter 4, decays off, with and without the impact-parameter window.
 | b: x_E, plain Lund (rFactB = 0) | 0.963 +- 0.038 | 0.952 +- 0.048 | | |
 | b: x_E, Peterson | 0.870 +- 0.120 | 0.839 +- 0.132 | | |
 | bbar: x_E | 1.033 +- 0.049 | 1.025 +- 0.072 | 0.941 +- 0.095 | 0.936 +- 0.094 |
-| b: B hadron pT [GeV] | 71.1 +- 5.0 | 69.4 +- 5.2 | 87.8 +- 26.7 | 87.7 +- 27.3 |
+| b: B hadron pT [GeV] | 71.1 +- 5.0 | 68.7 +- 6.2 | 87.8 +- 26.7 | 87.7 +- 27.3 |
 | b, R = 0.4: partons -> hadrons pT [GeV] | 100.67 -> 98.0 +- 2.2 | 100.67 -> 96.8 +- 3.1 | 109.7 -> 109.6 | 109.7 -> 109.8 |
 | b, R = 0.4: hadrons, mass [GeV] | 7.6, 17.2 | 8.0, 16.8 | 6.2, 14.3 | 6.7, 15.4 |
 | b, R = 0.4: B share of the cone pT | 0.726 | 0.710 | 0.800 | 0.799 |
@@ -140,19 +144,64 @@ chapter 4, decays off, with and without the impact-parameter window.
 On identical partons the standalone script makes 5 % more hadrons (the
 excess sits in the gluon-rich strings: 46 against 43 hadrons from the 108
 GeV string with 21 partons, 24 against 21 from the 95 GeV one; the
-two-parton strings agree to 2 %), 11 % fewer baryons (no popcorn), and its
-B hadron keeps 3 % less of the quark's energy (0.882 against 0.913); the
-Bowler, plain-Lund and Peterson variants move both implementations the
-same way (plain Lund +0.05 to +0.07, Peterson -0.04). What the detector
-will see agrees better than that: the hadron-level cone pT around the b
-differs by 1.2 GeV (R = 0.4) and 0.4 GeV (R = 0.8) between the two, both
-within 4 GeV of the parton-level cone, and the cone masses agree to 0.5
-GeV. The full chain at the CMSSW impact parameter gives 306 +- 52 primary
+two-parton strings above 3 GeV agree to 2 %), 12 % fewer baryons (17 %
+fewer than PYTHIA without popcorn), and its B hadron keeps 3 % less of the
+quark's energy (0.882 against 0.913); plain Lund moves the script by +0.07
+and PYTHIA by +0.05, Peterson both by -0.04. What the detector will see
+agrees better than that: the hadron-level cone pT around the b differs by
+1.2 GeV (R = 0.4) and 0.4 GeV (R = 0.8) between the two, both within 4 GeV
+of the parton-level cone, and the cone masses agree to 0.4 GeV (R = 0.4)
+and 0.9 GeV. The full chain at the CMSSW impact parameter gives 306 +- 52 primary
 hadrons; CMSSW's single event has 320 from 26 strings, its B- carries x_pT
 = 1.03 of the b quark and 114.45 GeV sit within R = 0.4 of it (9 hadrons,
 mass 20.4 GeV). PYTHIA's first hadronisation of our partons is in
 `validate_hadronisation_with_pythia_record_event1.txt`, the first
 full-chain event in `..._full_event1.txt`, both in the standalone format.
+
+**Known deviations from PYTHIA (audit 2026-11-14).** The
+record of the book is kept as the script wrote it; the places where the
+port departs from PYTHIA are marked `KNOWN DEVIATION` in
+`standalone_hadronisation.py` and were checked against PYTHIA's source
+(`StringFragmentation.cc`, `FragmentationFlavZpT.cc`, `FragmentationSystems.cc`).
+The sizes were measured with switchable copies of the script on seeds
+1..100 and with PYTHIA on the same partons (400 events each):
+
+- *The simple step in every region.* PYTHIA takes "z of the own piece" only
+  in the first region of an end (`iPosOld + iNegOld == iMax`) and of the
+  end's own remainder (`xDirHad = zHad * xDirOld`); the script takes it in
+  every region and of the remainder shared by both ends. 88 of the 299
+  vertices of seed 1 then have a Gamma other than the logged one; hadrons
+  per event 402.5 (script), 387.5 (first region only), 398.1 (own
+  remainder), 385.9 (both), PYTHIA 383.3 +- 0.5.
+- *Gamma beyond the first region.* True proper time in the script, PYTHIA's
+  sum over regions (`cGam1..4`) in PYTHIA; they differ next to a massive
+  quark. x_E of the b: 0.891 -> 0.906 with PYTHIA's sum, 0.90 to 0.91 with
+  the two rules above as well; PYTHIA 0.913 (+- 0.007 per variant).
+- *Diquarks.* uu_1, dd_1 and ss_1 come at half the rate of ud_1 (measured
+  uu_1/ud_0 = 0.039 for ud_1/ud_0 = 0.082; PYTHIA: `qBM[uu1] = 6 qBB[uu1]`
+  against `3 qBB[ud1]` per ordering). Baryons per event: script 38.8;
+  PYTHIA 44.0, 46.7 with `StringFlav:popcornRate = 0`, 45.0 with
+  `StringZ:useOldAExtra = off`, 46.8 with both: the missing popcorn is not
+  the reason for the deficit. Delta++ and Delta-: 0.56 and 0.61 per event
+  against 1.24 and 1.18 in PYTHIA without popcorn.
+- *Redraws and restarts.* A hadron that fits nowhere is redrawn (7% of the
+  hadrons; 11.5% of the rejected trials are baryons, 7.9% of their
+  replacements), where PYTHIA goes to the final two; 13% of the strings
+  end with more than W_min left (median 5.5 GeV, 13.3 GeV for string 14 of
+  seed 1); 10.9 string restarts per event (11 in seed 1, in 7 strings).
+  Without the redraw the event has 281 hadrons.
+- *Masses and W_min.* The script uses m0 (0.33, 0.33, 0.5, 1.5, 4.8 GeV;
+  diquarks 0.58 to 1.09), PYTHIA `constituentMass` (0.325, 0.325, 0.5, 1.6,
+  5.0; diquarks 0.65, 0.825, 1.0) for the ministring threshold and W_min:
+  the u ud_1 system (2.04 GeV) is a ministring here and a string there, 29
+  + 4 (8 hadrons of status 82) against 30 + 3 (6). The script's W_min is
+  mT_q1 + mT_q2 + 1.0 + 2.0 m_qlast with the ends' pT and the flavour of
+  the previous break; PYTHIA's has plain constituent masses and the flavour
+  about to be made: the 2.05 and 2.17 GeV strings make 3.00 hadrons here,
+  2.12 and 2.23 there.
+- *Not the same in the reference either.* PYTHIA draws Breit-Wigner masses
+  (`mSel`), the script pole masses; PYTHIA 8.315 runs Monash with
+  `StringZ:useOldAExtra = on`, the script has the corrected a_old/a_new.
 
 ## Figures
 

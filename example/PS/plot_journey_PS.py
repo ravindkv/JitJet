@@ -144,6 +144,26 @@ def descendant(rows, no: int) -> int:
     return r["no"]
 
 
+def current_incoming(rows, r):
+    """The last copy of the incoming parton that entered the hard process as row r (status -21).
+
+    Its x grows twice over: by backward evolution (new mothers with status -41, the other side copied
+    with -42) and whenever a final-state emission recoils against it (a copy with status -53). PYTHIA
+    makes every new copy the mother of the old one; the standalone record does so for -41 but appends
+    a -53 copy as the single daughter of the parton it replaces. Both links are followed."""
+    seen = {r["no"]}
+    while True:
+        up = rows.get(r["m1"])
+        down = rows.get(r["d1"]) if r["d1"] == r["d2"] else None
+        if up is not None and up["no"] not in seen and up["status"] in (-41, -42, -53):
+            r = up
+        elif down is not None and down["no"] not in seen and down["status"] == -53:
+            r = down
+        else:
+            return r
+        seen.add(r["no"])
+
+
 def classify(rows):
     """Final-state rows with a 'family' (b, bbar, ISR) and a 'cat' (b, bbar, ISR, FSR)."""
     final = [r for r in rows.values() if r["status"] > 0]
@@ -156,7 +176,7 @@ def classify(rows):
                     else "ISR" if r["family"] == "ISR" else "FSR")
     beams = [r for r in rows.values() if r["status"] == -12]
     incoming0 = [r for r in rows.values() if r["status"] == -21]
-    incoming = [r for r in rows.values() if r["status"] == -41 and r["m1"] in (1, 2)] or incoming0
+    incoming = [current_incoming(rows, r) for r in incoming0]
     return final, beams, incoming0, incoming
 
 

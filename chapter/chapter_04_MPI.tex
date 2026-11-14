@@ -89,7 +89,7 @@ wrote the record. Two discs of matter slide towards each other in the
 transverse plane while the overlap and the enhancement factor rise along
 their curves, until the collision stops at the impact parameter of the
 \CMSSW event; a scale runs from the hard scale down to the cut-off and the
-ladder of the $24$ secondary scatterings fills rung by rung, seventeen of
+ladder of the $24$ secondary scatterings fills rung by rung, fifteen of
 them crowded below $2\GeV$; the momentum bars of the two protons are eaten
 interaction by interaction until the grey remnant partons appear with their
 flavours and their primordial kicks; the colour strings of the event are
@@ -198,8 +198,10 @@ showers, multiparton interactions, remnants and colour reconnection on,
 hadronisation off; since the impact parameter cannot be fixed from the
 Python binding, the fixed-$b$ column keeps the \PYTHIA events within a
 narrow window around the \CMSSW value. Read the columns as before. The
-geometry agrees: $\langle b\rangle$, $\langle f\rangle$ and $f(0.3136)$
-within $2\%$. The remnant count, the hardest secondary scattering and the
+geometry agrees as far as four hundred dressings can tell: the means of $b$
+and $f$ differ by $3\%$ and $7\%$ with a statistical error of $3\%$ each,
+and $f(0.3136)$ is $2\%$ low because the script normalises the enhancement
+factor differently from \PYTHIA (\cref{sec:uninvited_cousins:caveats}). The remnant count, the hardest secondary scattering and the
 underlying-event density agree at the $5$--$10\%$ level, and the extra \pt
 inside the cones follows the density. The one real disagreement is the
 number of scatterings, $20\%$ low in the standalone chain at both
@@ -257,13 +259,13 @@ interactions, incl.\ the hard one & $18.0\pm9.9$ & $14.7\pm7.2$ & $27.5\pm5.4$ &
 $b/\bmean$, $f(b)$ & $0.61$, $2.26$ & $0.63$, $2.10$ & $0.31$, $3.70$ & $0.31$, $3.63$ & $0.31$, $3.63$ & $0.31$, $3.71$ \\
 final partons & $125\pm60$ & $138\pm54$ & $181\pm34$ & $190\pm33$ & $211$ & $169$ \\
 \quad of which from secondary systems & $92$ & $88$ & $145$ & $137$ & $155$ & $142$ \\
-\quad of which beam remnants & $10.2$ & $9.4$ & $13.6$ & $12.9$ & $16$ & $13$ \\
+\quad of which beam remnants & $10.2$ & $9.4$ & $13.6$ & $12.8$ & $16$ & $13$ \\
 $\sum\pt$ of the secondary partons [GeV] & $134$ & $124$ & $212$ & $196$ & $230$ & $208$ \\
 hardest secondary interaction [GeV] & $6.8$ & $6.5$ & $8.6$ & $8.4$ & $11.45$ & $6.65$ \\ \midrule
 transverse UE density [GeV per unit $\eta$--$\phi$] & $2.21\pm1.72$ & $2.00\pm1.59$ & $3.48\pm1.54$ & $3.23\pm1.44$ & $2.10$ & -- \\
-UE $\sum\pt$ within $\dR<0.4$ of the $b$ [GeV] & $1.21\pm2.48$ & $0.85\pm1.31$ & $1.80\pm2.43$ & $1.60\pm2.19$ & $0.00$ & $6.91$ \\
-UE $\sum\pt$ within $\dR<0.8$ of the $b$ [GeV] & $4.57\pm5.20$ & $3.95\pm4.05$ & $7.32\pm5.68$ & $5.88\pm4.44$ & $3.42$ & -- \\
-UE partons within $\dR<0.4$ / $0.8$ & $0.75$ / $2.99$ & $0.72$ / $2.87$ & $1.20$ / $4.75$ & $1.07$ / $4.18$ & $0$ / $3$ & $3$ / -- \\ \midrule
+UE $\sum\pt$ within $\dR<0.4$ of the $b$ [GeV] & $1.21\pm2.48$ & $0.85\pm1.30$ & $1.80\pm2.43$ & $1.60\pm2.19$ & $0.00$ & $6.91$ \\
+UE $\sum\pt$ within $\dR<0.8$ of the $b$ [GeV] & $4.57\pm5.20$ & $3.95\pm4.05$ & $7.32\pm5.68$ & $5.90\pm4.42$ & $3.61$ & -- \\
+UE partons within $\dR<0.4$ / $0.8$ & $0.75$ / $2.99$ & $0.72$ / $2.87$ & $1.20$ / $4.75$ & $1.08$ / $4.20$ & $0$ / $3$ & $3$ / -- \\ \midrule
 systems merged by colour reconnection & -- & $13.2$ & -- & $19.7$ & $23$ & -- \\
 string length $\lambda$ before $\to$ after & -- & $563\to375$ & -- & $769\to472$ & $880\to521$ & -- \\
 \bottomrule
@@ -332,7 +334,8 @@ channels and integrated over the rapidities of the two outgoing partons is
   x_{1,2}=\frac{\pt}{E_{\mathrm{cm}}}\left(e^{\pm y_3}+e^{\pm y_4}\right),
   \label{eq:uninvited_cousins:dsigma}
 \end{equation}
-with $Q^2=\pt^2+\ptzero^2$ in the densities too, and
+with $Q^2=\pt^2$ in the densities (only the coupling takes the shifted
+scale $\pt^2+\ptzero^2$, as in \PYTHIA), and
 $\sigint=\int_{\pt^{\min}}\mathrm{d}\sigma$. Two details decide the number
 and both cost me a day: a final state of two different partons is reached
 twice when both rapidities run over their full range, once as the
@@ -340,7 +343,7 @@ $t$-channel and once as the $u$-channel configuration, so the sum must be
 halved for those channels, exactly as \PYTHIA averages the two; and the
 densities below the grid's lowest scale, $Q=1.65\GeV$, are frozen rather
 than extrapolated, as \PYTHIA's own readers do, which matters because
-scatterings below $1.5\GeV$ carry two thirds of \sigint.
+scatterings below $2\GeV$ carry two thirds of \sigint.
 
 \paragraph{The numbers.} The \code{-v} log opens with
 $\ptzero=1.41\times(13600/7000)^{0.03344}=1.4417\GeV$ and
@@ -408,8 +411,8 @@ spread in \cref{tab:uninvited_cousins:numbers} as large as it is.
 \caption[Two protons at impact parameter $b$ and the enhancement
 $f(b)$]{Left: the two protons of our event in the transverse plane, each a
 double-Gaussian matter distribution, displaced by the impact parameter $b$;
-the overlap $O(b)$ is hatched. Right: the enhancement factor $f(b)$ of
-\cref{eq:uninvited_cousins:fb} computed by the script, with our event at
+the overlap $O(b)$ is hatched. Right: the enhancement factor $f(b)$ as the
+script computes it, with our event at
 $b=0.3136\bmean$, the average over hard events and the average over
 minimum-bias events marked.}
 \label{fig:uninvited_cousins:overlap_sketch}
@@ -434,17 +437,22 @@ average over interacting collisions reproduce \cref{eq:uninvited_cousins:nmean},
   \langle n\rangle=\frac{\int\mathrm{d}^2b\;n(b)}{\int\mathrm{d}^2b\;P_{\mathrm{int}}(b)}
   =\frac{\sigint}{\signd},
   \qquad
-  f(b)\equiv\frac{n(b)}{\langle n\rangle}
-  =\frac{O(b)\int\mathrm{d}^2b'\,P_{\mathrm{int}}(b')}{\int\mathrm{d}^2b'\,O(b')}.
+  f(b)\equiv\frac{O(b)}{\langle O\rangle_{\mathrm{int}}},
+  \quad
+  \langle O\rangle_{\mathrm{int}}=\frac{\int\mathrm{d}^2b'\,P_{\mathrm{int}}(b')\,O(b')}{\int\mathrm{d}^2b'\,P_{\mathrm{int}}(b')}.
   \label{eq:uninvited_cousins:fb}
 \end{equation}
 The denominator of the first expression is the geometric cross section for
 interacting at all, which is \signd in these units. The enhancement factor
-$f(b)$ is the number that multiplies every rate in the rest of the chapter.
-Its definition is the one place where I first guessed wrong: it is not
-$O(b)$ divided by its average over interacting collisions, which would give
-$\langle f\rangle=1$ for minimum bias by a different route, but the ratio
-above, and the two differ by a few percent at the $b$ of our event. Which
+$f(b)$, the overlap in units of its average over interacting collisions, so
+that $\langle f\rangle=1$ for minimum bias, is the number that multiplies
+every rate in the rest of the chapter. This is \PYTHIA's definition, and it
+is the one place where I guessed wrong and the script still does: it fixes
+$k$ by $k\,\langle O\rangle_{\mathrm{int}}=\langle n\rangle$ instead of the
+first condition and takes $f(b)=O(b)\int\mathrm{d}^2b'\,P_{\mathrm{int}}/\int\mathrm{d}^2b'\,O$,
+the ratio $n(b)/\langle n\rangle$ of the original model. The two choices
+nearly cancel and leave the script's $f$ two percent below \PYTHIA's at the
+$b$ of our event (\cref{sec:uninvited_cousins:caveats}). Which
 $b$ a collision has is then drawn with a weight that depends on what is
 asked: for minimum bias $\propto P_{\mathrm{int}}(b)\,\mathrm{d}^2b$, for a
 collision known to contain a hard scattering
@@ -453,9 +461,11 @@ the exponential being the probability that no \emph{other} scattering above
 the hard scale happened, which for our event is $0.99996$ and does not
 matter.
 
-\paragraph{The numbers.} The log prints the overlap table with $k=93.0$
-so that $\langle n\rangle=8.974$, $\bmean_{\mathrm{ND}}=1.24$ in the
-profile's own units, and $f(0)=4.52$:
+\paragraph{The numbers.} The log prints the overlap table with the script's
+$k=93.0$ for $\langle n\rangle=8.974$ (\PYTHIA's condition gives $89.7$),
+$\bmean_{\mathrm{ND}}=1.24$ in the profile's own units, and $f(0)=4.52$;
+the last two columns are $1-e^{-kO}$ and $kO(b)$ with that $k$, while the
+rate the chain uses is $f(b)\langle n\rangle=0.97\,kO(b)$:
 \begin{center}\footnotesize
 \begin{tabular}{rrrrr}\toprule
 $b/\bmean$ & $O(b)$ & $f(b)$ & $P_{\mathrm{int}}(b)$ & $n(b)$ \\ \midrule
@@ -470,14 +480,17 @@ $2.00$ & $0.0002$ & $0.002$ & $0.016$ & $0.02$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Averaged with the minimum-bias weight $f$ gives $0.97$, with the
-hard-process weight $2.22$; \PYTHIA measures $2.26$ over its two thousand
-events. Our event is at $b=0.3136\bmean$, where the script finds $f=3.627$
-against \PYTHIA's $3.709$ for the same $b$ in the \CMSSW log, a $2\%$
-difference from the coarser integration of the script; the expected number
-of secondary scatterings is $f\langle n\rangle=32.5$, and the \CMSSW event
-got $31$, the standalone dressing $24$. Seed~1 with $b$ drawn lands at
-$1.21\bmean$, $f=0.20$, $n(b)=1.8$ and one secondary scattering; nature's
+Averaged with the minimum-bias weight the script's $f$ gives $0.97$, with
+the hard-process weight $2.22$; \PYTHIA's normalisation gives $1$ and
+$2.26$, and \PYTHIA measures $2.26$ over its two thousand events. Our event
+is at $b=0.3136\bmean$, where the script finds $f=3.627$; \PYTHIA's
+normalisation gives $3.704$ with the script's \sigint and $3.709$ with the
+$500.67\,\mathrm{mb}$ of the \CMSSW log, which is the value that log
+prints. The record keeps the script's $3.627$: the expected number of
+secondary scatterings is $f\langle n\rangle=32.5$ ($33.2$ with \PYTHIA's
+$f$), and the \CMSSW event got $31$, the standalone dressing $24$. Seed~1
+with $b$ drawn lands at $1.21\bmean$, $f=0.20$, $f\langle n\rangle=1.8$ and
+one secondary scattering; nature's
 events are spread over the whole of panel~(c) of
 \cref{fig:uninvited_cousins:overlap_plot}, and that spread, not the
 scattering process, is the first reason why the underlying event of two
@@ -489,7 +502,7 @@ events with identical hard processes can differ by a factor of ten.
 distributions]{Page~2 of \file{theory_multiparton_interactions.pdf}. (a) The
 double-Gaussian matter density of CP5 against a single Gaussian. (b) The
 overlap $O(b)$, the interaction probability $P_{\mathrm{int}}(b)$ and the
-enhancement $f(b)$ of \cref{eq:uninvited_cousins:fb}. (c) The distribution
+script's enhancement $f(b)$. (c) The distribution
 of $b/\bmean$ for minimum-bias collisions and for collisions with a hard
 process, the latter against the $400$ dressings with $b$ drawn and
 against \PYTHIA; our event and the \CMSSW event are the vertical line.}
@@ -549,7 +562,7 @@ from the trial scale and its veto weight to the showered system.}
 \cref{eq:uninvited_cousins:chain} integrates to $32.55$ expected secondary
 scatterings below $113.3\GeV$. The first one is accepted at $11.453\GeV$
 with veto weight $0.174$, after a quiet stretch whose probability,
-$\exp[-3.627\times3.6/55.42]=0.79$, is not small: the rate above $10\GeV$ is
+$\exp[-3.627\times3.42/55.42]=0.80$, is not small: the rate above $10\GeV$ is
 low. Its rapidities $y_3=-2.787$ and $y_4=-0.658$ give
 $x_1=4.88\times10^{-4}$ and $x_2=1.53\times10^{-2}$, $\sqrt{\shat}=37.1\GeV$,
 and the channel weights are $gg\to gg$ $65.1\%$, $gd\to dg$ $3.6\%$, $gu\to
@@ -562,7 +575,7 @@ proton~A, and $x_2=8.8\times10^{-4}$, and its outgoing parton at $y=6.2$
 carries $1909\GeV$ almost along the beam. Such a scattering is invisible to
 any detector and still takes $28\%$ of proton~A. The ladder then descends
 through $4.47$, $3.65$, $3.42$, $3.14$, $2.80$, $2.19$ and $2.18\GeV$ and
-seventeen rungs between $1.8$ and $0.43\GeV$; after the 24th the next
+fifteen rungs between $1.8$ and $0.43\GeV$; after the 24th the next
 trial falls below $\pt^{\min}$ and the chain stops. The log counted $303$
 trial scales for $24$ acceptances: the overestimate is loose by an order
 of magnitude at low \pt, where the depleted densities and the halved
@@ -615,16 +628,16 @@ next scattering.}
 Let $X=1-\sum_i x_i$ be the momentum fraction not yet given away by a
 proton. The modified density for a parton of flavour $q$ at fraction $x$ is
 \begin{equation}
-  xf_q^{\mathrm{mod}}(x)=\frac{1}{X}\left[\,
+    xf_q^{\mathrm{mod}}(x)=
     \frac{n_q^{\mathrm{left}}}{n_q^{\mathrm{val}}}\;x'f_q^{\mathrm{val}}(x')
     +r_{\mathrm{gs}}\;x'f_q^{\mathrm{sea}}(x')
-    +\sum_{\text{companions }c}x'f_c(x';x_s)\right],
-  \qquad x'=\frac{x}{X},
+    +\sum_{\text{companions }c}x_cf_c(x_c;x_s),
+  \qquad x'=\frac{x}{X},\quad x_c=\frac{x}{X+x_s},
   \label{eq:uninvited_cousins:depleted}
 \end{equation}
-with three ingredients. \emph{Rescaling:} every density is evaluated at
-$x/X$ and divided by $X$, so that the remaining partons share the remaining
-momentum. \emph{Valence counting:} a proton has two $u$ and one $d$ valence
+with three ingredients. \emph{Rescaling:} every momentum density $xf$ is evaluated at $x/X$, which
+for the number density $f$ means evaluating it there and dividing by $X$, so
+that the remaining partons share the remaining momentum. \emph{Valence counting:} a proton has two $u$ and one $d$ valence
 quarks; each can leave once, and the valence density is scaled by the
 number left. \emph{Companions:} a sea quark that leaves was one half of a
 $g\to q\bar q$ splitting, so its partner is still in the proton with a
@@ -632,8 +645,9 @@ density derived from the splitting kernel,
 $f_c(x_c;x_s)\propto g(x_c+x_s)\,P_{g\to q\bar q}\bigl(x_s/(x_c+x_s)\bigr)/(x_c+x_s)$
 with $g(x)\propto(1-x)^4/x$, and it must leave with the remnant if nothing
 takes it first. The gluon and sea densities are rescaled together by
-$r_{\mathrm{gs}}=(1-\langle x\rangle_{\mathrm{val,left}})/(1-\langle x\rangle_{\mathrm{val,all}})$,
-the momentum the departed valence quarks were carrying on average, so
+$r_{\mathrm{gs}}=(1-\langle x\rangle_{\mathrm{val,left}}-\langle x\rangle_{\mathrm{comp}})/(1-\langle x\rangle_{\mathrm{val,all}})$,
+which hands them the momentum the departed valence quarks were carrying on
+average, less what the companions still owed now carry, so
 that the momentum sum rule holds for the proton that remains.
 
 \paragraph{The numbers.} After the hard process the log says that proton A
@@ -645,11 +659,13 @@ $x_1=0.281$, that is $x/X=0.287$, the modified densities are $xg=0.179$,
 $xu=0.492$, $xd=0.209$, and for the first time a quark channel leads the
 weights, $ug\to gu$ with $35.4\%$ against $gg\to gg$ with $28.9\%$; the
 random number chose the gluons. At the third rung proton A supplies a $u$
-quark that the log labels ``sea (companion still inside)'': from that
-moment proton A owes a $\bar u$ companion, and at the end of the chain it
-has given away $25$ partons, $15$ gluons, one valence $u$ and $9$ sea
-quarks, with $X=0.110$ left, one $u$ and the $d$ for the diquark, and six
-companions to pay. Proton B gave $25$ partons as well and keeps
+quark that the log labels ``sea (companion still inside)'', but the shower
+of that rung evolves its initiator back to a gluon and the debt is
+cancelled; the first that lasts is the $u$ owed for the $\bar u$ of the
+tenth rung. At the end of the chain proton A has given away $25$ partons,
+$16$ gluons, one valence $u$ and $8$ sea quarks, two of them each other's
+companions, with $X=0.110$ left, one $u$ and the $d$ for the diquark, and
+six companions to pay. Proton B gave $25$ partons as well and keeps
 $X=0.266$. Panel~(c) of \cref{fig:uninvited_cousins:flavours_plot} is the
 staircase of $X$ for both protons: the second rung is the big step of
 proton~A, the hard process that of proton~B.
@@ -660,7 +676,7 @@ proton~A, the hard process that of proton~B.
 protons]{Page~4 of \file{theory_multiparton_interactions.pdf}. (a) The
 gluon, valence and sea densities at $Q=1.65\GeV$ with the $(x_1,x_2)$ of the
 hard process and of the 24 secondary scatterings of our event. (b) The
-processes of the secondary scatterings: $gg\to gg$ in all but five. (c) The
+processes of the secondary scatterings: $gg\to gg$ in eleven of the 24, quark--gluon in ten. (c) The
 momentum fraction $X$ left in each proton after each scattering,
 \cref{eq:uninvited_cousins:depleted}.}
 \label{fig:uninvited_cousins:flavours_plot}
@@ -683,8 +699,8 @@ and the script ports its three steps.
 light-cone momentum of each proton shared between the hard system, the 24
 secondary systems and the remnants, with the numbers of our event. Middle:
 the primordial-$k_{\mathrm{T}}$ width of \cref{eq:uninvited_cousins:kt}
-against the scale of the system, with the hard system and two rungs of our
-event. Right: the kicks of the hard system's two initiators and the recoil
+before its mass damping against the scale of the system, with the hard
+system and two rungs of our event. Right: the kicks of the hard system's two initiators and the recoil
 that the rest of the proton absorbs.}
 \label{fig:uninvited_cousins:remnants_sketch}
 \end{figure}
@@ -695,21 +711,22 @@ $uu_1$; if a valence quark is left over it goes alone; every companion owed
 is added; and a proton with nothing left at all gets a gluon. \emph{Momenta.}
 Each remnant parton draws an unrescaled fraction from a shape chosen by its
 kind, $(1-x)^{3.5}/\sqrt x$ for a valence $u$, $(1-x)^2/\sqrt x$ for a
-valence $d$, the sum of two such draws for a diquark, $(1-x)^4/x$ for a
+valence $d$, twice the sum of two such draws for a diquark, $(1-x)^4/x$ for a
 gluon, the companion distribution of \cref{eq:uninvited_cousins:depleted}
 for a companion, and all remnant fractions are then rescaled so that they
 sum to $X$. \emph{Transverse momentum.} Every initiator and every remnant
 of a proton receives a Gaussian $\vec k_{\mathrm{T}}$ of width
 \begin{equation}
-  \sigma_{k_{\mathrm{T}}}(Q,m)=\frac{Q_{1/2}\,\sigma_{\mathrm{soft}}+Q\,\sigma_{\mathrm{hard}}}{Q_{1/2}+Q}\cdot\frac{m}{m+m_{1/2}},
+  \sigma_{k_{\mathrm{T}}}(Q,m)=\frac{Q_{1/2}\,\sigma_{\mathrm{soft}}+Q\,\sigma_{\mathrm{hard}}}{Q_{1/2}+Q}\cdot\frac{m}{m+m_{1/2}\,(E/m)^{1/2}},
   \label{eq:uninvited_cousins:kt}
 \end{equation}
 with $Q_{1/2}=1.5\GeV$, $\sigma_{\mathrm{soft}}=0.9\GeV$,
 $\sigma_{\mathrm{hard}}=1.8\GeV$ and $m_{1/2}=1\GeV$ (the CP5 values of
 \code{BeamRemnants:halfScaleForKT}, \code{primordialKTsoft},
 \code{primordialKThard} and \code{halfMassForKT}), where $Q$ is the \pt of
-the scattering (the renormalisation scale for the hard process) and $m$ the
-mass of the system; the remnants get $0.4\GeV$ flat. The vector sum over a
+the scattering (the renormalisation scale for the hard process), $m$ the
+mass of the system and $E$ its energy, so that a light or strongly boosted
+system is kicked less (\code{reducedKTatHighY}~$=0.5$); the remnants get $0.4\GeV$ flat. The vector sum over a
 proton is then shared out so that it vanishes. With the fractions and the transverse momenta fixed, each system
 is required to keep its invariant mass and its rapidity, which determines
 the light-cone momenta $p^+$ and $p^-$ of its two initiators; the remnants
@@ -724,14 +741,17 @@ $\bar s$, $d$; sixteen remnant partons in all, status~63. For the hard
 system, $Q=113.3\GeV$ and $m=1221\GeV$, the width is $1.786\GeV$ and the
 kicks given are $(-1.767,+1.652)\GeV$ to the initiator from A and
 $(-1.113,-1.838)\GeV$ to the one from B; for the first rung, $Q=11.45\GeV$,
-$1.676\GeV$; for the last, $Q=0.43\GeV$, $1.10\GeV$. The light-cone
+$1.676\GeV$; for the last, $Q=0.43\GeV$ and $m=2.8\GeV$ at $E=50.7\GeV$,
+only $0.44\GeV$, the damping at work. The light-cone
 solution was found in one attempt and leaves $p^+=1419.9\GeV$ for the
 remnants of A and $p^-=3593.3\GeV$ for those of B, remnant systems of mass
 $7.2$ and $61.8\GeV$; the remnant fractions were rescaled by $1.585$ and
-$1.480$ to fit. The $ud_0$ carries $x=0.184$, $206.6\GeV$ at $\eta=6.6$; the
-hardest remnant of B is a $\bar s$ companion with $x=0.307$, $817\GeV$ at
-$\eta=-8.4$; and the softest, a $\bar u$ of $0.67\GeV$, sits at $\eta=0.35$
-in the middle of the detector, the one remnant that will be seen. The
+$1.480$ to fit. The $ud_0$ drew $x=0.184$, which after the rescaling is
+$206.6\GeV$, three percent of the beam, at $\eta=6.6$; the hardest remnant
+of B is a $\bar s$ companion of $817\GeV$ at $\eta=-8.4$; and the softest,
+a $\bar u$ of $0.67\GeV$, sits at $\eta=0.35$ in the middle of the
+detector, with a $u$ of $5\GeV$ at $\eta=-2.4$ the only other one inside
+the tracker. The
 hard system's kick is the first thing of this stage that touches the
 ledger: boosted to the frame of its kicked initiators, the $b$ quark moves
 from $78.12$ to $78.29\GeV$ and its family from $100.45$ to $100.67\GeV$.
@@ -800,8 +820,9 @@ event: only the first rung survives on its own.}
 \label{fig:uninvited_cousins:cr_sketch}
 \end{figure}
 
-The rule has two parts. Each secondary system, starting from the softest,
-is merged into a harder one with probability
+The rule has two parts. Each secondary system, starting from the softest, is offered to every
+harder system in turn and merged into the first that accepts, each with
+probability
 \begin{equation}
   P_{\mathrm{merge}}=\frac{(R\,\ptzero)^2}{(R\,\ptzero)^2+\pt^2},
   \qquad R=\code{ColourReconnection:range}=5.176\ \text{(CP5)},
@@ -840,9 +861,10 @@ has $P=0.486$ and is merged, into the hard system; rung 1 at $11.45\GeV$
 has $P=0.298$ and is not. $23$ of $24$ systems merged, and since the chain
 of merges ends in the hard system, every soft gluon of the event ends up on
 the hard system's dipoles. The log lists each insertion: the $7.34\GeV$
-gluon of rung 2 goes into the dipole between rows 702 and 738, the two
-initiators of the hard system, with the invariant $441.8\GeV^2$; the
-$u\bar u$ pair of rung 2 into a dipole of the $\bar b$ family; the six
+gluon of rung 2 goes into the dipole between rows 702 and 738, the hard
+system's initiator from proton~A and a $20\GeV$ gluon of its initial-state
+shower, with the invariant $441.8\GeV^2$; the $u\bar u$ pair of rung 2
+into another dipole of that shower; the six
 systems whose initiators were both gluons become colour-singlet
 pass-throughs. The string length drops from $879.6$ to $520.8$ and the
 event ends with $33$ colour-singlet strings. One of them passes through the
@@ -924,9 +946,10 @@ region of our event, and the transverse density of
 \paragraph{The numbers.} In our event the partons that do not descend from
 the hard system carry $49.5\GeV$ in the toward region, $22.0\GeV$ in the
 transverse region, $47.7\GeV$ in the away region, within $|\eta|<2.5$. The
-toward and away sums are large because the initial-state partons of the
-hard system are counted here as ``not from the hard system'' in the
-analyser's sense while the hard shower's recoil lives in those regions; the
+toward and away sums are twice the transverse one by chance, not by
+physics: no parton of the hard system, its initial-state radiation
+included, is counted in any of the three, and the two hardest rungs alone
+put $24\GeV$ into the toward region; the
 transverse region holds 21 partons and
 $\rho_{\mathrm{UE}}=21.99/10.47=2.10\GeV$. Over the ensembles the transverse
 density is $3.23\pm1.44\GeV$ at our impact parameter and $2.00\pm1.59$ with
@@ -941,7 +964,7 @@ makes, with \PYTHIA at hadron level, and CP5 reproduces the data to within
 its uncertainties~\cite{CMS:2019csb}. Panel~(c) of
 \cref{fig:uninvited_cousins:ue_plot} is the tune knob in action:
 $\langle n\rangle$ against \ptzero from the script's \code{SigmaInt},
-falling from $25$ at $\ptzero=1\GeV$ to $3$ at $2.5\GeV$.
+falling from $30$ at $\ptzero=1\GeV$ to $2.4$ at $2.5\GeV$.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=7,width=\textwidth]{MPI/Standalone/theory_multiparton_interactions.pdf}
@@ -981,7 +1004,7 @@ copied them; the next four are the first secondary scattering, $gg\to gg$,
 whose outgoing gluons have $p_x=\pm3.302$ and $p_y=\pm10.967\GeV$, that is
 $\pt=11.453\GeV$, and whose incoming gluons carry $p_z=3.317$ and
 $-103.979\GeV$, that is $x_1=4.88\times10^{-4}$ and $x_2=1.53\times10^{-2}$
-of $6800\GeV$; then a hundred rows of its shower and the $23$ further
+of $6800\GeV$; then the $55$ rows of its shower and the $23$ further
 scatterings with theirs. From row~702 the stage writes the boosted copies,
 first the hard system's initiators after their kicks, and far below, among
 the status-62 rows, the mother at $78.29\GeV$ with her last shower copy as
@@ -1006,7 +1029,7 @@ $b$ & after the shower (chapter 2, row 124) & $78.12$ & $4.80$ & $1$ & \\
     & hard system within $\dR<0.4$ & $100.67$ & $13.52$ & $3$ & \\
     & all partons within $\dR<0.4$ & $100.67$ & $13.52$ & $3$ & $0$ \\
     & hard system within $\dR<0.8$ & $100.67$ & $13.52$ & $3$ & \\
-    & all partons within $\dR<0.8$ & $104.09$ & $20.17$ & $6$ & $3$ ($3.42\GeV$) \\ \midrule
+    & all partons within $\dR<0.8$ & $104.09$ & $20.17$ & $6$ & $3$ ($3.61\GeV$) \\ \midrule
 $\bar b$ & after the kick (status 62) & $72.50$ & $4.80$ & $1$ & \\
     & all partons within $\dR<0.4$ & $93.88$ & $7.75$ & $4$ & $1$ ($2.66\GeV$) \\
     & all partons within $\dR<0.8$ & $116.07$ & $41.61$ & & $3$ \\ \midrule
@@ -1018,14 +1041,14 @@ all final partons & & $0.00$ & $13600$ & $211$ & $171$ \\
 \Cref{tab:uninvited_cousins:kinematics} and \cref{fig:uninvited_cousins:journey}
 say what the record means for the ledger. Within $\dR<0.4$ of the mother
 nothing arrived: the three partons of her family are still her two
-children and herself, and the only change is the $0.22\GeV$ of the
+children and herself, and the only change is the $0.21\GeV$ of the
 primordial-$k_{\mathrm{T}}$ boost. That is luck, and
 \cref{fig:uninvited_cousins:our_jet_plot} says how much: at this impact
-parameter a cone of $R=0.4$ receives $1.6\pm2.2\GeV$ on average, one parton
-in most events and none in a third of them; a uniform density of
+parameter a cone of $R=0.4$ receives $1.6\pm2.2\GeV$ on average, no parton
+in a third of the events and exactly one in another third; a uniform density of
 $3.79\GeV$ per unit area, the all-azimuth density of our event, would put
 $\rho\pi R^2=1.9\GeV$ into it. Within $\dR<0.8$ three cousins did arrive,
-with $3.42\GeV$ of \pt between them, and they raise the family mass from
+with $3.61\GeV$ of \pt between them, $3.42\GeV$ in the vector sum, and they raise the family mass from
 $13.5$ to $20.2\GeV$: the mass is far more sensitive to a soft parton at a
 large angle than the \pt is, because the mass grows with the product of
 the energy and the angle. The $\bar b$ at $\eta=-3.4$ received one cousin
@@ -1069,7 +1092,7 @@ rows from the ledger and the analyser log of the \code{04\_MPI} job of
 of the cone sum.}
 \ledgerblock{Standalone (seed 1, \file{event_MPI.lhe})}
 \ledgerrow{$b$ family after the shower ($\dR<0.4$)}{100.45}{13.52}{3}{--}
-\ledgerrow{$b$ family after this stage ($\dR<0.4$)}{100.67}{13.52}{3}{$+0.22$}
+\ledgerrow{$b$ family after this stage ($\dR<0.4$)}{100.67}{13.52}{3}{$+0.21$}
 \ledgerrow{\quad of which the $b$ quark itself}{78.29}{4.80}{1}{--}
 \ledgerrow{\quad the same within $\dR<0.8$ (3 UE partons)}{104.09}{20.17}{6}{$+3.42$}
 \ledgerblock{\CMSSW (run 1, event 1; ISR, FSR and MPI on)}
@@ -1111,8 +1134,8 @@ $44$, are her copies after two initial-state recoils, at $112.6$ and
 $122.8\GeV$; entries~49 and~182, status~52, are her copies after she
 recoiled against two emissions of her dipole partner, at $106.0$ and
 $91.59\GeV$. She never branched herself, and her whole loss is recoil.
-Entry~515 is her final copy at $91.74\GeV$, with the same $0.15\GeV$ of
-primordial-$k_{\mathrm{T}}$ boost that moved ours from $78.12$ to $78.29$.
+Entry~515 is her final copy at $91.74\GeV$, after a
+primordial-$k_{\mathrm{T}}$ boost of $0.15\GeV$; ours of $0.17\GeV$ moved her from $78.12$ to $78.29$.
 The copy that the CMS status flags call \code{LastCopyBeforeFSR} is
 entry~14 at $122.8\GeV$, nine GeV \emph{above} the Born value, all of it
 from initial-state recoil.
@@ -1137,8 +1160,8 @@ $255\GeV$, spread over the whole plane.
 Read the two panels of \cref{fig:uninvited_cousins:displays} together.
 Both colour a parton by where it comes from: orange and green triangles
 for initial- and final-state emissions, cyan squares for the outgoing
-partons of the secondary scatterings, grey diamonds for the remnants, most
-of them on the border beyond $|\eta|=6$. Panel~(a) applies one rule to all
+partons of the secondary scatterings, grey diamonds for the remnants, the
+most forward of them on the border beyond $|\eta|=6$. Panel~(a) applies one rule to all
 systems, so that a gluon emitted by a parton of a secondary system counts
 as FSR, which is why it shows $45$ cyan squares where the script's summary
 counts $155$ partons from the secondary systems; panel~(b) keeps orange
@@ -1186,6 +1209,18 @@ disagreements are understood. Each omission is a caveat to carry:
     \cite{Sjostrand:2004ef}; the script showers each system before drawing
     the next scattering. The chain is $20\%$ short because of it, and the
     recoils between systems are not shared as \PYTHIA shares them.
+  \item \textbf{The enhancement factor is not \PYTHIA's.} The script fixes
+    $k$ by $k\,\langle O\rangle_{\mathrm{int}}=\langle n\rangle$ and takes
+    $f(b)=O(b)\int\mathrm{d}^2b'\,P_{\mathrm{int}}/\int\mathrm{d}^2b'\,O$;
+    \PYTHIA fixes $k$ by the first condition of
+    \cref{eq:uninvited_cousins:fb} and takes
+    $O(b)/\langle O\rangle_{\mathrm{int}}$, larger by the constant
+    $1/\langle f\rangle_{\mathrm{ND}}$, $2.9\%$, of which the script's
+    larger $k$ gives $0.7\%$ back at our $b$: $f(0.3136)=3.627$ here against
+    $3.704$, $32.5$ expected scatterings against $33.2$, two of the twenty
+    percent above. I found it after the later stops had been built on the
+    record, so the record keeps the script's value, and the script says so
+    where it computes it.
   \item \textbf{At most one valence quark leaves a proton.} A second one is
     reclassified as sea, so the junction topologies of \PYTHIA's remnants,
     a baryon number carried by three strings meeting at a point, never
@@ -1257,10 +1292,12 @@ pileup is \cite{Cacciari:2008gn}.
     \code{PDF:pSet} to the tune's own PDF. Every CMS configuration has the
     order right; a hand-written \PYTHIA card may not, and the symptom is a
     few percent everywhere and no error message.
-  \item \textbf{The enhancement factor is not the overlap divided by its
-    mean.} $f(b)$ is \cref{eq:uninvited_cousins:fb}; a plausible-looking
-    alternative differs by a few percent at small $b$ and would make the
-    \CMSSW number $3.709$ unreproducible.
+  \item \textbf{The enhancement factor is the overlap divided by its
+    mean.} \PYTHIA's $f(b)$ is \cref{eq:uninvited_cousins:fb}, $O(b)$ over
+    its average in interacting collisions; the plausible-looking
+    $n(b)/\langle n\rangle$ of the original model, which the script uses,
+    is two percent lower at our $b$ and cannot reproduce the \CMSSW number
+    $3.709$.
   \item \textbf{Two different partons, one final state, counted twice.}
     Integrating $y_3$ and $y_4$ over their full ranges reaches $qg\to qg$
     both as $t$- and as $u$-channel; halve those channels or \sigint comes
@@ -1268,7 +1305,7 @@ pileup is \cite{Cacciari:2008gn}.
   \item \textbf{Freeze, do not extrapolate, the PDFs below the grid.}
     \PYTHIA's readers freeze the densities below $Q=1.65\GeV$; LHAPDF's own
     extrapolation gives $352$ instead of $500\,\mathrm{mb}$, and two thirds
-    of \sigint is below $1.5\GeV$.
+    of \sigint is below $2\GeV$.
   \item \textbf{The impact parameter cannot be fixed from Python.} The
     \code{pythia8mc} wheel offers no \code{UserHooks} override; select
     events in a window of $b$ instead, as the validation script does, and
@@ -1282,10 +1319,12 @@ pileup is \cite{Cacciari:2008gn}.
     draw. Do not conclude from one event that the underlying event is
     negligible at $R=0.4$, and do not conclude from the mass jump at
     $R=0.8$ that it is large: both are the tails.
-  \item \textbf{The remnants are at $|\eta|>6$, mostly.} Fifteen of the
-    sixteen remnant partons are beyond any detector; the one at
-    $\eta=0.35$ carries $0.67\GeV$. The remnants matter for the energy flow
-    and the forward detectors, not for the barrel jet.
+  \item \textbf{The remnants are forward, not gone.} Four of the sixteen
+    remnant partons, with $1810$ of the remnants' $2507\GeV$, are beyond
+    $|\eta|=6$; seven are inside $|\eta|<5.2$, where the forward calorimeter
+    ends, and two inside the tracker, with $0.67$ and $5\GeV$. The remnants
+    matter for the energy flow and the forward detectors, not for the
+    barrel jet.
   \item \textbf{Colour reconnection is invisible at parton level.} Every
     momentum in the record is the same with \code{--no-cr}; only the colour
     tags differ. Its effects are in the hadrons, and a parton-level
@@ -1319,11 +1358,15 @@ pileup is \cite{Cacciari:2008gn}.
   of scatterings change between $13.6$ and $14\TeV$?
 \item \textbf{The overlap by hand.} Write $O(b)$ of
   \cref{eq:uninvited_cousins:overlap} for the double Gaussian with
-  $\beta=0.63$ and $a_2=0.7634\,a_1$, normalise it, and reproduce $f(0)=4.52$
-  and $f(0.3136\bmean)=3.63$ with \cref{eq:uninvited_cousins:fb} and a
-  one-dimensional numerical integral in $b$. Then compute $\langle f\rangle$
-  with the minimum-bias and with the hard-process weight and confirm
-  $0.97$ and $2.22$.
+  $\beta=0.63$ and $a_2=0.7634\,a_1$, normalise it to $\int\mathrm{d}^2b\,O=1$,
+  and solve the script's condition
+  $k\int\mathrm{d}^2b\,P_{\mathrm{int}}O=8.974\int\mathrm{d}^2b\,P_{\mathrm{int}}$
+  with $P_{\mathrm{int}}=1-e^{-kO}$ by a one-dimensional numerical integral
+  in $b$: $k=93.0$. With the script's $f(b)=O(b)\int\mathrm{d}^2b\,P_{\mathrm{int}}$
+  reproduce $f(0)=4.52$, $f(0.3136\bmean)=3.63$ and $\langle f\rangle=0.97$
+  and $2.22$ with the minimum-bias and the hard-process weight. Then do it
+  \PYTHIA's way, $k$ and $f$ from \cref{eq:uninvited_cousins:fb}: $k=89.7$,
+  $4.60$, $3.70$, $1$ and $2.26$, and $3.709$ for $\langle n\rangle=500.67/55.42$.
 \item \textbf{Invert the chain.} Derive \cref{eq:uninvited_cousins:trial}
   from \cref{eq:uninvited_cousins:chain} with the overestimate
   $g(\pt^2)=C/(\pt^2+\ptzero^2)^2$, $C=9752\,\mathrm{mb}\,\GeV^2$ from the
@@ -1348,9 +1391,9 @@ pileup is \cite{Cacciari:2008gn}.
   confirm $78.29\GeV$. Then rerun with \code{--no-kt} and check that the
   family \pt returns to $100.45\GeV$.
 \item \textbf{Light-cone closure.} Sum $p^+=E+p_z$ over the status-62
-  partons of the systems that took their initiator from proton A and over
-  the remnants of A (rows 947 to 953), and confirm that the total is
-  $13600\GeV$; repeat for $p^-$ and proton B. Which remnant carries the
+  partons and over the sixteen remnants (rows 947 to 962), and confirm that
+  the total is $13600\GeV$, of which the remnants of A (rows 947 to 953)
+  hold $1419$; repeat for $p^-$ and proton B. Which remnant carries the
   largest share?
 \item \textbf{Reconnection by hand.} For rung 2 ($\pt=7.679\GeV$) and rung 1
   ($11.453\GeV$) compute \cref{eq:uninvited_cousins:cr_prob} with
@@ -1363,14 +1406,16 @@ pileup is \cite{Cacciari:2008gn}.
 \item \textbf{The string length.} Compute $\lambda$ of
   \cref{eq:uninvited_cousins:lambda} for the hard system alone from the
   rows of \file{event_PS.lhe} and its colour tags, and compare with the
-  per-system contributions the script prints with \code{-vv}. Why does
+  $879.6$ the script prints for the whole event before reconnection. Why does
   merging a soft system into a hard one \emph{reduce} the total?
 \item \textbf{The transverse region.} From the status-62 and 63 rows of
   \file{event_MPI.lhe}, select the partons that do not descend from the
   hard process (walk the mothers), restrict to $|\eta|<2.5$, and reproduce
-  the three sums $49.5$, $22.0$ and $47.7\GeV$ and the density $2.10\GeV$.
-  Repeat with \emph{all} partons: by how much do the toward and away
-  regions grow, and why does the transverse region barely change?
+  the three sums $49.5$, $22.0$ and $47.7\GeV$ and the density $2.10\GeV$
+  (one parton of $0.05\GeV$ sits on a boundary at the record's three
+  decimals). Repeat with \emph{all} partons: the sums become $202$, $116$
+  and $86\GeV$. Which partons of the hard system put $94\GeV$ at right
+  angles to the $b$, and why is the away side the emptiest?
 \item \textbf{The cone against the radius.} Reproduce panel~(c) of
   \cref{fig:uninvited_cousins:our_jet_plot} from the record with the reader
   of \file{plot_journey_MPI.py}: the vector-summed \pt and the mass of the

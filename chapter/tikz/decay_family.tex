@@ -60,11 +60,11 @@
 \node[lab,text=blue!50!black,anchor=west] at (7.6,-1.6) {the cone $\dR<0.4$};
 \fill[red!80!black] (0,0) circle (1.3mm); \node[lab,anchor=north] at (0,-0.2) {$\bar B^0$};
 \draw[walk] (0,0) -- (1.6,0.1);
-\node[ch] (Dst) at (2.9,-0.9) {$D^{*+}$ ($c\bar d$)}; \draw[lnk] (1.6,0.1) -- (Dst);
+\node[ch] (Dst) at (2.9,-0.9) {$D^{*-}$ ($\bar cd$)}; \draw[lnk] (1.6,0.1) -- (Dst);
 \foreach \x/\y in {5.2/-1.3,5.6/-0.9,6.1/-1.5,5.0/-0.6,6.4/-0.8} {\fill[black!60] (\x,\y) circle (0.8mm); \draw[lnk] (Dst) -- (\x,\y);}
-\draw[-{Stealth[length=2mm]},orange!80!black,line width=1.3pt] (1.6,0.1) -- (7.9,0.9); \node[lab,text=orange!80!black,anchor=west] at (8.0,0.9) {$\mu^-$: a track, then a hit in the muon chambers};
-\draw[-{Stealth[length=2mm]},green!50!black,line width=1.3pt,dashed] (1.6,0.1) -- (9.4,2.3); \node[lab,text=green!50!black,anchor=west] at (9.5,2.3) {$\bar\nu_\mu$: $19.8\GeV$, $12\%$ of the B, never seen: through the calorimeter and out};
+\draw[-{Stealth[length=2mm]},orange!80!black,line width=1.3pt] (1.6,0.1) -- (7.9,0.9); \node[lab,text=orange!80!black,anchor=west] at (8.0,0.9) {$\mu^+$: a track, then a hit in the muon chambers};
+\draw[-{Stealth[length=2mm]},green!50!black,line width=1.3pt,dashed] (1.6,0.1) -- (9.4,2.3); \node[lab,text=green!50!black,anchor=west] at (9.5,2.3) {$\nu_\mu$: $19.8\GeV$ of energy, $12\%$ of the B, never seen: through the calorimeter and out};
 \draw[black!40,line width=3pt] (7.5,-2.0) -- (7.5,1.9); \node[lab,anchor=west,text=black!55] at (7.6,-0.3) {calorimeter};
-\node[lab,anchor=north west,text width=7.6cm,align=left] at (8.4,0.35) {$\bar B^0\to D^{*+}\mu^-\bar\nu_\mu$ (meMode 22, V$-$A): the muon is hard, the neutrino harder, and the detector will never recover it. The cone's \pt drops from $99.2$ to $89.7\GeV$ in that decay; over 400 decays of the same hadrons the visible \pt averages $91.1\pm12.2$ against $98.8\GeV$ of final particles. Our seed-1 decay is hadronic and loses nothing.};
+\node[lab,anchor=north west,text width=7.6cm,align=left] at (8.4,0.35) {the $\bar B^0$ oscillates and decays as $B^0\to D^{*-}\mu^+\nu_\mu$ (meMode 22, V$-$A): the muon is hard, $21.8\GeV$, the neutrino softer, and the detector will never recover it. The cone's \pt drops from $99.2$ to $89.7\GeV$ in that decay; over 400 decays of the same hadrons the visible \pt averages $91.1\pm12.2$ against $98.8\GeV$ of final particles. Our seed-1 decay is hadronic and loses nothing.};
 \end{scope}
 \end{tikzpicture}

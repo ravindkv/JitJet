@@ -197,6 +197,12 @@ def page_string(st: Setup):
         for ev_strings in st.py_rec["strings"]:
             for w, n in ev_strings:
                 acc.setdefault(round(w, 1), []).append(n)
+        # a string whose partons PYTHIA does not copy (they are contiguous already) has no status-71 rows
+        # and W = 0 in the validation file: it is the one string of ours without a partner in mass
+        if 0.0 in acc:
+            lone = [round(float(w), 1) for w in ws if min(abs(float(w) - k) for k in acc if k > 0) > 0.15]
+            if len(lone) == 1:
+                acc[lone[0]] = acc.pop(0.0)
         wk = np.array(sorted(acc))
         a3.plot(wk, [np.mean(acc[w]) for w in wk], "D", color=COL_PY, ms=4, label="PYTHIA 8 on the same partons (mean)")
     a3.set_xlabel("string mass $W$  [GeV]")
@@ -225,7 +231,7 @@ def page_breakup(st: Setup):
     a1.set_xlim(0, 1.2)
     a1.set_title("(a) which flavour pops out of the vacuum", fontsize=10.5)
     a1.legend(loc="lower left", fontsize=8.5)
-    a1.text(0.97, 0.75, "c and b: never from the vacuum\n($10^{-11}$ and $10^{-100}$); they come\nfrom the hard process and the showers",
+    a1.text(0.97, 0.75, "c and b: never from the vacuum\n($10^{-15}$ and $10^{-159}$); they come\nfrom the hard process and the showers",
             transform=a1.transAxes, ha="right", va="top", fontsize=8.5, color=TEXT2)
     # (b) the pT kicks of the event
     kicks = []
@@ -303,7 +309,7 @@ def page_z(st: Setup):
     wmin = [h[2].get("w_min") for h in sysm.hadrons]
     k = np.arange(len(wrem))
     a3.plot(k, wrem, "o-", color=COL_STR, ms=5, mec="white", label="remaining mass $W_{rem}$ before each hadron")
-    a3.plot(k, wmin, "s--", color=COL_MINI, ms=4, label=r"$W_{min}$ = $m_{q_1}$ + $m_{q_2}$ + stopMass + stopNewFlav $m_{q,last}$, smeared")
+    a3.plot(k, wmin, "s--", color=COL_MINI, ms=4, label=r"$W_{min}$ = $m_{T,q_1}$ + $m_{T,q_2}$ + stopMass + stopNewFlav $m_{q,last}$, smeared")
     for i, (hid, p, info) in enumerate(sysm.hadrons):
         a3.annotate(journey.hadron_tex(core.pname(hid)), (i, wrem[i]), xytext=(0, 7 if i % 2 == 0 else -11), textcoords="offset points",
                     ha="center", fontsize=6.5, color=COL_B if info["end"] == "+" else COL_BBAR)

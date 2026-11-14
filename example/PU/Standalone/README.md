@@ -33,10 +33,10 @@ python3 standalone_pileup.py --repeat 400 --jobs 4 --quiet --history standalone_
 ```
 
 On this Mac use `/usr/bin/python3` (NumPy); the record takes two minutes, almost all of it
-the anti-kT clustering of 9684 particles and 6300 ghosts (the kT clustering for the jet
+the anti-kT clustering of 10 696 particles and 6300 ghosts (the kT clustering for the jet
 median 20 s); `--no-area` brings it to 20 s; the `--repeat 400` ensemble (the in-time crowd
 drawn again and again on the photograph, no clustering: the grid rho and the pileup inside
-the circle of our jet) takes 15 s with four workers. The script imports chapter 7's
+the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The script imports chapter 7's
 `standalone_genjets.py` (the record, the clustering, the jet tables) and needs nothing else.
 
 ## What the script reproduces, and the numbers
@@ -48,36 +48,46 @@ the circle of our jet) takes 15 s with four workers. The script imports chapter 
   960 collisions expected per signal event. The production draws mu_true flat in 55 ... 75
   (`Run3_Flat55To75_PoissonOOTPU`, about 1040 collisions per signal event) and reweights.
 * **The draw** (`Stage.draw_crowd`): Poisson(60) per crossing; seed 1 gives sixteen numbers
-  from 50 to 68, **63** in time, 960 in all, read at random positions of the library with
-  replacement (763 distinct events; `--sequential` reads from the first event on, as the
-  CMSSW exercise of the companion does).
+  from 50 to 68, **63** in time, 960 in all. The library is opened at a random event (430
+  for seed 1) and read on in order, wrapping at the end, as CMSSW's
+  `RootEmbeddedFileSequence::readOneRandom` does with `sequential = False`: no collision is
+  used twice in an event (drawing every position at random would repeat one within the
+  in-time crossing in six draws of ten); `--sequential` reads from the first event on, as
+  the CMSSW exercise of the companion does.
 * **The beam spot** (`BeamSpot`): BetafuncEvtVtxGenerator with the 2024 payload: z Gaussian of
   3.6 cm around 0.42 cm, t an independent Gaussian of sigma_z / c = 120 ps, x and y Gaussians
   of sqrt(eps beta*/2) sqrt(1 + ((z - z0)/beta*)^2) = 9 um at the focus (beta* = 30 cm,
-  emittance 5.725e-8 cm). The 960 drawn vertices: r.m.s. 3.79 cm, 119 ps, 9 um; the signal at
-  z = -0.17 cm, t = -121 ps. CMSSW's 250-event library: 3.56 cm, 122 ps. (`LuminousRegion`, the
+  emittance 5.725e-8 cm). The 960 drawn vertices: r.m.s. 3.56 cm, 124 ps, 9 um; the signal at
+  z = +0.16 cm, t = +94 ps. CMSSW's 250-event library: 3.56 cm, 122 ps. (`LuminousRegion`, the
   HL-LHC model of two 9 cm bunches crossing at 510 urad, crab-rotated by 380 urad at 400 MHz
   and focused to beta* = 20 cm, 4.27 cm and 193 ps, is `--region hllhc`.)
 * **The stacking** (`Stage.stack`): the signal's 744 particles without neutrinos, 651 within
-  |eta| < 5; the 63 in-time collisions bring 12 113 particles, 9033 within |eta| < 5 and not
-  neutrinos; 860 charged particles in the tracker's reach against 93 of the signal.
+  |eta| < 5; the 63 in-time collisions bring 13 456 particles, 10 045 within |eta| < 5 and not
+  neutrinos; 995 charged particles in the tracker's reach against 93 of the signal.
 * **The clustering** (`TiledClustering`, `MixedJets`, `ghost_grid`): chapter 7's anti-kT with
   FastJet's tiled nearest-neighbour search (a pair farther apart than R never merges, so the
   neighbour of every pseudojet is within R and the plane can be tiled in cells of side R);
-  6300 ghosts of area 0.01 within |y| < 5, pT = 1e-18; 15 984 steps; 173 jets above 3 GeV, 62
-  above 30. Our jet: 112 particles, the 31 of the photograph and 81 strangers from 34
-  collisions, 132.75 GeV, A = 0.529 (pi R^2 = 0.503).
+  6300 ghosts of area 0.01 within |y| < 5, pT = 1e-18; 16 996 steps; 175 jets above 3 GeV, 82
+  above 30. Our jet is mixed jet [1] in this crossing (the bbar jet, 136.77 GeV, leads):
+  115 particles, the 31 of the photograph and 84 strangers from 33 collisions, 133.53 GeV,
+  0.012 from the photograph's axis in (y, phi), A = 0.529 (pi R^2 = 0.503; the ghosts
+  measure it to +- 0.02: 0.47 to 0.54 with other ghost seeds, 0.539 with FastJet's).
 * **rho** (`grid_rho`, `jet_median_rho`): 18 x 11 cells of 0.556 x 0.571 in |y| < 5, median
-  68.28 GeV per unit area (cells from 13 to 359, mean 74.0); the kT-jet median in |y| < 4.4:
-  69.87; per collision 1.08 and 1.11 in this crossing, 0.94 over the ensemble; the signal
-  alone 3.42.
-* **The subtraction** (`Stage.subtract`): our jet 132.75 - 68.28 x 0.529 = 96.66 against the
-  100.07 GeV of signal inside: residual -3.41 GeV in this crossing; over 400 draws the crowd
-  puts 27.8 +- 8.4 GeV inside the circle, rho pi R^2 estimates 29.7 +- 5.8, the residual is
-  -1.9 +- 6.7 GeV. 56 pileup jets above 30 GeV before the subtraction, none after.
-* **The vertices** (`Stage.visible_vertices`): 43 of 63 in-time collisions have at least four
-  charged particles of pT > 0.5 GeV within |eta| < 2.5; the nearest to the signal is 0.06 mm
-  away in z and 5 ps in t; 4 are within 1 mm, 7 within 30 ps.
+  75.47 GeV per unit area (cells from 30 to 361, mean 82.9); the kT-jet median in |y| < 4.4
+  (the range of CMSSW's kT-jet rho): 78.50; per collision 1.20 and 1.25 in this crowded
+  crossing, 0.97 over the ensemble; the signal alone 3.42 (mean 11.1, 17 of 198 cells
+  empty), the crowd alone 69.93: the signal raises the median by 5.5 here, 6.2 on average.
+* **The subtraction** (`Stage.subtract`): our jet 133.53 - 75.47 x 0.529 = 93.64 against the
+  100.07 GeV of signal inside: residual -6.43 GeV in this crossing (the record's
+  definition: vector pT - rho A - scalar signal), -5.32 as pileup inside minus rho A (the
+  ensemble's definition: scalar sums on both sides). Over 400 draws the crowd puts
+  28.3 +- 8.1 GeV inside the circle, rho pi R^2 estimates 29.5 +- 5.3, the residual is
+  -1.1 +- 6.1 GeV, and +2.0 +- 6.1 with the rho of the crowd alone (-2.7 +- 6.1 and +0.4
+  for the bbar jet). 76 pileup jets above 30 GeV before the subtraction, one after; over
+  seeds 1 to 9 clustered in full, 23 to 76 before and five in all after.
+* **The vertices** (`Stage.visible_vertices`): 40 of 63 in-time collisions have at least four
+  charged particles of pT > 0.5 GeV within |eta| < 2.5; the nearest to the signal is 0.01 mm
+  away in z and 0.3 ps in t; 3 are within 1 mm, 7 within 30 ps.
 * **The profile** (`fill_profile`, `year_profile`, `flat_profile`, `reweight`): a 2024-like fill
   (levelled at 60 for 8 h, then decaying with tau = 10 h, 12 h) keeps 72% of its collisions at
   the levelled value (mean 57); a year of such fills levelled between 57 and 67 (a model) has

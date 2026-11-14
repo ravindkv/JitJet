@@ -127,6 +127,9 @@ def analyse(e, pd, b_rows, parton_rows):
     for i in had:
         groups.setdefault((e[i].mother1(), e[i].mother2()), []).append(i)
     s["strings"] = []
+    # NOTE (audit 2026-11-14): a string whose partons are contiguous already is not copied by PYTHIA, its
+    # mothers keep status 23 and the mass below comes out as 0 (the 20.1 GeV s dbar string of the record);
+    # plot_theory_Had.py gives that entry the mass of the standalone string without a partner.
     for (a, b), hs in groups.items():
         p = np.zeros(4)
         for j in range(a, max(a, b) + 1):

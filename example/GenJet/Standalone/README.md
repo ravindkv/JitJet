@@ -55,7 +55,7 @@ and clusters each result). The script imports chapter 6's `standalone_hadron_dec
   cone are not in the jet and two others are, the border effect of an axis 0.06 away. The
   36 merges that build the jet are listed in `standalone_genjets.log`: the hard core first
   (the Bbar0's K- and pi- at dR = 0.006, its photons), the ghosts of the D0, the Bbar0 and
-  the b quark between merges 20 and 27, the soft periphery last at dR up to 0.38, then d_iB
+  the b quark at steps 20, 24 and 27 of the event, the soft periphery last at dR up to 0.38, then d_iB
   = 1/pT^2 = 1.0e-4 wins. The jet without neutrinos is the same jet (the Bbar0 decayed
   hadronically); the ak8 jet [1] has 105.79 GeV and 47 particles. The jet is 68.1 GeV of
   charged hadrons, 22.8 of photons, 9.0 of neutral hadrons, no lepton, no neutrino.
@@ -64,7 +64,7 @@ and clusters each result). The script imports chapter 6's `standalone_hadron_dec
   quark) also swallows the gluon-splitting pair of the shower, Lambda_bbar0 (row 1005,
   35.5 GeV) and Bbar0 (row 1584, 24.9 GeV), which in ak4 share jet [2] (60.45 GeV).
 * **Ghosts and labels.** Four b-hadron ghosts (the Bbar0 of each hard quark, the pair
-  from the gluon), nine c-hadron ghosts, 163 parton ghosts (the rows with status 71-79,
+  from the gluon), nine c-hadron ghosts, 161 parton ghosts (the quarks and gluons with status 71-79,
   CMSSW's `Pythia8PartonSelector`), the two status-23 partons, three leptons from heavy
   hadrons. The b jet: hadronFlavour 5 (the Bbar0's ghost), partonFlavour +5 (the b quark's
   status-71 ghost; the hardest b parton, else c, else the hardest parton), dR < 0.3
@@ -74,26 +74,41 @@ and clusters each result). The script imports chapter 6's `standalone_hadron_dec
   **net flavour of +1 b** from its oscillated B0 (the record keeps the Bbar0 it decayed
   as). Jet [2]: hadronFlavour 5 from two hadrons, net flavour 0 (b + bbar), partonFlavour
   -5. hadronFlavour 5 is given to 3 ak4 jets, 4 to two more (the shower's D+ and D-).
-* **IFN** (anti-kT kinematics, alpha = 2, omega = 1, candidates taken among all pseudojets
-  alive at the step, final jets included) finds no neutralisation in the event: every
+* **IFN** (anti-kT kinematics, alpha = 2, omega = 1; the search is triggered by the softer
+  of the two pseudojets about to merge when it is flavoured, and the candidates are all
+  flavoured pseudojets, declared jets included, as in Section 3 of the paper) finds no
+  neutralisation in the event: every
   flavoured hadron's nearest opposite flavour is further in u_ik than the pseudojet it
   joins. **Flavour-kT** (alpha = 2) builds different, kT-like jets, the b jet with 99.83
   GeV in 17 constituents (the heavy hadrons undecayed), the bbar jet with 94.49 GeV, both
-  with the flavour of their hadron.
+  with the flavour of their hadron and the only b-flavoured ones; two soft jets (7.10 and
+  3.29 GeV, a Dbar0 and a D-) carry -1 c under the net flavour, IFN and flavour-kT.
 * **The infrared test** (`--soft-pair PT`): a B0 and a Bbar0 of PT each, 0.5 apart in dR,
   placed between the two nearest light jets above 5 GeV (jets [8] and [9] here), one
   hadron inside each. At PT = 0.5 GeV both jets get hadronFlavour 5 and the net flavours
-  +1 b / -1 b, while IFN neutralises the pair before the first of them is merged (u_ik
-  of the pair against u_ij of hadron and jet) and leaves both jets flavourless; above a few
-  GeV the pair is hard enough to keep its flavour under every definition. Page 3 of
-  `theory_genjets.pdf` scans PT from 0.2 to 15 GeV.
+  -1 b / +1 b, while IFN neutralises the pair before the Bbar0 joins the nbar0 of 7.42 GeV
+  in jet [9] (u_ik = 0.064 of the pair against u_ij = 0.21 of the merge) and leaves both
+  jets flavourless; from 1 GeV on u_ik exceeds u_ij and IFN labels both jets, as
+  hadronFlavour and the net flavour do. Flavour-kT never labels them: each hadron gathers
+  its neighbours and the two flavoured pseudojets, 0.58 apart, merge into one flavourless
+  jet (24.16 GeV at PT = 0.5) at every PT of the scan, 0.2 to 15 GeV (page 3 of
+  `theory_genjets.pdf`). The pair is soft in pT only: each B meson keeps its mass (5.3 and
+  6.3 GeV of energy at PT = 0.5), and the two small jets move, [8] from 12.02 GeV (eta
+  0.02, m 2.78, 6 particles) to 12.22 (0.07, 12.23, 6), [9] from 10.64 (0.66, 2.19, 5) to
+  11.68 (0.85, 12.04, 7).
 
 Left out on purpose: jet areas and the ghosts of the area (chapter 15); the flavour
 dressing and CMP variants of infrared-safe flavour; the sign conventions of
 partonFlavour for a jet with a b and a bbar parton (the harder one wins, as in CMSSW);
-the CMSSW ghost "leptons" are collected but used for no label. The IFN candidate set is
-an assumption of this port: the FastJet contrib IFNPlugin is the reference, and the
-python wheel of FastJet carries no contrib.
+the CMSSW ghost "leptons" are collected but used for no label. The IFN port follows the
+text of the paper (trigger, candidates, exclusion set, recursion); the FastJet contrib
+IFNPlugin is the reference code, and the python wheel of FastJet carries no contrib.
+
+The record carries three decimals and the readers recompute E from the mass. A pi- of
+0.27 GeV (row 1607) on the R = 0.8 border is inside the record's ak8 jet [1] (105.79 GeV,
+47 particles) and outside it at full precision: entry 0 of the `--repeat` statistics, the
+same decay clustered before rounding, has 105.51 GeV and 46 particles (ak4: 367 instead
+of 368 particles clustered, m = 14.82 instead of 14.83 for the b jet).
 
 ## The three photographers on nine particles, and on the whole event
 
@@ -154,7 +169,7 @@ with ghosts, the status-71 b quark as the axis (CMSSW's choice):
 | b: ak8 jet pT | 120.0 +- 24.6 | 104.61 +- 0.80 |
 | b: neutrino pT in the ak4 jet | 7.9 +- 14.3 (none in 58% of the events, above 5 GeV in 34%) | 7.7 (none in 54%, above 5 GeV in 37%) |
 | b: hadronFlavour 5 / partonFlavour +-5 | 99.2% / 99.3% | 100% / 100% |
-| b: B hadron to jet axis, its products outside the jet | 0.025, 0.33 | 0.062, 0.20 |
+| b: B hadron to jet axis, its products outside the jet | 0.025, 0.31 | 0.062, 0.20 |
 | ak4 jets with two b hadrons | 0.009 per event | 1.00 per event (the shower's pair) |
 
 The full chain spreads the response because the shower, the MPI and the status-71 quark

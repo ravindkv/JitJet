@@ -514,7 +514,8 @@ MadGraph's default dynamical scale for a 2 -> 2 process, built from the
 transverse masses after a kT clustering, instead of pTHat^2 + m_b^2 (a factor
 two in mu_R moves the result by about 20%, section 5.4); and alpha_s from
 the PDF set instead of PYTHIA's own running, which at this scale agree to
-four digits. With `ptb = 30` instead, the same recipe gives about 19.4 nb
+four digits and part only above the top threshold (`--alpha-backend lhapdf`:
+-0.10%). With `ptb = 30` instead, the same recipe gives about 19.4 nb
 against PYTHIA's 18.4 nb: at the lower cut the four-flavour proton, the b
 mass and the scale convention matter more.
 
@@ -590,6 +591,7 @@ envelope of the seven-point scale variation is 345.3 +80.0 -56.5 pb.
 | no incoming b | `--nquark 4` | 339.85 | -1.6% |
 | m_b = 4.7 GeV | `--mb 4.7` | 345.37 | +0.01% |
 | negative PDFs kept | `--signed-pdfs` | 345.04 | -0.08% |
+| alpha_s of the PDF set | `--alpha-backend lhapdf` | 344.99 | -0.10% |
 
 ### 5.5 PDF values and coupling at our event
 
@@ -617,9 +619,8 @@ mother we follow.
 | bbar | 62.071 | 94.690 | -2413.001 | 2415.661 | 113.22 | -3.753 | -3.752 | 0.991 |
 | pair | 0 | 0 | -2638.149 | 2667.719 | 0 | | Y = -2.595 | |
 
-Momenta in GeV, phi in rad. Checks: sHat = x1 x2 s = 2.174e-3 x 0.3901 x
-13600^2 = 156 895 GeV^2 against the momentum-sum mass 396.1 GeV; the decay
-rapidity y* = artanh(beta cos thetaHat) = 1.157 gives y_b = Y + y* = -1.438
+Momenta in GeV, phi in rad. Checks: sHat = x1 x2 s = 4 x 14.785 x 2652.934 = 156 895 GeV^2 against the momentum-sum mass 396.1 GeV; the decay
+rapidity y* = -artanh(beta cos thetaHat) = 1.157 (our quark came from -z) gives y_b = Y + y* = -1.438
 and y_bbar = Y - y* = -3.752.
 
 ### 5.7 The energy ledger

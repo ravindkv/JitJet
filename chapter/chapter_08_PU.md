@@ -9,15 +9,18 @@ side (the pileup library and the overlay of the in-time collisions on the signal
 at PU 60) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is written up
 there, see section 4.3.
 
-The crowd is the crowd of Run 3 in 2024: the event of chapters 1 to 7 was born at
-13.6 TeV under Run-3 conditions and stays there: 60 collisions per crossing, the 2024
-beam spot, the Run-3 production window bx = -12 ... +3, and, from chapter 9, the 2024
-CMS detector. The HL-LHC crowd (mu = 200 at 14 TeV, the Phase-2 luminous region) is one
+The crowd is the crowd of Run 3 in 2025: the event of chapters 1 to 7 was born at
+13.6 TeV under Run-3 conditions and stays there: 60 collisions per crossing, the 2025
+beam spot (the payload of the 2025 global tag, fitted to early-2024 collisions), the
+Run-3 production window bx = -12 ... +3, and, from chapter 9, the CMS detector of 2025.
+The luminosity and the bunches of 2025 (L = 2.23e34 levelled, 2340 colliding bunches,
+mu = 66.5 at the peak) and the year's profile (mean 64.3) are those of the release's
+2025 pileup profile, `Run3_2025_LHC_Simulation_fill12p5h_levelling9h_nb2340_xSec80mb_il2p23_cfi`. The HL-LHC crowd (mu = 200 at 14 TeV, the Phase-2 luminous region) is one
 option of the script, `--scenario ultimate`, kept for the exercises and the open problems.
 
 | | |
 |---|---|
-| Stage | the signal of chapter 7 in a bunch crossing of 2024: the crowd, where and when it walks, rho, the areas and the subtraction |
+| Stage | the signal of chapter 7 in a bunch crossing of 2025: the crowd, where and when it walks, rho, the areas and the subtraction |
 | Standalone script | [`example/PU/Standalone/standalone_pileup.py`](../example/PU/Standalone/standalone_pileup.py) |
 | The library | [`example/PU/pileup_library.lhe.gz`](../example/PU/pileup_library.lhe.gz), 2000 minimum-bias collisions at 13.6 TeV made once by [`make_pileup_library.py`](../example/PU/Standalone/make_pileup_library.py) with PYTHIA (its log: [`pileup_library.log`](../example/PU/pileup_library.log)) |
 | Input | [`example/GenJet/event_GenJet.lhe`](../example/GenJet/event_GenJet.lhe), the final state and the generator-level jets of chapter 7 |
@@ -38,19 +41,19 @@ Contents: [1. Running the standalone script](#1-running-the-standalone-script) Â
 ## 1. Running the standalone script
 
 `standalone_pileup.py` takes the final state of chapter 7 and puts it into a bunch
-crossing of 2024, with every piece of CMSSW's mixing written out: mu from the
+crossing of 2025, with every piece of CMSSW's mixing written out: mu from the
 luminosity, mu = L sigma_inel / (n_b f_rev); the Poisson draw of the MixingModule for
 every crossing of the production window bx = -12 ... +3; the library of minimum-bias
 collisions it reads in order from a random position; the beam spot of CMSSW's BetafuncEvtVtxGenerator
-(the SimBeamSpot payload of the 2024 global tag: a Gaussian of 3.6 cm along the beam, an
+(the SimBeamSpot payload of the 2025 global tag: a Gaussian of 3.6 cm along the beam, an
 independent Gaussian of 120 ps in time, 9 um across with the hourglass of beta* = 30 cm)
 and the 25 ns offsets of the out-of-time crossings; the stacking of the in-time collisions
 onto the signal; anti-kT on the mixed final state with the active area of every jet
 measured with ghosts, using FastJet's tiled search; the median energy density rho two
 ways (FastJet's grid, which CMSSW's fixedGridRhoFastjetAll wraps, and the kT-jet median of
 Cacciari and Salam); the subtraction pT - rho A against the truth; the vertices the
-tracker will see; the flat pileup profile of the Run-3 production, a 2024-like year and
-the reweighting. Seven hundred lines of Python that need NumPy and nothing else; it
+tracker will see; the flat pileup profile of the Run-3 production, the 2025 profile of
+CMSSW (`PROFILE_2025`, the probValue of the release's cfi) and the reweighting. Seven hundred lines of Python that need NumPy and nothing else; it
 imports chapter 7's `standalone_genjets.py` for the record, the clustering and the jet
 tables.
 
@@ -61,12 +64,12 @@ A map of the file, with the steps of the chapter's flow chart:
 | `mu_of`, `SCENARIOS`, `parse_window` | step 1: mu = L sigma_inel / (n_b f_rev), the three scenarios (`run3`, `nominal`, `ultimate`) with their bunches, windows and vertex generators |
 | `Library` | the minimum-bias collisions of the library file, with their multiplicities |
 | `Stage.draw_crowd` | step 2: the Poisson draw per crossing and the library events read, in order from a random position, wrapping at the end (CMSSW's `readOneRandom`: no collision twice in an event) |
-| `BeamSpot` (`LuminousRegion` for `--region hllhc`) | step 3: the 2024 beam spot of BetafuncEvtVtxGenerator (the HL-LHC overlap of two crabbed bunches), its moments, and the drawing of vertices |
+| `BeamSpot` (`LuminousRegion` for `--region hllhc`) | step 3: the 2025 beam spot of BetafuncEvtVtxGenerator (the HL-LHC overlap of two crabbed bunches), its moments, and the drawing of vertices |
 | `Stage.stack` | step 4: the mixed final state (signal + in-time crowd, abs(eta) < 5, no neutrinos) |
 | `TiledClustering`, `MixedJets`, `ghost_grid` | step 5: chapter 7's anti-kT with FastJet's tiled search, the ghosts, every constituent tagged by its collision |
 | `grid_rho`, `jet_median_rho` | step 6: the two estimators of rho |
 | `Stage.subtract` | step 7: pT - rho A for every jet against the signal pT inside it (`residual`), and the pileup pT inside against rho A (`residual_pileup`, the ensemble's definition) |
-| `Stage.visible_vertices`, `fill_profile`, `year_profile`, `flat_profile`, `reweight` | step 8: the collisions the tracker can see; the profiles and the weight |
+| `Stage.visible_vertices`, `release_profile`, `profile_stats`, `fill_profile`, `flat_profile`, `reweight` | step 8: the collisions the tracker can see; the profiles (the 2025 profile of CMSSW, one fill of its header, the flat band) and the weight; `year_profile`, a year of modelled fills, is kept for the exercises |
 | `pileup_tables`, `read_pileup_tables` | step 9: the tables of the record and their reader |
 | `stage_summary`, `one_repeat` | the summary JSON and the worker of `--repeat` |
 
@@ -83,7 +86,7 @@ cd example/PU/Standalone
 
 Options: `--scenario run3|nominal|ultimate` (the luminosity, the colliding bunches, the
 window, the vertex generator and the rounded mu CMSSW mixes at: 60 in bx = -12 ... +3 with
-the 2024 beam spot; 140 and 200 in bx = -3 ... +3 with the HL-LHC luminous region), `--mu`,
+the 2025 beam spot; 140 and 200 in bx = -3 ... +3 with the HL-LHC luminous region), `--mu`,
 `--window N|MIN,MAX` and `--region run3|hllhc` to override them, `--sequential` to read
 the library from its first event on (CMSSW's `sequential = True`), `--seed`, `--radius`,
 `--ptmin`, `--no-area`, `--repeat N --jobs J --history FILE` for the ensemble (the
@@ -110,7 +113,7 @@ cd example/PU/Standalone
 /usr/bin/python3 minbias_catalogue.py --first 20   # the first twenty library events instead of the in-time ten of the record
 ```
 
-The twin of the companion's `minBiasGenStats.py`, which prints one line per GEN event of the 2024 CMSSW
+The twin of the companion's `minBiasGenStats.py`, which prints one line per GEN event of the 2025 CMSSW
 library: for every collision the kind, the interactions, the stable particles, the charged ones, the
 central ones (|eta| < 2.5 and pT > 0.5 GeV, all species, as the CMSSW catalogue counts them), the ones
 beyond |eta| = 5.5, the pT of the hardest particle, the scalar sum of pT, the anti-kT R = 0.4 jets above
@@ -123,8 +126,9 @@ the 960 drawn); the means per kind close it. The `.tex` holds the three tables a
 
 ### The learning modes
 
-`-v` narrates the nine steps: the scenario and the arithmetic of mu (1.57e9 collisions
-per second over 2.64e7 crossings per second, 59.3, or 60.5 with 80 mb; mixed at 60; the
+`-v` narrates the nine steps: the scenario and the arithmetic of mu (L = 2.23e34 and
+2340 bunches from the 2025 profile's header: 1.75e9 collisions per second over 2.63e7
+crossings per second, 66.5, or 67.8 with 80 mb; mixed at 60, as the companion; the
 production's flat 55 ... 75 profile and its 1040 collisions per signal event); the
 sixteen Poisson draws (60, 56, 68, 61, 66, 56, 55, 50, 53, 66, 61, 60, **63**, 63, 59,
 63) and the library events read (in order from event 430, 960 distinct; ND 698, SD 158,
@@ -134,16 +138,19 @@ beta* = 30 cm, emittance 5.725e-8 cm: sigma_xy = 9.3 um, sigma_t = 120 ps) and t
 vertices drawn (r.m.s. 3.56 cm, 124 ps, 9 um; the signal at z = +0.16 cm, t = +94 ps);
 the stacking crossing by crossing (651 signal particles, 10 045 of the crowd within
 abs(eta) < 5 without neutrinos; 995 charged in the tracker against 93); the clustering
-(10 696 particles + 6300 ghosts, 16 996 steps, 157 s; 175 jets, 82 above 30 GeV)
+(10 696 particles + 6300 ghosts, 16 996 steps, 148 s; 175 jets, 82 above 30 GeV)
 and our jet (mixed jet [1], 115 particles, 31 + 84 from 33 collisions, A = 0.529, 0.012
 from the photograph's axis in (y, phi)); the medians (75.47 grid, 78.50 kT; the signal
 alone 3.42 with a mean of 11.08 and 17 of 198 cells empty; the crowd alone 69.93); the
 subtraction of the twelve leading jets against the truth, with both residuals of our jet
 (-6.43 on the signal's sum, -5.32 as pileup inside minus rho A; -3.50 and -2.39 with the
 rho of the crowd alone); the visible vertices (40 of 63; the nearest 0.01 mm and 0.3 ps
-away; 3 within 1 mm, 7 within 30 ps); the profiles (one fill: mean 57, 72% levelled; the
-year: mean 59; the flat profile reweighted: w from 0 to 1.62, 1.54 at 60; a fixed-mu
-sample: 0.07) and, for comparison, the levelled HL-LHC fill. `-vv` adds every collision
+away; 3 within 1 mm, 7 within 30 ps); the profiles (one fill of the 2025 header,
+levelled at 67.8 for 9 h of 12.5: mean 65, 76% levelled; the 2025 profile of CMSSW:
+mean 64.3, r.m.s. 11.7, median 65, 18% below 55 and 16% above 75; the flat profile
+reweighted to it: w from 0.45 to 0.78, 0.65 at 60, nothing for the 34% outside the band;
+a fixed-mu sample: one bin, it cannot be reweighted) and, for comparison, the levelled
+HL-LHC fill. `-vv` adds every collision
 with its vertex and every constituent of our jet with its collision, pT and distance to
 the axis in (y, phi). The seed-1 log is committed as `standalone_pileup.log`; every number
 quoted in the chapter's theory is in it.
@@ -157,8 +164,8 @@ jet listing and the constituent listing: see the
 ### The summary
 
 ```
- --------  Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2024; seed 1)  ----------
-  mu from L sigma/(n_b f_rev): 59.35; mixed at mu = 60
+ --------  Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2025; seed 1)  ----------
+  mu from L sigma/(n_b f_rev): 66.46; mixed at mu = 60
   collisions per bunch crossing: bx -12: 60, bx -11: 56, bx -10: 68, bx -9: 61, bx -8: 66, bx -7: 56, bx -6: 55, bx -5: 50, bx -4: 53, bx -3: 66, bx -2: 61, bx -1: 60, bx +0: 63, bx +1: 63, bx +2: 59, bx +3: 63; 960 in all, 63 in time
   beam spot: sigma_z = 3.60 cm, sigma_t = 120 ps (model); drawn r.m.s. z 3.56 cm, t 124 ps, x 8.9 um, y 9.6 um
   signal vertex: x = 287.13 um, y = -155.09 um, z = 0.157 cm, t = 0.0940 ns
@@ -252,8 +259,8 @@ cd example/PU/Standalone
 ```
 
 Page 1: mu against the luminosity for the three scenarios, the Poisson draw with the
-sixteen draws of our event, the profile of a 2024-like year against the flat 55 ... 75
-profile of the production with the weight. Page 2: the multiplicity of the library by
+sixteen draws of our event, the 2025 profile of CMSSW and one fill of its header against
+the flat 55 ... 75 profile of the production, with the weight. Page 2: the multiplicity of the library by
 process type, the plateau dN/deta, the pT per unit area per collision. Page 3: the
 density p(z, t) with the in-time vertices and the signal, the z of the 960 vertices
 against the Gaussian of the payload and the 250 vertices of the CMSSW library, the sixteen
@@ -277,14 +284,19 @@ outro, the clips cached in `build/narration/PU/`, the subtitles next to the .mp4
 score follows `example/soundtrack.py` with a chord per scene and a thud when the crowd is
 complete. Scene 3 shows the four kinds of collision one after the other (ND, SD, DD, CD,
 one library event each, the surviving protons marked), the table of their cross sections
-and multiplicities filling row by row, then the multiplicity of the whole library; the
+and multiplicities filling row by row with, below it, the panel of the chapter's sketch
+(`chapter/tikz/pu_minbias.tex`) for the kind being told, then the four sketches side by
+side under the full table, then the multiplicity of the whole library. The panels are
+compiled from the TikZ once (`\def\puminbiaspanel{0..3}` cuts the bounding box to one
+panel) and rendered with ghostscript into `build/pu_minbias_panels/`; without pdflatex or gs
+the scene is drawn without them. The
 still the book prints for it is the library histogram, since the table is in the theory
 section. The film picks up where chapter 7's ends and ends at the border of the detector.
-The 2024 film (`--jobs 4`, about 25 minutes to render) is the one on the playlist.
+The 2025 film (`--jobs 8`, rendered on 15 November 2026) is the one on the playlist.
 
 ## 4. Validation from official packages
 
-### 4.1 The library: PYTHIA's cross sections and the 2024 CMSSW library
+### 4.1 The library: PYTHIA's cross sections and the 2025 CMSSW library
 
 The catalogue of section 1 is the first comparison: against the summary of the companion's 250 GEN
 events (interactions 7.0 mean / 3 median / 1 to 39; stable 194 / 132 / 3 to 723; charged 89 / 59;
@@ -390,7 +402,7 @@ The job has two parts. The library is one GEN job of 250 minimum-bias collisions
 (`MinBias_14TeV_pythia8_TuneCP5_cfi` at 13.6 TeV, `SoftQCD:inelastic`, seeds 20241 /
 20242 so that its vertices are not those of the signal); JitJetSW runs it with the
 2025 conditions of the release, which at generator level give the same library as the
-2024 ones collision by collision (the beam-spot payload is the 2024 one,
+2024 ones collision by collision (the beam-spot payload of the 2025 global tag is the same tag as in 2024,
 `SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc`:
 sigma_z = 3.6 cm, sigma_t = 120 ps). The overlay runs the `MixingModule` with no
 digitiser, `mixHepMC` only, on the signal of chapter 7 and library events 72 to 139,

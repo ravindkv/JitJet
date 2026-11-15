@@ -51,7 +51,14 @@
    5.2/green!50!black/12.9 mb/15.9\%/51/3/{one proton survives, the other dissociates; a gap on the surviving side},
    10.4/orange!80!black/8.8 mb/10.9\%/62/3/{both dissociate into low-mass systems; a gap in the middle, little in the tracker},
    15.6/violet!80!black/1.3 mb/1.9\%/28/2/{both survive; a small system in the centre, a few particles}} {
-  \node[lab,anchor=north west,text width=4.5cm,align=left] at (\dx cm-0.2cm,-0.55) {\textcolor{\col}{$\sigma=\sig$, \share\ of the library}\\ \np\ particles on average, \nc\ charged in the tracker\\ \desc};
+  \node[lab,anchor=north west,text width=4.5cm,align=left] at (\dx cm-0.2cm,-0.55) {\textcolor{\col}{$\sigma={}$\sig, \share\ of the library}\\ \np\ particles on average, \nc\ charged in the tracker\\ \desc};
 }
 \node[lab,anchor=north west,text width=20cm,align=left] at (-0.2,-2.5) {\textbf{Minimum bias} is all of them in their natural proportions, $\sigma_{\rm inel}=78.4$ mb at 13.6 TeV (\PYTHIA, CP5: $\sigma_{\rm tot}=100.3$ and $\sigma_{\rm el}=21.9$ mb fixed by the tune, the same at 14 TeV; the diffractive pieces from its parametrisation, ND what remains). The library holds 2000 of them: 179 final particles per collision on average, a median of 116, from 3 to 829; the hardest particle $2.2$ GeV on average; $0.95$ GeV of $p_T$ per unit area in the tracker's reach.};
+% One panel at a time for the film (scene 3 of example/PU/Standalone/animate_standalone_pileup.py): with
+% \def\puminbiaspanel{0|1|2|3} (ND, SD, DD, CD) before \input, the bounding box is cut to that panel and
+% its description; the book never defines the macro and gets the whole figure.
+\ifdefined\puminbiaspanel
+  \pgfresetboundingbox
+  \path[use as bounding box] ({5.2*\puminbiaspanel-0.3},-2.3) rectangle ({5.2*\puminbiaspanel+4.6},3.6);
+\fi
 \end{tikzpicture}

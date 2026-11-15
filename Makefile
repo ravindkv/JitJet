@@ -346,7 +346,7 @@ example/Decay/event_Decay.lhe: example/Decay/Standalone/standalone_hadron_decays
 example/GenJet/event_GenJet.lhe: example/GenJet/Standalone/standalone_genjets.py example/Decay/event_Decay.lhe
 	$(PYTHON) example/GenJet/Standalone/standalone_genjets.py -i example/Decay/event_Decay.lhe -o $@
 
-# Chapter 8: the signal of chapter 7 in a bunch crossing of Run 3 (2024: mu = 60, bx = -12 ... +3, the 2024
+# Chapter 8: the signal of chapter 7 in a bunch crossing of Run 3 (2025: mu = 60, bx = -12 ... +3, the 2025
 # beam spot), with the library of minimum-bias collisions at 13.6 TeV made once by make_pileup_library.py
 # in the ME venv. About two minutes.
 example/PU/event_PU.lhe: example/PU/Standalone/standalone_pileup.py example/GenJet/event_GenJet.lhe example/PU/pileup_library.lhe.gz

@@ -211,3 +211,30 @@ has its film: watch Part I.
 Path:
 example/trailer/animate_trailer_part1_ch01_07.mp4
 example/GenJet/CMSSW/genJetAnalyzer_ME_PS_MPI_Had_Decay_GenJet_out.pdf
+
+
+### --------------------------------------
+(8/30) JitJet | Chapter-8 | The Crowd on the Road: Pileup
+
+Our family is not alone. In a bunch crossing of the LHC in 2025 some sixty
+proton-proton collisions happen at once, and the film puts the photograph of
+the previous stop into that crowd. The 63 other collisions of our crossing
+arrive one by one on the eta-phi plane, a counter running and the energy
+density rho rising by about a GeV per unit area with each, until anti-kT finds
+175 jets and our b jet reads 133.5 GeV instead of 99.8. Then the road: the
+beam spot as the overlap of two bunches, 3.6 cm long and 120 ps wide, our
+collision a hundredth of a millimetre from its nearest neighbour, and the
+fifteen neighbouring crossings of the production window arriving 25 ns apart.
+One member of the crowd is shown in its four kinds, non-diffractive, single-,
+double- and central-diffractive, each with its sketch and its row in the
+table, before the two thousand collisions of the library pile up into their
+multiplicity. The grid cells fill and their median is rho, 75 GeV per unit
+area; the crowd pours 35 GeV of strangers from 33 collisions into the circle
+of our jet, and rho times the area takes 40 GeV back out, leaving 93.6. Drawn
+four hundred times, the crowd puts 28 ± 8 GeV inside the circle and the
+subtraction leaves ± 6 GeV: the first price of pileup on a hundred-GeV jet,
+and what the chapters ahead are about paying less of.
+
+Path:
+example/PU/Standalone/animate_standalone_pileup.mp4
+chapter/chapter_08_PU.tex

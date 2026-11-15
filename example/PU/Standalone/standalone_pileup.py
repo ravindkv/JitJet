@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone pileup for the b bbar event of chapter 7: the crowd on the road, in Run 3 (2024).
+"""Standalone pileup for the b bbar event of chapter 7: the crowd on the road, in Run 3 (2025).
 
 Dependencies: numpy, plus chapter 7's ../../GenJet/Standalone/standalone_genjets.py (the record, the
 anti-kT clustering, the jet tables; chapters 6, 5 and 2 are imported through it). No CMSSW, no FastJet:
@@ -17,16 +17,19 @@ the energy density and the subtracted momenta.
 What is implemented (the physics of chapter 8)
 ----------------------------------------------
 * The mean number of collisions per bunch crossing, mu = L sigma_inel / (n_b f_rev), from the
-  luminosity scenario (Run 3 in 2024, HL-LHC nominal, HL-LHC ultimate) and PYTHIA's sigma_inel = 78.42 mb;
-  the 2024 simulation mixes at mu = 60 (CMSSW's AVE_60_BX_25ns; the production draws the in-time mean
-  from the flat profile Run3_Flat55To75_PoissonOOTPU), the default here.
+  luminosity scenario (Run 3 in 2025, HL-LHC nominal, HL-LHC ultimate) and PYTHIA's sigma_inel = 78.42 mb;
+  the 2025 numbers are the header of the release's 2025 profile (2340 colliding bunches, levelled at
+  2.23e34 for 9 h of a 12.5 h fill, 80 mb): mu = 66.5 at the levelled peak, a mean of 64.3 over the
+  profile. The book mixes at mu = 60, the AVE_60_BX_25ns of the CMSSW companion (the production draws the
+  in-time mean from the flat profile Run3_Flat55To75_PoissonOOTPU), the default here.
 * The draw of the MixingModule: for every bunch crossing of the window (bx = -12 ... +3 in the Run-3
   production, 25 ns apart) a Poisson number of collisions with mean mu, the library read in order from a
   random position, wrapping at its end, so that no collision is used twice in an event (CMSSW's
   sequential = False, RootEmbeddedFileSequence::readOneRandom; --sequential reads from the first event
   on, as the exercise of the CMSSW companion does).
-* The beam spot of 2024 (CMSSW's BetafuncEvtVtxGenerator with the SimBeamSpot payload of the 2024
-  global tag, the VtxSmeared of the GEN step): every collision, the signal included, gets a position and
+* The beam spot of 2025 (CMSSW's BetafuncEvtVtxGenerator with the SimBeamSpot payload of the 2025
+  global tag, the VtxSmeared of the GEN step; the payload is a fit to early-2024 collisions, which the
+  2025 conditions keep unchanged): every collision, the signal included, gets a position and
   a time drawn from a Gaussian of sigma_z = 3.6 cm around z0 = 0.42 cm, a Gaussian in time of
   sigma_z / c = 120 ps, and a transverse Gaussian of 9 um that widens with the beta function away from
   the focus (beta* = 30 cm, the hourglass). The out-of-time collisions are shifted by 25 ns x bx
@@ -47,8 +50,9 @@ What is implemented (the physics of chapter 8)
 * The vertices the tracker will see: the collisions with at least four charged particles of pT > 0.5
   GeV within |eta| < 2.5, and how far from the signal vertex each one is in z and in t.
 * The pileup profile and its reweighting: the flat profile the Run-3 production mixes with
-  (mu_true uniform in 55 ... 75), the distribution of mu over a 2024-like year of levelled fills, and
-  the weight w(mu_true) = P_target(mu_true) / P_sample(mu_true) of the pileup reweighting.
+  (mu_true uniform in 55 ... 75), the 2025 profile of the release (Run3_2025_LHC_Simulation_fill12p5h_
+  levelling9h_nb2340_xSec80mb_il2p23_cfi, the distribution of mu over the fills of 2025), one levelled fill
+  of its header, and the weight w(mu_true) = P_target(mu_true) / P_sample(mu_true) of the pileup reweighting.
 
 What is left out, on purpose: the premixing bookkeeping (the physics is the same); the four-vector
 area subtraction (the scalar one is what chapter 17 uses); the detector's time windows (chapters 9 to
@@ -103,20 +107,50 @@ BUNCH_SPACING = 25.0              # ns
 SIGMA_INEL_MB = 78.42             # mb, PYTHIA 8.315 with CP5 (SigmaTotal:mode = 0: the tune fixes it, at 13.6 as at 14 TeV): what the library was made with
 MB_TO_CM2 = 1e-27
 SCENARIOS = {                     # instantaneous luminosity [cm^-2 s^-1], colliding bunch pairs, the window of bunch crossings, the rounded mu CMSSW mixes, the beam spot
-    "run3": dict(lumi=2.0e34, n_bunch=2350, bunches=(-12, 3), mu=60.0, region="run3", label="Run 3 (2024, levelled)",
-                 production="Run3_Flat55To75_PoissonOOTPU"),
+    "run3": dict(lumi=2.23e34, n_bunch=2340, bunches=(-12, 3), mu=60.0, region="run3", label="Run 3 (2025, levelled)",
+                 production="Run3_Flat55To75_PoissonOOTPU"),   # L and n_b: the header of the release's 2025 profile (PROFILE_2025)
     "nominal": dict(lumi=5.0e34, n_bunch=2748, bunches=(-3, 3), mu=140.0, region="hllhc", label="HL-LHC nominal, levelled", production="AVE_140_BX_25ns"),
     "ultimate": dict(lumi=7.5e34, n_bunch=2748, bunches=(-3, 3), mu=200.0, region="hllhc", label="HL-LHC ultimate, levelled (Phase-2 production)",
                      production="AVE_200_BX_25ns"),
 }
 FLAT_PROFILE = (55, 75)           # the Run-3 production: mu_true of the in-time crossing uniform in 55 ... 75 (mix_Run3_Flat55To75_PoissonOOTPU_cfi)
 
+# the pileup profile of 2025 in CMSSW_15_0_5: SimGeneral/MixingModule/python/Run3_2025_LHC_Simulation_fill12p5h_levelling9h_nb2340_xSec80mb_il2p23_cfi.py
+# (the "2025_LHC_Simulation_..." scenario of Configuration/StandardSequences/python/Mixing.py). Its header: "A distribution for Run3 studies
+# (2023) derived from LHC simulations. Colliding bunches: 2340, Hadronic x-sec: 80mb, Fill length: 750min, Levelling time: 540min,
+# Initial lumi: 2.23e38Hz/m2". probValue[n] is the probability of mu_true = n, n = 0 ... 99 (mean 64.34, r.m.s. 11.70, median 65).
+PROFILE_2025 = dict(
+    name="Run3_2025_LHC_Simulation_fill12p5h_levelling9h_nb2340_xSec80mb_il2p23", n_bunch=2340, xsec_mb=80.0, lumi=2.23e34,
+    fill_hours=12.5, levelled_hours=9.0,
+    prob=[0.0000010538773679583783, 0.0000014453031026961327, 0.000001970363090883917, 0.000002670281107593809,
+          0.000003597462798567677, 0.000004818033267765735, 0.000006414803175506918, 0.00000849069485055825, 0.000011172650635919335,
+          0.000014616032654130512, 0.000019009506082787833, 0.00002458037676190198, 0.00003160032867400924, 0.0000403914780629409,
+          0.0000513326296393648, 0.00006486558791741853, 0.00008150134525564022, 0.00010182594025209081, 0.00012650575898492516,
+          0.0001562920409839073, 0.00019202435605314403, 0.00023463284180945632, 0.0002851390399338541, 0.0003446552465146764,
+          0.0004143824030220098, 0.0004956067031895889, 0.0005896952798974523, 0.0006980915654970719, 0.0008223111862412097,
+          0.0009639395493586345, 0.0011246325961596164, 0.001306122503779093, 0.0015102303874063258, 0.0017388882349847804,
+          0.0019941723308908393, 0.0022783502088846506, 0.0025939426153526782, 0.002943800947840044, 0.0033311990480591035,
+          0.0037599359803347204, 0.004234443471816578, 0.0047598880701177565, 0.005342253951931872, 0.005988388019207414,
+          0.0067059849622914496, 0.0075034870576089615, 0.008389872464109042, 0.00937430762932423, 0.01046564500185625,
+          0.011671757233613201, 0.012998713670709948, 0.01444982377096003, 0.0160245939526876, 0.017717667226787342,
+          0.0195178359692353, 0.0214072340014225, 0.02336082128919122, 0.025346270004274998, 0.02732434240367562,
+          0.029249818558649544, 0.03107298698415659, 0.03274165737659939, 0.03420359754458777, 0.035409243087022646,
+          0.03631448568932437, 0.036883320614776005, 0.03709013079903057, 0.03692140594496318, 0.03637673898184205,
+          0.03546900479726313, 0.0342237001823724, 0.03267750066270309, 0.030876160122826117, 0.028871934631968292,
+          0.0267207465479145, 0.024479315695643617, 0.02220247134867907, 0.01994082511453152, 0.017738936250727092,
+          0.01563404440428138, 0.01365538752456454, 0.011824071217400022, 0.010153414981995273, 0.00864967347023981,
+          0.007313017889518202, 0.0061386628307422315, 0.0051180346517136965, 0.0042398957981439585, 0.0034913616164943813,
+          0.0028587691188455234, 0.002328378260551149, 0.001886903867739054, 0.0015218895230552547, 0.0012219433370943896,
+          0.0009768600068832721, 0.0007776546470029057, 0.0006165324821007001, 0.0004868155154920938, 0.000382843527372107,
+          0.0002998628250636046])
+
 # ---------------------------------------------------------------------------
-# the beam spot of 2024: VtxSmearedRealistic_cfi (BetafuncEvtVtxGenerator, readDB = True), the SimBeamSpotObjectsRcd payload
-# SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc of the global tag 150X_mcRun3_2024_realistic_v2
+# the beam spot of 2025: VtxSmearedRealistic_cfi (BetafuncEvtVtxGenerator, readDB = True), the SimBeamSpotObjectsRcd payload
+# SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc of the global tag 150X_mcRun3_2025_realistic_v1
+# (auto:phase1_2025_realistic): a fit to early-2024 collisions, the same tag as in the 2024 global tag 150X_mcRun3_2024_realistic_v2
 # ---------------------------------------------------------------------------
 C_CM_PER_NS = 29.9792458
-BEAMSPOT_2024 = dict(x0=0.0285, y0=-0.0166, z0=0.416, sigma_z=3.6, beta_star=30.0, emittance=5.725e-8, time_offset=0.0,
+BEAMSPOT_2025 = dict(x0=0.0285, y0=-0.0166, z0=0.416, sigma_z=3.6, beta_star=30.0, emittance=5.725e-8, time_offset=0.0,
                      tag="SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc")   # cm, cm, cm, cm, cm, cm, ns
 
 # ---------------------------------------------------------------------------
@@ -211,21 +245,21 @@ def parse_window(text) -> tuple:
 
 
 # ---------------------------------------------------------------------------
-# the beam spot of 2024 (BetafuncEvtVtxGenerator)
+# the beam spot of 2025 (BetafuncEvtVtxGenerator)
 # ---------------------------------------------------------------------------
 class BeamSpot:
-    """CMSSW's BetafuncEvtVtxGenerator with the 2024 payload: the luminous region as the database describes it.
+    """CMSSW's BetafuncEvtVtxGenerator with the 2025 payload: the luminous region as the database describes it.
 
     z is a Gaussian of width SigmaZ around Z0; t an independent Gaussian of the same width in mm/c (sigma_t = sigma_z / c);
     x and y are Gaussians around X0, Y0 of width sqrt(epsilon beta* (1 + ((z - z0)/beta*)^2)) / sqrt(2), the beam size at that z
     (the hourglass) divided by sqrt(2) for the overlap of two beams. Two Gaussian bunches of r.m.s. length sigma_s meeting head-on
-    give exactly this, with sigma_z = sigma_s / sqrt(2) and z and t independent; the payload is a fit to the 2024 data rather than a
+    give exactly this, with sigma_z = sigma_s / sqrt(2) and z and t independent; the payload is a fit to early-2024 data (kept for 2025) rather than a
     model of the bunches, whose length and crossing angle it absorbs (the HL-LHC model, LuminousRegion, builds the region from them).
     """
 
     name = "run3"
 
-    def __init__(self, p=BEAMSPOT_2024):
+    def __init__(self, p=BEAMSPOT_2025):
         self.p = dict(p)
         self.x0, self.y0, self.z0 = p["x0"], p["y0"], p["z0"]
         self.sigma_z = p["sigma_z"]
@@ -346,7 +380,7 @@ class LuminousRegion:
 
 
 def region_of(name: str):
-    """The vertex generator of a scenario: 'run3' (the 2024 beam spot) or 'hllhc' (the Phase-2 luminous region)."""
+    """The vertex generator of a scenario: 'run3' (the 2025 beam spot) or 'hllhc' (the Phase-2 luminous region)."""
     return BeamSpot() if name == "run3" else LuminousRegion()
 
 
@@ -374,6 +408,28 @@ def year_profile(mu_levels, hours: float, levelled_hours: float, tau_hours: floa
         mu, w = fill_profile(mu0, hours, levelled_hours, tau_hours)
         h += np.histogram(mu, bins=edges, weights=w)[0]
     return h / max(h.sum(), 1e-300)
+
+
+def release_profile(edges, prof=PROFILE_2025):
+    """The pileup profile of a CMSSW scenario (type probFunction): probValue[n] for mu_true = n, as a histogram on `edges`
+    (bin [n, n + 1) holds probValue[n], as the flat profile below)."""
+    c = 0.5 * (edges[1:] + edges[:-1])
+    p = np.asarray(prof["prob"], dtype=float)
+    idx = np.floor(c).astype(int)
+    h = np.where((idx >= 0) & (idx < len(p)), p[np.clip(idx, 0, len(p) - 1)], 0.0)
+    return h / max(h.sum(), 1e-300)
+
+
+def profile_stats(prof=PROFILE_2025) -> dict:
+    """Mean, r.m.s., median and the shares below, inside and above the flat band of the production, of a probFunction profile."""
+    p = np.asarray(prof["prob"], dtype=float)
+    p = p / p.sum()
+    n = np.arange(len(p))
+    mean = float((n * p).sum())
+    cum = np.cumsum(p)
+    return dict(mean=mean, rms=float(math.sqrt(((n - mean) ** 2 * p).sum())), median=int(n[np.searchsorted(cum, 0.5)]), peak=int(n[p.argmax()]),
+                q16=int(n[np.searchsorted(cum, 0.16)]), q84=int(n[np.searchsorted(cum, 0.84)]),
+                below=float(p[:FLAT_PROFILE[0]].sum()), inside=float(p[FLAT_PROFILE[0]:FLAT_PROFILE[1] + 1].sum()), above=float(p[FLAT_PROFILE[1] + 1:].sum()))
 
 
 def flat_profile(lo: int, hi: int, edges):
@@ -643,7 +699,7 @@ class Stage:
         self.log(1, f"  n_b = {self.n_bunch} colliding bunches, f_rev = {F_REV:.1f} Hz: {sc['lumi'] * SIGMA_INEL_MB * MB_TO_CM2:.3e} collisions/s over "
                     f"{self.n_bunch * F_REV:.3e} crossings/s")
         self.log(1, f"  mu = L sigma / (n_b f_rev) = {self.mu_formula:.1f} ({mu_of(sc['lumi'], self.n_bunch, 80.0):.1f} with the 80 mb of the bookkeeping); "
-                    f"the mixing scenario rounds it to mu = {self.mu:g} (CMSSW AVE_{self.mu:g}_BX_{BUNCH_SPACING:g}ns), window bx = {self.bxs[0]:+d} ... {self.bxs[-1]:+d}, "
+                    f"mixed at mu = {self.mu:g} (CMSSW AVE_{self.mu:g}_BX_{BUNCH_SPACING:g}ns, as the companion), window bx = {self.bxs[0]:+d} ... {self.bxs[-1]:+d}, "
                     f"{len(self.bxs) * self.mu:g} collisions expected per signal event")
         if sc.get("production", "").startswith("Run3_Flat"):
             self.log(1, f"  the Run-3 production mixes {sc['production']}: mu_true of the in-time crossing drawn flat in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]} "
@@ -700,13 +756,13 @@ class Stage:
         r = self.region
         self.log(1, banner("3  the beam spot: where and when each collision happens"))
         if r.name == "run3":
-            self.log(1, f"  BetafuncEvtVtxGenerator with the 2024 payload ({r.p['tag']}):")
+            self.log(1, f"  BetafuncEvtVtxGenerator with the payload of the 2025 global tag ({r.p['tag']}, fitted to early-2024 data):")
             self.log(1, f"  centre ({r.x0:.4f}, {r.y0:.4f}, {r.z0:.3f}) cm, sigma_z = {r.sigma_z:.1f} cm, beta* = {r.beta:.0f} cm, emittance {r.emittance:.3e} cm: "
                         f"sigma_xy = {r.sigma_x0 * 1e4:.1f} um at the focus, x sqrt(1 + ((z - z0)/beta*)^2) away from it (the hourglass)")
             m = dict(model=r.moments())
             self.region_moments = m
             self.log(1, f"  sigma_z, sigma_t of the model: {m['model'][0]:.2f} cm, {m['model'][1] * 1e3:.0f} ps (sigma_t = sigma_z / c, z and t independent: what two head-on "
-                        f"Gaussian bunches of {r.sigma_s:.1f} cm would give; the payload is a fit to the 2024 data, the crossing angle folded in)")
+                        f"Gaussian bunches of {r.sigma_s:.1f} cm would give; the payload is a fit to the data, the crossing angle folded in)")
         else:
             self.log(1, f"  HLLHCEvtVtxGenerator: two bunches of sigma_s = {r.sigma_s:.1f} cm, crossing at {r.alpha * 1e6:.0f} urad, crabbed by {r.alpha_c * 1e6:.0f} urad "
                         f"({r.p['crab_frequency_mhz']:.0f} MHz), beta* = {r.beta:.0f} cm, sigma_x0 = {r.sigma_x0 * 1e4:.1f} um, sigma_y0 = {r.sigma_y0 * 1e4:.1f} um")
@@ -887,18 +943,22 @@ class Stage:
     # -- 9 the profile and the reweighting ---------------------------------------------------------------------
     def profile(self):
         edges = np.arange(0, 301, 1.0)
-        # one 2024-like fill: levelled at mu = 60 for 8 h (the beams separated to hold the luminosity), then decaying with tau = 10 h to 12 h
-        mu_fill, w_fill = fill_profile(SCENARIOS["run3"]["mu"], 12.0, 8.0, 10.0)
-        # a 2024-like year: fills levelled between 57 and 67, the width of the profile coming from the fill-to-fill spread (a model, not the measurement)
-        year = year_profile(np.arange(57, 68), 12.0, 8.0, 10.0, edges)
+        prof = PROFILE_2025
+        # one fill of the 2025 profile's header: levelled at 2.23e34 (mu = 67.8 with its 80 mb) for 9 h, then decaying with tau = 10 h
+        # (a model of the burn-off), 12.5 h in all; the beams are separated at the start to hold the luminosity
+        self.mu_fill0 = mu_of(prof["lumi"], prof["n_bunch"], prof["xsec_mb"])
+        mu_fill, w_fill = fill_profile(self.mu_fill0, prof["fill_hours"], prof["levelled_hours"], 10.0)
+        # the year: the release's 2025 profile, the distribution of mu_true over the fills of 2025 "derived from LHC simulations"
+        year = release_profile(edges, prof)
+        ys = profile_stats(prof)
         flat = flat_profile(*FLAT_PROFILE, edges)
         mu_hl, w_hl = fill_profile(SCENARIOS["ultimate"]["mu"], 12.0, 8.0, 5.0)
         hl = profile_histogram(mu_hl, w_hl, edges)
         sample = np.zeros(len(edges) - 1)
         sample[int(np.clip(np.searchsorted(edges, self.mu, side="right") - 1, 0, len(sample) - 1))] = 1.0
         self.profiles = dict(edges=edges, fill=profile_histogram(mu_fill, w_fill, edges), year=year, flat=flat, hllhc=hl, sample=sample)
-        c = 0.5 * (edges[1:] + edges[:-1])
-        self.mu_fill_mean, self.mu_year_mean, self.mu_hl_mean = float((mu_fill * w_fill).sum()), float((c * year).sum()), float((mu_hl * w_hl).sum())
+        self.mu_fill_mean, self.mu_year_mean, self.mu_hl_mean = float((mu_fill * w_fill).sum()), ys["mean"], float((mu_hl * w_hl).sum())
+        self.year_stats = ys
         self.w_fixed = reweight(self.mu, year, sample, edges)
         self.w_flat = reweight(self.mu, year, flat, edges)
         self.w_flat_range = [reweight(m, year, flat, edges) for m in range(FLAT_PROFILE[0], FLAT_PROFILE[1] + 1)]
@@ -910,17 +970,20 @@ class Stage:
                         f"luminosity-weighted mean {self.mu_hl_mean:.0f}, {100 * w_hl[mu_hl > 0.99 * mu_hl.max()].sum():.0f}% of the collisions at the levelled value")
             self.log(1, f"  a sample mixed at a fixed mu = {self.mu:g} reweighted to that profile: w = P_target({self.mu:g}) / P_sample({self.mu:g}) = {w:.2f}, and no event at all for the tail; "
                         f"a production mixed with the profile itself (type probFunction) needs no reweighting")
-            self.log(1, f"  for comparison the Run-3 production's flat profile (mu_true uniform in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]}) reweighted to a 2024-like year (mean {self.mu_year_mean:.0f}): "
+            self.log(1, f"  for comparison the Run-3 production's flat profile (mu_true uniform in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]}) reweighted to the 2025 profile (mean {self.mu_year_mean:.1f}): "
                         f"w from {min(self.w_flat_range):.2f} to {max(self.w_flat_range):.2f}")
             return
-        self.log(1, f"  a 2024-like fill (levelled at mu = {SCENARIOS['run3']['mu']:g} for 8 h, then decaying with tau = 10 h, 12 h in all): mu from {mu_fill.min():.0f} to {mu_fill.max():.0f}, "
+        self.log(1, f"  one fill of the 2025 profile's header (L = {prof['lumi']:.2e} for {prof['levelled_hours']:g} h, mu = {self.mu_fill0:.1f} with its {prof['xsec_mb']:g} mb and "
+                    f"{prof['n_bunch']} bunches, then decaying with tau = 10 h, {prof['fill_hours']:g} h in all): mu from {mu_fill.min():.0f} to {mu_fill.max():.0f}, "
                     f"luminosity-weighted mean {self.mu_fill_mean:.0f}, {100 * w_fill[mu_fill > 0.99 * mu_fill.max()].sum():.0f}% of the collisions at the levelled value")
-        self.log(1, f"  a 2024-like year of such fills levelled between 57 and 67: mean {self.mu_year_mean:.0f}, 68% of the collisions between "
-                    f"{c[np.searchsorted(np.cumsum(year), 0.16)]:.0f} and {c[np.searchsorted(np.cumsum(year), 0.84)]:.0f} (a model; the measured profile is what an analysis reweights to)")
-        self.log(1, f"  the production's flat profile (probFunction, mu_true uniform in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]}): the weight w = P_2024(mu_true) / P_flat(mu_true) "
-                    f"runs from {min(self.w_flat_range):.2f} to {max(self.w_flat_range):.2f} over the flat range, {self.w_flat:.2f} at mu_true = {self.mu:g}")
-        self.log(1, f"  a sample mixed at a fixed mu = {self.mu:g} reweighted to the same profile: w = {self.w_fixed:.2f} for every event, and no event at all for the rest of the profile; "
-                    f"the flat profile costs events at the edges and covers the whole year")
+        self.log(1, f"  the 2025 profile of the release ({prof['name']}_cfi, \"derived from LHC simulations\"): mean {ys['mean']:.1f}, r.m.s. {ys['rms']:.1f}, "
+                    f"median {ys['median']}, 68% of the collisions between {ys['q16']} and {ys['q84']}; {100 * ys['below']:.0f}% below {FLAT_PROFILE[0]}, "
+                    f"{100 * ys['inside']:.0f}% in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]}, {100 * ys['above']:.0f}% above {FLAT_PROFILE[1]} (an analysis reweights to the measured profile of its data)")
+        self.log(1, f"  the production's flat profile (probFunction, mu_true uniform in {FLAT_PROFILE[0]} ... {FLAT_PROFILE[1]}): the weight w = P_2025(mu_true) / P_flat(mu_true) "
+                    f"runs from {min(self.w_flat_range):.2f} to {max(self.w_flat_range):.2f} over the flat range, {self.w_flat:.2f} at mu_true = {self.mu:g}; the "
+                    f"{100 * (ys['below'] + ys['above']):.0f}% of the 2025 collisions outside the band have no simulated event to carry them")
+        self.log(1, f"  a sample mixed at a fixed mu = {self.mu:g} reweighted to the same profile: one bin (w = {self.w_fixed:.3f} for every event) and no event at all for the rest "
+                    f"of the profile: it cannot be reweighted")
         self.log(1, f"  for comparison a levelled HL-LHC fill (mu = {SCENARIOS['ultimate']['mu']:g} for 8 h, then tau = 5 h, 12 h): mean {self.mu_hl_mean:.0f}, "
                     f"{100 * w_hl[mu_hl > 0.99 * mu_hl.max()].sum():.0f}% of the collisions at the levelled value")
 
@@ -936,7 +999,8 @@ def stage_summary(st: Stage) -> dict:
              signal_vertex=[float(v) for v in st.signal_vertex], vertex_rms=st.vertex_rms, region_model=st.region.name, region=st.region_moments,
              n_visible=st.n_visible, nearest=st.nearest, kinds={}, library=len(st.lib),
              profile=dict(mu_fill_mean=st.mu_fill_mean, mu_year_mean=st.mu_year_mean, mu_hllhc_mean=st.mu_hl_mean, w_fixed=st.w_fixed, w_flat=st.w_flat,
-                          w_flat_range=[min(st.w_flat_range), max(st.w_flat_range)]))
+                          w_flat_range=[min(st.w_flat_range), max(st.w_flat_range)], year=PROFILE_2025["name"], year_stats=st.year_stats,
+                          mu_fill_levelled=st.mu_fill0))
     for c in st.collisions:
         s["kinds"][c["ev"]["kind"]] = s["kinds"].get(c["ev"]["kind"], 0) + 1
     if st.mixed is not None:
@@ -963,7 +1027,7 @@ def pileup_tables(st: Stage) -> str:
     a = st.args
     out = []
     t0 = (f"Standalone Pileup Summary  (mu = {st.mu:g}, window bx = {st.bxs[0]:+d}..{st.bxs[-1]:+d}, {BUNCH_SPACING:g} ns; library {st.lib.path.name} "
-          f"({len(st.lib)} events, {'sequential' if a.sequential else 'random'}); beam spot {'2024' if st.region.name == 'run3' else 'HL-LHC'}; seed {a.seed})")
+          f"({len(st.lib)} events, {'sequential' if a.sequential else 'random'}); beam spot {'2025' if st.region.name == 'run3' else 'HL-LHC'}; seed {a.seed})")
     out += ["", f" --------  {t0}  " + "-" * max(10, 133 - len(t0) - 14), " "]
     out.append(f"  mu from L sigma/(n_b f_rev): {st.mu_formula:.2f}; mixed at mu = {st.mu:g}")
     out.append("  collisions per bunch crossing: " + ", ".join(f"bx {bx:+d}: {n}" for bx, n in st.n_bx.items()) + f"; {len(st.collisions)} in all, {len(st.in_time)} in time")
@@ -1102,10 +1166,10 @@ def main():
     ap.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "GenJet" / "event_GenJet.lhe")
     ap.add_argument("-l", "--library", type=Path, default=HERE.parent / "pileup_library.lhe.gz")
     ap.add_argument("-o", "--output", type=Path, default=HERE.parent / "event_PU.lhe")
-    ap.add_argument("--scenario", choices=sorted(SCENARIOS), default="run3", help="run3 (2024: mu = 60, bx = -12 ... +3, the 2024 beam spot), nominal or ultimate (HL-LHC)")
+    ap.add_argument("--scenario", choices=sorted(SCENARIOS), default="run3", help="run3 (2025: mu = 60, bx = -12 ... +3, the 2025 beam spot), nominal or ultimate (HL-LHC)")
     ap.add_argument("--mu", type=float, default=None, help="the mean number of collisions per crossing (default: the scenario's)")
     ap.add_argument("--window", default=None, help="the bunch crossings around the signal's: N for bx = -N ... +N, or MIN,MAX (default: the scenario's, -12,3 for Run 3)")
-    ap.add_argument("--region", choices=("run3", "hllhc"), default=None, help="the vertex generator: the 2024 beam spot or the HL-LHC luminous region (default: the scenario's)")
+    ap.add_argument("--region", choices=("run3", "hllhc"), default=None, help="the vertex generator: the 2025 beam spot or the HL-LHC luminous region (default: the scenario's)")
     ap.add_argument("--sequential", action="store_true", help="read the library from its first event on (CMSSW sequential = True)")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--radius", type=float, default=R_JET)

@@ -15,7 +15,7 @@ record  The mixed final state of the book's record (../event_PU.lhe: the signal 
 
 library The cross sections and the multiplicities of the minimum-bias collisions: PYTHIA's own numbers at
         initialisation (sigma for ND, SD, DD, CD at 13.6 TeV) against the shares of the library, and the
-        per-collision particle and charged multiplicities, with and without the |eta| cuts, against the 2024
+        per-collision particle and charged multiplicities, with and without the |eta| cuts, against the 2025
         CMSSW library of the companion (250 events at 13.6 TeV, CMSSW_15_0_5, PYTHIA 8.311).
 
 Needs the environment of example/ME/Standalone (fastjet, pythia8mc):
@@ -150,7 +150,7 @@ def mode_library(args, pythia8):
     kinds = {}
     for e in lib.events:
         kinds[e["kind"]] = kinds.get(e["kind"], 0) + 1
-    sig = dict(ND=55.42, SD=2 * 6.43, DD=8.85, CD=1.29)           # PYTHIA 8.315 with CP5 at 13.6 TeV (pileup_library.log); the 2024 CMSSW library prints the same
+    sig = dict(ND=55.42, SD=2 * 6.43, DD=8.85, CD=1.29)           # PYTHIA 8.315 with CP5 at 13.6 TeV (pileup_library.log); the 2025 CMSSW library prints the same
     tot = sum(sig.values())
     print(f"the library: {len(lib)} events; shares against PYTHIA's cross sections at 13.6 TeV (sigma_inel = {tot:.2f} mb):")
     print("CMSSW library (250 events, companion): ND 183 = 73.2%, SD 45 = 18.0%, DD 19 = 7.6%, CD 3 = 1.2%")

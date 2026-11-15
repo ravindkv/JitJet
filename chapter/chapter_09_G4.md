@@ -9,16 +9,17 @@ the physics; this page says how to run the scripts, how to read what they write,
 each number of the official packages was obtained, and lists every table the chapter
 quotes with the command that produced it. All files are in
 [`example/G4/`](../example/G4/) of this repository unless stated otherwise; the
-CMSSW side (the GEN-SIM step of the signal event in the 2024 detector (`g4SimHits`)) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is
+CMSSW side (the GEN-SIM step of the signal event in the 2025 detector (`g4SimHits`)) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is
 written up there, see section 4.3.
 
-The conditions are those of Run 3 in 2024, as in chapter 8: 13.6 TeV, mu = 60, the
-2024 beam spot and the 2024 CMS detector (`CMSSW_15_0_5`). The HL-LHC appears only in
+The conditions are those of Run 3 in 2025, as in chapter 8: 13.6 TeV, mu = 60, the
+2025 beam spot and the CMS detector of 2025 (`CMSSW_15_0_5`, `auto:phase1_2025_realistic`,
+era `Run3_2025`; the geometry is the `Extended2024` one, which the 2025 global tag reads unchanged). The HL-LHC appears only in
 the exercises and the open problems.
 
 | | |
 |---|---|
-| Stage | the family of chapter 7, alone, transported by Geant4 through the 2024 CMS detector and its 3.8 T field down to SimHits |
+| Stage | the family of chapter 7, alone, transported by Geant4 through the 2025 CMS detector and its 3.8 T field down to SimHits |
 | Standalone script | `example/G4/Standalone/standalone_G4.py` (TODO: to be written) |
 | Input | [`example/GenJet/event_GenJet.lhe`](../example/GenJet/event_GenJet.lhe), the final state of chapter 7 (the crowd joins in chapter 10) |
 | Event record | `example/G4/event_G4.*` (TODO) |
@@ -84,7 +85,7 @@ TODO.
 
 The CMSSW side of this stop is one job of
 [JitJetSW](https://github.com/ravindkv/JitJetSW), `test/09_G4/run_09_G4.sh`
-(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the GEN-SIM step of the signal event in the 2024 detector (`g4SimHits`).
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): the GEN-SIM step of the signal event in the 2025 detector (`g4SimHits`).
 Its commands, configurations, logs and tables are documented there, and this page does
 not repeat them:
 

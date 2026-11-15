@@ -1,0 +1,62 @@
+%% smpost/thumbnail/chapter_08_crowd_on_the_road.tex : thumbnail of video 8/30,
+%% "Chapter-8 | The Crowd on the Road: Pileup". Motif: one bunch crossing of
+%% 2025 seen from the side: the luminous region on the beam line with the
+%% vertices of the crowd strung along it, ours the gold star; the b jet leaves
+%% our vertex as a cone, its family in red, and strangers from the neighbouring
+%% vertices (light grey) walk into it; the crowd's other tracks are faint.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_08_crowd_on_the_road)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{8}{Chapter 8}{8 / 30}{The Crowd\\on the Road}{Pileup: sixty collisions in every bunch crossing, and the strangers that walk into our jet}
+
+\begin{scope}[shift={(\mx,\my)}]
+\def\by{-1.75}    % the beam line
+\def\vx{0.35}     % our vertex
+%% everything the crowd draws stays in the motif box
+\begin{scope}
+\clip (-4.05,-3.3) rectangle (3.7,3.75);
+%% the luminous region on the beam line
+\shade[inner color=gold, outer color=navy, opacity=0.55] (0,\by) ellipse [x radius=3.6, y radius=0.5];
+\draw[steel, line width=1.4pt] (-4.6,\by) -- (4.3,\by);
+%% the crowd: vertices along the beam, each with a few faint tracks
+\pgfmathsetseed{60}
+\foreach \i in {1,...,46}{
+  \pgfmathsetmacro{\zz}{1.35*(rnd+rnd+rnd-1.5)*2}
+  \pgfmathsetmacro{\yy}{\by+0.16*(rnd-0.5)}
+  \foreach \k in {1,2,3}{
+    \pgfmathsetmacro{\aa}{15+150*rnd}
+    \pgfmathsetmacro{\ll}{0.7+1.9*rnd}
+    \draw[pu, opacity=0.45, line width=0.8pt, line cap=round] (\zz,\yy) -- ++(\aa:\ll);}
+  \node[pudot, minimum size=4.5pt, opacity=0.95] at (\zz,\yy) {};}
+\end{scope}
+%% our b jet: a cone from our vertex, its cap a circle seen at an angle
+\coordinate (V) at (\vx,\by);
+\coordinate (C) at ($(V)+(64:3.85)$);
+\fill[gold, opacity=0.16] (V) -- ($(V)+(48:4.0)$) -- ($(V)+(80:4.0)$) -- cycle;
+\draw[gold, line width=1.6pt, opacity=0.9] (V) -- ($(V)+(48:4.0)$) (V) -- ($(V)+(80:4.0)$);
+\draw[gold, line width=2.2pt, rotate around={-26:(C)}] (C) ellipse [x radius=1.1, y radius=0.3];
+%% strangers from the neighbouring vertices walking into the cone
+\foreach \sx/\a/\d in {-0.75/60/2.7, 1.35/70/2.3, 1.95/57/3.3, -0.2/74/3.4, 2.55/63/3.6}{
+  \draw[trackcol, line width=1.1pt, line cap=round, opacity=0.75] (\sx,\by) -- ($(V)+(\a:\d)$);
+  \node[circle, fill=trackcol, inner sep=0pt, minimum size=4.5pt] at ($(V)+(\a:\d)$) {};
+  \node[pudot, fill=trackcol, minimum size=5pt] at (\sx,\by) {};}
+%% the family: the mother's tracks inside the cone, and the bbar jet the other way
+\foreach \a/\l in {54/3.7, 58/3.3, 62/3.9, 65/3.5, 69/3.8, 73/3.4}
+  \draw[bred, line width=2pt, line cap=round] (V) -- ++(\a:\l);
+\foreach \a/\l in {118/2.6, 123/2.9, 128/2.4}
+  \draw[bblue, line width=2pt, line cap=round] (V) -- ++(\a:\l);
+%% our collision
+\node[star, star points=5, star point ratio=2.3, fill=gold, draw=navy, line width=0.6pt, inner sep=0pt, minimum size=17pt] at (V) {};
+\end{scope}
+%% the numbers to take away
+\node[bred, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,9.05)
+  {our jet: 99.8 $\to$ 133.5 GeV};
+\node[gold, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,8.45)
+  {$-\,\rho A$: 93.6 GeV};
+\node[gold!85!white, font=\sffamily\small\itshape, anchor=north] at (\mx-0.2,\my-2.45)
+  {63 collisions in one crossing, one of them ours};
+\end{tikzpicture}
+\end{document}

@@ -1,7 +1,7 @@
 % ---------------------------------------------------------------------------
 % How many: mu = L sigma_inel / (n_b f_rev). (a) the ring: 3564 slots of 25 ns,
-% 2350 of them colliding at CMS in 2024; (b) the arithmetic of the 2024
-% scenario against the HL-LHC ones; (c) the Poisson draw and the flat profile
+% 2340 of them colliding at CMS in 2025; (b) the arithmetic of the 2025
+% scenario (the header of the CMSSW 2025 profile) against the HL-LHC ones; (c) the Poisson draw and the flat profile
 % of the Run-3 production.
 % ---------------------------------------------------------------------------
 \begin{tikzpicture}[x=1cm,y=1cm,
@@ -25,23 +25,23 @@
 \node[lab,anchor=west] at (2.3,0) {CMS};
 \node[lab,text=blue!70!black] at (0,0.5) {26\,659 m, $f_{\rm rev}=11\,245$ Hz};
 \node[lab] at (0,0.0) {3564 slots of 25 ns,};
-\node[lab] at (0,-0.4) {2350 pairs collide at CMS\\ (the gaps are for the kickers)};
-\node[lab,anchor=north,text width=4.6cm] at (0,-2.3) {bunch crossings per second at CMS in 2024: $n_b f_{\rm rev}=2350\times11\,245=2.64\times10^{7}$, not the 40 MHz of the spacing};
+\node[lab] at (0,-0.4) {2340 pairs collide at CMS\\ (the gaps are for the kickers)};
+\node[lab,anchor=north,text width=4.6cm] at (0,-2.3) {bunch crossings per second at CMS in 2025: $n_b f_{\rm rev}=2340\times11\,245=2.63\times10^{7}$, not the 40 MHz of the spacing};
 \end{scope}
 % ---------------- (b) the arithmetic ----------------------------------------------------------------
 \begin{scope}[xshift=6.6cm]
 \node[head,anchor=west] at (-0.4,3.0) {(b) collisions per second over crossings per second};
-\node[anchor=north west,text width=7.4cm,align=left,font=\footnotesize] at (-0.4,2.5) {%
+\node[anchor=north west,text width=9.2cm,align=left,font=\footnotesize] at (-0.4,2.5) {%
   $\displaystyle \mu=\frac{L\,\sigma_{\rm inel}}{n_b\,f_{\rm rev}}
-   =\frac{2.0\times10^{34}\,{\rm cm^{-2}s^{-1}}\times 78.4\times10^{-27}\,{\rm cm^2}}{2350\times 11\,245\,{\rm s^{-1}}}
-   =\frac{1.6\times10^{9}\ {\rm collisions/s}}{2.6\times10^{7}\ {\rm crossings/s}}=59$\\[6pt]
+   =\frac{2.23\times10^{34}\,{\rm cm^{-2}s^{-1}}\times 78.4\times10^{-27}\,{\rm cm^2}}{2340\times 11\,245\,{\rm s^{-1}}}$\\[3pt]
+  \hspace*{9mm}$\displaystyle =\frac{1.75\times10^{9}\ {\rm collisions/s}}{2.63\times10^{7}\ {\rm crossings/s}}=66.5$\\[6pt]
   {\scriptsize\begin{tabular}{@{}lcccc@{}}
    scenario & $L$ [cm$^{-2}$s$^{-1}$] & $n_b$ & $\mu$ (formula) & mixed at \\ \hline
-   Run 3, 2024, levelled & $2\times10^{34}$ & 2350 & 59 & \textbf{60} \\
+   Run 3, 2025, levelled & $2.23\times10^{34}$ & 2340 & 66 & \textbf{60} \\
    HL-LHC nominal & $5\times10^{34}$ & 2748 & 127 & 140 \\
    HL-LHC ultimate & $7.5\times10^{34}$ & 2748 & 190 & 200 \\
   \end{tabular}}\\[4pt]
-  The 2024 simulation mixes at \code{AVE\_60\_BX\_25ns}; the production draws $\mu_{\rm true}$ flat in $55\ldots75$ and reweights to the measured profile. $\sigma_{\rm inel}$ is \PYTHIA's with CP5 ($\sigma_{\rm tot}=100.3$, $\sigma_{\rm el}=21.9$ mb); the 80 mb of the bookkeeping gives 60.5.};
+  $L$ and $n_b$ of 2025 are the header of the \CMSSW 2025 profile (levelled for 9 of 12.5 hours; mean 64 over the year). The book mixes at \code{AVE\_60\_BX\_25ns}, as its \CMSSW companion; the production draws $\mu_{\rm true}$ flat in $55\ldots75$ and reweights to the measured profile. $\sigma_{\rm inel}$ is \PYTHIA's with CP5 ($\sigma_{\rm tot}=100.3$, $\sigma_{\rm el}=21.9$ mb); the 80 mb of the bookkeeping gives 67.8.};
 \end{scope}
 % ---------------- (c) the Poisson draw --------------------------------------------------------------
 \begin{scope}[xshift=16.6cm]
@@ -52,10 +52,10 @@
 \foreach \x/\t in {1.1/40,2.7/60,4.3/80} {\draw (\x,-0.05) -- (\x,0.05); \node[lab,anchor=north] at (\x,-0.08) {\t};}
 % the production's flat profile of mu_true, 55 ... 75
 \fill[black!12] (2.3,0) rectangle (3.9,0.55);
-\node[lab,text=black!60,anchor=west] at (4.0,0.3) {the production:\\ $\mu_{\rm true}$ flat in $55\ldots75$};
+\node[lab,text=black!60,anchor=west] at (4.0,0.85) {the production:\\ $\mu_{\rm true}$ flat in $55\ldots75$};
 % Poisson(60) ~ Gaussian of width 7.7: 0.62 cm, height 2.0 at n = 60
 \draw[green!50!black,thick] plot[domain=0.3:5.1,samples=70] (\x,{2.0*exp(-(\x-2.7)*(\x-2.7)/(2*0.62*0.62))});
-\node[lab,text=green!50!black,anchor=west] at (3.4,2.1) {$\mu=60$: $60\pm8$ (2024)};
+\node[lab,text=green!50!black,anchor=west] at (3.4,2.1) {$\mu=60$: $60\pm8$ (2025)};
 \node[lab,anchor=north west,text width=6.2cm,align=left] at (-0.4,-0.75) {For every crossing of the window $bx=-12\ldots+3$ the mixing draws its own $n$: sixteen numbers around 60, 960 collisions per signal event. The \code{PileupSummaryInfo} keeps them with the mean (\code{getTrueNumInteractions}), which the reweighting reads.};
 \end{scope}
 \end{tikzpicture}

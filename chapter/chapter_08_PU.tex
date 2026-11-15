@@ -4,8 +4,8 @@
 % the technical companion of the chapter is chapter/chapter_08_PU.md: how to
 % run the scripts, how to read the records and logs, how the official numbers
 % were obtained, and the full tables. The book gives the physics.
-% The crowd is the crowd of Run 3 (2024): sixty collisions per crossing at
-% 13.6 TeV, the 2024 beam spot, the production window bx = -12 ... +3.
+% The crowd is the crowd of Run 3 (2025): sixty collisions per crossing at
+% 13.6 TeV, the 2025 beam spot, the production window bx = -12 ... +3.
 % ---------------------------------------------------------------------------
 %% chapter-local shorthands
 \providecommand{\akfour}{\code{ak4GenJets}\xspace}
@@ -30,7 +30,7 @@
 Our family is not alone. At every bunch crossing some sixty other families
 set out at the same moment, and the road is so crowded that some of their
 members walk in step with ours and are impossible to tell apart. The road
-is the road of Run~3 in its last full year, 2024: the crowd of this
+is the road of Run~3 in its last full year, 2025: the crowd of this
 chapter is the one CMS recorded, and the one its simulation was built to
 reproduce, and the family will meet it again at every stop ahead.
 \end{journeybox}
@@ -39,7 +39,7 @@ reproduce, and the family will meet it again at every stop ahead.
 $\mup=L\sigmainel/(n_b f_{\mathrm{rev}})$, and its Poisson fluctuation; the
 minimum-bias collision and its four kinds; in-time and out-of-time pileup,
 the 25\ns clock and the sixteen crossings of the production window; the
-beam spot of 2024, where and when the collisions happen; how \CMSSW mixes
+beam spot of 2025, where and when the collisions happen; how \CMSSW mixes
 a library of soft collisions into a signal event, why the production
 premixes, and how a flat pileup profile is reweighted; the median energy
 density \rhoPU, the jet area $A$ and the subtraction $\pt-\rhoPU A$. The
@@ -56,7 +56,7 @@ of \akfour, $99.83\GeV$ in $31$ particles around $\eta=-1.44$, $\phi=-2.71$,
 the reference every later jet will be judged against. The family was alone
 in the picture. It never is in the detector. The LHC does not collide one
 proton with one proton; it collides bunches of $10^{11}$ protons every
-$25\ns$, and at the luminosity the LHC delivered in 2024, about sixty pairs
+$25\ns$, and at the luminosity the LHC delivered in 2025, some sixty pairs
 of protons collided inelastically in each crossing. One of those collisions
 is ours, the $q\bar q\to b\bar b$ of \cref{ch:ancestral_home}. The other
 sixty happened because they could, soft and uneven, and their particles
@@ -71,17 +71,21 @@ right vertex, is the business of
 pays for what cannot be removed is \cref{ch:paying_for_uninvited}. Here we
 only let the crowd arrive and measure what it does.
 
-The crowd is the crowd of 2024, and the choice deserves a sentence. The
+The crowd is the crowd of 2025, and the choice deserves a sentence. The
 family of \crefrange{ch:ancestral_home}{ch:family_photograph} was born at
 $\sqrt{s}=13.6\TeV$, the energy of Run~3, and Run~3 is over: its
 luminosity, its filling scheme, its beam spot and its detector are
 frozen, measured, and written into the conditions of \CMSSW, so that a
-book pinned to them stays right. The High-Luminosity LHC, with its two
+book pinned to them stays right; 2025 is its last full year, and the
+release of this book simulates it with conditions of its own. (The family
+itself was generated in the companion with the conditions of 2024; at the
+generator level the two years are the same, collision by collision, as
+\cref{sec:crowd_on_the_road:cmssw_event} shows.) The High-Luminosity LHC, with its two
 hundred collisions per crossing and the detector CMS is building for
 them, is still being designed, and a book pinned to it would be out of
 date before the first beam. So the crowd of every stop from here on is
 the Run-3 crowd, the detector of \cref{ch:crossing_the_border} is the
-2024 CMS detector, and what the HL-LHC will change is said at the end of
+CMS detector of 2025, and what the HL-LHC will change is said at the end of
 each chapter, in its open problems, where the scripts of this stop keep
 the HL-LHC road one option away.\footnote{\file{standalone_pileup.py
 --scenario ultimate} mixes the same family at $\mup=200$ with the Phase-2
@@ -115,7 +119,7 @@ areas and the subtracted jets; the theory derives \mup from the
 luminosity, the collision from the cross section, the beam spot from two
 bunches and \rhoPU from the median; and the official packages, \PYTHIA for
 the library and its cross sections, \FASTJET for the areas and the two
-estimators of \rhoPU on exactly our mixed particles, and the 2024 \CMSSW
+estimators of \rhoPU on exactly our mixed particles, and the 2025 \CMSSW
 mixing of the companion, get the last word.
 
 \paragraph{The film.}
@@ -133,8 +137,10 @@ spot appears as the overlap of two bunches, the vertices of our crossing
 spread along it with the signal among them, and the fifteen neighbouring
 crossings of the production window arrive $25\ns$ apart; the four kinds
 of minimum-bias collision are drawn one after the other, each with its
-row in the table of cross sections and multiplicities, and the
-multiplicity of all two thousand builds up; the grid cells fill
+row in the table of cross sections and multiplicities and its panel of
+the sketch of \cref{fig:crowd_on_the_road:minbias_sketch}, the four
+panels side by side under the full table, and the multiplicity of all
+two thousand builds up; the grid cells fill
 with transverse momentum and their median settles at \rhoPU; the family's
 circle fills with strangers, the counter climbs from $99.8$ to
 $133.5\GeV$, and $\rhoPU A$ is taken out; and the crowd is drawn four
@@ -199,7 +205,7 @@ Soyez~\cite{Soyez:2018opl}.
 \resizebox{\textwidth}{!}{\input{chapter/tikz/pu_crowd}}
 \caption[The crowd on the road: one bunch crossing, and the circle of our
 jet with the strangers inside]{The crowd on the road. Left: one bunch
-crossing of 2024, two bunches passing through each other and the sixty
+crossing of 2025, two bunches passing through each other and the sixty
 collisions of the crossing spread along their overlap, ours among them.
 Right: the circle of our jet, the family in red and the crowd in khaki,
 with the numbers of the four hundred draws of the crowd on the same
@@ -214,13 +220,13 @@ left.}
 \Cref{tab:crowd_on_the_road:numbers} gives away the ending, and its columns
 are of two kinds. The crowd itself is made by \PYTHIA: a library of two
 thousand minimum-bias collisions at $13.6\TeV$, generated once with the
-minimum-bias fragment the companion's 2024 library uses, \code{SoftQCD:inelastic} with the CP5
+minimum-bias fragment the companion's 2025 library uses, \code{SoftQCD:inelastic} with the CP5
 tune, and stored as a record, so that the standalone script needs NumPy
 and nothing else to read it. That is the way of \CMSSW too, whose \Mix
 reads a library of simulated collisions made once and stacked many
 times, and the first rows of the table check the library against the
 cross sections \PYTHIA printed and against the $250$-event library of the
-2024 \CMSSW exercise of the companion. Everything after the library is a
+2025 \CMSSW exercise of the companion. Everything after the library is a
 port: the Poisson draw of the \Mix, the beam spot of the
 \code{BetafuncEvtVtxGenerator}, the stacking, the \antikt with ghosts, the
 two estimators of \rhoPU and the subtraction; and for those the sharpest
@@ -234,7 +240,7 @@ which \FASTJET scatters differently from the script, $\pm0.03$ on an area
 of $0.5$; and the jet median, which is measured on the ghost jets
 themselves, agrees to the percent by which it moves when the ghosts move.
 The last column is the \CMSSW mixing of the companion,
-\code{CMSSW\_15\_0\_5} at $13.6\TeV$ with the beam spot of 2024: the
+\code{CMSSW\_15\_0\_5} at $13.6\TeV$ with the conditions and the beam spot of 2025: the
 library of $250$ collisions it reads, its vertex smearing, and the $68$
 collisions that its \Mix draws at $\mup=60$ for the crossing of our event,
 overlaid on the signal at generator level, before the hits of \GEANT are
@@ -280,14 +286,14 @@ of the pileup inside with $\rhoPU A$.}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}\toprule
- & \PYTHIA & library & standalone / \FASTJET & 400 draws & \CMSSW 2024 \\
+ & \PYTHIA & library & standalone / \FASTJET & 400 draws & \CMSSW 2025 \\
  & cross sections & 2000 collisions & seed 1, $\mup=60$ & $\mup=60$ & 250 + 1 events \\ \midrule
 \sigmainel at $13.6\TeV$ [mb] & $78.42$ & -- & -- & -- & $78.42$ \\
 ND / SD / DD / CD [\%] & $70.7$ / $16.4$ / $11.3$ / $1.6$ & $71.2$ / $15.9$ / $10.9$ / $1.9$ & $72.7$ / $16.5$ / $9.0$ / $1.9$ (960 drawn) & -- & $73$ / $18$ / $8$ / $1$ \\
 particles per collision: mean, median & -- & $179$, $116$ & $214$ & -- & $194$, $132$ \\
 \quad charged, $|\eta|<2.5$, $\pt>0.5\GeV$ & -- & $12.2$ (median 6) & $15.8$ & -- & $21$ (all, median 10) \\
 \quad hardest particle [GeV] & -- & $2.2$ (max $17.9$) & -- & -- & $2.2$ (max $8.1$) \\ \midrule
-\mup: formula / mixed & -- & -- & $59.3$ / $60$ & $60$ & $60$ (AVE\_60); production flat $55$--$75$ \\
+\mup: formula / mixed & -- & -- & $66.5$ / $60$ & $60$ & $60$ (AVE\_60); 2025 profile $64.3$ \\
 collisions per crossing & -- & -- & $50$ to $68$ in 16 crossings, $\mathbf{63}$ in time, $960$ & $59.9\pm7.4$ (in time) & $71$, $\mathbf{68}$, $54$ ($\bx=-1\ldots+1$) \\
 beam spot $\sigma_z$ [cm], $\sigma_t$ [ps] & -- & -- & payload $3.60$, $120$; drawn $3.56$, $124$ & $3.61$, $117$ & $3.6$, $120$ (payload); $3.56$, $122$ (250) \\
 signal vertex $z$ [cm], $t$ [ps] & -- & -- & $+0.16$, $+94$ & -- & $3.11$, $+121$ \\
@@ -333,30 +339,36 @@ the mean number of collisions per crossing:
 \begin{equation}
   \mup=\frac{L\,\sigmainel}{n_b\,f_{\mathrm{rev}}},\qquad
   f_{\mathrm{rev}}=\frac{c}{26\,659\,\mathrm{m}}=11\,245\,\mathrm{Hz},\qquad
-  n_b=2350\ \text{of the }3564\text{ slots in }2024.
+  n_b=2340\ \text{of the }3564\text{ slots in }2025.
   \label{eq:crowd_on_the_road:mu}
 \end{equation}
 The denominator is not the $40\,\mathrm{MHz}$ of the $25\ns$ spacing:
-only $2350$ of the $3564$ slots of the ring held a colliding pair in the
-filling scheme of 2024, the gaps being needed by the injection and dump
-kickers, so that CMS saw $2.64\times10^{7}$ crossings per second. The
-numbers of 2024 are $L=2.0\times10^{34}\,\mathrm{cm^{-2}s^{-1}}$ at the
-levelled peak and, from \PYTHIA with the CP5 tune at $13.6\TeV$,
-$\sigmainel=78.42\mbarn$: the script prints $1.57\times10^{9}$
-collisions per second over $2.64\times10^{7}$ crossings per second,
-$\mup=59.3$, or $60.5$ with the $80\mbarn$ that CMS uses for its pileup
-bookkeeping. The mixing scenario of the 2024 simulation rounds this to
-$60$, \code{AVE\_60\_BX\_25ns}, and $60$ is the number this chapter mixes;
-the same arithmetic with the $2748$ bunches of the HL-LHC gives $127$ for
+only $2340$ of the $3564$ slots of the ring held a colliding pair in the
+filling scheme of 2025, the gaps being needed by the injection and dump
+kickers, so that CMS saw $2.63\times10^{7}$ crossings per second. The
+numbers of 2025 are those the release writes at the head of its 2025
+pileup profile, $L=2.23\times10^{34}\,\mathrm{cm^{-2}s^{-1}}$ at the
+levelled peak, held for nine hours of a fill of twelve and a half, and,
+from \PYTHIA with the CP5 tune at $13.6\TeV$, $\sigmainel=78.42\mbarn$:
+the script prints $1.75\times10^{9}$ collisions per second over
+$2.63\times10^{7}$ crossings per second, $\mup=66.5$, or $67.8$ with the
+$80\mbarn$ that CMS uses for its pileup bookkeeping. The year sits below
+its peak: averaged over the profile, the decaying ends of the fills
+included, \mup is $64.3$ (the 2024 profile of the same release has
+$44.9$). This chapter mixes at $60$, the \code{AVE\_60\_BX\_25ns} of its
+\CMSSW companion, a round number inside the band the Run-3 production
+draws from (below), so that the standalone crowd and the companion's can
+be set side by side; the same arithmetic with the $2748$ bunches of the HL-LHC gives $127$ for
 its nominal $5\times10^{34}$ and $190$ for its ultimate $7.5\times10^{34}$,
 which \CMSSW mixes as $140$ and $200$.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/pu_mu}}
 \caption[How many: the ring, the arithmetic of $\mup$ and the Poisson
-draw]{How many. (a) The ring: $3564$ slots of $25\ns$, $2350$ of them
-colliding at CMS in 2024, $11\,245$ times a second each. (b) The
-arithmetic of \cref{eq:crowd_on_the_road:mu} for 2024 and for the two
+draw]{How many. (a) The ring: $3564$ slots of $25\ns$, $2340$ of them
+colliding at CMS in 2025, $11\,245$ times a second each. (b) The
+arithmetic of \cref{eq:crowd_on_the_road:mu} for 2025, with the
+luminosity and the bunches of the release's 2025 profile, and for the two
 HL-LHC scenarios, and the value \CMSSW mixes at. (c) The draw: for every
 crossing of the window the \Mix takes $n$ from a Poisson distribution of
 mean \mup, sixteen numbers around $60$ for our event, and the flat band
@@ -399,16 +411,21 @@ the sixteen draws of our event, and the third thing a mean hides.
 \mup is a mean over a crossing, but it is also a number that changes
 during a fill and from fill to fill: a year of running is a distribution
 of \mup, the \emph{pileup profile}, weighted by the collisions themselves
-since every collision counts once. In 2024 the luminosity was
+since every collision counts once. In 2025 the luminosity was
 \emph{levelled}: the beams were kept slightly separated at the start of a
-fill so that \mup stayed near $60$ for hours instead of starting higher
-and decaying, and only the last hours of a fill ran below it. The script
-builds the profile from a luminosity curve: one fill levelled at $60$ for
-eight hours and then decaying with a lifetime of ten keeps $72\%$ of its
-collisions at the levelled value and has a mean of $57$; a year of such
-fills levelled between $57$ and $67$, a model of the fill-to-fill spread
-and not the measured profile, has a mean of $59$ with two thirds of its
-collisions between $52$ and $66$. A simulated sample is mixed with one
+fill so that \mup stayed at its peak for hours instead of starting higher
+and decaying, and only the last hours of a fill ran below it. The release
+describes the year with a profile of its own, the 2025 scenario of its
+\file{Mixing.py}, a histogram of \mutrue from $0$ to $99$ ``derived from
+LHC simulations'' for fills of twelve and a half hours levelled for nine
+at $2.23\times10^{34}$, with $2340$ bunches and $80\mbarn$: its mean is
+$64.3$, its median $65$, two thirds of its collisions lie between $53$
+and $75$, and $18\%$ lie below $55$, in the decaying ends of the fills.
+The script builds one such fill from the luminosity curve, levelled at
+$67.8$ for nine hours and then decaying with a lifetime of ten, a model of
+the burn-off: it keeps $76\%$ of its collisions at the levelled value and
+has a mean of $65$, close to the profile's, which is wider because the
+spread from fill to fill is folded in. A simulated sample is mixed with one
 profile and compared with data taken with another, and the repair is a
 weight per event,
 \begin{equation}
@@ -423,13 +440,14 @@ fixed $60$ at all: its scenario, \code{Run3\_Flat55To75\_PoissonOOTPU},
 hands the \Mix a histogram in place of a mean (\code{type = probFunction}),
 flat between $55$ and $75$, draws \mutrue from it for every signal event,
 and gives the sixteen crossings Poisson draws of that mean, about $1040$
-collisions per signal event. A flat profile is meant to cover whatever the year turns out to be, and
-the reweighting to the measured profile then costs events where the band
-is wider than the year: against the model year the weights run from $1.6$
-at the levelled values to zero from $68$ on, $1.54$ at $\mutrue=60$. It
-does not cover everything, though: a fifth of the model year's collisions
-lie below $55$, in the decaying tails of the fills, where the flat sample
-has no events to reweight. A sample mixed at a fixed $\mup=60$, like the record of
+collisions per signal event. A flat profile is meant to cover whatever
+the year turns out to be, and the reweighting to the year's profile then
+costs events where the band and the year differ: against the 2025 profile
+the weights run from $0.45$ at the edges of the band to $0.78$ in its
+middle, $0.65$ at $\mutrue=60$, and add up to two thirds of the sample.
+The band does not cover everything, though: the other third of the 2025
+collisions, $18\%$ below $55$ and $16\%$ above $75$, lie where the flat
+sample has no events to reweight. A sample mixed at a fixed $\mup=60$, like the record of
 this chapter, covers one value and cannot be reweighted to a profile at
 all. Panel (c) of \cref{fig:crowd_on_the_road:theory_mu} shows the three
 profiles and the weight.
@@ -441,9 +459,9 @@ the profiles]{Page~1 of \file{theory_pileup.pdf}. (a)
 \Cref{eq:crowd_on_the_road:mu} against the luminosity, with the three
 scenarios from the formula and the values \CMSSW mixes at. (b) The Poisson
 distributions of $\mup=60$ and $200$, and the sixteen draws of our event,
-one per crossing. (c) The pileup profile of a 2024-like year of levelled
-fills, one fill, the flat $55$--$75$ profile of the Run-3 production, and
-the weight of \cref{eq:crowd_on_the_road:reweight} for an event of the
+one per crossing. (c) The pileup profile of 2025 in the release
+(\code{Run3\_2025\_LHC\_Simulation\_\ldots}), one levelled fill of its
+header, the flat $55$--$75$ profile of the Run-3 production, and the weight of \cref{eq:crowd_on_the_road:reweight} for an event of the
 flat sample.}
 \label{fig:crowd_on_the_road:theory_mu}
 \end{figure}
@@ -502,7 +520,7 @@ brings on average.}
 
 \Cref{tab:crowd_on_the_road:catalogue} is the crowd one member at a
 time, the catalogue of the library as the companion's
-\code{minBiasGenStats.py} prints it for the $250$ GEN events of the 2024
+\code{minBiasGenStats.py} prints it for the $250$ GEN events of the 2025
 \CMSSW library: the first ten collisions of our in-time crossing, each
 with its kind, its parton-parton interactions, its particles, what the
 tracker and what nothing will see of them, its hardest particle, its
@@ -569,6 +587,27 @@ the same shape; ten of its events, single-diffractive ones that hand
 \GEANT a surviving proton and nothing else, leave no hit in the central
 detector at all.
 
+The \CMSSW library also says what sets the size of a collision and what it
+is made of. Its log prints the regularisation scale of the multiparton
+cross section of \cref{ch:uninvited_cousins}, $\pt^0=1.41\times
+(13.6/7)^{0.03344}=1.44\GeV$ for CP5, and the parton-parton cross section
+above it, $492\mbarn$, nine times the non-diffractive $55.42$: nine parton
+pairs interact in an average non-diffractive collision. Its catalogue
+counts them, from one to $39$ and $9.0$ on average over its $183$
+non-diffractive collisions (our library, which counts \PYTHIA's own
+number of interactions, has $8.1$), and the multiplicity follows them
+almost linearly, from $85$ stable particles for a single interaction to
+$723$ for $39$, while a diffractive collision has one or two. Of the
+$48\,437$ stable particles of its $250$ collisions, $45.9\%$ are photons,
+almost all from the decay of the $\pi^0$ (a $u\bar u$ and $d\bar d$
+mixture) in the generator, $37.1\%$ charged pions ($u\bar d$, $d\bar u$),
+$4.8\%$ charged kaons ($u\bar s$, $s\bar u$), $2.7\%$ protons ($uud$),
+$2.5\%$ neutrons ($udd$), $2.4\%$ $K^0_L$ and $2.2\%$ $K^0_S$ (mixtures of
+$d\bar s$ and $s\bar d$) and $0.9\%$ $\Lambda$ ($uds$), the last three
+left to \GEANT to decay; three quarters of them have $\pt<0.5\GeV$, only
+$17$ have more than $5\GeV$, and a fifth fly beyond $|\eta|=5.5$, where no
+subdetector is.
+
 \begin{figure}[htbp]\centering
 \includegraphics[page=2,width=\textwidth]{PU/Standalone/theory_pileup.pdf}
 \caption[One member of the crowd: the multiplicity, the plateau, the
@@ -619,8 +658,9 @@ hourglass width at that $z$. What it does not do is compute $\sigma_z$
 from the bunches. The real bunches of Run~3 are longer than
 $\sqrt2\times3.6\cm$ and cross at an angle, which shortens their overlap,
 and the generator reads instead the \emph{measured} beam spot from the
-database, the \code{SimBeamSpot} payload of the 2024 global tag, a fit to
-the early-2024 data: centre $(0.03,-0.02,0.42)\cm$, $\sigma_z=3.6\cm$,
+database, the \code{SimBeamSpot} payload of the 2025 global tag, a fit
+to early-2024 collisions that the 2025 conditions keep unchanged (it is
+the same tag in the global tags of both years): centre $(0.03,-0.02,0.42)\cm$, $\sigma_z=3.6\cm$,
 $\beta^*=30\cm$ and an emittance of $5.7\times10^{-8}\cm$, hence
 $\sigma_t=120\ps$ and $\sigma_{xy}=9\um$ at the focus. The script draws
 every vertex of the crowd, and the signal's, from that payload: the $960$
@@ -637,10 +677,10 @@ hllhc}.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/pu_region}}
-\caption[The beam spot of 2024: the two bunches and the numbers of the
+\caption[The beam spot of 2025: the two bunches and the numbers of the
 payload]{The beam spot. (a) The $(x,z)$ plane: the two bunches, their
 overlap and the hourglass of the $\beta$ function. (b) The length of the
-beam spot: the 2024 payload against the vertices of our event, the
+beam spot: the 2025 payload against the vertices of our event, the
 \CMSSW library and the HL-LHC model.}
 \label{fig:crowd_on_the_road:region_sketch}
 \end{figure}
@@ -1051,13 +1091,23 @@ is what it will try to get back.
 
 \paragraph{The same event in \CMSSW.}
 \label{sec:crowd_on_the_road:cmssw_event}
-In \CMSSW this stop is two jobs. The first makes the crowd: \PYTHIA with
-the minimum-bias fragment of the release at the $13.6\TeV$ of the signal,
-$250$ times, with its own random seeds so that its vertices are not those
-of the signal. Its log repeats the numbers of
+In \CMSSW this stop is two jobs, the first of the companion with the
+conditions of 2025, the global tag \code{auto:phase1\_2025\_realistic}
+and the era \code{Run3\_2025}, which every \CMSSW stop from here on
+keeps. The first job makes the crowd: \PYTHIA with
+\file{MinBias_14TeV_pythia8_TuneCP5_cfi}, the only unfiltered CP5
+minimum-bias fragment of the release, set by hand to the $13.6\TeV$ of the
+signal, $250$ times, with its own random seeds, $20241$ for the generator
+and $20242$ for the vertex smearing. The seeds are not a detail:
+\code{cmsDriver.py} writes the same default seeds into every
+configuration, and a library made with them would give library event $k$
+the vertex of signal event $k$, so that the first collision of the crowd
+would sit exactly on ours. Its log repeats the numbers of
 \cref{sec:crowd_on_the_road:one_member}: an inelastic cross section of
 $78.42\,\mathrm{mb}$ that the tune fixes, $183$ non-diffractive, $45$
-single-, $19$ double- and $3$ central-diffractive collisions, $7.0$
+single-, $19$ double- and $3$ central-diffractive collisions against
+$176.7$, $41.0$, $28.2$ and $4.1$ expected (the shortfall of
+double-diffractive ones is $1.7$ standard deviations), $7.0$
 parton--parton interactions and $194$ stable particles per collision on
 average, between $3$ and $723$. The second job puts the crowd on the
 family. The \Mix that will run with the detector simulation of
@@ -1071,16 +1121,33 @@ $12\,993$ stable ones on top of the $634$ of the family, $49$
 non-diffractive, $15$ single- and $4$ double-diffractive collisions, from
 $3$ particles to $547$. A list of particles has no time axis, which is why
 only the in-time crossing enters; the early and late ones act through the
-time response of the detector alone.
+time response of the detector alone. No new code touches the particles:
+the \Mix, with the generator record as its only mixed object and no
+digitiser, puts the signal and the $68$ library events into one
+\code{CrossingFrame} for the crossing $0$; the \code{GenParticleProducer}
+of every GEN job turns the frame into one collection,
+\code{genParticlesPU}, the family with \code{collisionId} $0$ and the
+crowd with $1$ to $68$; and the jets of \cref{ch:family_photograph} run on
+it as \code{ak4GenJetsPU}. The first of the $68$, library event $72$, is a
+smaller than average non-diffractive collision with three interactions:
+two partons on its hard-process page, a $2\to2$ scattering below
+$5\GeV$, ten after the showers, $26$ with the multiparton interactions and
+the remnants, $102$ after hadronisation and $192$ stable after the decays;
+the $68$ together have $467$ interactions and a median of $150.5$
+particles each, a sum of very unequal terms.
 
 The crowd of \CMSSW weighs what ours does. Within $|\eta|<2.5$ it is
 $2179\GeV$ of transverse momentum in $4864$ particles of $0.45\GeV$ each,
 a pedestal of $69\GeV$ per unit of $\eta$--$\phi$ area where our grid
 median reads $75.5$ for a more crowded draw, and a circle of $R=0.4$ collects $34.9\GeV$ of it
-wherever it is put. The mother's jet went from $117.79$ to $150.90\GeV$
+wherever it is put. In energy the crowd is $925\TeV$, $68$ collisions of
+$13.6\TeV$ each, and $91\%$ of it flies beyond $|\eta|=5.5$ with the
+beam remnants, where nothing will see it. The mother's jet went from $117.79$ to $150.90\GeV$
 and from $24$ to $114$ constituents, the $90$ strangers from $41$
 different collisions carrying $33.9\GeV$, and its mass from $16.7$ to
-$51\GeV$; the $\bar b$'s went from $115.94$ to $152.03$. As in our
+$51\GeV$; the $\bar b$'s went from $115.94$ to $152.03$, and the invariant
+mass of the two from $387$ to $522\GeV$, a shift that no part of the hard
+event made. As in our
 record the family stayed whole, and the axis moved by $0.04$ in
 pseudorapidity, as ours does there. No
 subtraction is run in this job, but the arithmetic of the last \CMSSW row
@@ -1093,7 +1160,22 @@ collisions were drawn: $266$ jets where the family had $27$, $76$ of them
 above $30\GeV$, seven between $50$ and $61\GeV$ that are four fifths to
 all pileup. The distinction is not sharp, though. Only $87$ of the $266$
 hold no particle of the family at all, because its underlying event is
-spread over the whole plane and a circle anywhere catches a few.
+spread over the whole plane and a circle anywhere catches a few; and $627$
+of the family's $634$ particles are now inside a jet, against $239$
+before, not because they moved but because a jet above $3\GeV$ now exists
+around every one of them.
+
+The year, finally, is a label at this stop. The global tags of 2024 and
+2025 differ in $35$ of their some $620$ records, the calibrations of the
+calorimeters and of the pixels, the alignment, the offline beam spot and
+the Level-1 menu, and a generator job reads none of them: the simulated
+beam spot, the geometry and the magnetic field are the same tags in both,
+and the era \code{Run3\_2025} adds to \code{Run3\_2024} only modifiers of
+the reconstruction and of the Level-1 trigger. The companion ran the
+library and the overlay with both and found them identical line by line,
+the process of every collision, its vertex in space and time, every
+particle and every jet. The year starts to matter at the border, where
+the detector of 2025 has calibrations of its own.
 
 Panel~(b) of \cref{fig:crowd_on_the_road:displays} is the analyser's page
 for the overlay: the particles of the family are circles and those of the
@@ -1161,10 +1243,10 @@ a model rather than a port carry their caveats:
   \item \textbf{The beam spot is a payload, not a model of the beams.}
     \Cref{eq:crowd_on_the_road:region} is what two head-on Gaussian
     bunches give, and \CMSSW's generator draws exactly that shape, but with
-    the measured widths of early 2024 rather than widths computed from
-    the bunches; a fill at the end of the year, with a different
-    $\beta^*$ and crossing angle, had a different beam spot, and the real
-    one is measured run by run.
+    the widths measured in early 2024, which the 2025 conditions keep,
+    rather than widths computed from the bunches; the fills of 2025, with
+    their own $\beta^*$ and crossing angle, had their own beam spot, and
+    the real one is measured run by run.
   \item \textbf{The visible vertex is a proxy.} Four charged particles of
     $\pt>0.5\GeV$ within $|\eta|<2.5$ is a count, not a fit; the vertex
     finder of \cref{ch:footprints} needs tracks, and loses more of
@@ -1222,7 +1304,7 @@ calorimeter~\cite{CMS:2017jpq} and the timing layer~\cite{Butler:2019rpu}.
     (\code{getPU\_NumInteractions}) and, after reconstruction, $N_{\mathrm{PV}}$.
     Reweight on the mean, cut on the vertices, and never mix them.
   \item \textbf{40 MHz is not the crossing rate.} The bunch spacing is
-    $25\ns$, but $2350$ of $3564$ slots collided in 2024: \cref{eq:crowd_on_the_road:mu}
+    $25\ns$, but $2340$ of $3564$ slots collided in 2025: \cref{eq:crowd_on_the_road:mu}
     divides by $n_b f_{\mathrm{rev}}$, a third less, and $n_b$ changes
     with the filling scheme from year to year.
   \item \textbf{The library must match the signal.} The same beam spot,
@@ -1230,16 +1312,17 @@ calorimeter~\cite{CMS:2017jpq} and the timing layer~\cite{Butler:2019rpu}.
     seeds}: a library made with the default seeds of \code{cmsDriver.py}
     draws the same vertex sequence as the signal, and the first pileup
     event lands on the signal vertex in space and time. A library made
-    with the HL-LHC beam spot under a 2024 signal would be wrong, and
+    with the HL-LHC beam spot under a 2025 signal would be wrong, and
     nothing in the job would notice.
   \item \textbf{The flat profile is not the data.} A sample mixed with
     \code{Run3\_Flat55To75} is meant to be reweighted to the measured
     profile of the year, on \mutrue; an analysis that forgets the weights
-    compares data at $\langle\mup\rangle\simeq60$ with a simulation at
-    $65$, and its jets are too wide and too many. The measured profile
-    itself scales with the cross section it is computed with: the $60$ is
-    the $80\mbarn$ of the public plots, and the Run-2 convention for the
-    reweighting, $69.2\mbarn$, would call the same crossings $52$.
+    compares a year of which a third lies outside $55$--$75$ with a
+    simulation that has nothing there, and every pileup-sensitive
+    distribution is wrong in both tails. The profile itself scales with
+    the cross section it is computed with: the $64$ of 2025 is computed
+    with $80\mbarn$, the library has $78.42$, and the Run-2 convention for
+    the reweighting, $69.2\mbarn$, would call the same crossings $56$.
   \item \textbf{The median, not the mean.} A mean density over the plane
     includes the jets; the median does not. Conversely a median over too
     few patches, or over a region with more jets than empty patches, is a
@@ -1328,7 +1411,7 @@ calorimeter~\cite{CMS:2017jpq} and the timing layer~\cite{Butler:2019rpu}.
 \subsection*{Open problems in the context of Phase-2 LHC}
 \label{sec:crowd_on_the_road:open_problems}
 
-The crowd of this chapter is the crowd of 2024; the HL-LHC will bring
+The crowd of this chapter is the crowd of 2025; the HL-LHC will bring
 three times more of it, two hundred collisions per crossing at $14\TeV$,
 and the detector CMS is building for it, with a tracker to $|\eta|=4$, a
 high-granularity endcap calorimeter and a timing layer, is designed
@@ -1373,10 +1456,18 @@ questions below can each be started with it.
     is whether the L1 track trigger of \cite{CMS:2020jkc} can make that
     separation at $40\,\mathrm{MHz}$.
   \item \textbf{The luminous region and the crab cavities.} The beam
-    spot of 2024 is a payload fitted to data; the HL-LHC region is a
+    spot of 2025 is a payload fitted to data; the HL-LHC region is a
     model built from the bunches, in which the crossing angle would cut the
 overlap to a third and the crab cavities give it back, and no data exist yet
-    to fit. With \code{LuminousRegion.density} and its switches, compute
+    to fit. In the release the Phase-2 workflows generate with
+    \code{-{}-beamspot DBrealisticHLLHC}, an \code{HLLHCEvtVtxGenerator}
+    that reads the payload
+    \file{SimBeamSpotHLLHCObjects_z4p3cm_t193ns_14TeV_nominal_mc_v1}: a
+    crossing angle of $510\,\mu$rad, crab cavities at $400$\,MHz that
+    tilt the bunches by $380\,\mu$rad, $\beta^*=0.20$\,m, bunches
+    $0.090$\,m long and $7\TeV$ per proton; the mixing takes every library
+    vertex as it is, so a library made with another beam spot cannot be
+    repaired. With \code{LuminousRegion.density} and its switches, compute
     the luminosity lost without the crab cavities and the length and the
     time spread of the region as a function of the crab angle, and ask how
     the vertex finder and the MTD should be tuned if the crabbing scheme
@@ -1384,7 +1475,12 @@ overlap to a third and the crab cavities give it back, and no data exist yet
     foresees.
   \item \textbf{The library, the premixing and the profile at
     $\mup=200$.} The production premixes because the classical mixing
-    cannot read $1400$ events per signal event, and the premixed sample
+    cannot read $1400$ events per signal event (the Phase-2 RelVals mix
+    \code{AVE\_200\_BX\_25ns}, a Poisson draw of mean $200$ in each of the
+    seven crossings $-3$ to $+3$, against some $1040$ collisions for the
+    Run-3 scenario and the $193$ of the companion's three crossings; both
+    scenarios read the library from a random start, so that a library
+    smaller than $1400$ events repeats collisions within one event), and the premixed sample
     loses the hit-level truth of the crowd that this chapter's pictures
     rely on; the HL-LHC profile is a spike at the levelled value with a
     tail, and a flat band like Run~3's would waste most of its events.

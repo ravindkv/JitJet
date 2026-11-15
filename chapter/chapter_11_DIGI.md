@@ -12,8 +12,9 @@ quotes with the command that produced it. All files are in
 CMSSW side (the DIGI step of the mixed event) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is
 written up there, see section 4.3.
 
-The conditions are those of Run 3 in 2024, as in chapter 8: 13.6 TeV, mu = 60, the
-2024 beam spot and the 2024 CMS detector (`CMSSW_15_0_5`). The HL-LHC appears only in
+The conditions are those of Run 3 in 2025, as in chapter 8: 13.6 TeV, mu = 60, the
+2025 beam spot and the CMS detector of 2025 (`CMSSW_15_0_5`, `auto:phase1_2025_realistic`,
+era `Run3_2025`; the geometry is the `Extended2024` one, which the 2025 global tag reads unchanged). The HL-LHC appears only in
 the exercises and the open problems.
 
 | | |
@@ -23,7 +24,7 @@ the exercises and the open problems.
 | Input | the mixed SimHits of chapter 10 |
 | Event record | `example/DIGI/event_DIGI.*` (TODO) |
 | Learning-mode log | `example/DIGI/Standalone/standalone_DIGI.log` (`-v`, seed 1) and its summary `standalone_DIGI.json` (TODO) |
-| Validation with official packages | `example/DIGI/Standalone/validate_DIGI.py`: the digitiser models with the 2024 conditions (TODO) |
+| Validation with official packages | `example/DIGI/Standalone/validate_DIGI.py`: the digitiser models with the 2025 conditions (TODO) |
 | CMSSW figure | `example/DIGI/CMSSW/*_11_DIGI.pdf`, the lower panel of the chapter's display (TODO) |
 | CMSSW write-up (JitJetSW) | physics details: [`chapter_11_DIGI.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_11_DIGI.tex); technical companion: [`chapter_11_DIGI.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_11_DIGI.md) |
 | Film | scene 11 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) (TODO) |

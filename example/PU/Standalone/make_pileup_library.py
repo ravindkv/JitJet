@@ -7,7 +7,7 @@ the fragment of the Run-3 RelVal libraries, Configuration/Generator/MinBias_14Te
 i.e. SoftQCD:inelastic (non-diffractive, single-, double- and central-diffractive collisions in their
 natural proportions) with the CP5 tune and the CMS common settings (every particle with c tau < 10 mm
 decayed, the longer-lived ones left for the detector), with the energy set to the sqrt(s) = 13.6 TeV of
-the Run-3 signal as the 2024 library of the CMSSW companion does (process.generator.comEnergy = 13600).
+the Run-3 signal as the 2025 library of the CMSSW companion does (process.generator.comEnergy = 13600).
 Every collision is generated at the origin; the beam spot (where and when it happened) is drawn later by
 the mixing, as CMSSW's VtxSmeared does. Nothing is ported here: this script only runs the official
 package and writes what it produced, so that the standalone mixing needs NumPy and nothing else.

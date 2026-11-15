@@ -1,21 +1,22 @@
-# The crowd on the road: pileup in Run 3 (2024), without CMSSW
+# The crowd on the road: pileup in Run 3 (2025), without CMSSW
 
 `standalone_pileup.py` takes the final state of chapter 7 (`../../GenJet/event_GenJet.lhe`:
 the particles the detector will see and the generator-level jets) and puts it into a
-bunch crossing of the LHC of 2024, with every piece of CMSSW's mixing written out: the
+bunch crossing of the LHC of 2025, with every piece of CMSSW's mixing written out: the
 mean number of collisions per crossing from the luminosity, mu = L sigma_inel / (n_b f_rev);
 the Poisson draw of the MixingModule for every crossing of the Run-3 production window
 bx = -12 ... +3; the library of minimum-bias collisions it reads (`../pileup_library.lhe.gz`,
 2000 collisions at 13.6 TeV made once with PYTHIA by `make_pileup_library.py`, the
-generator-level twin of the GEN-SIM library of the CMSSW production); the 2024 beam spot of
-CMSSW's BetafuncEvtVtxGenerator (the SimBeamSpot payload of the 2024 global tag: sigma_z =
+generator-level twin of the GEN-SIM library of the CMSSW production); the 2025 beam spot of
+CMSSW's BetafuncEvtVtxGenerator (the SimBeamSpot payload of the 2025 global tag, fitted to
+early-2024 collisions and kept for 2025: sigma_z =
 3.6 cm, sigma_t = 120 ps, beta* = 30 cm, 9 um across) and the 25 ns offsets of the
 out-of-time crossings; the stacking of the in-time collisions onto the signal; anti-kT on
 the mixed final state with the active area of every jet measured with ghosts (FastJet's
 N2Tiled search ported); the median energy density rho two ways (the grid of CMSSW's
 fixedGridRhoFastjetAll and the kT-jet median of Cacciari and Salam); the subtraction
 pT - rho A against the truth; the vertices the tracker will see; and the flat pileup
-profile of the Run-3 production with its reweighting. The output, `../event_PU.lhe`, is the
+profile of the Run-3 production with its reweighting to the 2025 profile of CMSSW. The output, `../event_PU.lhe`, is the
 chapter-7 record followed by the vertex table of the 960 collisions, the particles of the
 in-time crossing, the mixed jets with their areas and subtracted momenta, and the signal
 rows with the mixed jet that holds each. The HL-LHC crowd of the Phase-2 production
@@ -41,10 +42,12 @@ the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The scri
 
 ## What the script reproduces, and the numbers
 
-* **The scenario** (`mu_of`, `SCENARIOS`): L = 2.0e34 cm^-2 s^-1 (2024, levelled), sigma_inel
-  = 78.42 mb (PYTHIA, CP5; the tune fixes it, at 13.6 as at 14 TeV), 2350 colliding bunches,
-  f_rev = 11245.5 Hz: mu = 59.3 (60.5 with the 80 mb of the bookkeeping); the 2024 simulation
-  mixes at mu = 60 (`AVE_60_BX_25ns`), the default, with the production window bx = -12 ... +3:
+* **The scenario** (`mu_of`, `SCENARIOS`): L = 2.23e34 cm^-2 s^-1 levelled and 2340 colliding
+  bunches, the header of the 2025 profile of CMSSW_15_0_5 (`PROFILE_2025`), sigma_inel = 78.42
+  mb (PYTHIA, CP5; the tune fixes it, at 13.6 as at 14 TeV), f_rev = 11245.5 Hz: mu = 66.5 at
+  the levelled peak (67.8 with the 80 mb of the bookkeeping; the profile's mean is 64.3). The
+  book mixes at mu = 60 (`AVE_60_BX_25ns`, as the CMSSW companion), the default, with the
+  production window bx = -12 ... +3:
   960 collisions expected per signal event. The production draws mu_true flat in 55 ... 75
   (`Run3_Flat55To75_PoissonOOTPU`, about 1040 collisions per signal event) and reweights.
 * **The draw** (`Stage.draw_crowd`): Poisson(60) per crossing; seed 1 gives sixteen numbers
@@ -54,7 +57,8 @@ the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The scri
   used twice in an event (drawing every position at random would repeat one within the
   in-time crossing in six draws of ten); `--sequential` reads from the first event on, as
   the CMSSW exercise of the companion does.
-* **The beam spot** (`BeamSpot`): BetafuncEvtVtxGenerator with the 2024 payload: z Gaussian of
+* **The beam spot** (`BeamSpot`): BetafuncEvtVtxGenerator with the payload of the 2025 global
+  tag (`SimBeamSpot_Realistic25ns13p6TeVEarly2024...`, the same tag as in 2024): z Gaussian of
   3.6 cm around 0.42 cm, t an independent Gaussian of sigma_z / c = 120 ps, x and y Gaussians
   of sqrt(eps beta*/2) sqrt(1 + ((z - z0)/beta*)^2) = 9 um at the focus (beta* = 30 cm,
   emittance 5.725e-8 cm). The 960 drawn vertices: r.m.s. 3.56 cm, 124 ps, 9 um; the signal at
@@ -88,11 +92,15 @@ the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The scri
 * **The vertices** (`Stage.visible_vertices`): 40 of 63 in-time collisions have at least four
   charged particles of pT > 0.5 GeV within |eta| < 2.5; the nearest to the signal is 0.01 mm
   away in z and 0.3 ps in t; 3 are within 1 mm, 7 within 30 ps.
-* **The profile** (`fill_profile`, `year_profile`, `flat_profile`, `reweight`): a 2024-like fill
-  (levelled at 60 for 8 h, then decaying with tau = 10 h, 12 h) keeps 72% of its collisions at
-  the levelled value (mean 57); a year of such fills levelled between 57 and 67 (a model) has
-  mean 59; the production's flat 55 ... 75 profile reweighted to it gets w from 1.6 to 0, 1.54
-  at mu_true = 60; a sample at a fixed mu = 60 cannot be reweighted (w = 0.07, one bin).
+* **The profile** (`release_profile`, `profile_stats`, `fill_profile`, `flat_profile`,
+  `reweight`): the 2025 profile of CMSSW (`Run3_2025_LHC_Simulation_fill12p5h_levelling9h_
+  nb2340_xSec80mb_il2p23_cfi`, "derived from LHC simulations") has mean 64.3, r.m.s. 11.7,
+  median 65, 18% of its collisions below 55 and 16% above 75; one fill of its header
+  (levelled at 67.8 for 9 h, then decaying with tau = 10 h, 12.5 h, a model) keeps 76% of its
+  collisions at the levelled value (mean 65). The production's flat 55 ... 75 profile
+  reweighted to the 2025 profile gets w from 0.45 to 0.78, 0.65 at mu_true = 60, and has no
+  event for the 34% outside the band; a sample at a fixed mu = 60 cannot be reweighted (one
+  bin). (`year_profile`, a year of modelled fills, is kept for the exercises.)
 
 ## The other files
 
@@ -102,8 +110,8 @@ the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The scri
 | `standalone_pileup.log`, `standalone_pileup.json` | the `-v` narration of the record and its summary |
 | `standalone_pileup_stats.json`, `standalone_pileup_stats.log` | the 400-draw ensemble |
 | `minbias_catalogue.py` | the catalogue of the library in the format of the CMSSW companion's `minBiasGenStats.py`: one line per collision (kind, interactions, stable, charged, central, beyond \|eta\| = 5.5, lead pT, sum pT, jets > 10 GeV, forward protons, and the vertex drawn for the in-time ones), the summary and the means per kind; writes `.txt`, `.json` and the `.tex` tables the chapter inputs (2 min) |
-| `validate_pileup_with_fastjet.py` | the validation: `--mode record` clusters the mixed final state of the record with FastJet (areas, grid and jet-median rho); `--mode library` checks the library's shares and multiplicities against PYTHIA's cross sections and the 2024 CMSSW library |
+| `validate_pileup_with_fastjet.py` | the validation: `--mode record` clusters the mixed final state of the record with FastJet (areas, grid and jet-median rho); `--mode library` checks the library's shares and multiplicities against PYTHIA's cross sections and the 2025 CMSSW library |
 | `plot_theory_PU.py` | the four pages of `theory_pileup.pdf` behind the theory sections |
-| `animate_standalone_pileup.py` | the film (six narrated scenes) and its stills; the stills are a build product, the film is rendered on request |
+| `animate_standalone_pileup.py` | the film (six narrated scenes) and its stills; the stills are a build product, the film is rendered on request; scene 3 shows the panels of `chapter/tikz/pu_minbias.tex`, compiled once into `build/pu_minbias_panels/` (needs pdflatex and gs) |
 | `../plot_journey_PU.py` | the (eta, phi) display of the event with the crowd, `../journey_PU.pdf` |
-| `../CMSSW/` | the CMSSW side: the 2024 pileup library and the mixing of one signal event at PU 60 (`2024/`), and the Phase-2 exercise at PU 10 (`Phase2/`), from JitJetSW |
+| `../CMSSW/` | the CMSSW side: `README.md` links the JitJetSW write-up of the 2025 pileup library and of the overlay of its 68 in-time collisions on the signal (`chapter_08_PU.tex` / `.md`), and `genJetAnalyzer_08_PU.pdf` is its display |

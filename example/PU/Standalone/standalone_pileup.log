@@ -1,8 +1,8 @@
 
 ==== 1  the scenario: how many collisions per bunch crossing =========================================
-  Run 3 (2024, levelled): L = 2.00e+34 cm^-2 s^-1, sigma_inel = 78.42 mb (PYTHIA, CP5, the tune fixes it),
-  n_b = 2350 colliding bunches, f_rev = 11245.5 Hz: 1.568e+09 collisions/s over 2.643e+07 crossings/s
-  mu = L sigma / (n_b f_rev) = 59.3 (60.5 with the 80 mb of the bookkeeping); the mixing scenario rounds it to mu = 60 (CMSSW AVE_60_BX_25ns), window bx = -12 ... +3, 960 collisions expected per signal event
+  Run 3 (2025, levelled): L = 2.23e+34 cm^-2 s^-1, sigma_inel = 78.42 mb (PYTHIA, CP5, the tune fixes it),
+  n_b = 2340 colliding bunches, f_rev = 11245.5 Hz: 1.749e+09 collisions/s over 2.631e+07 crossings/s
+  mu = L sigma / (n_b f_rev) = 66.5 (67.8 with the 80 mb of the bookkeeping); mixed at mu = 60 (CMSSW AVE_60_BX_25ns, as the companion), window bx = -12 ... +3, 960 collisions expected per signal event
   the Run-3 production mixes Run3_Flat55To75_PoissonOOTPU: mu_true of the in-time crossing drawn flat in 55 ... 75 (mean 65), Poisson draws of the same mean in the other 15 crossings, about 1040 collisions per signal event; this record fixes mu_true = 60
 
 ==== 2  the draw of the MixingModule: Poisson(mu) collisions per bunch crossing ======================
@@ -11,9 +11,9 @@
   process types: CD 18, DD 86, ND 698, SD 158 (library shares: CD 1.9%, DD 10.9%, ND 71.2%, SD 15.9%)
 
 ==== 3  the beam spot: where and when each collision happens =========================================
-  BetafuncEvtVtxGenerator with the 2024 payload (SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc):
+  BetafuncEvtVtxGenerator with the payload of the 2025 global tag (SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc, fitted to early-2024 data):
   centre (0.0285, -0.0166, 0.416) cm, sigma_z = 3.6 cm, beta* = 30 cm, emittance 5.725e-08 cm: sigma_xy = 9.3 um at the focus, x sqrt(1 + ((z - z0)/beta*)^2) away from it (the hourglass)
-  sigma_z, sigma_t of the model: 3.60 cm, 120 ps (sigma_t = sigma_z / c, z and t independent: what two head-on Gaussian bunches of 5.1 cm would give; the payload is a fit to the 2024 data, the crossing angle folded in)
+  sigma_z, sigma_t of the model: 3.60 cm, 120 ps (sigma_t = sigma_z / c, z and t independent: what two head-on Gaussian bunches of 5.1 cm would give; the payload is a fit to the data, the crossing angle folded in)
   drawn: 960 vertices with r.m.s. x 8.9 um, y 9.6 um, z 3.56 cm (mean 0.22), t 124 ps; z from -12.4 to 13.9 cm
   the signal vertex: x = 287.1 um, y = -155.1 um, z = 0.16 cm, t = 94 ps; the out-of-time crossings are shifted by 25 ns x bx (the CMSSW signal event of the companion sits at z = 3.11 cm, t = +121 ps)
 
@@ -24,7 +24,7 @@
   the in-time crowd in the tracker (|eta| < 2.5, pT > 0.5): 995 charged particles against 93 of the signal
 
 ==== 5  anti-kT on the mixed final state, with ghosts for the areas ==================================
-  10696 particles + 6300 ghosts of area 0.0100 (|y| < 5): 16996 steps in 157 s; 175 jets above 3 GeV, 82 above 30
+  10696 particles + 6300 ghosts of area 0.0100 (|y| < 5): 16996 steps in 148 s; 175 jets above 3 GeV, 82 above 30
   the b jet: chapter-7 jet [0] 99.83 GeV, 31 particles -> mixed jet [1] 133.53 GeV, 115 particles (31 signal, 84 pileup from 33 collisions), dR = 0.012, area 0.529 (pi R^2 = 0.503); signal pT inside 100.07, pileup pT inside 34.57
     of the 31 particles of the photograph 31 are in the mixed jet, 0 fell out, 0 signal particles joined
   the bbar jet: chapter-7 jet [1] 94.09 GeV, 18 particles -> mixed jet [0] 136.77 GeV, 101 particles (19 signal, 82 pileup from 33 collisions), dR = 0.014, area 0.489 (pi R^2 = 0.503); signal pT inside 94.33, pileup pT inside 43.42
@@ -32,7 +32,7 @@
 ==== 6  the median energy density rho, two ways ======================================================
   grid median (fixedGridRhoFastjetAll): 18 x 11 cells of 0.556 x 0.571 = 0.317 in |y| < 5, phi from 0; rho = 75.47 GeV per unit area (cells from 30.0 to 361.5, mean 82.93)
   the same grid on the signal alone: rho = 3.42 (median; mean 11.08, 17 of 198 cells empty); on the crowd alone: rho = 69.93, so the signal raises the median by 5.53
-  jet median (Cacciari-Salam): kT jets of R = 0.4 with ghosts, 195 jets, 171 within |y| < 4.4; rho = 78.50 GeV per unit area (pT/A from 41.7 to 236.9); 30 s
+  jet median (Cacciari-Salam): kT jets of R = 0.4 with ghosts, 195 jets, 171 within |y| < 4.4; rho = 78.50 GeV per unit area (pT/A from 41.7 to 236.9); 25 s
   per collision: 1.198 (grid) and 1.246 (jets) GeV per unit area
 
 ==== 7  the area subtraction, pT - rho A, against the truth ==========================================
@@ -58,8 +58,8 @@
   the nearest crowd vertex to the signal's: 0.01 mm away in z, 0 ps in t; 3 within 1 mm (the vertex finder's reach), 7 within 30 ps (what the timing layer of Phase 2 would resolve; Run 3 has none)
 
 ==== 9  the pileup profile of a fill, and the reweighting ============================================
-  a 2024-like fill (levelled at mu = 60 for 8 h, then decaying with tau = 10 h, 12 h in all): mu from 40 to 60, luminosity-weighted mean 57, 72% of the collisions at the levelled value
-  a 2024-like year of such fills levelled between 57 and 67: mean 59, 68% of the collisions between 52 and 66 (a model; the measured profile is what an analysis reweights to)
-  the production's flat profile (probFunction, mu_true uniform in 55 ... 75): the weight w = P_2024(mu_true) / P_flat(mu_true) runs from 0.00 to 1.62 over the flat range, 1.54 at mu_true = 60
-  a sample mixed at a fixed mu = 60 reweighted to the same profile: w = 0.07 for every event, and no event at all for the rest of the profile; the flat profile costs events at the edges and covers the whole year
+  one fill of the 2025 profile's header (L = 2.23e+34 for 9 h, mu = 67.8 with its 80 mb and 2340 bunches, then decaying with tau = 10 h, 12.5 h in all): mu from 48 to 68, luminosity-weighted mean 65, 76% of the collisions at the levelled value
+  the 2025 profile of the release (Run3_2025_LHC_Simulation_fill12p5h_levelling9h_nb2340_xSec80mb_il2p23_cfi, "derived from LHC simulations"): mean 64.3, r.m.s. 11.7, median 65, 68% of the collisions between 53 and 75; 18% below 55, 66% in 55 ... 75, 16% above 75 (an analysis reweights to the measured profile of its data)
+  the production's flat profile (probFunction, mu_true uniform in 55 ... 75): the weight w = P_2025(mu_true) / P_flat(mu_true) runs from 0.45 to 0.78 over the flat range, 0.65 at mu_true = 60; the 34% of the 2025 collisions outside the band have no simulated event to carry them
+  a sample mixed at a fixed mu = 60 reweighted to the same profile: one bin (w = 0.031 for every event) and no event at all for the rest of the profile: it cannot be reweighted
   for comparison a levelled HL-LHC fill (mu = 200 for 8 h, then tau = 5 h, 12 h): mean 186, 75% of the collisions at the levelled value

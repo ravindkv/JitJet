@@ -16,7 +16,7 @@
 \node[head,anchor=west] at (6.7,1.4) {our event (seed 1, $\mu=60$, $bx=-12\ldots+3$)};
 \node[stepbox] (S1) at (2.5,0) {\textbf{1\; the scenario}\\ $\mu=L\sigma_{\rm inel}/(n_b f_{\rm rev})$ from the luminosity; the window of bunch crossings, 25 ns apart};
 \node[stepbox,below=7mm of S1] (S2) {\textbf{2\; the draw}\\ for every crossing $n\sim{\rm Poisson}(\mu)$; the library read in order from a random position};
-\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; the beam spot}\\ $(x,y,z,t)$ of every collision, the signal included, from the 2024 payload: Gaussian in $z$ and $t$, the hourglass across; $+25\,{\rm ns}\times bx$};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; the beam spot}\\ $(x,y,z,t)$ of every collision, the signal included, from the 2025 payload: Gaussian in $z$ and $t$, the hourglass across; $+25\,{\rm ns}\times bx$};
 \node[stepbox,below=7mm of S3] (S4) {\textbf{4\; the stacking}\\ one final state: the signal and the in-time collisions, $|\eta|<5$, no neutrinos; the out-of-time ones recorded, not clustered};
 \node[stepbox,below=7mm of S4] (S5) {\textbf{5\; the clustering}\\ anti-$k_T$, $R=0.4$, with a grid of ghosts of area 0.01 (tiled search); every constituent tagged by its collision};
 \node[stepbox,below=7mm of S5] (S6) {\textbf{6\; $\rho$ and $A$}\\ the grid median of the cells ($0.56\times0.57$, $|y|<5$) and the $k_T$-jet median ($|y|<4.4$); $A=0.01\,n_{\rm ghosts}$};
@@ -34,13 +34,13 @@
 \node[fn,anchor=south east] at (S7.north east) {Stage.subtract};
 \node[fn,anchor=south east] at (S8.north east) {visible\_vertices, fill\_profile, reweight};
 \node[fn,anchor=south east] at (S9.north east) {pileup\_tables, read\_pileup\_tables};
-\node[numbox,anchor=west] (N1) at (6.7,0) {$2.0\times10^{34}$ cm$^{-2}$s$^{-1}$, 78.4 mb, 2350 bunches, 11\,245 Hz: $\mu=59$; mixed at 60, window $bx=-12\ldots+3$, 960 collisions expected (the production: $\mu_{\rm true}$ flat in 55--75, $\sim1040$)};
+\node[numbox,anchor=west] (N1) at (6.7,0) {$2.23\times10^{34}$ cm$^{-2}$s$^{-1}$, 78.4 mb, 2340 bunches, 11\,245 Hz: $\mu=66.5$; mixed at 60, window $bx=-12\ldots+3$, 960 collisions expected (the production: $\mu_{\rm true}$ flat in 55--75, $\sim1040$)};
 \node[numbox,anchor=west] (N2) at (6.7,0 |- S2) {sixteen draws from 50 to 68, \textbf{63} in time, 960 in all; library events 430 to 1389, each once (ND 698, SD 158, DD 86, CD 18)};
 \node[numbox,anchor=west] (N3) at (6.7,0 |- S3) {payload: $\sigma_z=3.6$ cm, $\sigma_t=120$ ps; drawn: r.m.s.\ 3.56 cm, 124 ps, $x$ and $y$ 9 $\mu$m; the signal at $z=+0.16$ cm, $t=+94$ ps; nearest neighbour 0.01 mm and 0.3 ps away};
 \node[numbox,anchor=west] (N4) at (6.7,0 |- S4) {signal: 651 of 744 particles; in time: 63 collisions, 13\,456 particles, 10\,045 within $|\eta|<5$; 995 charged in the tracker against 93 of the signal};
 \node[numbox,anchor=west] (N5) at (6.7,0 |- S5) {10\,696 particles + 6300 ghosts, 16\,996 steps (3 min); 175 jets above 3 GeV, 82 above 30; our jet, mixed jet [1]: 115 particles, 31 of the family and 84 strangers from 33 collisions, $A=0.529$};
 \node[numbox,anchor=west] (N6) at (6.7,0 |- S6) {grid: $\rho=75.5$ (cells from 30 to 361, mean 83); $k_T$ jets: 78.5; per collision 1.20 and 1.25 GeV per unit area in this crossing, 0.97 over the ensemble; the signal alone: 3.4, the crowd alone: 69.9};
 \node[numbox,anchor=west] (N7) at (6.7,0 |- S7) {our jet $133.53-75.47\times0.529=93.64$ against $100.07$ of signal inside: residual $-6.43$ GeV; the crowd had put $34.57$ in; 76 pileup jets above 30 GeV before, one after};
-\node[numbox,anchor=west] (N8) at (6.7,0 |- S8) {40 of 63 in-time collisions visible ($\ge4$ charged, $p_T>0.5$, $|\eta|<2.5$); 3 within 1 mm of the signal; the flat profile reweighted to a 2024-like year: $w=1.54$ at $\mu_{\rm true}=60$};
+\node[numbox,anchor=west] (N8) at (6.7,0 |- S8) {40 of 63 in-time collisions visible ($\ge4$ charged, $p_T>0.5$, $|\eta|<2.5$); 3 within 1 mm of the signal; the flat profile reweighted to the 2025 profile: $w=0.65$ at $\mu_{\rm true}=60$};
 \node[numbox,anchor=west] (N9) at (6.7,0 |- S9) {\file{event_PU.lhe}: the chapter-7 rows + 961 vertex rows + 13\,456 particle rows + 175 jet rows + 651 constituent rows (1.7 MB)};
 \end{tikzpicture}

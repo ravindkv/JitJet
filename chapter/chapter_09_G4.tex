@@ -4,10 +4,10 @@
 % \todo marks text, numbers or figures still to come.
 % The scripts, records, logs and films of this stop will live in example/G4/,
 % the technical companion is chapter/chapter_09_G4.md, and the CMSSW side
-% (the GEN-SIM step of the signal event in the 2024 detector) is chapter 9
+% (the GEN-SIM step of the signal event in the 2025 detector) is chapter 9
 % of JitJetSW, linked from example/G4/CMSSW/README.md.
 % What this stop is: the family alone, no crowd, transported by GEANT4
-% through the 2024 CMS detector, the 3.8 T field and its material, down to
+% through the 2025 CMS detector, the 3.8 T field and its material, down to
 % SimHits. The crowd crosses the border in chapter 10 (SIM), the SimHits
 % become ADC counts in chapter 11 (DIGI).
 % ---------------------------------------------------------------------------
@@ -28,7 +28,7 @@ weigh luggage, and their scales are made of material that keeps part of
 what it weighs. \todo{Polish the metaphor paragraph (B1).}
 \end{journeybox}
 
-\physicsline{the 2024 CMS detector as \GEANT sees it, the material budget
+\physicsline{the 2025 CMS detector as \GEANT sees it, the material budget
 in radiation and interaction lengths; charged particles in a field and in
 matter: curvature, ionisation, multiple scattering, bremsstrahlung and
 photon conversions; electromagnetic showers; hadronic showers, the
@@ -87,7 +87,7 @@ neutrinos leaving. TikZ in \file{chapter/tikz/g4_*.tex}.}
 (a NumPy transport of the family through a simplified CMS geometry), the
 official package (\GEANT itself, standalone, on the same particles and the
 same simplified geometry), and \CMSSW (the GEN-SIM step of the signal event
-in the 2024 detector, \code{CMSSW\_15\_0\_5}). How each column is produced
+in the 2025 detector, \code{CMSSW\_15\_0\_5}). How each column is produced
 is in the companion,}
 \begin{center}
   \companion{chapter_09_G4}
@@ -98,7 +98,7 @@ is in the companion,}
 detector obtained three ways. \todo{Caption: what each column is.}}
 \label{tab:crossing_the_border:numbers}
 \begin{tabular}{lrrr}\toprule
- & standalone & \GEANT & \CMSSW 2024 \\ \midrule
+ & standalone & \GEANT & \CMSSW 2025 \\ \midrule
 material in front of the ECAL at $\eta=-1.44$ [\Xzero] & \todo{} & \todo{} & \todo{} \\
 charged members reaching the ECAL / looping & \todo{} & \todo{} & \todo{} \\
 photons converted in the tracker & \todo{} & \todo{} & \todo{} \\
@@ -115,7 +115,7 @@ SimHits: tracker / ECAL / HCAL & \todo{} & \todo{} & \todo{} \\
 % Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
 % (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
 
-\subsection{The country: the 2024 detector, its field and its material}
+\subsection{The country: the 2025 detector, its field and its material}
 \label{sec:crossing_the_border:detector}
 \todo{(C2-1) Why the geometry and the material budget come first.
 (C2-2) TikZ: the $r$--$z$ quarter of CMS with the subdetectors.
@@ -211,7 +211,8 @@ the detector, standalone (top) and \CMSSW (bottom). \todo{Caption.}}
   \item \todo{SimHits are energy, not signals: the ADC counts are
     \cref{ch:customs_form}.}
   \item \todo{The simplified geometry of the standalone script against
-    the full 2024 geometry of \CMSSW.}
+    the full geometry of \CMSSW (\code{DB:Extended}: the \code{Extended2024}
+    geometry, which the 2025 global tag reads unchanged).}
   \item \todo{One event is one sample.}
 \end{itemize}
 

@@ -2,7 +2,7 @@
 """Animated companion to standalone_pileup.py: the crowd on the road.
 
 Six scenes, narrated, show the b bbar event of chapter 7 meeting the sixty other collisions of its
-bunch crossing in Run 3 (2024). Every number on screen and in the narration is read from the record
+bunch crossing in Run 3 (2025). Every number on screen and in the narration is read from the record
 (../event_PU.lhe), the library (../pileup_library.lhe.gz), the summary (standalone_pileup.json) and the
 ensemble (standalone_pileup_stats.json) that the standalone script wrote. The film picks up where the
 chapter-7 film ended (the photograph is taken) and ends at the next stop, the border of the detector.
@@ -13,8 +13,10 @@ chapter-7 film ended (the photograph is taken) and ends at the next stop, the bo
                 with the signal among them, then the fifteen other crossings of the production window
                 (bx = -12 ... +3), 25 ns apart.
   3  member     The four kinds of inelastic collision, one example of each from the library (ND, SD, DD,
-                CD) with the table of their cross sections and multiplicities filling row by row, then the
-                multiplicity of the two thousand collisions building up.
+                CD) with the table of their cross sections and multiplicities filling row by row and, below
+                it, the panel of the chapter's sketch (chapter/tikz/pu_minbias.tex) for the kind being told;
+                the four sketches side by side under the full table; then the multiplicity of the two
+                thousand collisions building up.
   4  median     The grid cells fill with pT, the histogram of the cell densities and its median: rho.
   5  ourjet     Zoom on our jet: the family, the crowd pouring into the circle, the pT rising; then rho A
                 taken out, and what is left against the signal.
@@ -24,6 +26,10 @@ chapter-7 film ended (the photograph is taken) and ends at the next stop, the bo
 Narration and music: as in the other chapter films (example/soundtrack.py): one line per phase
 (--print-script), edge-tts or the macOS `say` voice, clips cached in build/narration/PU/, an .srt next
 to the .mp4; the score has a chord per scene and a thud when the crowd is complete.
+
+The sketch panels of scene 3 are compiled from chapter/tikz/pu_minbias.tex with pdflatex and rendered
+with ghostscript into build/pu_minbias_panels/ the first time (a few seconds; redone when the .tex is newer).
+Without pdflatex or gs the scene is drawn without them.
 
 Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
   python3 animate_standalone_pileup.py                  # -> .mp4 + .srt next to this file (1920x1080)
@@ -38,6 +44,7 @@ import argparse
 import json
 import math
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -46,6 +53,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parent.parent.parent
 sys.path.insert(0, str(HERE))
 import standalone_pileup as core  # noqa: E402
 
@@ -329,7 +337,7 @@ class RoadScene(Scene):
         it = ph.in_time
         allv = [c for c in ph.collisions if c["k"] > 0]
         bxs_all = sorted(set(c["bx"] for c in allv))
-        cap = ((f"The 2024 beam spot (BetafuncEvtVtxGenerator, the payload of the 2024 global tag): the collisions spread along the beam over sigma_z = {self.m[0]:.1f} cm around z0 = {r.z0:.1f} cm "
+        cap = ((f"The beam spot of 2025 (BetafuncEvtVtxGenerator, the payload of the 2025 global tag): the collisions spread along the beam over sigma_z = {self.m[0]:.1f} cm around z0 = {r.z0:.1f} cm "
                 f"and over sigma_t = {self.m[1] * 1e3:.0f} ps in time, {r.sigma_x0 * 1e4:.0f} um across. " if r.name == "run3" else
                 f"Two bunches of 9 cm cross at 510 urad, crab-rotated by 380 urad and focused to beta* = 20 cm: the collisions spread over sigma_z = {self.m[0]:.1f} cm and sigma_t = {self.m[1] * 1e3:.0f} ps. ")
                if k < self.k_bunch else
@@ -382,6 +390,59 @@ class RoadScene(Scene):
         ax2.set_title("in time (blue), early (dark yellow), late (salmon)", fontsize=10.5, color=TEXT)
 
 
+# --- the sketch of the chapter, one panel per kind (scene 3) ------------------------------------------------------
+PANEL_TEX = REPO / "chapter" / "tikz" / "pu_minbias.tex"
+PANEL_DIR = REPO / "build" / "pu_minbias_panels"
+PANEL_WRAPPER = r"""\documentclass[tikz,border=0pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usetikzlibrary{arrows.meta}
+\newcommand{\PYTHIA}{\textsc{Pythia}~8\xspace}
+\begin{document}
+%s
+\end{document}
+"""
+PANEL_TOP = (3.6 + 0.45) / (3.6 + 2.3)      # the drawing without its description: the panel is cut at y = 3.6 ... -2.3 cm, the eta axis ends above -0.45
+
+
+def minbias_panels(tex: Path = PANEL_TEX, workdir: Path = PANEL_DIR, dpi: int = 200) -> Optional[List[np.ndarray]]:
+    """The four panels (ND, SD, DD, CD) of the chapter's sketch as RGB arrays: pu_minbias.tex compiled once per panel with
+    \\def\\puminbiaspanel{i} (its bounding box cut to that panel), rendered by ghostscript; cached until the .tex changes."""
+    pngs = [workdir / f"panel_{i + 1}.png" for i in range(4)]
+    fresh = all(p.exists() and p.stat().st_mtime >= tex.stat().st_mtime for p in pngs) if tex.exists() else all(p.exists() for p in pngs)
+    if not fresh:
+        if not tex.exists() or shutil.which("pdflatex") is None or shutil.which("gs") is None:
+            print(f"scene 3: no sketch panels ({tex.name}, pdflatex or gs missing)")
+            return None
+        workdir.mkdir(parents=True, exist_ok=True)
+        body = "\n".join(f"\\def\\puminbiaspanel{{{i}}}\\input{{{tex.with_suffix('').as_posix()}}}" for i in range(4))
+        (workdir / "pu_minbias_panels.tex").write_text(PANEL_WRAPPER % body)
+        r = subprocess.run(["pdflatex", "-interaction=batchmode", "-halt-on-error", "pu_minbias_panels.tex"], cwd=workdir, capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f"scene 3: pdflatex failed on the sketch panels (see {workdir / 'pu_minbias_panels.log'})")
+            return None
+        subprocess.run(["gs", "-q", "-dNOPAUSE", "-dBATCH", "-sDEVICE=png16m", f"-r{dpi}", "-dTextAlphaBits=4", "-dGraphicsAlphaBits=4",
+                        f"-sOutputFile={workdir / 'panel_%d.png'}", str(workdir / "pu_minbias_panels.pdf")], check=True)
+        print(f"scene 3: rendered the four panels of {tex.name} into {workdir}")
+    return [plt.imread(str(p))[:, :, :3] for p in pngs]
+
+
+def show_panel(fig, img: np.ndarray, rect, alpha: float = 1.0, frame: Optional[str] = None):
+    """An image in its own axes, aspect kept, fading in with alpha (blended with the white page)."""
+    ax = fig.add_axes(rect)
+    ax.imshow(1.0 - alpha * (1.0 - img), interpolation="lanczos")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for sp in ax.spines.values():
+        sp.set_visible(frame is not None)
+        if frame is not None:
+            sp.set_color(frame)
+            sp.set_linewidth(1.2)
+    return ax
+
+
 # --- scene 3: one member of the crowd -----------------------------------------------------------------------
 class MemberScene(Scene):
     number, title = 3, "one member of the crowd: the four kinds of minimum-bias collision"
@@ -396,6 +457,7 @@ class MemberScene(Scene):
         self.nframes = self.k_table + 7 * fps
         self.nf = np.array([e["nfinal"] for e in phys.lib.events])
         self.kind = np.array([e["kind"] for e in phys.lib.events])
+        self.panels = minbias_panels()                                 # the chapter's sketch, one panel per kind (None without pdflatex/gs)
 
     def phases(self):
         return [("nd", self.k_kind[0], self.k_kind[1]), ("sd", self.k_kind[1], self.k_kind[2]), ("dd", self.k_kind[2], self.k_kind[3]), ("cd", self.k_kind[3], self.k_kind[4]),
@@ -440,6 +502,27 @@ class MemberScene(Scene):
                     "the diffractive pieces from Pythia's parametrisation, ND what remains.",
                     fontsize=8.5, color=TEXT2, transform=ax.transAxes, va="top")
 
+    def sketch(self, fig, k, st):
+        """The chapter's sketch in the free corner under the table: the panel of the kind being told (stages 0-3), fading in at the
+        start of its phase, and the four drawings side by side under the full table (stage 4)."""
+        if not self.panels:
+            return
+        W, H = FIGSIZE
+        if st < 4:
+            img = self.panels[st]
+            h = 0.455                                                   # figure height fraction: from above the caption to below the CD row
+            w = h * H * img.shape[1] / img.shape[0] / W
+            a = ramp(k, self.k_kind[st], self.k_kind[st] + 0.75 * self.fps)
+            show_panel(fig, img, [0.75 - w / 2, 0.125, w, h], alpha=a)
+            fig.text(0.75, 0.125 + h + 0.004, "the sketch of the chapter", fontsize=8.5, color=TEXT2, ha="center", va="bottom", alpha=a)
+            return
+        a = ramp(k, self.k_kind[4], self.k_kind[4] + 0.75 * self.fps)
+        crops = [p[: int(PANEL_TOP * p.shape[0])] for p in self.panels]
+        w = 0.46 / 4 - 0.006
+        for i, img in enumerate(crops):
+            h = w * W * img.shape[0] / img.shape[1] / H
+            show_panel(fig, img, [0.52 + i * (w + 0.008), 0.13, w, h], alpha=a)
+
     def draw(self, fig, k):
         ph = self.phys
         st = self.stage(k)
@@ -448,12 +531,12 @@ class MemberScene(Scene):
             kd = self.KINDS[st]
             e = ph.examples[kd]
             p = ph.per_kind[kd]
-            what = {"ND": "both protons break up, several parton pairs interact: a plateau of soft particles over ten units of rapidity. Seven of ten members of the crowd",
+            what = {"ND": "both protons break up and several parton pairs interact: soft particles over ten units of rapidity. Seven in ten of the crowd",
                     "SD": "one proton survives intact, the other dissociates: a gap in rapidity on the surviving side. One in six of the crowd",
                     "DD": "both protons dissociate into low-mass systems: a gap in the middle, little in the tracker. One in nine",
                     "CD": "both protons survive and a small system is made in the centre: a few particles. One in fifty"}[kd]
             cap = (f"{self.LONG[kd].capitalize()} ({kd}), library event {e['no']}: {what}; this one has {e['nfinal']} particles, {max(1, e.get('nmpi', 0))} parton-parton interactions, "
-                   f"{e['n_central']} charged in the tracker's reach, the hardest at {e['pt_max']:.1f} GeV. On average a {kd} collision brings {p['stable']:.0f} particles.")
+                   f"{e['n_central']} charged in the tracker's reach, the hardest at {e['pt_max']:.1f} GeV. On average {'an' if kd in ('ND', 'SD') else 'a'} {kd} collision brings {p['stable']:.0f}.")
         elif st == 4:
             cap = (f"The table of the crowd: sigma_inel = {sum(ph.sigma.values()):.2f} mb at 13.6 TeV, the four kinds in the proportions of their cross sections, "
                    f"and what each brings on average: from {ph.per_kind['CD']['stable']:.0f} to {ph.per_kind['ND']['stable']:.0f} particles, {ph.per_kind['CD']['central']:.0f} to "
@@ -482,6 +565,7 @@ class MemberScene(Scene):
         ax2 = fig.add_axes([0.52, 0.15, 0.46, 0.75])
         if st <= 4:
             self.table(ax2, st + 1 if st < 4 else 4, highlight=kd if st < 4 else None, full=(st == 4))
+            self.sketch(fig, k, st)
             return
         style_2d(ax2, 9)
         n_show = int(f * len(ph.lib))
@@ -702,13 +786,13 @@ def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
     m = phys.region.moments()
     n_in = s["n_in_time"]
     lines = {
-        "crowd_photo": (f"The photograph is taken, and now the family sets out. ... At the L H C of 2024, every bunch crossing held about {s['mu']:.0f} proton proton collisions, "
+        "crowd_photo": (f"The photograph is taken, and now the family sets out. ... At the L H C of 2025, every bunch crossing held about {s['mu']:.0f} proton proton collisions, "
                         "and ours is only one of them. This is the photograph of chapter seven, in the eta phi plane: the signal alone."),
         "crowd_stack": (f"The other collisions of the same crossing arrive, one by one. ... They are soft, they come from everywhere, and there are {n_in} of them in ours, "
                         f"a Poisson draw with mean {s['mu']:.0f}. Watch the counter: {phys.n_run[-1]} particles, and an energy density, rho, that grows by about {s['rho_grid'] / n_in:.1f} GeV per unit area per collision."),
         "crowd_full": (f"The crowd is complete. Anti k T, run on everything, finds {s['n_jets']} jets, and our jet now holds {j['pt']:.1f} GeV instead of {phys.ref['pt']:.1f}: "
                        f"{j['pt_pileup']:.0f} GeV of strangers have walked into the circle."),
-        "road_bunches": (f"Where do they come from? ... Two bunches of protons pass through each other, and where they overlap is the beam spot: in 2024, "
+        "road_bunches": (f"Where do they come from? ... Two bunches of protons pass through each other, and where they overlap is the beam spot: in 2025, "
                          f"{m[0]:.1f} centimetres long and {m[1] * 1e3:.0f} picoseconds wide, as the simulation draws it from the measured beam parameters."),
         "road_intime": (f"The in-time collisions of our crossing are spread along it, each with its own position and time. The signal is the star. "
                         f"Its nearest neighbour is {s['nearest']['dz_mm']:.2f} millimetres away in z and {s['nearest']['dt_ps']:.0f} picoseconds in time: "
@@ -717,15 +801,15 @@ def narration(phys: Physics, scenes: List[Scene]) -> Dict[str, str]:
                            f"{-s['bunches'][0]} crossings before ours and {s['bunches'][1]} after in the production window; "
                            "their collisions sit in the same place, only earlier or later, and the slow detectors will see them. In time, early and late: the colours of the pages to come."),
         "member_nd": (f"One member of the crowd. Pythia makes four kinds of inelastic collision. The non-diffractive one: both protons break up, several parton pairs interact, "
-                      f"and the particles spread over the whole rapidity range. This one has {phys.ex_nd['nfinal']} particles, {max(1, phys.ex_nd.get('nmpi', 0))} parton pairs, the hardest particle at "
+                      f"and the particles spread over the whole rapidity range, the plateau of the sketch. This one has {phys.ex_nd['nfinal']} particles, {max(1, phys.ex_nd.get('nmpi', 0))} parton pairs, the hardest particle at "
                       f"{phys.ex_nd['pt_max']:.1f} GeV. Seven of ten collisions look like this, and they carry most of the crowd."),
-        "member_sd": (f"The single-diffractive one: a proton survives, the other dissociates, and a gap in rapidity opens on the surviving side. {phys.ex_sd['nfinal']} particles here, "
+        "member_sd": (f"The single-diffractive one: a proton survives, the other dissociates, and a gap in rapidity opens on the surviving side, where the sketch is empty. {phys.ex_sd['nfinal']} particles here, "
                       f"{phys.per_kind['SD']['stable']:.0f} on average, and only {phys.per_kind['SD']['central']:.0f} in the tracker's reach. One collision in six."),
         "member_dd": (f"The double-diffractive one: both protons dissociate into low-mass systems, with a gap in the middle. {phys.per_kind['DD']['stable']:.0f} particles on average, "
                       f"almost none in the tracker. One in nine."),
         "member_cd": (f"And the central-diffractive one: both protons survive, and a small system is made in the centre. {phys.per_kind['CD']['stable']:.0f} particles on average. "
                       f"One in fifty, the rarest and the emptiest."),
-        "member_table": (f"Put together, this is the table of the crowd. The inelastic cross section, {sum(phys.sigma.values()):.1f} millibarn, is fixed by the tune; the four kinds come in the "
+        "member_table": (f"Put together, the four sketches and the table of the crowd. The inelastic cross section, {sum(phys.sigma.values()):.1f} millibarn, is fixed by the tune; the four kinds come in the "
                          f"proportions of their cross sections; and on average a collision brings {nf.mean():.0f} particles, "
                          f"{np.mean([int(((e['pt'] > 0.5) & (np.abs(e['eta']) < 2.5)).sum()) for e in phys.lib.events]):.0f} of them in the tracker's reach, and nothing above a few GeV."),
         "member_library": (f"The library: two thousand collisions generated once with Pythia at thirteen point six T e V, {nf.mean():.0f} particles on average, a median of {np.median(nf):.0f}, "

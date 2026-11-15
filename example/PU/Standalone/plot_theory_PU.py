@@ -8,12 +8,12 @@ the seed-1 record (../event_PU.lhe and standalone_pileup.json), the library pane
 
   page 1  the crowd's size     mu against the luminosity for the three scenarios; the Poisson distribution of
                                the collisions per crossing with the sixteen draws of our event; the flat profile
-                               of the Run-3 production against a 2024-like year of fills, and the reweighting
+                               of the Run-3 production against the 2025 profile of CMSSW, one fill, and the reweighting
   page 2  one member           the multiplicity of a minimum-bias collision by process type; the particles
                                per unit of eta; the transverse momentum per unit area per collision, the
                                slope of rho
   page 3  the beam spot        the collision density in (z, t) with the vertices of our crossing; the z of the
-                               960 vertices against the model and the 2024 CMSSW library; the sixteen crossings
+                               960 vertices against the model and the 2025 CMSSW library; the sixteen crossings
                                on the clock
   page 4  rho and the area     the grid cells and the kT jets with their medians; rho against the number of
                                collisions over the ensemble; the truth against rho A for our jet
@@ -66,7 +66,7 @@ class Setup:
         self.scenario = core.SCENARIOS[self.s.get("scenario", "run3") if self.s else "run3"]
 
 
-# the 2024 CMSSW library of the companion (PULib.pdf, 250 events): the z and t of its vertices in 4 cm and 100 ps bins
+# the 2025 CMSSW library of the companion (PULib.pdf, 250 events; identical to its 2024 run): the z and t of its vertices in 4 cm and 100 ps bins
 CMSSW_LIB_Z = (np.arange(-16, 17, 4.0), [0, 4, 29, 93, 92, 28, 4, 0])
 CMSSW_LIB_T = (np.arange(-0.4, 0.41, 0.1), [4, 6, 46, 81, 67, 35, 8, 3])
 CMSSW_LIB = dict(n=250, nstable_mean=194, nstable_median=132, sigma_z=3.56, sigma_t=0.122)
@@ -89,7 +89,8 @@ def page_scenario(st: Setup):
         m = core.mu_of(sc["lumi"], sc["n_bunch"])
         a1.plot([sc["lumi"]], [m], "o", color=COL_EVENT, ms=7, mec="white")
         a1.plot([sc["lumi"]], [sc["mu"]], "s", color=COL_CMSSW, ms=6, mfc="none")
-        a1.annotate(f"{sc['label'].split(',')[0]}: {m:.0f} (mixed at {sc['mu']:g})", (sc["lumi"], m), xytext=(-8, 8 if key != "ultimate" else -16), textcoords="offset points",
+        short = sc["label"].split(",")[0] + (")" if sc["label"].split(",")[0].count("(") > sc["label"].split(",")[0].count(")") else "")
+        a1.annotate(f"{short}: {m:.0f} (mixed at {sc['mu']:g})", (sc["lumi"], m), xytext=(-8, 8 if key != "ultimate" else -16), textcoords="offset points",
                     fontsize=8.5, ha="right", color=COL_EVENT)
     a1.set_xscale("log")
     a1.set_xlabel(r"instantaneous luminosity $L$  [cm$^{-2}$ s$^{-1}$]")
@@ -99,12 +100,12 @@ def page_scenario(st: Setup):
     a1.plot([], [], "o", color=COL_EVENT, label="from the formula")
     a1.plot([], [], "s", color=COL_CMSSW, mfc="none", label="the CMSSW mixing scenario")
     a1.legend(loc="upper left", fontsize=8)
-    a1.text(0.98, 0.04, f"2024: $L$ = 2 x 10$^{{34}}$, 2350 colliding bunches, levelled;\nthe simulation mixes at $\\mu$ = 60 (AVE_60_BX_25ns),\nthe production draws $\\mu_{{true}}$ flat in 55 ... 75",
-            transform=a1.transAxes, ha="right", va="bottom", fontsize=8)
+    a1.text(0.98, 0.025, f"2025: $L$ = 2.23 x 10$^{{34}}$, $n_b$ = 2340\n(the CMSSW 2025 profile); mixed\nat $\\mu$ = 60, production flat 55 ... 75",
+            transform=a1.transAxes, ha="right", va="bottom", fontsize=7.8, bbox=dict(fc="white", ec="none", alpha=0.9, pad=1.5))
     # (b) Poisson
     n = np.arange(0, 320)
     other = 200.0 if st.mu < 150 else 60.0
-    for mu, col, lab in ((st.mu, COL_MODEL, f"Poisson, $\\mu$ = {st.mu:g}" + (" (2024)" if st.mu == 60 else "")),
+    for mu, col, lab in ((st.mu, COL_MODEL, f"Poisson, $\\mu$ = {st.mu:g}" + (" (2025)" if st.mu == 60 else "")),
                          (other, COL_CMSSW, f"Poisson, $\\mu$ = {other:g}" + (" (HL-LHC)" if other == 200 else " (Run 3)"))):
         logp = n * math.log(mu) - mu - np.array([math.lgamma(k + 1) for k in n])
         a2.plot(n, np.exp(logp), "-", color=col, lw=1.8, label=lab)
@@ -124,33 +125,39 @@ def page_scenario(st: Setup):
         bxs = sorted(st.n_bx)
         a2.text(0.98, 0.80, f"our event: {tot} collisions in the {len(st.n_bx)} crossings\nbx = {bxs[0]:+d} ... {bxs[-1]:+d} (dotted: early dark yellow, late salmon)\nfor an expectation of {len(st.n_bx) * st.mu:g}; from {min(st.n_bx.values())} to {max(st.n_bx.values())}",
                 transform=a2.transAxes, ha="right", va="top", fontsize=8.5)
-    # (c) the profile of a fill, the production's flat profile, and the weight
+    # (c) the 2025 profile of CMSSW, one fill of its header, the production's flat profile, and the weight
     edges = np.arange(0, 101, 1.0)
     c = 0.5 * (edges[1:] + edges[:-1])
-    mu_fill, w_fill = core.fill_profile(core.SCENARIOS["run3"]["mu"], 12.0, 8.0, 10.0)
+    prof = core.PROFILE_2025
+    mu0 = core.mu_of(prof["lumi"], prof["n_bunch"], prof["xsec_mb"])
+    mu_fill, w_fill = core.fill_profile(mu0, prof["fill_hours"], prof["levelled_hours"], 10.0)
     p_fill = core.profile_histogram(mu_fill, w_fill, edges)
-    year = core.year_profile(np.arange(57, 68), 12.0, 8.0, 10.0, edges)
+    year = core.release_profile(edges, prof)
+    ys = core.profile_stats(prof)
     flat = core.flat_profile(*core.FLAT_PROFILE, edges)
-    a3.bar(c, year, width=1, color=COL_MODEL, alpha=0.55, label="a 2024-like year: fills levelled at 57 ... 67 for 8 h, then decaying (a model)")
-    a3.step(edges[:-1], p_fill, where="post", color=COL_MODEL, lw=1.2, ls=":", label="one fill, levelled at 60")
+    a3.bar(edges[:-1] + 0.5, year, width=1, color=COL_MODEL, alpha=0.55, label="the 2025 profile of CMSSW (Run3_2025_LHC_Simulation_..._cfi)")
+    a3.step(edges[:-1], p_fill, where="post", color=COL_MODEL, lw=1.2, ls=":",
+            label=f"one fill of its header: levelled at {mu0:.1f} for {prof['levelled_hours']:g} h, then decaying")
     a3.step(edges[:-1], flat, where="post", color=COL_CMSSW, lw=1.8, label="the production's flat profile: $\\mu_{true}$ uniform in 55 ... 75")
-    a3.set_xlim(25, 85)
+    a3.set_xlim(20, 100)
     a3.set_ylim(0, max(year.max(), flat.max()) * 2.6)
     a3.set_xlabel(r"$\mu_{true}$ (luminosity-weighted: every collision counts once)")
     a3.set_ylabel("fraction of the collisions")
-    a3.set_title("(c) the profiles, and the weight $w(\\mu_{true}) = P_{2024} / P_{sample}$", fontsize=10.5)
+    a3.set_title("(c) the profiles, and the weight $w(\\mu_{true}) = P_{2025} / P_{sample}$", fontsize=10.5)
     a3.legend(loc="upper left", fontsize=7.4)
     aw = a3.twinx()
     w = np.array([core.reweight(m, year, flat, edges) for m in c])
-    sel = (c >= core.FLAT_PROFILE[0]) & (c <= core.FLAT_PROFILE[1])
+    sel = (c >= core.FLAT_PROFILE[0]) & (c <= core.FLAT_PROFILE[1] + 1)
     aw.plot(c[sel], w[sel], "-", color=COL_EVENT, lw=2, label="$w$ of the flat sample")
-    aw.plot([st.mu], [core.reweight(st.mu, year, flat, edges)], "*", color=COL_EVENT, ms=13, mec="white")
+    aw.plot([st.mu + 0.5], [core.reweight(st.mu, year, flat, edges)], "*", color=COL_EVENT, ms=13, mec="white")
     aw.set_ylabel("weight $w$ of an event of the flat sample", color=COL_EVENT)
     aw.tick_params(axis="y", colors=COL_EVENT)
-    aw.set_ylim(0, 3.2)
+    aw.set_ylim(0, 2.0)
     aw.grid(False)
-    a3.text(0.98, 0.70, f"mean $\\mu$: {float((c * year).sum()):.0f} (year), {float((mu_fill * w_fill).sum()):.0f} (one fill)\n$w$ = {core.reweight(st.mu, year, flat, edges):.2f} at $\\mu_{{true}}$ = {st.mu:g}, 0 where the year\nnever went; a sample at a fixed $\\mu$ = {st.mu:g}\ncovers one bin and cannot be reweighted",
-            transform=a3.transAxes, ha="right", va="top", fontsize=8.2)
+    a3.text(0.02, 0.80, f"mean $\\mu$: {ys['mean']:.1f} (2025), {float((mu_fill * w_fill).sum()):.0f} (one fill)\n"
+            f"$w$ = {core.reweight(st.mu, year, flat, edges):.2f} at $\\mu_{{true}}$ = {st.mu:g}; {100 * (ys['below'] + ys['above']):.0f}% of 2025\n"
+            f"lies outside 55 ... 75, where the flat\nsample has no events; a sample at a fixed\n$\\mu$ = {st.mu:g} covers one bin and cannot be reweighted",
+            transform=a3.transAxes, ha="left", va="top", fontsize=8.2)
     fig.suptitle(f"The crowd's size: $\\mu$ = {core.mu_of(st.scenario['lumi'], st.scenario['n_bunch']):.0f} from the formula, {st.mu:g} in the mixing, {st.n_bx.get(0, '?')} in our crossing (page 1)", fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     return fig
@@ -250,7 +257,7 @@ def page_region(st: Setup):
     a1.legend(loc="upper left", fontsize=8)
     m = r.moments()
     run3 = r.name == "run3"
-    a1.text(0.98, 0.04, (f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nBetafuncEvtVtxGenerator, 2024 payload: 3.6 cm, $\\sigma_z/c$ = 120 ps\nthe 250-event CMSSW library: {CMSSW_LIB['sigma_z']:.2f} cm, {CMSSW_LIB['sigma_t'] * 1e3:.0f} ps"
+    a1.text(0.98, 0.04, (f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nBetafuncEvtVtxGenerator, 2025 payload: 3.6 cm, $\\sigma_z/c$ = 120 ps\nthe 250-event CMSSW library: {CMSSW_LIB['sigma_z']:.2f} cm, {CMSSW_LIB['sigma_t'] * 1e3:.0f} ps"
              if run3 else f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nCMSSW HLLHCEvtVtxGenerator: 4.3 cm, 190 ps\nthe 50-event CMSSW library: 4.4 cm, 164 ps"),
             transform=a1.transAxes, ha="right", va="bottom", fontsize=8.5)
     # (b) the z marginal: the model, the vertices of our event, the CMSSW library
@@ -261,10 +268,10 @@ def page_region(st: Setup):
     nbx = len(set(c["bx"] for c in allv))
     if run3:
         pz = np.exp(-((zz - r.z0) ** 2) / (2 * r.sigma_z ** 2)) / (math.sqrt(2 * math.pi) * r.sigma_z)
-        a2.plot(zz, pz, "-", color=COL_MODEL, lw=2, label=f"the 2024 payload: Gaussian, $z_0$ = {r.z0:.2f} cm, $\\sigma_z$ = {r.sigma_z:.1f} cm")
+        a2.plot(zz, pz, "-", color=COL_MODEL, lw=2, label=f"the 2025 payload: Gaussian, $z_0$ = {r.z0:.2f} cm, $\\sigma_z$ = {r.sigma_z:.1f} cm")
         ze, zh = CMSSW_LIB_Z
         zh = np.array(zh, dtype=float) / (CMSSW_LIB["n"] * (ze[1] - ze[0]))
-        a2.step(ze, np.append(zh, zh[-1]), where="post", color=COL_CMSSW, lw=1.6, ls="--", label=f"the 2024 CMSSW library, 250 events: r.m.s. {CMSSW_LIB['sigma_z']:.2f} cm")
+        a2.step(ze, np.append(zh, zh[-1]), where="post", color=COL_CMSSW, lw=1.6, ls="--", label=f"the 2025 CMSSW library, 250 events: r.m.s. {CMSSW_LIB['sigma_z']:.2f} cm")
     else:
         for lab, sw, col, ls in (("head-on bunches: $\\sigma_s/\\sqrt{2}$", (False, False, False), TEXT2, ":"),
                                  ("+ crossing angle 510 $\\mu$rad", (True, False, False), COL_DD, "--"),
@@ -310,7 +317,7 @@ def page_region(st: Setup):
     if st.s:
         a3.text(0.98, 0.04, f"nearest crowd vertex to the signal's:\n{st.s['nearest']['dz_mm']:.1f} mm in z, {st.s['nearest']['dt_ps']:.0f} ps in t;\n{st.s['n_visible']} of {st.s['n_in_time']} in-time collisions visible to the tracker",
                 transform=a3.transAxes, ha="right", va="bottom", fontsize=8.5)
-    fig.suptitle(f"The beam spot of {'2024' if run3 else 'the HL-LHC'}: $\\sigma_z$ = {m[0]:.2f} cm and $\\sigma_t$ = {m[1] * 1e3:.0f} ps, and 25 ns between crossings (page 3)", fontsize=12)
+    fig.suptitle(f"The beam spot of {'2025' if run3 else 'the HL-LHC'}: $\\sigma_z$ = {m[0]:.2f} cm and $\\sigma_t$ = {m[1] * 1e3:.0f} ps, and 25 ns between crossings (page 3)", fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     return fig
 

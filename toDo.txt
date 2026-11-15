@@ -6,6 +6,7 @@ Best communication strategy to reduce number of pages without compromising physi
 (d) Every book has two component: Letter (what is written) and spirit (why it is written). We can keep the spirit in the text and refer the letter to references whenever applicable.
 (e) Follow with Fable if we can get better suggestions
 
+Maybe we can have a Communication.md file that every chapter follows and also a Validation.md file.
 
 In future we can have JitJetNano.root where each chapter can be a separate collection holding relevant information end to end. 
 

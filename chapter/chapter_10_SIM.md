@@ -12,8 +12,9 @@ quotes with the command that produced it. All files are in
 CMSSW side (the `MixingModule` with the detector simulation: the 193 collisions of bx = -1, 0, +1, their primaries, tracker hits and pileup-dominated ECAL cells) is in [JitJetSW](https://github.com/ravindkv/JitJetSW) and is
 written up there, see section 4.3.
 
-The conditions are those of Run 3 in 2024, as in chapter 8: 13.6 TeV, mu = 60, the
-2024 beam spot and the 2024 CMS detector (`CMSSW_15_0_5`). The HL-LHC appears only in
+The conditions are those of Run 3 in 2025, as in chapter 8: 13.6 TeV, mu = 60, the
+2025 beam spot and the CMS detector of 2025 (`CMSSW_15_0_5`, `auto:phase1_2025_realistic`,
+era `Run3_2025`; the geometry is the `Extended2024` one, which the 2025 global tag reads unchanged). The HL-LHC appears only in
 the exercises and the open problems.
 
 | | |

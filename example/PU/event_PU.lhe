@@ -3467,16 +3467,16 @@
 
  --------  End Standalone Jet Constituent Listing  (row -> jet index in ak4, ak4nonu, ak8; -1 = not clustered or in a jet below the threshold)  ----------
 
- --------  Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2024; seed 1)  ----------
+ --------  Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2025; seed 1)  ----------
  
-  mu from L sigma/(n_b f_rev): 59.35; mixed at mu = 60
+  mu from L sigma/(n_b f_rev): 66.46; mixed at mu = 60
   collisions per bunch crossing: bx -12: 60, bx -11: 56, bx -10: 68, bx -9: 61, bx -8: 66, bx -7: 56, bx -6: 55, bx -5: 50, bx -4: 53, bx -3: 66, bx -2: 61, bx -1: 60, bx +0: 63, bx +1: 63, bx +2: 59, bx +3: 63; 960 in all, 63 in time
   beam spot: sigma_z = 3.60 cm, sigma_t = 120 ps (model); drawn r.m.s. z 3.56 cm, t 124 ps, x 8.9 um, y 9.6 um
   signal vertex: x = 287.13 um, y = -155.09 um, z = 0.157 cm, t = 0.0940 ns
   in-time final particles: 13456 (10045 within |eta| < 5); signal 744 (651)
   rho: grid median 75.468 GeV per unit area, jet median 78.499; signal alone 3.420, crowd alone 69.933
   visible in-time vertices (>= 4 charged, pT > 0.5, |eta| < 2.5): 40 of 63
- --------  End Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2024; seed 1)  ----------
+ --------  End Standalone Pileup Summary  (mu = 60, window bx = -12..+3, 25 ns; library pileup_library.lhe.gz (2000 events, random); beam spot 2025; seed 1)  ----------
 
  --------  Standalone Pileup Vertex Listing  (k = 0 the signal; bx, library event, process, final particles, central charged, visible; vertex x y [um], z [cm], t [ns] with the 25 ns x bx offset)  ----------
  

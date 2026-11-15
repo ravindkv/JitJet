@@ -1,0 +1,236 @@
+% ---------------------------------------------------------------------------
+% Chapter 10: The Crowd at the Border: Mixing the Simulated Hits
+% SKELETON (2026-11-15), laid out after Constitution.md rules B-E. Every
+% \todo marks text, numbers or figures still to come.
+% The scripts, records, logs and films of this stop will live in example/SIM/,
+% the technical companion is chapter/chapter_10_SIM.md, and the CMSSW side
+% (the MixingModule with the detector simulation: the 193 collisions of the
+% three crossings bx = -1, 0, +1, their primaries, tracker hits and
+% pileup-dominated ECAL cells) is chapter 10 of JitJetSW, linked from
+% example/SIM/CMSSW/README.md and already cited by chapter_08_PU.md.
+% What this stop is: the crowd of chapter 8 crosses the border with the
+% family; its SimHits, in time and out of time, are added to ours. Energy
+% is added to the event here. The SimHits become ADC counts in chapter 11.
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\placeholderfig}[1]{\fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering\todo{#1}}}}
+\providecommand{\Mix}{\code{MixingModule}\xspace}
+\providecommand{\bx}{\ensuremath{\mathrm{bx}}\xspace}
+\providecommand{\ns}{\ensuremath{\,\mathrm{ns}}\xspace}
+\chapter{The Crowd at the Border: Mixing the Simulated Hits}
+\chaptermark{The Crowd at the Border}
+\label{ch:crowd_at_the_border}
+
+\begin{journeybox}
+The family did not cross the border alone. The sixty families of the crowd
+cross at the same gate, and so do the crowds that passed a little earlier
+and will pass a little later, whose footprints are still on the floor of
+the customs hall. The guards weigh everyone's luggage on the same scales,
+and what reaches their ledger is the sum. \todo{Polish the metaphor
+paragraph (B1).}
+\end{journeybox}
+
+\physicsline{every collision of the crowd through the detector; the
+\Mix and the crossing frame; the time window of each subdetector and the
+$25\ns\times\bx$ offsets; in-time and out-of-time SimHits; classic mixing
+and premixing; the truth that survives the mixing, \code{PileupSummaryInfo}
+and the hit-level history. The one number to take away: \todo{the energy
+the crowd adds to the SimHits inside our jet, in time and out of time}.}
+
+\section{What we will see at this stop}
+\label{sec:crowd_at_the_border:what_we_compute}
+
+% (C1-1) motivation, connected to the previous chapter
+\todo{Motivation (C1-1). \Cref{ch:crowd_on_the_road} let the crowd arrive
+at the generator level, where nothing lasts $25\ns$;
+\cref{ch:crossing_the_border} sent the family alone through the detector.
+Here the two meet: every collision of the production window is transported
+by \GEANT, its SimHits are shifted by its crossing, and the hits of all of
+them are stacked on the family's. Give the four numbers to take away.}
+
+\paragraph{The film.}
+\label{sec:crowd_at_the_border:animation}
+% (C1-2) one paragraph, at most one figure of key frames
+\todo{One paragraph on the tenth film of the playlist of \jitjetworld.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{Key frames of the film, from
+\file{example/SIM/Standalone/animate_standalone_SIM_stills.pdf}.}
+\caption[Key frames of the animated mixing stage]{Key frames of the
+animated mixing stage. \todo{Caption.}}
+\label{fig:crowd_at_the_border:stills}
+\end{figure}
+
+\paragraph{The picture to carry: one hall, many crossings.}
+% (C1-3) a sketch or diagram
+\todo{The picture to carry: the SimHits of the signal and of the crowd of
+the crossings $\bx=-12\ldots+3$ on one time axis, with the readout window
+of each subdetector drawn over them. TikZ in \file{chapter/tikz/sim_*.tex}.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{TikZ: the crossings and the subdetector windows
+(\file{chapter/tikz/sim_windows.tex}).}
+\caption[The crowd at the border]{The crowd at the border. \todo{Caption.}}
+\label{fig:crowd_at_the_border:windows_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:crowd_at_the_border:validation}
+% (C1-4) the agreement table, one or two paragraphs
+\todo{One or two paragraphs on the agreement table: the standalone script
+(the stacking of the SimHits of chapter 9 for the signal and the library),
+the official package (\GEANT on the same collisions), and \CMSSW (the
+\Mix with the detector simulation of JitJetSW). How each column is produced
+is in the companion,}
+\begin{center}
+  \companion{chapter_10_SIM}
+\end{center}
+
+\begin{table}[htbp]\centering\small
+\caption[The crowd at the border obtained three ways]{The crowd at the
+border obtained three ways. \todo{Caption: what each column is.}}
+\label{tab:crowd_at_the_border:numbers}
+\begin{tabular}{lrrr}\toprule
+ & standalone & \GEANT & \CMSSW 2024 \\ \midrule
+collisions transported, per crossing & \todo{} & \todo{} & \todo{} \\
+primaries handed to \GEANT & \todo{} & \todo{} & \todo{} \\
+tracker SimHits: signal / crowd & \todo{} & \todo{} & \todo{} \\
+calorimeter SimHits: signal / in-time / out-of-time & \todo{} & \todo{} & \todo{} \\
+cells dominated by the crowd & \todo{} & \todo{} & \todo{} \\
+energy of the crowd in our jet's cells [GeV] & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:crowd_at_the_border:theory}
+% Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
+% (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
+
+\subsection{Every collision crosses: simulating the crowd}
+\label{sec:crowd_at_the_border:every_collision}
+\todo{(C2-1) Why the crowd cannot be added after the detector, and what it
+costs to simulate it.
+(C2-2) TikZ: the library of minimum-bias SimHits read crossing by crossing.
+(C2-3) The number of collisions in the window,
+$N=\sum_{\bx}\mathrm{Poisson}(\mu)$, and the cost in CPU per event.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: SimHits per subdetector against the number of collisions.}
+
+\subsection{The crossing frame: time windows and offsets}
+\label{sec:crowd_at_the_border:crossing_frame}
+\todo{(C2-1) A hit of the crossing before ours arrives $25\ns$ earlier, and
+each subdetector listens for a different time.
+(C2-2) TikZ: hits on a time axis with the window of each subdetector.
+(C2-3) The hit time $t=t_{\mathrm{G4}}+25\ns\cdot\bx$ and the acceptance
+$\Theta(t_{\min}<t<t_{\max})$ per subdetector.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the time distribution of the SimHits of our jet's cells.}
+
+\subsection{In time and out of time: the energy the crowd adds}
+\label{sec:crowd_at_the_border:in_out_of_time}
+\todo{(C2-1) The energy in a cell is the sum over all crossings it listens to.
+(C2-2) TikZ: one cell receiving hits from several crossings.
+(C2-3) $E_{\mathrm{cell}}=\sum_{\bx}\sum_{\mathrm{hits}\in\bx}E_{\mathrm{hit}}$
+and its mean $\propto\mu$.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the energy of the crowd per cell versus $\eta$, in time and
+out of time.}
+
+\subsection{Classic mixing and premixing}
+\label{sec:crowd_at_the_border:premixing}
+\todo{(C2-1) Why the production mixes the crowd once and reuses it.
+(C2-2) TikZ: the two workflows side by side.
+(C2-3) The statistical cost of a reused library.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the correlation between events sharing library collisions.}
+
+\subsection{The truth that survives}
+\label{sec:crowd_at_the_border:truth}
+\todo{(C2-1) After this stop the hits of the family and of the crowd are
+added, and only the bookkeeping tells them apart.
+(C2-2) TikZ: a SimHit with its track, its vertex and its crossing.
+(C2-3) The fraction of a cell's energy that is the family's.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the signal fraction of the cells of our jet.}
+
+\paragraph{The recipe.}
+\todo{The recipe, step by step, that the standalone script runs.}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:crowd_at_the_border:ledger}
+% (C3-1) the ledger table, "The same event in CMSSW", one figure page
+\todo{What the record \file{example/SIM/event_SIM.*} holds, and what the
+ledger says.}
+
+\begin{ledgerboth}{The Crowd at the Border}{tab:crowd_at_the_border:ledger}{%
+\todo{What the two blocks are.}}
+\ledgerblock{Standalone (seed 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+\ledgerrow{the family's energy in SimHits (chapter 9)}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerrow{with the crowd's SimHits, in time}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerrow{with the crowd's SimHits, in and out of time}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerblock{\CMSSW (run 1, event 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
+\ledgerrow{with the crowd's SimHits, $\bx=-1\ldots+1$}{\todo{}}{--}{\todo{}}{\todo{}}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:crowd_at_the_border:cmssw_event}
+\todo{The \Mix of JitJetSW with the detector simulation: the $193$
+collisions of the three crossings, their primaries, the tracker hits and
+the ECAL cells dominated by the crowd, read from its log.}
+
+\begin{figure}[p]\centering
+\placeholderfig{Standalone display: \file{SIM/journey_SIM.pdf}.}\\[2mm]
+\placeholderfig{\CMSSW display: \file{SIM/CMSSW/simHitAnalyzer_10_SIM.pdf}.}
+% when the files exist:
+% \ledgerdisplays
+%   {SIM/journey_SIM.pdf}{Standalone: ...}{fig:crowd_at_the_border:journey}
+%   {SIM/CMSSW/simHitAnalyzer_10_SIM.pdf}{\CMSSW: ...}{fig:crowd_at_the_border:cmssw}
+\caption[The family and the crowd in the detector, standalone and
+\CMSSW]{The family and the crowd in the detector, standalone (top) and
+\CMSSW (bottom). \todo{Caption.}}
+\label{fig:crowd_at_the_border:displays}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:crowd_at_the_border:caveats}
+\begin{itemize}
+  \item \todo{SimHits are still energy: the pulse that spreads a hit over
+    several crossings is \cref{ch:customs_form}.}
+  \item \todo{The library is finite and reused.}
+  \item \todo{The standalone windows against the \CMSSW ones.}
+  \item \todo{One event is one sample.}
+\end{itemize}
+
+\section{Further reading}
+\label{sec:crowd_at_the_border:further_reading}
+The \CMSSW simulation and its premixing are described in
+\cite{Hildreth:2017caz}, the toolkit in \cite{GEANT4:2002zbu}, and the
+experiment's account of its crowd in the pileup mitigation paper of
+CMS~\cite{CMS:2020ebo}. \todo{Literature survey: the mixing module, the
+out-of-time pileup in the calorimeters, premixed libraries.}
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \todo{Pitfall 1.}
+  \item \todo{Pitfall 2.}
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item \todo{Exercise 1.}
+\item \todo{Exercise 2.}
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:crowd_at_the_border:open_problems}
+\todo{Literature survey: mixing two hundred collisions per crossing, the
+size of a Phase-2 premixed library, timing with the MIP timing
+detector~\cite{Butler:2019rpu}.}
+\begin{enumerate}
+  \item \todo{Open problem 1.}
+  \item \todo{Open problem 2.}
+\end{enumerate}
+The next stop turns the energy in the hall into numbers on a form.

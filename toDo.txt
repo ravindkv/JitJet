@@ -1,4 +1,11 @@
 
+Best communication strategy to reduce number of pages without compromising physics goals
+(a) An image is better than thousand words. We can follow this philosophy to reduce/compress the text in the future (once the first draft of the book is completed)
+(b) Sometimes we speak too much but say too little
+(c) Sometimes we look too much but see little
+(d) Every book has two component: Letter (what is written) and spirit (why it is written). We can keep the spirit in the text and refer the letter to references whenever applicable.
+(e) Follow with Fable if we can get better suggestions
+
 
 In future we can have JitJetNano.root where each chapter can be a separate collection holding relevant information end to end. 
 

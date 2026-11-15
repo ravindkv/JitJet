@@ -1,0 +1,250 @@
+% ---------------------------------------------------------------------------
+% Chapter 9: Crossing the Border: Detector Simulation with Geant4
+% SKELETON (2026-11-15), laid out after Constitution.md rules B-E. Every
+% \todo marks text, numbers or figures still to come.
+% The scripts, records, logs and films of this stop will live in example/G4/,
+% the technical companion is chapter/chapter_09_G4.md, and the CMSSW side
+% (the GEN-SIM step of the signal event in the 2024 detector) is chapter 9
+% of JitJetSW, linked from example/G4/CMSSW/README.md.
+% What this stop is: the family alone, no crowd, transported by GEANT4
+% through the 2024 CMS detector, the 3.8 T field and its material, down to
+% SimHits. The crowd crosses the border in chapter 10 (SIM), the SimHits
+% become ADC counts in chapter 11 (DIGI).
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\placeholderfig}[1]{\fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering\todo{#1}}}}
+\providecommand{\Xzero}{\ensuremath{X_0}\xspace}
+\providecommand{\lambdaI}{\ensuremath{\lambda_I}\xspace}
+\chapter{Crossing the Border: Detector Simulation with \GEANT}
+\chaptermark{Crossing the Border}
+\label{ch:crossing_the_border}
+
+\begin{journeybox}
+The family now enters a foreign country: silicon, lead tungstate, brass and
+iron, under a magnetic field of $3.8$~tesla. The road bends, the luggage
+gets heavier with every layer crossed, and some members of the family are
+stopped at the gate for good. The border guards do not count people, they
+weigh luggage, and their scales are made of material that keeps part of
+what it weighs. \todo{Polish the metaphor paragraph (B1).}
+\end{journeybox}
+
+\physicsline{the 2024 CMS detector as \GEANT sees it, the material budget
+in radiation and interaction lengths; charged particles in a field and in
+matter: curvature, ionisation, multiple scattering, bremsstrahlung and
+photon conversions; electromagnetic showers; hadronic showers, the
+invisible energy and non-compensation, $e/h$; sampling calorimeters and
+the SimHits of our jet. The one number to take away: \todo{the fraction
+of the jet's energy that the calorimeters actually register as SimHits,
+from the standalone script and \CMSSW}.}
+
+\section{What we will see at this stop}
+\label{sec:crossing_the_border:what_we_compute}
+
+% (C1-1) motivation, connected to the previous chapter
+\todo{Motivation (C1-1). Start from the end of \cref{ch:crowd_on_the_road}:
+the family of \cref{ch:family_photograph} is a list of particles, and the
+detector is the first place where a particle is no longer a four-vector.
+This stop follows the family alone, without the crowd, so that every
+SimHit is ours; the crowd crosses the border in \cref{ch:crowd_at_the_border}.
+Say what is lost here (neutrinos, muons that walk through, the invisible
+energy of hadronic showers, the energy left in the tracker material) and
+give the four numbers to take away.}
+
+\paragraph{The film.}
+\label{sec:crossing_the_border:animation}
+% (C1-2) one paragraph, at most one figure of key frames
+\todo{One paragraph on the ninth film of the playlist of \jitjetworld:
+the scenes, where it picks up (the crowd of \cref{ch:crowd_on_the_road})
+and where it ends (the crowd crossing too).}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{Key frames of the film, from
+\file{example/G4/Standalone/animate_standalone_G4_stills.pdf}.}
+\caption[Key frames of the animated detector-simulation stage]{Key frames
+of the animated detector-simulation stage. \todo{Caption.}}
+\label{fig:crossing_the_border:stills}
+\end{figure}
+
+\paragraph{The picture to carry: the family in the detector.}
+% (C1-3) a sketch or diagram
+\todo{The picture to carry: a quarter view of the CMS detector, our jet
+entering at $\eta=-1.44$, the charged members curling in the field,
+photons showering in the ECAL, hadrons in the HCAL, the muon and the
+neutrinos leaving. TikZ in \file{chapter/tikz/g4_*.tex}.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{TikZ: the family crossing the CMS detector
+(\file{chapter/tikz/g4_border.tex}).}
+\caption[The family crossing the border]{The family crossing the border.
+\todo{Caption.}}
+\label{fig:crossing_the_border:border_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:crossing_the_border:validation}
+% (C1-4) the agreement table, one or two paragraphs
+\todo{One or two paragraphs on the agreement table: the standalone script
+(a NumPy transport of the family through a simplified CMS geometry), the
+official package (\GEANT itself, standalone, on the same particles and the
+same simplified geometry), and \CMSSW (the GEN-SIM step of the signal event
+in the 2024 detector, \code{CMSSW\_15\_0\_5}). How each column is produced
+is in the companion,}
+\begin{center}
+  \companion{chapter_09_G4}
+\end{center}
+
+\begin{table}[htbp]\centering\small
+\caption[The family in the detector obtained three ways]{The family in the
+detector obtained three ways. \todo{Caption: what each column is.}}
+\label{tab:crossing_the_border:numbers}
+\begin{tabular}{lrrr}\toprule
+ & standalone & \GEANT & \CMSSW 2024 \\ \midrule
+material in front of the ECAL at $\eta=-1.44$ [\Xzero] & \todo{} & \todo{} & \todo{} \\
+charged members reaching the ECAL / looping & \todo{} & \todo{} & \todo{} \\
+photons converted in the tracker & \todo{} & \todo{} & \todo{} \\
+energy deposited in ECAL / HCAL / HF [GeV] & \todo{} & \todo{} & \todo{} \\
+energy escaping: neutrinos, muons, punch-through [GeV] & \todo{} & \todo{} & \todo{} \\
+visible fraction of the jet energy & \todo{} & \todo{} & \todo{} \\
+SimHits: tracker / ECAL / HCAL & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:crossing_the_border:theory}
+% Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
+% (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
+
+\subsection{The country: the 2024 detector, its field and its material}
+\label{sec:crossing_the_border:detector}
+\todo{(C2-1) Why the geometry and the material budget come first.
+(C2-2) TikZ: the $r$--$z$ quarter of CMS with the subdetectors.
+(C2-3) The material budget $t(\eta)=\int\mathrm{d}s/\Xzero$ and the
+curvature $p_T[\GeV]=0.3\,B[\mathrm{T}]\,R[\mathrm{m}]$.
+(C2-4) The numbers for our jet from the \code{-v} log.
+(C2-5) Plot: material budget versus $\eta$ in \Xzero and \lambdaI.}
+
+\subsection{A charged member in matter: ionisation and multiple scattering}
+\label{sec:crossing_the_border:charged}
+\todo{(C2-1) What the tracker sees of a charged hadron.
+(C2-2) TikZ: a track crossing silicon layers, with its scattering angle.
+(C2-3) Bethe--Bloch and the Highland formula for $\theta_0$.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: $\mathrm{d}E/\mathrm{d}x$ and $\theta_0$ over the momenta of
+the family.}
+
+\subsection{Photons and electrons: conversions and electromagnetic showers}
+\label{sec:crossing_the_border:em_shower}
+\todo{(C2-1) The photons of the $\pi^0$ decays of \cref{ch:children_getting_married} carry
+a fifth of the jet.
+(C2-2) TikZ: a conversion in the tracker and a shower in a crystal.
+(C2-3) The conversion probability $1-e^{-7t/9}$ and the longitudinal
+profile $\mathrm{d}E/\mathrm{d}t=E_0\,b\,(bt)^{a-1}e^{-bt}/\Gamma(a)$, the
+Moli\`ere radius.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the profile and its containment in $25.8\,\Xzero$ of
+lead tungstate.}
+
+\subsection{Hadrons: hadronic showers, the invisible energy and $e/h$}
+\label{sec:crossing_the_border:had_shower}
+\todo{(C2-1) Two thirds of the jet are hadrons, and the calorimeter does
+not see all of their energy.
+(C2-2) TikZ: a hadronic shower with its electromagnetic core, nuclear
+fragments and neutrons.
+(C2-3) The electromagnetic fraction $f_{\mathrm{em}}=1-(E/E_0)^{k-1}$ and
+the response $\pi/e=f_{\mathrm{em}}+(1-f_{\mathrm{em}})\,h/e$; the
+physics list of \CMSSW.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: $\pi/e$ versus energy, with the hadrons of our jet on it.}
+
+\subsection{The scales of the guards: sampling and the SimHits}
+\label{sec:crossing_the_border:sampling}
+\todo{(C2-1) The HCAL samples the shower in scintillator between brass
+plates; what is written is a SimHit, energy and time in an active volume.
+(C2-2) TikZ: a sampling calorimeter, absorber and active layers.
+(C2-3) The sampling fraction and the stochastic term
+$\sigma/E=a/\sqrt{E}\oplus c$.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the energy of our jet in SimHits per subdetector.}
+
+\paragraph{The recipe.}
+\todo{The recipe, step by step, that the standalone script runs.}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:crossing_the_border:ledger}
+% (C3-1) the ledger table, "The same event in CMSSW", one figure page
+\todo{What the record \file{example/G4/event_G4.*} holds, and what the
+ledger says.}
+
+\begin{ledgerboth}{Crossing the Border}{tab:crossing_the_border:ledger}{%
+\todo{What the two blocks are.}}
+\ledgerblock{Standalone (seed 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+\ledgerrow{with the crowd, after $\pt-\rhoPU A$ (chapter 8)}{93.64}{--}{115}{$-39.89$}
+\ledgerrow{the family's energy in SimHits}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerblock{\CMSSW (run 1, event 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
+\ledgerrow{the family's energy in SimHits}{\todo{}}{--}{\todo{}}{\todo{}}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:crossing_the_border:cmssw_event}
+\todo{The GEN-SIM step of JitJetSW on the signal event: the
+\code{g4SimHits} of our jet, read from the log of the analyser.}
+
+\begin{figure}[p]\centering
+\placeholderfig{Standalone display: \file{G4/journey_G4.pdf}.}\\[2mm]
+\placeholderfig{\CMSSW display: \file{G4/CMSSW/simHitAnalyzer_09_G4.pdf}.}
+% when the files exist:
+% \ledgerdisplays
+%   {G4/journey_G4.pdf}{Standalone: ...}{fig:crossing_the_border:journey}
+%   {G4/CMSSW/simHitAnalyzer_09_G4.pdf}{\CMSSW: ...}{fig:crossing_the_border:cmssw}
+\caption[The family in the detector, standalone and \CMSSW]{The family in
+the detector, standalone (top) and \CMSSW (bottom). \todo{Caption.}}
+\label{fig:crossing_the_border:displays}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:crossing_the_border:caveats}
+\begin{itemize}
+  \item \todo{The family alone: no crowd, which is \cref{ch:crowd_at_the_border}.}
+  \item \todo{SimHits are energy, not signals: the ADC counts are
+    \cref{ch:customs_form}.}
+  \item \todo{The simplified geometry of the standalone script against
+    the full 2024 geometry of \CMSSW.}
+  \item \todo{One event is one sample.}
+\end{itemize}
+
+\section{Further reading}
+\label{sec:crossing_the_border:further_reading}
+The toolkit is \GEANT~\cite{GEANT4:2002zbu}; the detector is described in
+\cite{CMS:2008xjf} and its Run-3 state in \cite{CMS:2024aqx}; calorimetry
+is Wigmans' book~\cite{Wigmans:2000vf}, and the passage of particles
+through matter the review of the Particle Data
+Group~\cite{ParticleDataGroup:2024cfk}. \todo{Literature survey: the
+\CMSSW simulation, its physics lists and its validation with test-beam
+data.}
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \todo{Pitfall 1.}
+  \item \todo{Pitfall 2.}
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item \todo{Exercise 1.}
+\item \todo{Exercise 2.}
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:crossing_the_border:open_problems}
+\todo{Literature survey of the Phase-2 detector simulation: the
+high-granularity endcap calorimeter~\cite{CMS:2017jpq}, the Phase-2
+tracker~\cite{CMS:2017lum}, the timing layer~\cite{Butler:2019rpu}, and
+the cost of simulating them.}
+\begin{enumerate}
+  \item \todo{Open problem 1.}
+  \item \todo{Open problem 2.}
+\end{enumerate}
+The next stop lets the crowd cross the border too.

@@ -1,0 +1,220 @@
+% ---------------------------------------------------------------------------
+% Chapter 13: The Second Checkpoint: High-Level Trigger
+% SKELETON (2026-11-15), laid out after Constitution.md rules B-E. Every
+% \todo marks text, numbers or figures still to come.
+% The scripts, records, logs and films of this stop will live in example/HLT/,
+% the technical companion is chapter/chapter_13_HLT.md, and the CMSSW side
+% (the HLT menu run on the L1-accepted event) is chapter 13 of JitJetSW,
+% linked from example/HLT/CMSSW/README.md.
+% What this stop is: the second checkpoint. A fast reconstruction of the
+% event, online jets and online corrections, and a decision: the paths the
+% event fired, the stamp it carries into the stored data.
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\placeholderfig}[1]{\fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering\todo{#1}}}}
+\chapter{The Second Checkpoint: High-Level Trigger}
+\chaptermark{The Second Checkpoint}
+\label{ch:second_checkpoint}
+
+\begin{journeybox}
+The second checkpoint is staffed by the same kind of officers who will later
+conduct the census, but in a hurry. They reconstruct the family quickly,
+calibrate it with an older table, and keep only about one crossing in a
+hundred of those the first guard let through. The family that passes
+carries the stamps of both checkpoints into the archive. \todo{Polish the
+metaphor paragraph (B1).}
+\end{journeybox}
+
+\physicsline{from a hundred kilohertz to a few kilohertz; the HLT farm and
+its GPUs; paths, modules and filters; calorimeter jets and Particle-Flow
+jets online; online pileup mitigation and online jet energy corrections;
+prescales, streams and primary datasets; measuring a trigger efficiency.
+The one number to take away: \todo{the HLT jet of our event against the
+L1 jet of \cref{ch:first_checkpoint} and the jet of
+\cref{ch:family_photograph}, and the path that kept the event}.}
+
+\section{What we will see at this stop}
+\label{sec:second_checkpoint:what_we_compute}
+
+% (C1-1) motivation, connected to the previous chapter
+\todo{Motivation (C1-1). \Cref{ch:first_checkpoint} let our event through on
+coarse towers. The HLT has the full event and a few hundred milliseconds:
+it runs a fast version of the reconstruction that the census of the next
+part will run, builds jets, corrects them with the online calibration and
+decides again. Give the four numbers to take away.}
+
+\paragraph{The film.}
+\label{sec:second_checkpoint:animation}
+% (C1-2) one paragraph, at most one figure of key frames
+\todo{One paragraph on the thirteenth film of the playlist of \jitjetworld.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{Key frames of the film, from
+\file{example/HLT/Standalone/animate_standalone_HLT_stills.pdf}.}
+\caption[Key frames of the animated High-Level-Trigger stage]{Key frames of
+the animated High-Level-Trigger stage. \todo{Caption.}}
+\label{fig:second_checkpoint:stills}
+\end{figure}
+
+\paragraph{The picture to carry: a path.}
+% (C1-3) a sketch or diagram
+\todo{The picture to carry: one HLT path as a chain of modules and filters,
+the L1 seed at its head, the calorimeter jets, the Particle-Flow jets, the
+threshold at its end, and our event walking through it. TikZ in
+\file{chapter/tikz/hlt_*.tex}.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{TikZ: an HLT jet path (\file{chapter/tikz/hlt_path.tex}).}
+\caption[The second checkpoint]{The second checkpoint. \todo{Caption.}}
+\label{fig:second_checkpoint:path_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:second_checkpoint:validation}
+% (C1-4) the agreement table, one or two paragraphs
+\todo{One or two paragraphs on the agreement table: the standalone script
+(online jets and online corrections ported to NumPy), the official package
+(\FASTJET and the online correction tables on the same inputs), and
+\CMSSW (the 2024 HLT menu of JitJetSW). How each column is produced is in
+the companion,}
+\begin{center}
+  \companion{chapter_13_HLT}
+\end{center}
+
+\begin{table}[htbp]\centering\small
+\caption[The second checkpoint obtained three ways]{The second checkpoint
+obtained three ways. \todo{Caption: what each column is.}}
+\label{tab:second_checkpoint:numbers}
+\begin{tabular}{lrrr}\toprule
+ & standalone & official & \CMSSW 2024 \\ \midrule
+our calorimeter jet online, raw / corrected [GeV] & \todo{} & \todo{} & \todo{} \\
+our Particle-Flow jet online, raw / corrected [GeV] & \todo{} & \todo{} & \todo{} \\
+online \rhoPU [GeV per unit area] & \todo{} & \todo{} & \todo{} \\
+online $H_T$ [GeV] & \todo{} & \todo{} & \todo{} \\
+jet paths fired & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:second_checkpoint:theory}
+% Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
+% (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
+
+\subsection{From a hundred kilohertz to a few: HLT design}
+\label{sec:second_checkpoint:design}
+\todo{(C2-1) Software on a farm, with a time budget per event.
+(C2-2) TikZ: paths, modules and filters, the farm and its GPUs.
+(C2-3) The time budget $\langle t\rangle\le N_{\mathrm{cores}}/R_{\mathrm{L1}}$
+and the output rate.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the time per module for our event.}
+
+\subsection{Jets online: calorimeter jets and Particle-Flow jets}
+\label{sec:second_checkpoint:online_jets}
+\todo{(C2-1) A calorimeter jet first because it is cheap, a Particle-Flow jet
+when the event deserves it.
+(C2-2) TikZ: the two kinds of jet on our event.
+(C2-3) The \antikt jet on online inputs and the regional reconstruction.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the online jets against the jet of chapter 7.}
+
+\subsection{Online pileup mitigation and jet energy corrections}
+\label{sec:second_checkpoint:online_jec}
+\todo{(C2-1) The online calibration is an older table and a faster method.
+(C2-2) TikZ: the factorised correction applied online.
+(C2-3) $\pt^{\mathrm{corr}}=C(\pt,\eta,\rhoPU,A)\,\pt^{\mathrm{raw}}$, with
+the offset of \cref{ch:crowd_on_the_road}.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the online response against the offline one.}
+
+\subsection{Measuring a trigger efficiency}
+\label{sec:second_checkpoint:efficiency}
+\todo{(C2-1) An analysis needs the efficiency of the path it used, measured
+in data.
+(C2-2) TikZ: orthogonal datasets, tag-and-probe and the bootstrap of
+paths.
+(C2-3) $\varepsilon=N(\mathrm{ref}\wedge\mathrm{probe})/N(\mathrm{ref})$ and
+its binomial uncertainty.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the turn-on of the path our event fired.}
+
+\paragraph{The recipe.}
+\todo{The recipe, step by step, that the standalone script runs.}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:second_checkpoint:ledger}
+% (C3-1) the ledger table, "The same event in CMSSW", one figure page
+\todo{What the record \file{example/HLT/event_HLT.*} holds, and what the
+ledger says: the HLT jet is a quick copy of the census to come, and the
+stamp is the decision.}
+
+\begin{ledgerboth}{The Second Checkpoint}{tab:second_checkpoint:ledger}{%
+\todo{What the two blocks are.}}
+\ledgerblock{Standalone (seed 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+\ledgerrow{the L1 jet (chapter 12)}{\todo{}}{--}{--}{\todo{}}
+\ledgerrow{the HLT jet, raw}{\todo{}}{\todo{}}{\todo{}}{\todo{}}
+\ledgerrow{the HLT jet, corrected online}{\todo{}}{\todo{}}{\todo{}}{\todo{}}
+\ledgerblock{\CMSSW (run 1, event 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
+\ledgerrow{the HLT jet, corrected online}{\todo{}}{\todo{}}{\todo{}}{\todo{}}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:second_checkpoint:cmssw_event}
+\todo{The 2024 HLT menu of JitJetSW on our event: the online jets and the
+paths fired, read from the log of the analyser.}
+
+\begin{figure}[p]\centering
+\placeholderfig{Standalone display: \file{HLT/journey_HLT.pdf}.}\\[2mm]
+\placeholderfig{\CMSSW display: \file{HLT/CMSSW/hltAnalyzer_13_HLT.pdf}.}
+% when the files exist:
+% \ledgerdisplays
+%   {HLT/journey_HLT.pdf}{Standalone: ...}{fig:second_checkpoint:journey}
+%   {HLT/CMSSW/hltAnalyzer_13_HLT.pdf}{\CMSSW: ...}{fig:second_checkpoint:cmssw}
+\caption[The event at the HLT, standalone and \CMSSW]{The event at the
+HLT, standalone (top) and \CMSSW (bottom). \todo{Caption.}}
+\label{fig:second_checkpoint:displays}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:second_checkpoint:caveats}
+\begin{itemize}
+  \item \todo{A checkpoint, not the census: the offline reconstruction of
+    \cref{ch:footprints} and \cref{ch:census_takers} is slower and better.}
+  \item \todo{The online corrections are not the offline ones.}
+  \item \todo{One event is one sample: the efficiency is the ensemble.}
+\end{itemize}
+
+\section{Further reading}
+\label{sec:second_checkpoint:further_reading}
+The trigger system of CMS is described in \cite{CMS:2016ngn} and its
+Run-3 state, including the HLT on GPUs, in \cite{CMS:2024aqx}; the jet
+energy corrections the online ones descend from are in \cite{CMS:2016lmd}.
+\todo{Literature survey: the Run-3 HLT, online jets and corrections,
+scouting and parking.}
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \todo{Pitfall 1.}
+  \item \todo{Pitfall 2.}
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item \todo{Exercise 1.}
+\item \todo{Exercise 2.}
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:second_checkpoint:open_problems}
+\todo{Literature survey: the Phase-2 HLT, its input rate from the Phase-2
+Level-1 trigger~\cite{CMS:2020jkc}, heterogeneous computing, and
+pileup mitigation online at two hundred collisions.}
+\begin{enumerate}
+  \item \todo{Open problem 1.}
+  \item \todo{Open problem 2.}
+\end{enumerate}
+The family has passed both checkpoints and is written to the archive; the
+census begins at the next stop.

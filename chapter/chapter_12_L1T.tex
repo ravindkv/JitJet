@@ -1,0 +1,223 @@
+% ---------------------------------------------------------------------------
+% Chapter 12: The First Checkpoint: Level-1 Trigger
+% SKELETON (2026-11-15), laid out after Constitution.md rules B-E. Every
+% \todo marks text, numbers or figures still to come.
+% The scripts, records, logs and films of this stop will live in example/L1T/,
+% the technical companion is chapter/chapter_12_L1T.md, and the CMSSW side
+% (the L1 emulation of the digitised event) is chapter 12 of JitJetSW,
+% linked from example/L1T/CMSSW/README.md.
+% What this stop is: a checkpoint. Nothing is added to the event or taken
+% from it; the event is stamped, accepted or not, with the L1 seeds it fired.
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\placeholderfig}[1]{\fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering\todo{#1}}}}
+\providecommand{\us}{\ensuremath{\,\mu\mathrm{s}}\xspace}
+\chapter{The First Checkpoint: Level-1 Trigger}
+\chaptermark{The First Checkpoint}
+\label{ch:first_checkpoint}
+
+\begin{journeybox}
+At the first checkpoint a guard with a coarse ledger has a few microseconds
+to decide whether the family may continue at all. He sees only towers, not
+people, and his thresholds are the first place where families are lost with
+a probability rather than a certainty. Those who pass get a stamp that says
+which rule let them through. \todo{Polish the metaphor paragraph (B1).}
+\end{journeybox}
+
+\physicsline{forty million crossings per second and a hundred thousand
+kept; trigger primitives and calorimeter trigger towers; Layer-1
+calibration and Layer-2 jets of $9\times9$ towers; Level-1 pileup
+subtraction; the global trigger menu, seeds and prescales; efficiency
+turn-on curves. The one number to take away: \todo{the L1 jet of our
+event against the jet of \cref{ch:family_photograph}, and the seed that
+let it through}.}
+
+\section{What we will see at this stop}
+\label{sec:first_checkpoint:what_we_compute}
+
+% (C1-1) motivation, connected to the previous chapter
+\todo{Motivation (C1-1). \Cref{ch:customs_form} wrote the event as the
+detector writes it, every crossing. Nothing can store forty million of
+them a second: a decision has to be taken in a few microseconds, on
+coarse information, by custom hardware. This stop is that decision for our
+event. Give the four numbers to take away.}
+
+\paragraph{The film.}
+\label{sec:first_checkpoint:animation}
+% (C1-2) one paragraph, at most one figure of key frames
+\todo{One paragraph on the twelfth film of the playlist of \jitjetworld.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{Key frames of the film, from
+\file{example/L1T/Standalone/animate_standalone_L1T_stills.pdf}.}
+\caption[Key frames of the animated Level-1 stage]{Key frames of the
+animated Level-1 stage. \todo{Caption.}}
+\label{fig:first_checkpoint:stills}
+\end{figure}
+
+\paragraph{The picture to carry: the guard's ledger.}
+% (C1-3) a sketch or diagram
+\todo{The picture to carry: the towers of our event as the L1 calorimeter
+trigger sees them, the $9\times9$ window around our jet, the pileup
+estimate around it, and the menu with the seed that fired. TikZ in
+\file{chapter/tikz/l1t_*.tex}.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{TikZ: trigger towers and the L1 jet window
+(\file{chapter/tikz/l1t_towers.tex}).}
+\caption[The first checkpoint]{The first checkpoint. \todo{Caption.}}
+\label{fig:first_checkpoint:towers_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:first_checkpoint:validation}
+% (C1-4) the agreement table, one or two paragraphs
+\todo{One or two paragraphs on the agreement table: the standalone script
+(the Layer-1/Layer-2 jet algorithm and a menu ported to NumPy), the
+official package (the L1 emulator with the 2024 menu), and \CMSSW (the L1
+step of JitJetSW). How each column is produced is in the companion,}
+\begin{center}
+  \companion{chapter_12_L1T}
+\end{center}
+
+\begin{table}[htbp]\centering\small
+\caption[The first checkpoint obtained three ways]{The first checkpoint
+obtained three ways. \todo{Caption: what each column is.}}
+\label{tab:first_checkpoint:numbers}
+\begin{tabular}{lrrr}\toprule
+ & standalone & emulator & \CMSSW 2024 \\ \midrule
+trigger towers above threshold & \todo{} & \todo{} & \todo{} \\
+L1 jets above $30\GeV$ & \todo{} & \todo{} & \todo{} \\
+our L1 jet: $E_T$ [GeV], $\eta$, $\phi$ & \todo{} & \todo{} & \todo{} \\
+pileup subtracted from our L1 jet [GeV] & \todo{} & \todo{} & \todo{} \\
+$H_T$ [GeV] & \todo{} & \todo{} & \todo{} \\
+seeds fired & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:first_checkpoint:theory}
+% Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
+% (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
+
+\subsection{Forty million times per second: the Level-1 problem}
+\label{sec:first_checkpoint:l1_problem}
+\todo{(C2-1) Why a hardware trigger, and why so fast.
+(C2-2) TikZ: the L1 data flow, calorimeter and muon paths to the global
+trigger.
+(C2-3) The rate $R=L\,\sigma_{\mathrm{eff}}$ and the latency budget.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the rate against the jet threshold.}
+
+\subsection{Trigger primitives and towers}
+\label{sec:first_checkpoint:towers}
+\todo{(C2-1) The guard sees towers, not crystals.
+(C2-2) TikZ: crystals summed into a tower, ECAL and HCAL.
+(C2-3) The tower transverse energy and its compression.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the towers of our event.}
+
+\subsection{The Level-1 jet: calibration and pileup subtraction}
+\label{sec:first_checkpoint:l1_jet}
+\todo{(C2-1) A jet in a few hundred nanoseconds.
+(C2-2) TikZ: the $9\times9$ window and the surrounding strips used for the
+pileup estimate.
+(C2-3) The jet sum, the pileup subtraction and the calibration look-up
+table.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the L1 jet response against the jet of chapter 7.}
+
+\subsection{Efficiency turn-on curves: the mathematics of a threshold}
+\label{sec:first_checkpoint:turn_on}
+\todo{(C2-1) A threshold on a smeared quantity is a probability.
+(C2-2) TikZ: a threshold on the L1 scale seen on the offline scale.
+(C2-3) $\varepsilon(\pt)=\frac12\left[1+\mathrm{erf}\left(\frac{\pt-\mu}{\sqrt2\,\sigma}\right)\right]$.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the turn-on of the seed our event fired.}
+
+\subsection{The menu: seeds and prescales}
+\label{sec:first_checkpoint:menu}
+\todo{(C2-1) The stamp says which rule let the family through.
+(C2-2) TikZ: the global trigger as a list of conditions.
+(C2-3) The prescaled rate $R/P$ and the total within the budget.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the seeds of the menu our event fired.}
+
+\paragraph{The recipe.}
+\todo{The recipe, step by step, that the standalone script runs.}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:first_checkpoint:ledger}
+% (C3-1) the ledger table, "The same event in CMSSW", one figure page
+\todo{What the record \file{example/L1T/event_L1T.*} holds, and what the
+ledger says: this stop adds and removes nothing; the L1 jet is a coarse
+copy, and the stamp is the decision.}
+
+\begin{ledgerboth}{The First Checkpoint}{tab:first_checkpoint:ledger}{%
+\todo{What the two blocks are.}}
+\ledgerblock{Standalone (seed 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+\ledgerrow{digitised, above threshold (chapter 11)}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerrow{the L1 jet}{\todo{}}{--}{--}{\todo{}}
+\ledgerblock{\CMSSW (run 1, event 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
+\ledgerrow{the L1 jet}{\todo{}}{--}{--}{\todo{}}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:first_checkpoint:cmssw_event}
+\todo{The L1 emulation of JitJetSW on our event: the L1 jets, the sums and
+the seeds, read from the log of the analyser.}
+
+\begin{figure}[p]\centering
+\placeholderfig{Standalone display: \file{L1T/journey_L1T.pdf}.}\\[2mm]
+\placeholderfig{\CMSSW display: \file{L1T/CMSSW/l1tAnalyzer_12_L1T.pdf}.}
+% when the files exist:
+% \ledgerdisplays
+%   {L1T/journey_L1T.pdf}{Standalone: ...}{fig:first_checkpoint:journey}
+%   {L1T/CMSSW/l1tAnalyzer_12_L1T.pdf}{\CMSSW: ...}{fig:first_checkpoint:cmssw}
+\caption[The event at Level~1, standalone and \CMSSW]{The event at
+Level~1, standalone (top) and \CMSSW (bottom). \todo{Caption.}}
+\label{fig:first_checkpoint:displays}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:first_checkpoint:caveats}
+\begin{itemize}
+  \item \todo{A checkpoint, not a measurement: the L1 jet is never used
+    in an analysis, only its decision is.}
+  \item \todo{The menu is the 2024 menu at one luminosity.}
+  \item \todo{One event is one sample: the turn-on is the ensemble.}
+\end{itemize}
+
+\section{Further reading}
+\label{sec:first_checkpoint:further_reading}
+The trigger system of CMS is described in \cite{CMS:2016ngn} and the
+performance of its Level-1 trigger in \cite{CMS:2020cmk}; the Run-3 state
+of the detector and its trigger is in \cite{CMS:2024aqx}. \todo{Literature
+survey: the Run-3 calorimeter trigger, the L1 pileup subtraction, the
+2024 menu.}
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \todo{Pitfall 1.}
+  \item \todo{Pitfall 2.}
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item \todo{Exercise 1.}
+\item \todo{Exercise 2.}
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:first_checkpoint:open_problems}
+\todo{Literature survey: the Phase-2 Level-1 trigger~\cite{CMS:2020jkc},
+tracks and particle flow at Level~1, $12.5\us$ of latency and $750$~kHz.}
+\begin{enumerate}
+  \item \todo{Open problem 1.}
+  \item \todo{Open problem 2.}
+\end{enumerate}
+The next stop is the second checkpoint, where the family is looked at more
+closely.

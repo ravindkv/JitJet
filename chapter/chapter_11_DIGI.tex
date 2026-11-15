@@ -1,0 +1,232 @@
+% ---------------------------------------------------------------------------
+% Chapter 11: The Customs Form: Digitisation
+% SKELETON (2026-11-15), laid out after Constitution.md rules B-E. Every
+% \todo marks text, numbers or figures still to come.
+% The scripts, records, logs and films of this stop will live in example/DIGI/,
+% the technical companion is chapter/chapter_11_DIGI.md, and the CMSSW side
+% (the DIGI step of the mixed event) is chapter 11 of JitJetSW, linked from
+% example/DIGI/CMSSW/README.md.
+% What this stop is: the SimHits of the family and the crowd become what
+% the electronics write: charge, pulses sampled every 25 ns, pedestals and
+% noise, ADC counts, zero suppression. Energy is added (noise, out-of-time
+% pulses) and removed (thresholds). The checkpoints read the result.
+% ---------------------------------------------------------------------------
+%% chapter-local shorthands
+\providecommand{\placeholderfig}[1]{\fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering\todo{#1}}}}
+\providecommand{\bx}{\ensuremath{\mathrm{bx}}\xspace}
+\providecommand{\ns}{\ensuremath{\,\mathrm{ns}}\xspace}
+\providecommand{\Npe}{\ensuremath{N_{\mathrm{pe}}}\xspace}
+\chapter{The Customs Form: Digitisation}
+\chaptermark{The Customs Form}
+\label{ch:customs_form}
+
+\begin{journeybox}
+The weighing is over, and now it has to be written down. The customs form
+has boxes of fixed size, its own units and its own rounding; a small item
+is not worth a line and is left off, the clerk's hand trembles a little on
+every entry, and the ink of the previous traveller has not dried on the
+page. What travels on is not the luggage but the form. \todo{Polish the
+metaphor paragraph (B1).}
+\end{journeybox}
+
+\physicsline{from deposited energy to charge: light yield, photostatistics,
+gains and saturation; the pulse and the $25\ns$ clock, and the out-of-time
+crowd inside a pulse; pedestals, electronic noise and quantisation into ADC
+counts; zero suppression and selective readout; the tracker's charge
+sharing and thresholds. The one number to take away: \todo{the energy of
+our jet in digitised cells above threshold, against the SimHits of
+\cref{ch:crowd_at_the_border}}.}
+
+\section{What we will see at this stop}
+\label{sec:customs_form:what_we_compute}
+
+% (C1-1) motivation, connected to the previous chapter
+\todo{Motivation (C1-1). \Cref{ch:crowd_at_the_border} ended with energy in
+the active volumes, the family's and the crowd's added together. No
+detector reads energy: it reads light or charge, shaped into a pulse,
+sampled by the clock and written in counts. This stop is the conversion,
+and the first place where the event is what the real detector writes.
+Give the four numbers to take away.}
+
+\paragraph{The film.}
+\label{sec:customs_form:animation}
+% (C1-2) one paragraph, at most one figure of key frames
+\todo{One paragraph on the eleventh film of the playlist of \jitjetworld.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{Key frames of the film, from
+\file{example/DIGI/Standalone/animate_standalone_DIGI_stills.pdf}.}
+\caption[Key frames of the animated digitisation stage]{Key frames of the
+animated digitisation stage. \todo{Caption.}}
+\label{fig:customs_form:stills}
+\end{figure}
+
+\paragraph{The picture to carry: one cell, from energy to counts.}
+% (C1-3) a sketch or diagram
+\todo{The picture to carry: one ECAL crystal and one HCAL tower of our jet,
+the energy turned into photoelectrons, the pulse with the out-of-time
+pulses under it, the ten samples, the pedestal and the counts written.
+TikZ in \file{chapter/tikz/digi_*.tex}.}
+
+\begin{figure}[htbp]\centering
+\placeholderfig{TikZ: one cell from energy to ADC counts
+(\file{chapter/tikz/digi_pulse.tex}).}
+\caption[The customs form]{The customs form. \todo{Caption.}}
+\label{fig:customs_form:pulse_sketch}
+\end{figure}
+
+\paragraph{The number, three ways.}
+\label{sec:customs_form:validation}
+% (C1-4) the agreement table, one or two paragraphs
+\todo{One or two paragraphs on the agreement table: the standalone script
+(the digitisers ported to NumPy), the official package (the digitiser
+models with the 2024 conditions), and \CMSSW (the DIGI step of JitJetSW).
+How each column is produced is in the companion,}
+\begin{center}
+  \companion{chapter_11_DIGI}
+\end{center}
+
+\begin{table}[htbp]\centering\small
+\caption[The customs form obtained three ways]{The customs form obtained
+three ways. \todo{Caption: what each column is.}}
+\label{tab:customs_form:numbers}
+\begin{tabular}{lrrr}\toprule
+ & standalone & official & \CMSSW 2024 \\ \midrule
+photoelectrons per GeV: ECAL / HCAL & \todo{} & \todo{} & \todo{} \\
+noise per channel [MeV] & \todo{} & \todo{} & \todo{} \\
+out-of-time energy in our jet's pulses [GeV] & \todo{} & \todo{} & \todo{} \\
+channels read out after zero suppression & \todo{} & \todo{} & \todo{} \\
+energy lost below threshold in our jet [GeV] & \todo{} & \todo{} & \todo{} \\
+tracker clusters in our jet & \todo{} & \todo{} & \todo{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Let us dive into the details: the theory}
+\label{sec:customs_form:theory}
+% Every subsection: (C2-1) motivation, (C2-2) TikZ sketch, (C2-3) equation,
+% (C2-4) numbers for our event from the -v log, inline, (C2-5) one plot.
+
+\subsection{From energy to charge: light, photoelectrons and gains}
+\label{sec:customs_form:charge}
+\todo{(C2-1) The crystal makes light, the scintillator makes light, the
+silicon makes charge; each conversion counts quanta and fluctuates.
+(C2-2) TikZ: crystal, photodetector and preamplifier.
+(C2-3) $\Npe=E\cdot Y$ and the photostatistics term $\sigma/E=1/\sqrt{\Npe}$;
+the saturation of a SiPM.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the photostatistics term against energy.}
+
+\subsection{The pulse and the clock}
+\label{sec:customs_form:pulse}
+\todo{(C2-1) A hit is a pulse that lasts longer than $25\ns$, and the pulses
+of the crossings before ours sit under it.
+(C2-2) TikZ: the pulse and its samples, with the out-of-time pulses.
+(C2-3) The pulse shape $f(t)$ and the sampled amplitude
+$S_i=\sum_{\bx}A_{\bx}\,f(t_i-25\ns\cdot\bx)$.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the ten samples of the hottest crystal of our jet.}
+
+\subsection{Pedestals, noise and ADC counts}
+\label{sec:customs_form:noise}
+\todo{(C2-1) The form has boxes of fixed size and the clerk's hand trembles.
+(C2-2) TikZ: the pedestal, the noise band and the ADC steps.
+(C2-3) The quantisation noise $q/\sqrt{12}$, the electronic noise and the
+gain switching.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the noise of our jet's channels.}
+
+\subsection{What is not written: zero suppression and selective readout}
+\label{sec:customs_form:zero_suppression}
+\todo{(C2-1) Most channels hold noise, and writing them all is impossible.
+(C2-2) TikZ: the selective readout regions around our jet.
+(C2-3) The threshold $n\sigma_{\mathrm{noise}}$ and the energy lost below it.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the energy lost against the threshold.}
+
+\subsection{The tracker: charge sharing and clusters}
+\label{sec:customs_form:tracker}
+\todo{(C2-1) A charged member crossing silicon leaves charge on several
+pixels or strips.
+(C2-2) TikZ: drift, Lorentz angle and charge sharing.
+(C2-3) The Lorentz drift $\tan\theta_L=\mu_H B$ and the cluster position.
+(C2-4) Numbers from the \code{-v} log.
+(C2-5) Plot: the cluster sizes of our jet's tracks.}
+
+\paragraph{The recipe.}
+\todo{The recipe, step by step, that the standalone script runs.}
+
+\section{The energy ledger: our jet at this stage}
+\label{sec:customs_form:ledger}
+% (C3-1) the ledger table, "The same event in CMSSW", one figure page
+\todo{What the record \file{example/DIGI/event_DIGI.*} holds, and what the
+ledger says.}
+
+\begin{ledgerboth}{The Customs Form}{tab:customs_form:ledger}{%
+\todo{What the two blocks are.}}
+\ledgerblock{Standalone (seed 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
+\ledgerrow{with the crowd's SimHits (chapter 10)}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerrow{digitised, above threshold}{\todo{}}{--}{\todo{}}{\todo{}}
+\ledgerblock{\CMSSW (run 1, event 1)}
+\ledgerrow{the photograph, \code{ak4GenJets} jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
+\ledgerrow{digitised, above threshold}{\todo{}}{--}{\todo{}}{\todo{}}
+\end{ledgerboth}
+
+\paragraph{The same event in \CMSSW.}
+\label{sec:customs_form:cmssw_event}
+\todo{The DIGI step of JitJetSW: the digis of our jet, read from the log of
+the analyser.}
+
+\begin{figure}[p]\centering
+\placeholderfig{Standalone display: \file{DIGI/journey_DIGI.pdf}.}\\[2mm]
+\placeholderfig{\CMSSW display: \file{DIGI/CMSSW/digiAnalyzer_11_DIGI.pdf}.}
+% when the files exist:
+% \ledgerdisplays
+%   {DIGI/journey_DIGI.pdf}{Standalone: ...}{fig:customs_form:journey}
+%   {DIGI/CMSSW/digiAnalyzer_11_DIGI.pdf}{\CMSSW: ...}{fig:customs_form:cmssw}
+\caption[The digitised event, standalone and \CMSSW]{The digitised event,
+standalone (top) and \CMSSW (bottom). \todo{Caption.}}
+\label{fig:customs_form:displays}
+\end{figure}
+
+\subsection{What this stop is, and what it is not}
+\label{sec:customs_form:caveats}
+\begin{itemize}
+  \item \todo{Digis are counts, not energies: turning them back into
+    energy is the local reconstruction of \cref{ch:footprints}.}
+  \item \todo{The conditions are the 2024 ones, one set for the whole year.}
+  \item \todo{One event is one sample.}
+\end{itemize}
+
+\section{Further reading}
+\label{sec:customs_form:further_reading}
+The signal amplitudes of the ECAL and their reconstruction are in
+\cite{CMS:2020uim}, its calibration and resolution in \cite{CMS:2013lxn};
+the Run-3 electronics of the calorimeters, including the SiPM readout of the
+HCAL, are in \cite{CMS:2024aqx}, and calorimetry in general in
+\cite{Wigmans:2000vf}. \todo{Literature survey: the HCAL and tracker
+digitisers, selective readout.}
+
+\begin{pitfalls}
+\begin{itemize}[nosep]
+  \item \todo{Pitfall 1.}
+  \item \todo{Pitfall 2.}
+\end{itemize}
+\end{pitfalls}
+
+\begin{exercises}
+\item \todo{Exercise 1.}
+\item \todo{Exercise 2.}
+\end{exercises}
+
+\subsection*{Open problems in the context of Phase-2 LHC}
+\label{sec:customs_form:open_problems}
+\todo{Literature survey: the Phase-2 front ends, the high-granularity
+calorimeter~\cite{CMS:2017jpq}, the Phase-2 tracker~\cite{CMS:2017lum}
+and timing~\cite{Butler:2019rpu}.}
+\begin{enumerate}
+  \item \todo{Open problem 1.}
+  \item \todo{Open problem 2.}
+\end{enumerate}
+The next stop is the first checkpoint, where the form is read in a hurry.

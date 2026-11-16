@@ -66,10 +66,13 @@ class Setup:
         self.scenario = core.SCENARIOS[self.s.get("scenario", "run3") if self.s else "run3"]
 
 
-# the 2025 CMSSW library of the companion (PULib.pdf, 250 events; identical to its 2024 run): the z and t of its vertices in 4 cm and 100 ps bins
+# the 2025 CMSSW library of the companion (JitJetSW chapter_08_PU, genstats_08_PU.txt: 1000 events; identical to its 2024 run)
+CMSSW_LIB = dict(n=1000, nstable_mean=187.7, nstable_median=119, sigma_z=3.57, sigma_t=0.120)
+# the z and t of the vertices of its first 250 events (PULib.pdf of the earlier 250-event run: the same events, collision by
+# collision) in 4 cm and 100 ps bins; the per-event vertices of the 1000 are not published
 CMSSW_LIB_Z = (np.arange(-16, 17, 4.0), [0, 4, 29, 93, 92, 28, 4, 0])
 CMSSW_LIB_T = (np.arange(-0.4, 0.41, 0.1), [4, 6, 46, 81, 67, 35, 8, 3])
-CMSSW_LIB = dict(n=250, nstable_mean=194, nstable_median=132, sigma_z=3.56, sigma_t=0.122)
+CMSSW_LIB_250 = dict(n=250, sigma_z=3.56, sigma_t=0.122)
 
 
 def mark(ax, x, label, color=COL_EVENT, y=0.93, ha="left", dx=4, ls="--"):
@@ -178,7 +181,7 @@ def page_member(st: Setup):
     a1.text(np.mean([e["nfinal"] for e in ev]) * 1.08, a1.get_ylim()[1] * 0.97, f"mean {np.mean([e['nfinal'] for e in ev]):.0f},\nmedian {np.median([e['nfinal'] for e in ev]):.0f}",
             fontsize=8.5, color=COL_MODEL, va="top")
     a1.axvline(CMSSW_LIB["nstable_mean"], color=COL_CMSSW, lw=1.2, ls=":")
-    a1.text(CMSSW_LIB["nstable_mean"] * 1.08, a1.get_ylim()[1] * 0.80, f"CMSSW library (250):\nmean {CMSSW_LIB['nstable_mean']}, median {CMSSW_LIB['nstable_median']}", fontsize=8, color=COL_CMSSW, ha="left", va="top")
+    a1.text(CMSSW_LIB["nstable_mean"] * 1.08, a1.get_ylim()[1] * 0.80, f"CMSSW library ({CMSSW_LIB['n']}):\nmean {CMSSW_LIB['nstable_mean']:.0f}, median {CMSSW_LIB['nstable_median']}", fontsize=8, color=COL_CMSSW, ha="left", va="top")
     a1.axvline(749, color=COL_SIG, lw=1.2, ls=":")
     a1.text(749 * 0.92, a1.get_ylim()[1] * 0.60, "our signal\nevent: 749", fontsize=8, color=COL_SIG, ha="right", va="top")
     a1.set_xlabel("final particles in one minimum-bias collision")
@@ -257,7 +260,7 @@ def page_region(st: Setup):
     a1.legend(loc="upper left", fontsize=8)
     m = r.moments()
     run3 = r.name == "run3"
-    a1.text(0.98, 0.04, (f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nBetafuncEvtVtxGenerator, 2025 payload: 3.6 cm, $\\sigma_z/c$ = 120 ps\nthe 250-event CMSSW library: {CMSSW_LIB['sigma_z']:.2f} cm, {CMSSW_LIB['sigma_t'] * 1e3:.0f} ps"
+    a1.text(0.98, 0.04, (f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nBetafuncEvtVtxGenerator, 2025 payload: 3.6 cm, $\\sigma_z/c$ = 120 ps\nthe {CMSSW_LIB['n']}-event CMSSW library: {CMSSW_LIB['sigma_z']:.2f} cm, {CMSSW_LIB['sigma_t'] * 1e3:.0f} ps"
              if run3 else f"model: $\\sigma_z$ = {m[0]:.2f} cm, $\\sigma_t$ = {m[1] * 1e3:.0f} ps\nCMSSW HLLHCEvtVtxGenerator: 4.3 cm, 190 ps\nthe 50-event CMSSW library: 4.4 cm, 164 ps"),
             transform=a1.transAxes, ha="right", va="bottom", fontsize=8.5)
     # (b) the z marginal: the model, the vertices of our event, the CMSSW library
@@ -270,8 +273,8 @@ def page_region(st: Setup):
         pz = np.exp(-((zz - r.z0) ** 2) / (2 * r.sigma_z ** 2)) / (math.sqrt(2 * math.pi) * r.sigma_z)
         a2.plot(zz, pz, "-", color=COL_MODEL, lw=2, label=f"the 2025 payload: Gaussian, $z_0$ = {r.z0:.2f} cm, $\\sigma_z$ = {r.sigma_z:.1f} cm")
         ze, zh = CMSSW_LIB_Z
-        zh = np.array(zh, dtype=float) / (CMSSW_LIB["n"] * (ze[1] - ze[0]))
-        a2.step(ze, np.append(zh, zh[-1]), where="post", color=COL_CMSSW, lw=1.6, ls="--", label=f"the 2025 CMSSW library, 250 events: r.m.s. {CMSSW_LIB['sigma_z']:.2f} cm")
+        zh = np.array(zh, dtype=float) / (CMSSW_LIB_250["n"] * (ze[1] - ze[0]))
+        a2.step(ze, np.append(zh, zh[-1]), where="post", color=COL_CMSSW, lw=1.6, ls="--", label=f"the 2025 CMSSW library, its first 250 events: r.m.s. {CMSSW_LIB_250['sigma_z']:.2f} cm")
     else:
         for lab, sw, col, ls in (("head-on bunches: $\\sigma_s/\\sqrt{2}$", (False, False, False), TEXT2, ":"),
                                  ("+ crossing angle 510 $\\mu$rad", (True, False, False), COL_DD, "--"),

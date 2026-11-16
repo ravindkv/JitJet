@@ -152,7 +152,8 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PU/journey_PU_signal.pdf \
            example/PU/Standalone/theory_pileup.pdf \
            example/PU/Standalone/animate_standalone_pileup_stills.pdf \
-           example/PU/Standalone/minbias_catalogue.tex
+           example/PU/Standalone/minbias_catalogue.tex \
+           example/PU/Standalone/overlay_ledger.tex
 
 figures: $(FIGURES)
 
@@ -302,6 +303,13 @@ example/PU/Standalone/theory_pileup.pdf: example/PU/Standalone/plot_theory_PU.py
 example/PU/Standalone/minbias_catalogue.tex: example/PU/Standalone/minbias_catalogue.py \
 		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
 	$(PYTHON) example/PU/Standalone/minbias_catalogue.py -o example/PU/Standalone/minbias_catalogue
+
+# The ledger of the overlay (the twin of the CMSSW companion's genLedger.py --pu): the final state of the signal,
+# of the in-time and of the out-of-time pileup (rebuilt from the library) and of the signal with its in-time pileup, and the
+# jets before and after; two LaTeX tabulars the chapter \inputs. Three seconds.
+example/PU/Standalone/overlay_ledger.tex: example/PU/Standalone/overlay_ledger.py \
+		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/PU/Standalone/overlay_ledger.py -o example/PU/Standalone/overlay_ledger > /dev/null
 
 example/PU/Standalone/animate_standalone_pileup_stills.pdf: \
 		example/PU/Standalone/animate_standalone_pileup.py \

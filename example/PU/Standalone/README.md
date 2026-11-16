@@ -28,7 +28,7 @@ python3 standalone_pileup.py                        # -> ../event_PU.lhe (the bo
 python3 standalone_pileup.py -v --log standalone_pileup.log --summary standalone_pileup.json
 python3 standalone_pileup.py --no-area              # 20 s: no ghosts, no areas, no jet-median rho
 python3 standalone_pileup.py --window 0             # the in-time crossing only
-python3 standalone_pileup.py --window 1 --sequential   # the conditions of the CMSSW companion (PUSIM: PU 60 in bx = -1 ... +1)
+python3 standalone_pileup.py --sequential             # the conditions of the CMSSW companion's draw (PU 60 in bx = -12 ... +3, from the first library event)
 python3 standalone_pileup.py --scenario ultimate    # the HL-LHC crowd: mu = 200, bx = -3 ... +3, the Phase-2 luminous region (15 min)
 python3 standalone_pileup.py --repeat 400 --jobs 4 --quiet --history standalone_pileup_stats.json   # 15 s
 ```
@@ -62,7 +62,7 @@ the circle of our jet, drawn in (y, phi)) takes 15 s with four workers. The scri
   3.6 cm around 0.42 cm, t an independent Gaussian of sigma_z / c = 120 ps, x and y Gaussians
   of sqrt(eps beta*/2) sqrt(1 + ((z - z0)/beta*)^2) = 9 um at the focus (beta* = 30 cm,
   emittance 5.725e-8 cm). The 960 drawn vertices: r.m.s. 3.56 cm, 124 ps, 9 um; the signal at
-  z = +0.16 cm, t = +94 ps. CMSSW's 250-event library: 3.56 cm, 122 ps. (`LuminousRegion`, the
+  z = +0.16 cm, t = +94 ps. CMSSW's 1000-event library: 3.57 cm, 120 ps. (`LuminousRegion`, the
   HL-LHC model of two 9 cm bunches crossing at 510 urad, crab-rotated by 380 urad at 400 MHz
   and focused to beta* = 20 cm, 4.27 cm and 193 ps, is `--region hllhc`.)
 * **The stacking** (`Stage.stack`): the signal's 744 particles without neutrinos, 651 within

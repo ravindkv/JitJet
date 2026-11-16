@@ -22,6 +22,7 @@
 \providecommand{\mbarn}{\ensuremath{\,\mathrm{mb}}\xspace}
 \providecommand{\Mix}{\code{MixingModule}\xspace}
 \input{example/PU/Standalone/minbias_catalogue}
+\input{example/PU/Standalone/overlay_ledger}
 \chapter{The Crowd on the Road: Pileup}
 \chaptermark{The Crowd on the Road}
 \label{ch:crowd_on_the_road}
@@ -225,7 +226,7 @@ tune, and stored as a record, so that the standalone script needs NumPy
 and nothing else to read it. That is the way of \CMSSW too, whose \Mix
 reads a library of simulated collisions made once and stacked many
 times, and the first rows of the table check the library against the
-cross sections \PYTHIA printed and against the $250$-event library of the
+cross sections \PYTHIA printed and against the $1000$-event library of the
 2025 \CMSSW exercise of the companion. Everything after the library is a
 port: the Poisson draw of the \Mix, the beam spot of the
 \code{BetafuncEvtVtxGenerator}, the stacking, the \antikt with ghosts, the
@@ -241,11 +242,12 @@ of $0.5$; and the jet median, which is measured on the ghost jets
 themselves, agrees to the percent by which it moves when the ghosts move.
 The last column is the \CMSSW mixing of the companion,
 \code{CMSSW\_15\_0\_5} at $13.6\TeV$ with the conditions and the beam spot of 2025: the
-library of $250$ collisions it reads, its vertex smearing, and the $68$
-collisions that its \Mix draws at $\mup=60$ for the crossing of our event,
-overlaid on the signal at generator level, before the hits of \GEANT are
-involved; the standalone script takes the same conditions with
-\code{--window 1 --sequential}.
+library of $1000$ collisions it reads, its vertex smearing, and the draw of
+its \Mix at $\mup=60$ over the same sixteen crossings, $995$ collisions of
+which the $64$ of the crossing of our event are overlaid on the signal at
+generator level, before the hits of \GEANT are involved; the standalone
+script reads its library the same way, in order from the first event,
+with \code{--sequential}.
 
 The standalone script writes out what the \Mix does before the
 digitisers run and what the \FASTJET area tools do afterwards. Its
@@ -275,9 +277,9 @@ $\bx=-12\ldots+3$; ``\FASTJET'' is \FASTJET~3.5.2 on exactly the mixed
 final state of the record; ``400 draws'' is the in-time crowd drawn again
 and again on the same photograph, with the pileup counted inside the
 circle of $R=0.4$ in $(y,\phi)$ around our jet; ``\CMSSW'' is the library and
-mixing of the companion (\code{CMSSW\_15\_0\_5}, $13.6\TeV$, $250$ library
-events, the signal event mixed at $\mup=60$ in $\bx=-1\ldots+1$ and its
-$68$ in-time collisions overlaid at generator level). The
+mixing of the companion (\code{CMSSW\_15\_0\_5}, $13.6\TeV$, $1000$ library
+events, the signal event mixed at $\mup=60$ in $\bx=-12\ldots+3$ and its
+$64$ in-time collisions overlaid at generator level). The
 spread of a single event follows $\pm$. The two residuals are two
 definitions: the record's compares $\pt-\rhoPU A$, a vector sum, with the
 scalar sum of the signal inside; the ensemble's compares the scalar sum
@@ -287,27 +289,27 @@ of the pileup inside with $\rhoPU A$.}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}\toprule
  & \PYTHIA & library & standalone / \FASTJET & 400 draws & \CMSSW 2025 \\
- & cross sections & 2000 collisions & seed 1, $\mup=60$ & $\mup=60$ & 250 + 1 events \\ \midrule
+ & cross sections & 2000 collisions & seed 1, $\mup=60$ & $\mup=60$ & 1000 + 1 events \\ \midrule
 \sigmainel at $13.6\TeV$ [mb] & $78.42$ & -- & -- & -- & $78.42$ \\
-ND / SD / DD / CD [\%] & $70.7$ / $16.4$ / $11.3$ / $1.6$ & $71.2$ / $15.9$ / $10.9$ / $1.9$ & $72.7$ / $16.5$ / $9.0$ / $1.9$ (960 drawn) & -- & $73$ / $18$ / $8$ / $1$ \\
-particles per collision: mean, median & -- & $179$, $116$ & $214$ & -- & $194$, $132$ \\
-\quad charged, $|\eta|<2.5$, $\pt>0.5\GeV$ & -- & $12.2$ (median 6) & $15.8$ & -- & $21$ (all, median 10) \\
-\quad hardest particle [GeV] & -- & $2.2$ (max $17.9$) & -- & -- & $2.2$ (max $8.1$) \\ \midrule
+ND / SD / DD / CD [\%] & $70.7$ / $16.4$ / $11.3$ / $1.6$ & $71.2$ / $15.9$ / $10.9$ / $1.9$ & $72.7$ / $16.5$ / $9.0$ / $1.9$ (960 drawn) & -- & $72.2$ / $16.1$ / $10.5$ / $1.2$ \\
+particles per collision: mean, median & -- & $179$, $116$ & $214$ & -- & $188$, $119$ \\
+\quad charged, $|\eta|<2.5$, $\pt>0.5\GeV$ & -- & $12.2$ (median 6) & $15.8$ & -- & $20$ (all, median 9) \\
+\quad hardest particle [GeV] & -- & $2.2$ (max $17.9$) & -- & -- & $2.2$ (max $19.0$) \\ \midrule
 \mup: formula / mixed & -- & -- & $66.5$ / $60$ & $60$ & $60$ (AVE\_60); 2025 profile $64.3$ \\
-collisions per crossing & -- & -- & $50$ to $68$ in 16 crossings, $\mathbf{63}$ in time, $960$ & $59.9\pm7.4$ (in time) & $71$, $\mathbf{68}$, $54$ ($\bx=-1\ldots+1$) \\
-beam spot $\sigma_z$ [cm], $\sigma_t$ [ps] & -- & -- & payload $3.60$, $120$; drawn $3.56$, $124$ & $3.61$, $117$ & $3.6$, $120$ (payload); $3.56$, $122$ (250) \\
+collisions per crossing & -- & -- & $50$ to $68$ in 16 crossings, $\mathbf{63}$ in time, $960$ & $59.9\pm7.4$ (in time) & $52$ to $76$ in 16 crossings, $\mathbf{64}$ in time, $995$ \\
+beam spot $\sigma_z$ [cm], $\sigma_t$ [ps] & -- & -- & payload $3.60$, $120$; drawn $3.56$, $124$ & $3.61$, $117$ & $3.6$, $120$ (payload); $3.57$, $120$ (1000) \\
 signal vertex $z$ [cm], $t$ [ps] & -- & -- & $+0.16$, $+94$ & -- & $3.11$, $+121$ \\
 nearest pileup vertex: $\Delta z$ [mm], $\Delta t$ [ps] & -- & -- & $0.01$, $0.3$ & median $0.82$, $2.5$ & -- \\ \midrule
-in-time particles, within $|\eta|<5$ no $\nu$ & -- & -- & $13\,456$, $10\,045$ & $7882$ & $12\,993$, $9890$ ($|\eta|<5.2$) \\
-\rhoPU, grid median [GeV per unit area] & -- & -- & $75.47$ / 75.47 & $58.6\pm10.4$ & $69.4$ (mean, $|\eta|<2.5$) \\
+in-time particles, within $|\eta|<5$ no $\nu$ & -- & -- & $13\,456$, $10\,045$ & $7882$ & $10\,893$, $8393$ ($|\eta|<5.2$) \\
+\rhoPU, grid median [GeV per unit area] & -- & -- & $75.47$ / 75.47 & $58.6\pm10.4$ & $61.2$ (mean, $|\eta|<2.5$) \\
 \quad the same grid on the crowd alone & -- & -- & $69.93$ & $52.4\pm10.3$ & -- \\
 \rhoPU, $k_T$-jet median & -- & -- & $78.50$ / 79.53 & -- & -- \\
-\quad per collision & -- & $0.95$ (plateau) & $1.20$ / $1.25$ & $0.97$ (slope) & $1.02$ \\
-mixed jets above $3$ / $30\GeV$ & -- & -- & $175$ / $82$, all identical & -- & $266$ / $76$ (all $\eta$) \\
-our jet: \pt with the crowd [GeV], $n$ & -- & -- & $133.53$, $115$ (31 + 84) & -- & $150.90$, $114$ (24 + 90) \\
+\quad per collision & -- & $0.95$ (plateau) & $1.20$ / $1.25$ & $0.97$ (slope) & $0.96$ \\
+mixed jets above $3$ / $30\GeV$ & -- & -- & $175$ / $82$, all identical & -- & $261$ / $45$ (all $\eta$) \\
+our jet: \pt with the crowd [GeV], $n$ & -- & -- & $133.53$, $115$ (31 + 84) & -- & $150.75$, $101$ (23 + 78) \\
 \quad area $A$ & -- & -- & $0.529$ / 0.539 & $\pi R^2=0.503$ & -- \\
-\quad pileup inside, $\rhoPU A$, $\pt-\rhoPU A$ [GeV] & -- & -- & $34.57$, $39.89$, $93.64$ & $28.3\pm8.1$, $29.5\pm5.3$ & $33.92$, $34.9$ ($\pi R^2$), $116.0$ \\
-\quad residual: $\pt-\rhoPU A$ minus the signal inside [GeV] & -- & -- & $-6.43$ & -- & $-1.8$ \\
+\quad pileup inside, $\rhoPU A$, $\pt-\rhoPU A$ [GeV] & -- & -- & $34.57$, $39.89$, $93.64$ & $28.3\pm8.1$, $29.5\pm5.3$ & $34.22$, $30.8$ ($\pi R^2$), $120.0$ \\
+\quad residual: $\pt-\rhoPU A$ minus the signal inside [GeV] & -- & -- & $-6.43$ & -- & $+2.2$ (against the photograph) \\
 \quad residual: pileup inside minus $\rhoPU A$ [GeV] & -- & -- & $-5.32$ & $-1.1\pm6.1$ & -- \\
 \quad\quad the same with the \rhoPU of the crowd alone & -- & -- & $-2.39$ & $+2.0\pm6.1$ & -- \\
 pileup jets above $30\GeV$: before, after & -- & -- & $76$, $1$ (seeds 1--9: $23$ to $76$, $0$ to $2$) & -- & -- \\
@@ -498,8 +500,8 @@ non-diffractive part is what remains,
 \end{equation}
 the shares $70.7$, $16.4$, $11.3$ and $1.6\%$, which the library
 reproduces as $71.2$, $15.9$, $10.9$ and $1.9$ in its two thousand
-collisions and the $250$-event \CMSSW library as $183$, $45$, $19$ and
-$3$. The $14\TeV$ fragment of the release gives the same total, the pieces
+collisions and the $1000$-event \CMSSW library as $72.2$, $16.1$, $10.5$
+and $1.2$ ($722$, $161$, $105$ and $12$ collisions). The $14\TeV$ fragment of the release gives the same total, the pieces
 shifted in the third digit ($55.36$, $6.44$, $8.88$ and $1.29$), which is why the Run-3 workflows can mix their
 $13.6\TeV$ signals with a $14\TeV$ library and why the companion sets the
 energy by hand instead. The measured inelastic cross section at $13\TeV$
@@ -520,7 +522,7 @@ brings on average.}
 
 \Cref{tab:crowd_on_the_road:catalogue} is the crowd one member at a
 time, the catalogue of the library as the companion's
-\code{minBiasGenStats.py} prints it for the $250$ GEN events of the 2025
+\code{minBiasGenStats.py} prints it for the $1000$ GEN events of the 2025
 \CMSSW library: the first ten collisions of our in-time crossing, each
 with its kind, its parton-parton interactions, its particles, what the
 tracker and what nothing will see of them, its hardest particle, its
@@ -581,11 +583,11 @@ the one surprise in them: the multiplicity distribution is so wide that
 the median collision has two thirds of the mean, and in any crossing a
 handful of the sixty, the non-diffractive ones with many multiparton
 interactions, carry a quarter of the crowd. The \CMSSW library of the
-companion, $250$ collisions through the full chain, has $194$ stable
-particles per collision with a median of $132$, from $3$ to $723$, and
-the same shape; ten of its events, single-diffractive ones that hand
-\GEANT a surviving proton and nothing else, leave no hit in the central
-detector at all.
+companion, $1000$ collisions, has $188$ stable particles per collision
+with a median of $119$, from $3$ to $857$, and the same shape; of its
+first $250$, the ones the companion takes through \GEANT, ten
+single-diffractive collisions hand \GEANT a surviving proton and nothing
+else and leave no hit in the central detector at all.
 
 The \CMSSW library also says what sets the size of a collision and what it
 is made of. Its log prints the regularisation scale of the multiparton
@@ -593,19 +595,19 @@ cross section of \cref{ch:uninvited_cousins}, $\pt^0=1.41\times
 (13.6/7)^{0.03344}=1.44\GeV$ for CP5, and the parton-parton cross section
 above it, $492\mbarn$, nine times the non-diffractive $55.42$: nine parton
 pairs interact in an average non-diffractive collision. Its catalogue
-counts them, from one to $39$ and $9.0$ on average over its $183$
+counts them, from one to $45$ and $8.5$ on average over its $722$
 non-diffractive collisions (our library, which counts \PYTHIA's own
 number of interactions, has $8.1$), and the multiplicity follows them
-almost linearly, from $85$ stable particles for a single interaction to
-$723$ for $39$, while a diffractive collision has one or two. Of the
-$48\,437$ stable particles of its $250$ collisions, $45.9\%$ are photons,
+almost linearly, from $87$ stable particles for a single interaction to
+$805$ for $45$, while a diffractive collision has one or two. Of the
+$187\,684$ stable particles of its $1000$ collisions, $45.7\%$ are photons,
 almost all from the decay of the $\pi^0$ (a $u\bar u$ and $d\bar d$
-mixture) in the generator, $37.1\%$ charged pions ($u\bar d$, $d\bar u$),
-$4.8\%$ charged kaons ($u\bar s$, $s\bar u$), $2.7\%$ protons ($uud$),
-$2.5\%$ neutrons ($udd$), $2.4\%$ $K^0_L$ and $2.2\%$ $K^0_S$ (mixtures of
+mixture) in the generator, $37.3\%$ charged pions ($u\bar d$, $d\bar u$),
+$4.8\%$ charged kaons ($u\bar s$, $s\bar u$), $2.8\%$ protons ($uud$),
+$2.5\%$ neutrons ($udd$), $2.4\%$ $K^0_L$ and $2.3\%$ $K^0_S$ (mixtures of
 $d\bar s$ and $s\bar d$) and $0.9\%$ $\Lambda$ ($uds$), the last three
 left to \GEANT to decay; three quarters of them have $\pt<0.5\GeV$, only
-$17$ have more than $5\GeV$, and a fifth fly beyond $|\eta|=5.5$, where no
+$77$ have more than $5\GeV$, and a fifth fly beyond $|\eta|=5.5$, where no
 subdetector is.
 
 \begin{figure}[htbp]\centering
@@ -666,9 +668,9 @@ $\sigma_t=120\ps$ and $\sigma_{xy}=9\um$ at the focus. The script draws
 every vertex of the crowd, and the signal's, from that payload: the $960$
 vertices of our event have an r.m.s.\ of $3.56\cm$ in $z$ and $124\ps$
 in $t$, $9\um$ across, and the signal sits at $z=+0.16\cm$, $t=+94\ps$.
-The $250$-event \CMSSW library of the companion, drawn by the real
-module, has $3.56\cm$ and $122\ps$ with its vertices between $-9.5$ and
-$+10.1\cm$, and the \CMSSW signal event sits at $z=3.11\cm$. The HL-LHC
+The $1000$-event \CMSSW library of the companion, drawn by the real
+module, has $3.57\cm$ and $120\ps$ with its vertices between $-12.4$ and
+$+12.9\cm$, and the \CMSSW signal event sits at $z=3.11\cm$. The HL-LHC
 of the open problems is another story: there the crossing angle would
 cut the overlap to $2\cm$, crab cavities give most of it back, and
 \CMSSW's \code{HLLHCEvtVtxGenerator} builds the region from the bunches,
@@ -754,7 +756,7 @@ the sixteen crossings]{Page~3 of \file{theory_pileup.pdf}. (a) The
 collision density of \cref{eq:crowd_on_the_road:region} in $(z,t)$ with
 the $63$ in-time collisions of our crossing and the signal. (b) The $z$
 of the $960$ vertices of the event against the Gaussian of the payload
-and the $250$ vertices of the \CMSSW library. (c) The sixteen crossings
+and the first $250$ vertices of the \CMSSW library. (c) The sixteen crossings
 on the clock, $25\ns$ apart, early in dark yellow, in time in blue and
 late in salmon, the colours of the \CMSSW pages of the companion.}
 \label{fig:crowd_on_the_road:theory_region}
@@ -777,14 +779,20 @@ channel and apply the pulse shapes, the time windows and the thresholds
 in which the out-of-time pileup does its damage. The truth survives as
 the \code{PileupSummaryInfo}, the \code{TrackingParticle}s with their
 event ids, and the \code{DigiSimLink}s that say which collision
-contributed what to each channel. The companion's exercise does exactly
-this for one signal event, $\mup=60$ in three crossings, $71$, $68$ and
-$54$ collisions drawn in sequence from a library of $250$: the $193$
-collisions bring $31\,060$ primaries against the $571$ of the signal,
-$438\,043$ tracker hits against $10\,272$, and own $103\,808$ of the
-$106\,170$ hit cells of the ECAL. In the production window of sixteen
-crossings this classical mixing would read a thousand library events, a
-quarter of a gigabyte, per signal event, and the production therefore
+contributed what to each channel. The companion runs this \Mix for our
+signal event at $\mup=60$ over the sixteen crossings of the production
+window and reads its library in sequence, early crossings first: $746$
+collisions for the twelve early crossings, $64$ for ours, the library
+events $747$ to $810$, and $185$ for the three late ones, $995$ in all.
+Its simulation chapters from \cref{ch:crowd_at_the_border} on still mix only the three crossings $-1$ to $+1$,
+and there the same seed and the same mean draw $71$, $68$ and $54$
+collisions, exactly the numbers of the first three crossings of the long
+window, because the draws are made in that order from the same random
+numbers: the $193$ collisions bring $31\,060$ primaries against the $571$
+of the signal, $438\,043$ tracker hits against $10\,272$, and own
+$103\,808$ of the $106\,170$ hit cells of the ECAL. Over the whole
+window this classical mixing reads a thousand library events, a quarter
+of a gigabyte, per signal event, and the production therefore
 \emph{premixes}~\cite{Hildreth:2017caz}: the minimum-bias events are
 mixed among themselves at the flat profile and digitised once into a
 library of premixed crossings, and a single premixed event is added, in
@@ -793,8 +801,8 @@ the bookkeeping is a thousand times lighter, and the price is that the
 pileup hits are gone from a premixed sample, so that pictures like those
 of the companion, which colour every hit by the crossing it came from,
 can only be drawn with the classical mixing; the script reproduces the
-conditions of the exercise at the generator level with \code{--window 1
---sequential}.
+conditions of the companion's draw at the generator level with
+\code{--sequential}.
 
 \subsection{\rhoPU, the median energy density, and the jet area $A$}
 \label{sec:crowd_on_the_road:rho_the_median_energy_density_and_the_je}
@@ -1027,20 +1035,44 @@ $\bar b$ & the photograph, \akfour jet [1] & $94.09$ & $17.83$ & $18$ & & & & \\
 \begin{ledgerboth}{The Crowd on the Road}{tab:crowd_on_the_road:ledger}{The
 standalone rows are read from \file{example/PU/event_PU.lhe} (seed~1,
 $63$ in-time collisions); the \CMSSW rows from the log of the
-\code{genJetAnalyzer} of \code{JitJetSW} on the \code{08\_PU} job, $68$
-in-time collisions overlaid at generator level, where no subtraction is
-run and the last row takes the mean pedestal of a circle of $R=0.4$,
-$34.9\GeV$, off by hand.}
+\code{genJetAnalyzer} of \code{JitJetSW} on the \code{08\_PU} job, $64$
+in-time collisions of a draw over $\bx=-12\ldots+3$ overlaid at generator
+level, where no subtraction is run and the last row takes the mean
+pedestal of a circle of $R=0.4$, $30.8\GeV$, off by hand.}
 \ledgerblock{Standalone (seed 1, \file{event_PU.lhe})}
 \ledgerrow{the photograph, \akfour jet [0] (chapter 7)}{99.83}{14.83}{31}{--}
 \ledgerrow{with the crowd: mixed jet [1], $\mup=60$}{133.53}{43.21}{115}{$+33.70$}
 \ledgerrow{after the subtraction, $\pt-\rhoPU A$}{93.64}{--}{115}{$-39.89$}
-\ledgerblock{\CMSSW (run 1, event 1; 68 in-time collisions)}
+\ledgerblock{\CMSSW (run 1, event 1; 64 in-time collisions)}
 \ledgerrow{the photograph, \akfour jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
-\ledgerrow{with the crowd: mixed jet [1], $\mup=60$}{150.90}{51.36}{114}{$+33.11$}
-\ledgerrow{\quad of which pileup (scalar sum)}{33.92}{--}{90}{--}
-\ledgerrow{minus the mean pedestal of a circle, $\pt-\rhoPU\pi R^2$}{116.0}{--}{114}{$-34.9$}
+\ledgerrow{with the crowd: mixed jet [0], $\mup=60$}{150.75}{50.53}{101}{$+32.96$}
+\ledgerrow{\quad of which pileup (scalar sum)}{34.22}{--}{78}{--}
+\ledgerrow{minus the mean pedestal of a circle, $\pt-\rhoPU\pi R^2$}{120.0}{--}{101}{$-30.8$}
 \end{ledgerboth}
+
+\begin{table}[!tb]\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\caption[The ledger of the overlay, standalone]{The ledger of the
+overlay, standalone: the final state of the signal (the record of
+\cref{ch:family_photograph}), of its $63$ in-time pileup collisions
+($\bx=0$), of the $897$ out-of-time collisions of the draw ($\bx=-12$ to
+$-1$ and $+1$ to $+3$, \cref{fig:crowd_on_the_road:clock}) and of the
+signal with its in-time pileup, by kind and by region, number and scalar
+\pt; and the \antikt $R=0.4$ jets before and after the overlay, written
+by \file{overlay_ledger.py} from \file{event_PU.lhe} and the library in
+the layout of the \CMSSW ledger of the companion. The out-of-time pileup
+is not overlaid: it is removed later from the ECAL and HCAL pulses by
+their local reconstruction (\cref{ch:footprints}), as the in-time pileup
+is removed at the reconstruction stage by CHS and PUPPI
+(\cref{ch:the_police}). The mixed jets are clustered within $|\eta|<5$
+without neutrinos, the photograph on every final particle; the quark is
+the last copy of the $b$ or $\bar b$ before the hadronisation, and
+$\Delta R$ is measured in $(\eta,\phi)$.}
+\label{tab:crowd_on_the_road:overlay_ledger}
+\resizebox{\textwidth}{!}{\puOverlayLedgerFinal}
+
+\medskip
+\resizebox{\textwidth}{!}{\puOverlayLedgerJets}
+\end{table}
 
 \Cref{tab:crowd_on_the_road:kinematics}, the ledger of
 \cref{tab:crowd_on_the_road:ledger} and \cref{fig:crowd_on_the_road:journey}
@@ -1089,6 +1121,74 @@ crowd of \cref{fig:crowd_on_the_road:journey} is what the detector of
 \cref{fig:family_photograph:journey}, the same frame without the crowd,
 is what it will try to get back.
 
+\paragraph{The ledger of the overlay.}
+\label{sec:crowd_on_the_road:overlay_ledger}
+\Cref{tab:crowd_on_the_road:overlay_ledger} books the whole window the
+way the \CMSSW companion books its own, in four columns: the signal, the
+in-time pileup, the out-of-time pileup and the signal with its in-time
+pileup. The in-time crowd adds $13\,456$ final particles to the $749$ of
+the family, $5725\GeV$ of scalar \pt to its $743$, and $857\TeV$ of
+energy, $63$ collisions of $13.6\TeV$ each, $89\%$ of it beyond
+$|\eta|=5.5$ with the beam remnants, where nothing will see it. In the
+tracker's region it is $2440\GeV$ of \pt in $5229$
+particles of $0.47\GeV$ each: a pedestal of $2440/(5\times2\pi)=78\GeV$
+per unit of $\eta$--$\phi$ area, a little above the median \rhoPU of
+$75.5$, which ignores the denser patches and reaches out to $|y|=5$,
+where the plateau has begun to fall; a circle of $R=0.4$ collects
+$39\GeV$ of it on average, and around the last copies of our two quarks
+the crowd put $33.0\GeV$ ($b$) and $45.0\GeV$ ($\bar b$). The jets say
+the rest in numbers: $175$ mixed jets where the photograph had $42$, $82$
+above $30\GeV$ where it had six, and only $30$ of the $175$ without a
+single particle of the family, because its underlying event covers the
+plane and a circle anywhere catches some of it; $643$ of the $651$
+particles of the family that enter the clustering now sit in a jet,
+against $368$ of its $749$ before, not because they moved but because a
+jet above $3\GeV$ now exists around nearly every one of them. The two $b$
+jets carry the pedestal into everything built from them: their response
+to the quark goes from $1.28$ and $1.30$ to $1.71$ and $1.89$, and the
+invariant mass of the pair from $303$ to $437\GeV$, a shift of $134\GeV$
+that no part of the hard event made.
+
+The out-of-time columns are the $897$ collisions the draw put into the
+twelve crossings before ours and the three after it: $161\,696$ final
+particles and $65\,501\GeV$ of scalar \pt, $180$ particles and $73\GeV$
+per collision, as full as an average collision of the library and
+fourteen times as many as the in-time ones. They are booked and not
+overlaid. They happened up to $300\ns$ before the signal or up to $75\ns$
+after it, and a list of particles has no time: they can reach our event
+only through a detector that remembers, the calorimeter pulses that last
+several crossings.
+
+\paragraph{Three crowds, apart until the digitisation.}
+\label{sec:crowd_on_the_road:three_crowds}
+The table is also the last place where the event is this tidy. At this
+stop, in the simulation, the signal, the in-time pileup and the
+out-of-time pileup are three separate lists, every collision with its
+crossing and its number, and the separation survives the next three
+stops: \GEANT carries every collision through the detector on its own
+(\cref{ch:crossing_the_border}), the hits it leaves are stamped with the
+crossing and the collision they came from and shifted in time by
+$25\ns\times\bx$ (\cref{ch:crowd_at_the_border}), and the electronics
+turn each into its own counts (\cref{ch:customs_form}). Then the digits
+are mixed: the counts of the signal and of every collision of the window
+are added channel by channel, and from there on a channel holds one
+number and the separation is lost, as it is in the data, where it never
+existed; only the truth links of the simulation remember it, and a
+premixed sample does not even keep those. The reconstruction then takes
+the crowd out again in the order in which time can tell it apart. The
+out-of-time pileup goes first, at the local reconstruction of the
+calorimeters (\cref{ch:footprints}): the pulse fits of the ECAL and of the
+HCAL (the multifit and MAHI) give every channel one template per
+crossing and keep only the in-time amplitude. The in-time pileup, which
+no clock of Run~3 can separate from the signal, goes later, at the level
+of the reconstructed particles (\cref{ch:the_police}): charged-hadron
+subtraction (CHS) drops the charged particles that come from another
+vertex, and PUPPI weights every particle by how likely it is to belong
+to the crowd. What the two leave inside a jet, mostly the neutral part of
+the in-time crowd, is the pedestal of this chapter, and the offset
+correction of \cref{ch:paying_for_uninvited} pays for it with
+$\rhoPU A$.
+
 \paragraph{The same event in \CMSSW.}
 \label{sec:crowd_on_the_road:cmssw_event}
 In \CMSSW this stop is two jobs, the first of the companion with the
@@ -1097,73 +1197,82 @@ and the era \code{Run3\_2025}, which every \CMSSW stop from here on
 keeps. The first job makes the crowd: \PYTHIA with
 \file{MinBias_14TeV_pythia8_TuneCP5_cfi}, the only unfiltered CP5
 minimum-bias fragment of the release, set by hand to the $13.6\TeV$ of the
-signal, $250$ times, with its own random seeds, $20241$ for the generator
+signal, $1000$ times, with its own random seeds, $20241$ for the generator
 and $20242$ for the vertex smearing. The seeds are not a detail:
 \code{cmsDriver.py} writes the same default seeds into every
 configuration, and a library made with them would give library event $k$
 the vertex of signal event $k$, so that the first collision of the crowd
 would sit exactly on ours. Its log repeats the numbers of
 \cref{sec:crowd_on_the_road:one_member}: an inelastic cross section of
-$78.42\,\mathrm{mb}$ that the tune fixes, $183$ non-diffractive, $45$
-single-, $19$ double- and $3$ central-diffractive collisions against
-$176.7$, $41.0$, $28.2$ and $4.1$ expected (the shortfall of
-double-diffractive ones is $1.7$ standard deviations), $7.0$
-parton--parton interactions and $194$ stable particles per collision on
-average, between $3$ and $723$. The second job puts the crowd on the
-family. The \Mix that will run with the detector simulation of
-\cref{ch:crowd_at_the_border} reads the library in sequence, crossing by
-crossing, and for our event it draws $71$ collisions for the crossing
-before ours, $68$ for ours and $54$ for the one after; the $68$ are
-therefore the in-time collisions of \emph{this} event, the same ones the
-detector will see, and here they are mixed with the signal with no
-digitiser attached, so that the result is still a list of particles:
-$12\,993$ stable ones on top of the $634$ of the family, $49$
-non-diffractive, $15$ single- and $4$ double-diffractive collisions, from
-$3$ particles to $547$. A list of particles has no time axis, which is why
-only the in-time crossing enters; the early and late ones act through the
-time response of the detector alone. No new code touches the particles:
-the \Mix, with the generator record as its only mixed object and no
-digitiser, puts the signal and the $68$ library events into one
-\code{CrossingFrame} for the crossing $0$; the \code{GenParticleProducer}
-of every GEN job turns the frame into one collection,
-\code{genParticlesPU}, the family with \code{collisionId} $0$ and the
-crowd with $1$ to $68$; and the jets of \cref{ch:family_photograph} run on
-it as \code{ak4GenJetsPU}. The first of the $68$, library event $72$, is a
-smaller than average non-diffractive collision with three interactions:
-two partons on its hard-process page, a $2\to2$ scattering below
-$5\GeV$, ten after the showers, $26$ with the multiparton interactions and
-the remnants, $102$ after hadronisation and $192$ stable after the decays;
-the $68$ together have $467$ interactions and a median of $150.5$
-particles each, a sum of very unequal terms.
+$78.42\,\mathrm{mb}$ that the tune fixes, $722$ non-diffractive, $161$
+single-, $105$ double- and $12$ central-diffractive collisions against
+$706.7$, $164.0$, $112.8$ and $16.4$ expected, all within $1.1$ standard
+deviations, $6.6$ parton--parton interactions and $188$ stable particles
+per collision on average, between $3$ and $857$. The second job puts the
+crowd on the family. The \Mix reads the library in sequence, crossing by
+crossing, early crossings first, over the sixteen crossings
+$\bx=-12\ldots+3$ of the production window, and for our event it draws
+$995$ collisions: $746$ for the twelve early crossings, $64$ for ours and
+$185$ for the three late ones. Library events $747$ to $810$ are therefore
+the in-time collisions of \emph{this} event, and here they are mixed with
+the signal with no digitiser attached, so that the result is still a list
+of particles: $10\,893$ stable ones on top of the $634$ of the family,
+$41$ non-diffractive, $12$ single- and $11$ double-diffractive collisions,
+from $4$ particles to $826$. A list of particles has no time axis, which
+is why only the in-time crossing enters; the $931$ early and late
+collisions, $176\,266$ stable particles and $71\,748\GeV$ of scalar \pt,
+$189$ particles and $77\GeV$ per collision against the $180$ and $73$ of
+our $897$, are booked in the companion's ledger and act through the time
+response of the detector alone. (The companion's \GEANT stop takes all
+$1000$ collisions; its later stops, from \cref{ch:crowd_at_the_border}
+on, still mix the three crossings $-1$ to $+1$, whose in-time collisions
+are library events $72$ to $139$, until they too are moved to the
+sixteen.) No new code touches the particles: the \Mix, with the generator
+record as its only mixed object and no digitiser, puts the signal and the
+$64$ library events into one \code{CrossingFrame} for the crossing $0$;
+the \code{GenParticleProducer} of every GEN job turns the frame into one
+collection, \code{genParticlesPU}, the family with \code{collisionId} $0$
+and the crowd with $1$ to $64$; and the jets of \cref{ch:family_photograph}
+run on it as \code{ak4GenJetsPU}. The first of the $64$, library event
+$747$, is a single-diffractive collision: one proton leaves intact along
+the beam at $\eta=-12$ with $6799.8$ of its $6800\GeV$, the other
+dissociates into a system of $77\GeV$ that fills only $\eta>0$; two soft
+gluons on its hard-process page, two after the showers, seven with the
+multiparton interactions and the remnants, $24$ after hadronisation and
+$37$ stable after the decays, none of them in the tracker's reach. The
+$64$ together have $350$ interactions and a median of $116$ particles
+each, a sum of very unequal terms.
 
-The crowd of \CMSSW weighs what ours does. Within $|\eta|<2.5$ it is
-$2179\GeV$ of transverse momentum in $4864$ particles of $0.45\GeV$ each,
-a pedestal of $69\GeV$ per unit of $\eta$--$\phi$ area where our grid
-median reads $75.5$ for a more crowded draw, and a circle of $R=0.4$ collects $34.9\GeV$ of it
-wherever it is put. In energy the crowd is $925\TeV$, $68$ collisions of
-$13.6\TeV$ each, and $91\%$ of it flies beyond $|\eta|=5.5$ with the
-beam remnants, where nothing will see it. The mother's jet went from $117.79$ to $150.90\GeV$
-and from $24$ to $114$ constituents, the $90$ strangers from $41$
-different collisions carrying $33.9\GeV$, and its mass from $16.7$ to
-$51\GeV$; the $\bar b$'s went from $115.94$ to $152.03$, and the invariant
-mass of the two from $387$ to $522\GeV$, a shift that no part of the hard
-event made. As in our
-record the family stayed whole, and the axis moved by $0.04$ in
-pseudorapidity, as ours does there. No
-subtraction is run in this job, but the arithmetic of the last \CMSSW row
-of \cref{tab:crowd_on_the_road:ledger} can be done by hand: the jet minus
-the mean pedestal of a circle is $116.0\GeV$, $1.8\GeV$ below the
-photograph, inside the $-1.1\pm6.1$ of our four hundred draws. And the
-crowd makes jets of its own, more than in our record because nothing
-limits the pseudorapidity of what is clustered and because five more
-collisions were drawn: $266$ jets where the family had $27$, $76$ of them
-above $30\GeV$, seven between $50$ and $61\GeV$ that are four fifths to
-all pileup. The distinction is not sharp, though. Only $87$ of the $266$
-hold no particle of the family at all, because its underlying event is
-spread over the whole plane and a circle anywhere catches a few; and $627$
-of the family's $634$ particles are now inside a jet, against $239$
-before, not because they moved but because a jet above $3\GeV$ now exists
-around every one of them.
+The crowd of \CMSSW weighs a little less than ours. Within $|\eta|<2.5$
+it is $1922\GeV$ of transverse momentum in $4252$ particles of $0.45\GeV$
+each, a pedestal of $61\GeV$ per unit of $\eta$--$\phi$ area against the
+$78$ of our record in \cref{tab:crowd_on_the_road:overlay_ledger},
+because its $64$ collisions hold $41$ non-diffractive ones where our $63$
+hold $51$, and a circle of $R=0.4$ collects $30.8\GeV$ of it wherever it
+is put. In energy the crowd is $870\TeV$, $64$ collisions of $13.6\TeV$
+each, and $92\%$ of it flies beyond $|\eta|=5.5$ with the beam remnants,
+where nothing will see it. The mother's jet went from $117.79$ to
+$150.75\GeV$ and from $24$ to $101$ constituents, the $78$ strangers from
+$33$ different collisions carrying $34.2\GeV$, and its mass from $16.7$ to
+$50.5\GeV$; the $\bar b$'s went from $115.94$ to $144.69$, and the
+invariant mass of the two from $387$ to $505\GeV$, a shift that no part of
+the hard event made. As in our record the family stayed nearly whole: the
+$\bar b$ jet kept its $18$ particles and the $b$ jet $23$ of its $24$, a
+pion of $0.48\GeV$ at its edge going to a pileup jet of $3.4\GeV$ next to
+it; and the axis moved by $0.05$ in $(\eta,\phi)$, most of it in
+pseudorapidity, as ours does there. No subtraction is run in this job,
+but the arithmetic of the last \CMSSW row of
+\cref{tab:crowd_on_the_road:ledger} can be done by hand: the jet minus the
+mean pedestal of a circle is $120.0\GeV$, $2.2\GeV$ above the photograph,
+inside the $\pm6.1$ of our four hundred draws. And the crowd makes jets of
+its own, more than in our record in all, because nothing limits the
+pseudorapidity of what is clustered, and fewer above $30\GeV$, because the
+crowd is lighter: $261$ jets where the family had $27$, $45$ of them above
+$30\GeV$, five between $55$ and $73\GeV$ that are four fifths to all
+pileup. The distinction is not sharp, though. Only $79$ of the $261$ hold
+no particle of the family at all, and $626$ of the family's $634$
+particles are now inside a jet, against $239$ before, as in our record and
+for the same reason.
 
 The year, finally, is a label at this stop. The global tags of 2024 and
 2025 differ in $35$ of their some $620$ records, the calibrations of the
@@ -1172,7 +1281,8 @@ the Level-1 menu, and a generator job reads none of them: the simulated
 beam spot, the geometry and the magnetic field are the same tags in both,
 and the era \code{Run3\_2025} adds to \code{Run3\_2024} only modifiers of
 the reconstruction and of the Level-1 trigger. The companion ran the
-library and the overlay with both and found them identical line by line,
+library, the draw and the overlay with both and found them identical line
+by line for all $1000$ collisions,
 the process of every collision, its vertex in space and time, every
 particle and every jet. The year starts to matter at the border, where
 the detector of 2025 has calibrations of its own.
@@ -1182,8 +1292,8 @@ for the overlay: the particles of the family are circles and those of the
 crowd triangles, filled in the colour of their jet when they are
 clustered, and the jets above $30\GeV$ and the two $b$ jets are drawn with
 their circle of radius $R$; the margin lists the leading jets with the
-share of their \pt that is pileup, $22\%$ and $24\%$ for the two $b$ jets
-and $76$ to $101\%$ for the next seven. Panel~(a) is our record: the crowd
+share of their \pt that is pileup, $23\%$ and $20\%$ for the two $b$ jets
+and $79$ to $100\%$ for the next nine. Panel~(a) is our record: the crowd
 in khaki, the particles of the family coloured by the mixed jet that holds
 them, the circles of the mixed jets with their momentum before and after
 the subtraction, and our jet's line in the header,
@@ -1198,7 +1308,7 @@ nothing in them tells the algorithm which particle belongs to the family.
   {Standalone: the family and the 63 in-time collisions of \file{example/PU/event_PU.lhe} (seed~1), drawn by \file{plot_journey_PU.py}.}
   {fig:crowd_on_the_road:journey}
   {PU/CMSSW/genJetAnalyzer_08_PU.pdf}
-  {\CMSSW: the family and its 68 in-time collisions, clustered again as \code{ak4GenJetsPU} and drawn by the \code{genJetAnalyzer} of \code{JitJetSW}.}
+  {\CMSSW: the family and its 64 in-time collisions, clustered again as \code{ak4GenJetsPU} and drawn by the \code{genJetAnalyzer} of \code{JitJetSW}.}
   {fig:crowd_on_the_road:cmssw}
 \caption[The event with the crowd in the $(\eta,\phi)$ plane, standalone
 and \CMSSW]{The event with the crowd of its bunch crossing, standalone (a)
@@ -1237,9 +1347,10 @@ a model rather than a port carry their caveats:
     a year.
   \item \textbf{The out-of-time crowd is counted, not felt.} The $897$
     collisions of the other fifteen crossings are in the vertex listing
-    with their offsets and nowhere else, because nothing at the generator
-    level lasts $25\ns$. The calorimeters do, and \cref{ch:customs_form}
-    feels them.
+    with their offsets and in the out-of-time columns of the ledger, and
+    nowhere else, because nothing at the generator level lasts $25\ns$.
+    The calorimeters do: \cref{ch:customs_form} feels them, and the pulse
+    fits of \cref{ch:footprints} take them out again.
   \item \textbf{The beam spot is a payload, not a model of the beams.}
     \Cref{eq:crowd_on_the_road:region} is what two head-on Gaussian
     bunches give, and \CMSSW's generator draws exactly that shape, but with
@@ -1369,10 +1480,12 @@ calorimeter~\cite{CMS:2017jpq} and the timing layer~\cite{Butler:2019rpu}.
   replacement, and check in the vertex listing of the record that reading
   in order from a random start, as \CMSSW does, avoids it. When would a
   collision be reused within one event all the same?
-\item Run the script with \code{--window 1 --sequential}, the conditions
-  of the \CMSSW exercise of the companion, and compare the three draws,
-  the particles per crossing and the vertex spread with the companion's
-  table of mixed events. Which numbers can agree, and which cannot?
+\item Run the script with \code{--sequential}, the conditions of the
+  \CMSSW draw of the companion ($\mup=60$ in $\bx=-12\ldots+3$, the
+  library read from its first event), and compare the sixteen draws, the
+  particles of the in-time crossing and the vertex spread with the
+  companion's draw and its catalogue of the $64$ in-time collisions. Which
+  numbers can agree, and which cannot?
 \item With \code{fill\_profile} and \code{year\_profile}, build a profile
   of a year whose fills are levelled at $62$ and compute the weights of
   \cref{eq:crowd_on_the_road:reweight} for the flat $55$--$75$ sample bin
@@ -1478,7 +1591,7 @@ overlap to a third and the crab cavities give it back, and no data exist yet
     cannot read $1400$ events per signal event (the Phase-2 RelVals mix
     \code{AVE\_200\_BX\_25ns}, a Poisson draw of mean $200$ in each of the
     seven crossings $-3$ to $+3$, against some $1040$ collisions for the
-    Run-3 scenario and the $193$ of the companion's three crossings; both
+    Run-3 scenario and the $995$ of the companion's draw for our event; both
     scenarios read the library from a random start, so that a library
     smaller than $1400$ events repeats collisions within one event), and the premixed sample
     loses the hit-level truth of the crowd that this chapter's pictures

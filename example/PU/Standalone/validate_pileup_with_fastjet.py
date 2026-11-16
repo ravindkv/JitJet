@@ -16,7 +16,7 @@ record  The mixed final state of the book's record (../event_PU.lhe: the signal 
 library The cross sections and the multiplicities of the minimum-bias collisions: PYTHIA's own numbers at
         initialisation (sigma for ND, SD, DD, CD at 13.6 TeV) against the shares of the library, and the
         per-collision particle and charged multiplicities, with and without the |eta| cuts, against the 2025
-        CMSSW library of the companion (250 events at 13.6 TeV, CMSSW_15_0_5, PYTHIA 8.311).
+        CMSSW library of the companion (1000 events at 13.6 TeV, CMSSW_15_0_5, PYTHIA 8.311).
 
 Needs the environment of example/ME/Standalone (fastjet, pythia8mc):
   ../../ME/Standalone/.venv/bin/python validate_pileup_with_fastjet.py --mode record
@@ -153,7 +153,7 @@ def mode_library(args, pythia8):
     sig = dict(ND=55.42, SD=2 * 6.43, DD=8.85, CD=1.29)           # PYTHIA 8.315 with CP5 at 13.6 TeV (pileup_library.log); the 2025 CMSSW library prints the same
     tot = sum(sig.values())
     print(f"the library: {len(lib)} events; shares against PYTHIA's cross sections at 13.6 TeV (sigma_inel = {tot:.2f} mb):")
-    print("CMSSW library (250 events, companion): ND 183 = 73.2%, SD 45 = 18.0%, DD 19 = 7.6%, CD 3 = 1.2%")
+    print("CMSSW library (1000 events, companion): ND 722 = 72.2%, SD 161 = 16.1%, DD 105 = 10.5%, CD 12 = 1.2%")
     for k in ("ND", "SD", "DD", "CD"):
         n = kinds.get(k, 0)
         print(f"  {k}: {n:5d} = {100 * n / len(lib):5.1f}%  expected {100 * sig[k] / tot:5.1f}%  ({sig[k]:.2f} mb)")
@@ -167,12 +167,13 @@ def mode_library(args, pythia8):
           f"sum pT {sumpt.mean():.1f} (max {sumpt.max():.0f})")
     nc_all = np.array([int(((e["pt"] > sp.VISIBLE_PT) & (np.abs(e["eta"]) < sp.VISIBLE_ETA)).sum()) for e in lib.events])
     print(f"               central all particles (|eta| < 2.5, pT > 0.5) {nc_all.mean():.1f} (median {np.median(nc_all):.0f}, max {nc_all.max()})")
-    print("CMSSW library (250 events, companion): stable particles 194 (median 132, 3 to 723), central all particles 21 (median 10, max 126), hardest 2.2 GeV (max 8.1), sum pT 0.5 to 376")
+    print("CMSSW library (1000 events, companion): stable particles 187.7 (median 119, 3 to 857), charged 86.6, central all particles 20.4 (median 9, max 167), "
+          "hardest 2.21 GeV (max 19.0), sum pT 76.5 (0.3 to 498)")
     for k in ("ND", "SD", "DD", "CD"):
         sel = np.array([e["kind"] == k for e in lib.events])
         if sel.any():
             print(f"  {k}: {nf[sel].mean():6.1f} particles, {nc[sel].mean():5.1f} central charged, {sumpt[sel].mean():6.1f} GeV of pT")
-    print("  (CMSSW library per type, stable particles / central: ND 241 / 27, SD 70 / 7, DD 57 / 2, CD 35 / 2; primaries handed to GEANT: ND 195, SD 55, DD 36, CD 32)")
+    print("  (CMSSW library per type, stable particles / central all species: ND 236 / 26, SD 70 / 7, DD 55 / 3, CD 24 / 2)")
     res = dict(n=len(lib), kinds=kinds, nfinal=dict(mean=float(nf.mean()), median=float(np.median(nf)), min=int(nf.min()), max=int(nf.max())),
                central=dict(mean=float(nc.mean()), median=float(np.median(nc)), max=int(nc.max())),
                central_all=dict(mean=float(nc_all.mean()), median=float(np.median(nc_all)), max=int(nc_all.max())), ptmax=float(ptmax.mean()), ptmax_max=float(ptmax.max()),

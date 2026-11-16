@@ -71,7 +71,7 @@ Examples
   python3 standalone_pileup.py                       # -> ../event_PU.lhe (the book's record: mu = 60, bx = -12 ... +3)
   python3 standalone_pileup.py -v                    # learning mode
   python3 standalone_pileup.py --window 0            # the in-time crossing only
-  python3 standalone_pileup.py --window 1 --sequential   # the conditions of the CMSSW companion (PU 60 in bx = -1 ... +1)
+  python3 standalone_pileup.py --sequential          # the conditions of the CMSSW companion's draw (PU 60 in bx = -12 ... +3, from the first library event)
   python3 standalone_pileup.py --scenario ultimate   # the HL-LHC crowd: mu = 200 in bx = -3 ... +3, the Phase-2 luminous region
   python3 standalone_pileup.py --repeat 400 --quiet --history standalone_pileup_stats.json
                                                      # draw the crowd again and again on the same jet

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The catalogue of the minimum-bias library: one line per collision, as minBiasGenStats.py of the CMSSW
-companion prints it for the 250 GEN events of the 2025 library, plus the summary of the sample and the
+companion prints it for the 1000 GEN events of the 2025 library, plus the summary of the sample and the
 means per process type.
 
 For every collision of ../pileup_library.lhe.gz: the process type; the number of parton-parton

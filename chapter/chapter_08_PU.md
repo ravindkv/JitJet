@@ -28,6 +28,7 @@ option of the script, `--scenario ultimate`, kept for the exercises and the open
 | Learning-mode log | [`example/PU/Standalone/standalone_pileup.log`](../example/PU/Standalone/standalone_pileup.log) (`-v`, seed 1) and its summary [`standalone_pileup.json`](../example/PU/Standalone/standalone_pileup.json) |
 | Validation with FastJet and PYTHIA | [`example/PU/Standalone/validate_pileup_with_fastjet.py`](../example/PU/Standalone/validate_pileup_with_fastjet.py) |
 | The catalogue of the library | [`example/PU/Standalone/minbias_catalogue.py`](../example/PU/Standalone/minbias_catalogue.py), its tables [`minbias_catalogue.txt`](../example/PU/Standalone/minbias_catalogue.txt) / `.json` / `.tex` (the chapter `\input`s the last) |
+| The ledger of the overlay | [`example/PU/Standalone/overlay_ledger.py`](../example/PU/Standalone/overlay_ledger.py), the twin of the companion's `genLedger.py --pu`: [`overlay_ledger.txt`](../example/PU/Standalone/overlay_ledger.txt) / `.tex` (the chapter `\input`s the last as `tab:crowd_on_the_road:overlay_ledger`) |
 | CMSSW figure | [`example/PU/CMSSW/genJetAnalyzer_08_PU.pdf`](../example/PU/CMSSW/genJetAnalyzer_08_PU.pdf), the lower panel of the chapter's display |
 | CMSSW write-up (JitJetSW) | physics details: [`chapter_08_PU.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.tex); technical companion: [`chapter_08_PU.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_08_PU.md) |
 | Film | scene 8 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
@@ -79,7 +80,7 @@ cd example/PU/Standalone
       # -> ../event_PU.lhe, the book's record (mu = 60, bx = -12 ... +3, seed 1): 2 min, almost all of it the anti-kT clustering
 /usr/bin/python3 standalone_pileup.py --no-area              # 20 s: no ghosts, no areas, no jet-median rho
 /usr/bin/python3 standalone_pileup.py --window 0             # the in-time crossing only
-/usr/bin/python3 standalone_pileup.py --window 1 --sequential   # the conditions of the CMSSW exercise (PU 60 in bx = -1 ... +1, the library read in order)
+/usr/bin/python3 standalone_pileup.py --sequential           # the conditions of the CMSSW draw (PU 60 in bx = -12 ... +3, the library read from its first event)
 /usr/bin/python3 standalone_pileup.py --scenario ultimate    # the HL-LHC crowd: mu = 200 in bx = -3 ... +3, the Phase-2 luminous region (15 min)
 /usr/bin/python3 standalone_pileup.py --repeat 400 --jobs 4 --quiet --history standalone_pileup_stats.json   # 15 s
 ```
@@ -123,6 +124,31 @@ of the chapter is the first ten in-time collisions of our crossing with the vert
 each (the record's vertex listing); the summary is over the two thousand collisions (the vertex rows over
 the 960 drawn); the means per kind close it. The `.tex` holds the three tables as the macros
 `\minbiasCatalogueTen`, `\minbiasCatalogueSummary` and `\minbiasCataloguePerProcess`.
+
+### The ledger of the overlay
+
+```bash
+cd example/PU/Standalone
+/usr/bin/python3 overlay_ledger.py                 # -> overlay_ledger.txt, .tex (3 s; reads ../event_PU.lhe and ../pileup_library.lhe.gz)
+```
+
+The twin of `genLedger.py --pu` of the CMSSW companion (its `ledger_08_PU.txt`): the
+final state of the signal, of the 63 in-time collisions, of the 897 out-of-time collisions
+(never overlaid; rebuilt from their library events) and of the signal with its in-time
+pileup, by kind (charged
+hadrons, neutral hadrons, photons, electrons, muons, neutrinos) and by region of |eta|
+(2.5, 3.0, 5.2, 5.5), with the visible part (|eta| < 5.2, no neutrinos) and, for the
+overlaid blocks, the cone of Delta R < 0.4 around the last copy of each b quark; then the jets before (chapter 7's
+ak4GenJets) and after (the mixed jets of the record): the counts above 3 / 20 / 30 / 50
+GeV, the signal particles inside a jet, the b and bbar jets with their signal and pileup
+constituents, their response, their distance to the quark in (eta, phi), the dijet mass,
+the imbalance of the pair and the jets without a signal particle. The signal is read from
+the chapter-7 listing the record keeps, the in-time crowd from its particle listing, the
+out-of-time crowd from `../pileup_library.lhe.gz` by the library events of its vertex
+listing, the jets from the two jet listings. The text keeps the energies; the `.tex`, like
+the CMSSW table since 16 November 2026, gives n and scalar pT only and holds the two tables of the
+chapter as the macros `\puOverlayLedgerFinal` and `\puOverlayLedgerJets`; the text is in
+section 5.5.
 
 ### The learning modes
 
@@ -263,7 +289,7 @@ sixteen draws of our event, the 2025 profile of CMSSW and one fill of its header
 the flat 55 ... 75 profile of the production, with the weight. Page 2: the multiplicity of the library by
 process type, the plateau dN/deta, the pT per unit area per collision. Page 3: the
 density p(z, t) with the in-time vertices and the signal, the z of the 960 vertices
-against the Gaussian of the payload and the 250 vertices of the CMSSW library, the sixteen
+against the Gaussian of the payload and the first 250 vertices of the CMSSW library, the sixteen
 crossings on the clock. Page 4: the grid cells of our crossing with their median, rho
 against the number of collisions over the ensemble, the truth against rho A. The script
 reads the record, the library, `standalone_pileup.json` and `standalone_pileup_stats.json`
@@ -298,22 +324,27 @@ The 2025 film (`--jobs 8`, rendered on 15 November 2026) is the one on the playl
 
 ### 4.1 The library: PYTHIA's cross sections and the 2025 CMSSW library
 
-The catalogue of section 1 is the first comparison: against the summary of the companion's 250 GEN
-events (interactions 7.0 mean / 3 median / 1 to 39; stable 194 / 132 / 3 to 723; charged 89 / 59;
-central 21 / 10 / 0 to 126; beyond |eta| = 5.5 39 / 37; hardest 2.2 / 1.8 / 0.2 to 8.1 GeV; sum pT 79 /
-45 / 0.5 to 376; jets above 10 GeV 0.15 per event; protons at the PPS 0.37 per event; per kind ND
-9.0 interactions / 241 stable / 27 central, SD 2.0 / 70 / 7, DD 1.2 / 57 / 2, CD 2.0 / 35 / 2) the
-library gives 6.0 / 2 / 1 to 45; 179 / 116 / 3 to 829; 83 / 54; 19 / 8 / 0 to 167; 37 / 34; 2.2 / 1.7 /
-0.1 to 17.9; 73 / 38 / 0.5 to 518; 0.15; 0.38; ND 8.1 / 230 / 25, SD 1.0 / 51 / 4, DD 1.0 / 62 / 4, CD
-1.0 / 28 / 2. The interactions differ in the counting (CMSSW counts one plus the status-31 pairs, the
-library PYTHIA's `nMPI`, at least one), the diffractive means to what 45, 19 and 3 events allow, and the
-rest within the statistics of 250 against 2000.
+The catalogue of section 1 is the first comparison: against the summary of the companion's 1000 GEN
+events (`genstats_08_PU.txt`: interactions 6.6 mean / 3 median / 1 to 45; stable 188 / 119 / 3 to 857;
+charged 87 / 56; central 20 / 9 / 0 to 167; beyond |eta| = 5.5 38 / 35; hardest 2.2 / 1.7 / 0.16 to
+19.0 GeV; sum pT 76 / 41 / 0.3 to 498; jets above 10 GeV 0.15 per event; protons at the PPS 0.36 per
+event; per kind ND 8.5 interactions / 236 stable / 26 central, SD 2.1 / 70 / 7, DD 1.3 / 55 / 3, CD
+1.2 / 24 / 2) the library gives 6.0 / 2 / 1 to 45; 179 / 116 / 3 to 829; 83 / 54; 19 / 8 / 0 to 167;
+37 / 34; 2.2 / 1.7 / 0.1 to 17.9; 73 / 38 / 0.5 to 518; 0.15; 0.38; ND 8.1 / 230 / 25, SD 1.0 / 51 /
+4, DD 1.0 / 62 / 4, CD 1.0 / 28 / 2. The interactions differ in the counting (CMSSW counts one plus
+the status-31 pairs, the library PYTHIA's `nMPI`, at least one). The non-diffractive and
+double-diffractive multiplicities agree within the statistics (236 against 230, 0.8 standard errors;
+55 against 62, 1.7), and so does almost everything else of 1000 against 2000; the one difference
+beyond them is the single-diffractive multiplicity, 70 stable particles per collision in CMSSW
+against 51 here (161 and 319 collisions, an r.m.s. of 51 per collision: about 3.8 standard errors),
+which this page records and does not explain (PYTHIA 8.311 and the 14 TeV fragment there, 8.315
+and `Beams:eCM = 13600` here).
 
 The library is itself PYTHIA's product (`make_pileup_library.py`: `SoftQCD:inelastic`,
 the CP5 tune, the CMS common settings, `Beams:eCM = 13600` as the companion's
 `process.generator.comEnergy = 13600` does with the 14 TeV fragment, seed 20261), so the
 check is that its composition follows the cross sections PYTHIA printed at initialisation
-and that its multiplicities agree with the 250-event GEN-SIM library of the CMSSW
+and that its multiplicities agree with the 1000-event GEN library of the CMSSW
 exercise:
 
 ```bash
@@ -321,31 +352,34 @@ cd example/PU/Standalone
 ../../ME/Standalone/.venv/bin/python validate_pileup_with_fastjet.py --mode library
 ```
 
-| | PYTHIA sigma [mb] at 13.6 TeV | expected share | library (2000) | CMSSW library (250) |
+| | PYTHIA sigma [mb] at 13.6 TeV | expected share | library (2000) | CMSSW library (1000) |
 |---|---|---|---|---|
-| non-diffractive (101) | 55.42 | 70.7% | 1425 = 71.2% | 183 = 73.2% |
-| single diffractive (103 + 104) | 2 x 6.43 | 16.4% | 319 = 15.9% | 45 = 18.0% |
-| double diffractive (105) | 8.85 | 11.3% | 219 = 10.9% | 19 = 7.6% |
-| central diffractive (106) | 1.29 | 1.6% | 37 = 1.9% | 3 = 1.2% |
-| inelastic | 78.42 | | 2000 | 250 |
+| non-diffractive (101) | 55.42 | 70.7% | 1425 = 71.2% | 722 = 72.2% |
+| single diffractive (103 + 104) | 2 x 6.43 | 16.4% | 319 = 15.9% | 161 = 16.1% |
+| double diffractive (105) | 8.85 | 11.3% | 219 = 10.9% | 105 = 10.5% |
+| central diffractive (106) | 1.29 | 1.6% | 37 = 1.9% | 12 = 1.2% |
+| inelastic | 78.42 | | 2000 | 1000 |
 
-| per collision | library (2000) | CMSSW library (250) |
+| per collision | library (2000) | CMSSW library (1000) |
 |---|---|---|
-| final particles: mean, median, min, max | 179.2, 116, 3, 829 | 194, 132, 3, 723 |
-| charged | 82.6 | |
-| central (abs(eta) < 2.5, pT > 0.5 GeV): charged / all | 12.2 (median 6, max 97) / 19.3 (median 8, max 167) | 21 all particles (median 10, max 126) |
-| hardest particle [GeV] | 2.17 (max 17.9) | 2.2 (max 8.1) |
-| sum pT [GeV] | 73 (max 518) | 0.5 to 376 |
-| by type: particles (central charged) | ND 230 (16.1), SD 51 (2.5), DD 62 (2.7), CD 28 (1.6) | stable ND 241, SD 70, DD 57, CD 35; primaries handed to GEANT ND 195, SD 55, DD 36, CD 32 |
+| final particles: mean, median, min, max | 179.2, 116, 3, 829 | 187.7, 119, 3, 857 |
+| charged | 82.6 | 86.6 (median 56) |
+| central (abs(eta) < 2.5, pT > 0.5 GeV): charged / all | 12.2 (median 6, max 97) / 19.3 (median 8, max 167) | 20.4 all particles (median 9, max 167) |
+| hardest particle [GeV] | 2.17 (max 17.9) | 2.21 (max 19.0) |
+| sum pT [GeV] | 73 (max 518) | 76.5 (0.3 to 498) |
+| by type: particles (central charged) | ND 230 (16.1), SD 51 (2.5), DD 62 (2.7), CD 28 (1.6) | stable (central, all species) ND 236 (26), SD 70 (7), DD 55 (3), CD 24 (2) |
 
 The CMSSW numbers are those of the JitJetSW companion (`genstats_08_PU.txt`), whose cross sections are
 exactly the ones above (the same fragment, the same tune, the same energy; PYTHIA 8.311
 there, 8.315 here; the 14 TeV fragment of the Phase-2 exercise gives 55.36, 6.44, 8.88,
 1.29 mb: the tune, not the energy, sets them). The CMSSW library's central count includes
-the neutrals and its "primaries" are the stable particles handed to GEANT after the
-beam-pipe and momentum cuts; the medians and the extremes agree to what 250 events allow
-(the 19 double-diffractive events are 1.7 sigma low; the 723 of its largest event against
-829 here is the tail of two thousand against 250).
+the neutrals. Its shares are all within 1.1 standard deviations of the expectation (the
+first 250 events alone had a double-diffractive deficit of 1.7, which the 1000 wash out);
+the medians and the extremes agree to what 1000 events allow (the 857 of its largest event
+against 829 here is the tail). The first 250 events of the 1000 are the 250-event library
+of the earlier exercise, collision by collision (the same seeds give the same events
+whatever the length of the run), and they remain the library of chapters 10 to 13 of
+JitJetSW until those are moved to the sixteen crossings (chapter 9, Geant4, takes all 1000).
 
 ### 4.2 The mixed final state with FastJet
 
@@ -378,7 +412,7 @@ unchanged, and a rigid circle of R = 0.4 on the script's jittered ghost grid mea
 
 The CMSSW side of this stop is one job of
 [JitJetSW](https://github.com/ravindkv/JitJetSW), `test/08_PU/run_08_PU.sh`
-(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): a library of 250 minimum-bias collisions and the overlay of 68 of them on the signal at generator level.
+(CMSSW_15_0_5, 13.6 TeV, run 1, event 1 with the default seeds): a library of 1000 minimum-bias collisions, the draw of the mixing over bx = -12 ... +3, and the overlay of the 64 in-time collisions on the signal at generator level.
 Its commands, configurations, logs and tables are documented there, and this
 page does not repeat them:
 
@@ -398,41 +432,53 @@ The page of the analyser that the chapter shows is copied to
 [`example/PU/CMSSW/genJetAnalyzer_08_PU.pdf`](../example/PU/CMSSW/genJetAnalyzer_08_PU.pdf);
 the links are also in [`example/PU/CMSSW/README.md`](../example/PU/CMSSW/README.md).
 
-The job has two parts. The library is one GEN job of 250 minimum-bias collisions
+The job has three parts. The library is one GEN job of 1000 minimum-bias collisions
 (`MinBias_14TeV_pythia8_TuneCP5_cfi` at 13.6 TeV, `SoftQCD:inelastic`, seeds 20241 /
 20242 so that its vertices are not those of the signal); JitJetSW runs it with the
 2025 conditions of the release, which at generator level give the same library as the
 2024 ones collision by collision (the beam-spot payload of the 2025 global tag is the same tag as in 2024,
 `SimBeamSpot_Realistic25ns13p6TeVEarly2024CollisionVtxSmearingParameters_v1_mc`:
-sigma_z = 3.6 cm, sigma_t = 120 ps). The overlay runs the `MixingModule` with no
-digitiser, `mixHepMC` only, on the signal of chapter 7 and library events 72 to 139,
-the 68 collisions that the mixing of the simulation chapters draws for the in-time
-crossing of this event (71, 68 and 54 collisions for bx = -1, 0, +1, the library read
-in sequence), and clusters the sum as `ak4GenJetsPU`.
+sigma_z = 3.6 cm, sigma_t = 120 ps). The draw (`common/pileupDraw_cfg.py` and
+`pileupDraw.py`, `draw_08_PU.txt`) runs the `MixingModule` of the overlay with the
+settings of the scenario, `AVE_60_BX_25ns` with seed 12345 over the window of every Run-3
+scenario of the release, `minBunch = -12` to `maxBunch = 3`, the library read in sequence,
+early crossings first: 995 collisions, 746 for the twelve early crossings (library
+events 1-746), 64 in time (747-810) and 185 for the three late ones (811-995). The overlay
+runs the `MixingModule` with no digitiser, `mixHepMC` only, on the signal of chapter 7
+and library events 747 to 810 (`skipEvents = 746`, `type = fixed`, 64 collisions, the
+single crossing 0), and clusters the sum as `ak4GenJetsPU`.
 
 What the chapter reads from the output (`test/08_PU/out/`):
 
 | number in the chapter | value | file |
 |---|---|---|
-| cross sections, process counts of the 250 | 78.42 mb; 183 ND / 45 SD / 19 DD / 3 CD | `step1_GEN_MinBias_08_PU.log` |
-| per collision: interactions, stable particles, central ones, hardest | 7.0; 193.8 (median 132, 3 to 723); 21.2; 2.2 GeV (max 8.1) | `genstats_08_PU.txt` |
-| vertices of the 250: r.m.s. in z and t | 3.56 cm, 122 ps | `genstats_08_PU.txt` |
+| cross sections, process counts of the 1000 | 78.42 mb; 722 ND / 161 SD / 105 DD / 12 CD (706.7 / 164.0 / 112.8 / 16.4 expected) | `step1_GEN_MinBias_08_PU.log` |
+| per collision: interactions, stable particles, central ones, hardest | 6.6; 187.7 (median 119, 3 to 857); 20.4; 2.21 GeV (max 18.99) | `genstats_08_PU.txt` |
+| the 1000 stable-particle species, pT and ND multiplicity against interactions | 187 684 particles: photons 45.7%, charged pions 37.3%, ... 77 above 5 GeV; ND 1 to 45 interactions, mean 8.5; 87 stable for one, 805 for 45 | `genstats_08_PU.txt` |
+| vertices of the 1000: r.m.s. in z and t, range in z | 3.57 cm, 120 ps; -12.4 to +12.9 cm | `genstats_08_PU.txt` |
 | signal vertex | z = 3.11 cm, t = +0.121 ns | `step1_GEN_01_ME.root` of chapter 1 (the same in every job) |
-| the 68 in-time collisions | 49 ND / 15 SD / 4 DD, 12 993 stable particles (3 to 547) | `genstats_08_PU.txt`, events 72 to 139 |
-| pileup at abs(eta) < 2.5 | 4864 particles, 2179.4 GeV of scalar pT: 69.4 GeV per unit area, 34.9 GeV per circle of R = 0.4 | `ledger_08_PU.txt` |
-| jets above 3 / 20 / 30 / 50 GeV | 266 / 116 / 76 / 9 (27 / 2 / 2 / 2 without pileup) | `genJetPileup_08_PU.log` |
-| the b jet with the crowd | jet [1], 150.895 GeV, mass 51.36 GeV, 114 constituents (24 + 90 from 41 collisions), pileup pT 33.92 GeV | `genJetPileup_08_PU.log`, FWLite |
-| the bbar jet with the crowd | jet [0], 152.028 GeV, 88 constituents (18 + 70 from 32 collisions), pileup pT 36.74 GeV | the same |
-| jets without a signal particle | 87 of 266 | FWLite on `step2_GENJETPU_08_PU.root` |
+| the draw over bx = -12 ... +3 | 71, 68, 54, 59, 52, 61, 76, 59, 65, 59, 68, 54, **64**, 63, 62, 60: 746 early, 64 in time, 185 late, 995 | `draw_08_PU.txt` |
+| the 64 in-time collisions | 41 ND / 12 SD / 11 DD, 350 interactions, 10 893 stable particles (4 to 826, median 116) | `genstats_08_PU.txt`, events 747 to 810 |
+| library event 747, the first in-time collision | SD (103), 37 stable particles, none central; the surviving proton at eta = -11.97 | `genPartAnalyzer_MinBias_08_PU.log` |
+| pileup at abs(eta) < 2.5 | 4252 particles, 1922.1 GeV of scalar pT: 61.2 GeV per unit area, 30.8 GeV per circle of R = 0.4 | `ledger_08_PU.txt` |
+| pileup energy | 870 400 GeV, 92% beyond abs(eta) = 5.5 | `ledger_08_PU.txt` |
+| the out-of-time pileup (bx -12 ... -1, +1 ... +3; not overlaid) | 931 collisions, 176 266 stable particles, 71 747.8 GeV of scalar pT (189 and 77 per collision) | `ledger_08_PU.txt` (`genLedger.py --events` on the library) |
+| jets above 3 / 20 / 30 / 50 GeV | 261 / 99 / 45 / 7 (27 / 2 / 2 / 2 without pileup) | `genJetPileup_08_PU.log` |
+| the b jet with the crowd | jet [0], 150.752 GeV, mass 50.53 GeV, 101 constituents (23 + 78 from 33 collisions), pileup pT 34.22 GeV | `genJetPileup_08_PU.log`, FWLite |
+| the bbar jet with the crowd | jet [1], 144.688 GeV, mass 42.87 GeV, 86 constituents (18 + 68 from 30 collisions), pileup pT 29.51 GeV | the same |
+| dijet mass, signal / overlay | 386.8 / 505.2 GeV | `genJetPileup_08_PU.log` |
+| jets without a signal particle; signal particles in a jet | 79 of 261; 626 of 634 (239 before) | FWLite on `step2_GENJETPU_08_PU.root` |
 
-The mixing with the detector simulation (the 193 collisions of the three crossings,
-their 31 060 primaries, 438 043 tracker hits and 103 808 pileup-dominated ECAL cells
-quoted in the chapter's theory section) is chapter 10 of JitJetSW
-([`chapter_10_SIM.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.tex)).
-The standalone script takes the conditions of the exercise with
-`--window 1 --sequential`; the draws differ (different random numbers and a different
-library), and the vertex spread, the particles per collision and the per-collision
-density are what can be compared.
+The mixing with the detector simulation (the 193 collisions of the three crossings
+-1 ... +1, their 31 060 primaries, 438 043 tracker hits and 103 808 pileup-dominated ECAL
+cells quoted in the chapter's theory section) is chapter 10 of JitJetSW
+([`chapter_10_SIM.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.tex)),
+which has not been moved to the sixteen crossings yet: it reads library events 1 to 193
+(in time 72 to 139) of the first 250, and the same seed and mean give it the 71, 68 and
+54 collisions that the long window draws for its first three crossings, -12, -11 and
+-10. The standalone script takes the conditions of the draw with `--sequential`; the
+draws differ (different random numbers and a different library), and the vertex spread,
+the particles per collision and the per-collision density are what can be compared.
 
 ## 5. The full tables
 
@@ -503,21 +549,126 @@ the record's residual of our jet -6.43, -5.89, -3.05, +1.81, -1.74, -2.62, -1.16
 | the photograph, ak4 jet [0] (chapter 7) | 99.83 | 14.83 | 31 | |
 | with the crowd: mixed jet [1], mu = 60 | 133.53 | 43.21 | 115 | +33.70 |
 | after the subtraction, pT - rho A | 93.64 | | 115 | -39.89 |
-| **CMSSW** (run 1, event 1; 68 in-time collisions) | | | | |
+| **CMSSW** (run 1, event 1; 64 in-time collisions of the draw over bx = -12 ... +3) | | | | |
 | the photograph, ak4 jet [0] (chapter 7) | 117.79 | 16.72 | 24 | |
-| with the crowd: mixed jet [1], mu = 60 | 150.90 | 51.36 | 114 | +33.11 |
-| of which pileup (scalar sum) | 33.92 | | 90 | |
-| minus the mean pedestal of a circle, pT - rho pi R^2 | 116.0 | | 114 | -34.9 |
+| with the crowd: mixed jet [0], mu = 60 | 150.75 | 50.53 | 101 | +32.96 |
+| of which pileup (scalar sum) | 34.22 | | 78 | |
+| minus the mean pedestal of a circle, pT - rho pi R^2 | 120.0 | | 101 | -30.8 |
 
 The 33.70 GeV of the second line are the 34.57 GeV of pileup constituents less the
 difference between the vector sum of the jet and the scalar sums of its constituents;
 the third line is the scalar subtraction, which leaves the mass at its inflated value.
-The CMSSW rows are lines of `genJetPileup_08_PU.log` of JitJetSW (`[1] pt=150.895 ... mass=51.3568
-nConst=114 pileupPt=33.9195`); no subtraction is run in that job, and the last row is arithmetic:
-the mean pileup pT per unit area at abs(eta) < 2.5, 2179.4 / (5 x 2 pi) = 69.4 GeV, times
-pi R^2 = 0.503 is 34.9 GeV, and 150.90 - 34.9 = 116.0 GeV, 1.8 GeV below the photograph.
+The CMSSW rows are lines of `genJetPileup_08_PU.log` of JitJetSW (`[0] pt=150.752 eta=-1.63804
+phi=-2.07282 mass=50.5254 nConst=101 pileupPt=34.2175 (22.6978%)`); no subtraction is run in that
+job, and the last row is arithmetic: the mean pileup pT per unit area at abs(eta) < 2.5,
+1922.1 / (5 x 2 pi) = 61.2 GeV, times pi R^2 = 0.503 is 30.8 GeV, and 150.75 - 30.8 = 120.0 GeV,
+2.2 GeV above the photograph. (Before the CMSSW draw was moved to the sixteen crossings, the
+overlay took the 68 in-time collisions of the three-crossing draw, library events 72 to 139:
+the b jet was then jet [1], 150.90 GeV with 114 constituents, and the subtracted value 116.0.)
 
-### 5.5 The HL-LHC crowd, for the open problems
+### 5.5 The ledger of the overlay
+
+`overlay_ledger.py` on `event_PU.lhe` (seed 1), the table `tab:crowd_on_the_road:overlay_ledger`
+of the chapter; the CMSSW counterpart is section 4.7 of the JitJetSW companion (`ledger_08_PU.txt`).
+The file (`overlay_ledger.txt`) in full but for the by-kind and by-region lines of the signal with its
+in-time pileup, which are the sums of the first two blocks:
+
+```
+== overlay_ledger event_PU.lhe: signal 749 + in-time pileup 13456 final particles from 63 collisions (bx 0); out-of-time pileup 161696 final particles from 897 collisions (bx -12..-1 and 1..3, rebuilt from pileup_library.lhe.gz, not overlaid)
+final state of the signal: n=749 sumE=13600.0 GeV sumPt=743.0 GeV
+  by kind                  n      E[GeV]   pT[GeV]
+  charged hadron         329      7188.6     420.2
+  neutral hadron          79      3401.4     156.9
+  photon                 327      2735.6     153.7
+  electron                 7         6.6       0.9
+  muon                     2        38.4       1.0
+  neutrino                 5       229.4      10.2
+  by region                n      E[GeV]   pT[GeV]      E_nu
+  |eta|<2.5              396       982.8     418.6       2.9
+  2.5-3.0                 55       378.0      51.3       0.0
+  3.0-5.2                216      5180.7     241.7     122.1
+  5.2-5.5                 15       827.7       8.2     104.4
+  >5.5                    67      6230.9      23.1       0.0
+  visible (|eta|<5.2, no neutrinos): n=664 E=6416.4 GeV pT=702.5 GeV; neutrinos: n=5 E=229.4 GeV pT=10.2 GeV
+  cone Delta R < 0.4 around the last copy of each b quark (no neutrinos):
+    bbar axis [708] pT=72.5 eta=-3.42 phi=0.57: n=18 E=1441.8 GeV vector pT=93.0 GeV scalar pT=93.2 GeV
+    b    axis [719] pT=78.3 eta=-1.38 phi=-2.73: n=31 E=220.9 GeV vector pT=99.4 GeV scalar pT=99.7 GeV
+final state of the in-time pileup (63 collisions, bx 0): n=13456 sumE=856800.0 GeV sumPt=5725.4 GeV
+  by kind                  n      E[GeV]   pT[GeV]
+  charged hadron        6035    535374.8    3324.7
+  neutral hadron        1075    156113.9     756.3
+  photon                6258    164380.6    1610.0
+  electron                73       749.6      15.2
+  muon                     4        20.7       5.7
+  neutrino                11       160.4      13.4
+  by region                n      E[GeV]   pT[GeV]      E_nu
+  |eta|<2.5             5229      5937.1    2440.0      21.6
+  2.5-3.0               1038      3545.6     447.8       0.0
+  3.0-5.2               4124     62092.7    1773.6      99.3
+  5.2-5.5                466     20954.6     198.4       0.0
+  >5.5                  2599    764270.0     865.6      39.5
+  visible (|eta|<5.2, no neutrinos): n=10381 E=71454.5 GeV pT=4648.3 GeV; neutrinos: n=11 E=160.4 GeV pT=13.4 GeV
+  cone Delta R < 0.4 around the last copy of each b quark (no neutrinos):
+    bbar axis [708] pT=72.5 eta=-3.42 phi=0.57: n=81 E=701.2 GeV vector pT=44.1 GeV scalar pT=45.0 GeV
+    b    axis [719] pT=78.3 eta=-1.38 phi=-2.73: n=79 E=76.6 GeV vector pT=32.2 GeV scalar pT=33.0 GeV
+final state of the out-of-time pileup (897 collisions, bx -12..-1 and 1..3): n=161696 sumE=12199200.0 GeV sumPt=65501.2 GeV
+  by kind                  n      E[GeV]   pT[GeV]
+  charged hadron       73483   7659197.4   37987.6
+  neutral hadron       13209   2278029.0    9150.9
+  photon               73978   2244967.9   18162.9
+  electron               942     14135.8     131.4
+  muon                    31       834.3      21.1
+  neutrino                53      2035.7      47.2
+  by region                n      E[GeV]   pT[GeV]      E_nu
+  |eta|<2.5            60623     66364.4   26412.1      83.0
+  2.5-3.0              12613     43641.1    5471.6      17.6
+  3.0-5.2              49767    714318.0   20616.9     408.4
+  5.2-5.5               5550    229656.0    2184.2     218.7
+  >5.5                 33143  11145220.5   10816.4    1308.1
+  visible (|eta|<5.2, no neutrinos): n=122960 E=823814.6 GeV pT=52458.2 GeV; neutrinos: n=53 E=2035.7 GeV pT=47.2 GeV
+final state of signal + in-time pileup: n=14205 sumE=870400.0 GeV sumPt=6468.3 GeV
+  ...
+jets: chapter 7's ak4GenJets (the photograph) -> the mixed anti-kT R = 0.4 jets (signal + in-time pileup, |eta| < 5, no neutrinos)
+  jets above 3 / 20 / 30 / 50 GeV: 42 / 6 / 6 / 3 -> 175 / 108 / 82 / 20
+  signal particles inside a jet: 368 of 749 -> 643 of 749 (651 entered the mixed clustering)
+  b    quark pT=78.29: jet [0] pt=99.83 eta=-1.439 phi=-2.712 m=14.83 n=31 dR=0.0622 pt(jet)/pt(quark)=1.2752
+       -> mixed jet [1] pt=133.53 eta=-1.479 phi=-2.701 m=43.21 n=115 (31 signal + 84 pileup from 33 collisions) pileupPt=34.57 (25.9%) dR=0.1036 pt(jet)/pt(quark)=1.7057 A=0.529 rhoA=39.89 pTsub=93.64
+  bbar quark pT=72.50: jet [1] pt=94.09 eta=-3.446 phi=0.594 m=17.82 n=18 dR=0.0352 pt(jet)/pt(quark)=1.2978
+       -> mixed jet [0] pt=136.77 eta=-3.476 phi=0.580 m=43.09 n=101 (19 signal + 82 pileup from 33 collisions) pileupPt=43.42 (31.7%) dR=0.0588 pt(jet)/pt(quark)=1.8865 A=0.489 rhoA=36.88 pTsub=99.89
+  m(b jet + bbar jet): 302.9 -> 436.5 GeV; |pT(b jet) + pT(bbar jet)|: 16.9 -> 19.1 GeV
+  mixed jets without a single signal particle: 30 of 175; jets above 30 GeV with at least one: 78 of 82
+```
+
+The out-of-time block is rebuilt from the library: the record lists the particles of the in-time
+crossing only, and its vertex listing gives, for every other collision, its crossing and its library
+event, whose particles the script reads from `pileup_library.lhe.gz` (the mixing moves vertices, not
+momenta; the script checks that the in-time crossing rebuilt the same way gives back the record's
+particle listing). 897 collisions, 161 696 final particles (180.3 per collision, against 13 456 / 63 =
+213.6 in our crowded in-time crossing and 179.2 on average in the library), 65 501.2 GeV of scalar pT
+(73.0 per collision, against 90.9 in time), 12 199 200 GeV = 897 x 13 600 GeV; 897 / 63 = 14.2 times
+as many collisions as in time. CMSSW's 931 (section 4.7 of the JitJetSW companion): 176 266 stable
+particles, 189.3 per collision, 71 747.8 GeV of pT, 77.1 per collision. Not overlaid in either: the
+jets and the last column are signal + in-time pileup. The chapter says where each crowd is removed
+later: the out-of-time one by the pulse fits of the ECAL and HCAL local reconstruction (chapter 14;
+the release's `EcalUncalibRecHitWorkerMultiFit.cc`, `activeBXs` -5 ... +4, and
+`HBHEMahiParameters_cfi.py`, `activeBXs` -3 ... +4, as quoted by the JitJetSW companion), the in-time
+one by CHS and PUPPI (chapter 16), the rest by the L1 offset correction (chapter 19).
+
+Derived, as the chapter quotes them: the pileup energy beyond abs(eta) = 5.5 is
+764 270 / 856 800 = 89%; the pileup pT density at abs(eta) < 2.5 is 2440.0 / (5 x 2 pi) =
+77.7 GeV per unit of eta-phi area (CMSSW 61.2), the mean pT of a pileup particle there
+2440.0 / 5229 = 0.47 GeV (CMSSW 0.45), and a circle of pi R^2 = 0.503 collects 39.0 GeV
+(CMSSW 30.8). The standalone crowd is the denser of the two because its 63 collisions
+hold 51 non-diffractive ones against 41 of the 64 of CMSSW: 38.7 GeV of central pT per
+collision against 30.0. The "electrons, muons" row of the chapter's table is the sum of
+the two lines. Three differences of definition against the CMSSW ledger: the mixed
+clustering takes only the particles within abs(eta) < 5 and no neutrinos (CMSSW clusters
+every stable particle of `genParticlesForJets`), so the jet counts of the two are not
+like for like, and 98 of the 749 signal particles cannot be in a mixed jet; the quark is
+the last copy before the hadronisation (status below 70), where CMSSW takes the status-71
+copy that enters it; and Delta R is in (eta, phi), as CMSSW's.
+
+### 5.6 The HL-LHC crowd, for the open problems
 
 `standalone_pileup.py --scenario ultimate` mixes the same family at mu = 200 in
 bx = -3 ... +3 with the luminous region of CMSSW's HLLHCEvtVtxGenerator (two 9 cm bunches

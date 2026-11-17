@@ -87,3 +87,5 @@ smpost/thumbnail/*.aux
 smpost/thumbnail/*.log
 smpost/thumbnail/*.png
 
+example/G4/Standalone/animate_standalone_G4.mp4
+example/G4/Standalone/*.json

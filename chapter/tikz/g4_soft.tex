@@ -1,0 +1,39 @@
+% ---------------------------------------------------------------------------
+% The soft and the invisible. Left: a pi0 decays into two photons; in the
+% laboratory the energy of either photon is uniform between E(1-beta)/2 and
+% E(1+beta)/2, so a fraction of the photons of every pi0 falls below the 40 MeV
+% of MinPCut. Right: a neutrino passes the cuts of Generator.cc, becomes a
+% primary, and the StackingAction kills it before its first step
+% (TrackNeutrino = False): the missing transverse momentum of the event is
+% decided here.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm, every node/.style={font=\scriptsize}, >={Stealth[length=2mm]}]
+% ---- (a) pi0 -> gamma gamma
+\node[font=\small\bfseries,anchor=west] at (-0.3,2.6) {(a) $\pi^0\to\gamma\gamma$ and the 40 MeV cut};
+\fill (0,0.8) circle (2pt);
+\draw[->,thick] (-1.2,0.8) -- (-0.05,0.8) node[midway,above] {$\pi^0$, $E$};
+\draw[->,thick,green!50!black,decorate,decoration={snake,amplitude=1.2pt,segment length=6pt,post length=2mm}] (0,0.8) -- (2.4,1.25) node[right] {$E_1=\tfrac{E}{2}(1+\beta\cos\theta^*)$};
+\draw[->,thick,green!50!black,decorate,decoration={snake,amplitude=1.2pt,segment length=6pt,post length=2mm}] (0,0.8) -- (-0.45,0.05) node[below] {$E_2=\tfrac{E}{2}(1-\beta\cos\theta^*)$};
+% the flat spectrum
+\begin{scope}[shift={(-0.3,-2.5)}]
+\draw[->] (0,0) -- (3.6,0) node[right] {$E_\gamma$};
+\draw[->] (0,0) -- (0,1.3) node[left] {$\mathrm{d}N/\mathrm{d}E_\gamma$};
+\fill[red!20] (0.25,0) rectangle (0.75,0.9);
+\draw[thick,green!50!black] (0.25,0) -- (0.25,0.9) -- (3.2,0.9) -- (3.2,0);
+\draw[red!70!black,thick] (0.75,-0.08) -- (0.75,1.15) node[above right=0pt and -4pt,text=red!70!black] {$E_c=40$ MeV};
+\node[below] at (0.25,0) {$\tfrac{E-p}{2}$};
+\node[below] at (3.2,0) {$\tfrac{E+p}{2}$};
+\node[anchor=west,text width=2.9cm,align=left] at (4.1,0.55) {uniform: $P(E_\gamma<E_c)=\dfrac{E_c-(E-p)/2}{p}\simeq\dfrac{E_c}{E}$};
+\end{scope}
+% ---- (b) the neutrino
+\begin{scope}[shift={(7.6,0)}]
+\node[font=\small\bfseries,anchor=west] at (-0.6,2.6) {(b) the neutrino: a primary, then killed};
+\draw[black!30,line width=6pt] (-0.4,0.8) -- (4.6,0.8);
+\node[text=black!50] at (4.2,0.45) {beam};
+\fill (0,0.8) circle (2pt);
+\draw[->,thick,dashed,orange!70!black] (0,0.8) -- (2.3,2.1) node[above right,text=orange!70!black] {$\bar\nu$: passes $p$ and $\eta$};
+\draw[orange!70!black,thick] (1.55,1.5) -- ++(0.25,0.25) ++(-0.25,0) -- ++(0.25,-0.25);
+\node[anchor=west,text width=4.3cm,align=left] at (-0.5,-0.4) {\texttt{StackingAction}, \texttt{TrackNeutrino = False}: classified \texttt{fKill} before the first step, no \texttt{SimTrack}.};
+\node[anchor=west,text width=4.3cm,align=left] at (-0.5,-1.55) {the transverse momentum it carries is missing from every detector, from here on: $\vec p_T^{\,\rm miss}=-\sum_{\rm visible}\vec p_T=\sum_\nu\vec p_T$ (at generator level).};
+\end{scope}
+\end{tikzpicture}

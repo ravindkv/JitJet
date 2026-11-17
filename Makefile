@@ -152,8 +152,13 @@ FIGURES := example/ME/journey_ME.pdf \
            example/PU/journey_PU_signal.pdf \
            example/PU/Standalone/theory_pileup.pdf \
            example/PU/Standalone/animate_standalone_pileup_stills.pdf \
-           example/PU/Standalone/minbias_catalogue.tex \
-           example/PU/Standalone/overlay_ledger.tex
+                      example/PU/Standalone/minbias_catalogue.tex \
+           example/PU/Standalone/overlay_ledger.tex \
+           example/G4/journey_G4.pdf \
+           example/G4/Standalone/theory_G4.pdf \
+           example/G4/Standalone/animate_standalone_G4_stills.pdf \
+           example/G4/Standalone/handover_ledger.tex \
+           chapter/tikz/g4_cms3d.tex
 
 figures: $(FIGURES)
 
@@ -316,6 +321,25 @@ example/PU/Standalone/animate_standalone_pileup_stills.pdf: \
 		example/PU/Standalone/standalone_pileup.py example/PU/event_PU.lhe
 	$(PYTHON) example/PU/Standalone/animate_standalone_pileup.py --stills $@ --no-video --no-narration --no-music
 
+# Chapter 9, the gate at the border: the (eta, phi) display of the hand-over, the five theory pages, the key
+# frames of the film, the LaTeX ledger of the hand-over (written with the record) and the 3D CMS of the picture
+# to carry (chapter/tikz/g4_cms3d.tex). The plots redo the gate on event_PU.lhe in a few seconds.
+example/G4/journey_G4.pdf: example/G4/plot_journey_G4.py example/G4/Standalone/standalone_G4.py example/PU/event_PU.lhe
+	$(PYTHON) example/G4/plot_journey_G4.py -i example/PU/event_PU.lhe -o $@
+
+example/G4/Standalone/theory_G4.pdf: example/G4/Standalone/plot_theory_G4.py \
+		example/G4/Standalone/standalone_G4.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/G4/Standalone/plot_theory_G4.py -o $@
+
+example/G4/Standalone/animate_standalone_G4_stills.pdf: example/G4/Standalone/animate_standalone_G4.py \
+		example/G4/Standalone/standalone_G4.py example/G4/Standalone/draw_cms3d.py example/PU/event_PU.lhe
+	$(PYTHON) example/G4/Standalone/animate_standalone_G4.py --stills $@ --no-video --no-narration --no-music
+
+example/G4/Standalone/handover_ledger.tex: example/G4/event_G4.lhe
+
+chapter/tikz/g4_cms3d.tex: example/G4/Standalone/draw_cms3d.py
+	$(PYTHON) example/G4/Standalone/draw_cms3d.py -o $@
+
 # Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
 example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
 	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
@@ -329,7 +353,7 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
 RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe example/GenJet/event_GenJet.lhe \
-           example/PU/event_PU.lhe
+           example/PU/event_PU.lhe example/G4/event_G4.lhe
 
 records: $(RECORDS)
 
@@ -359,6 +383,14 @@ example/GenJet/event_GenJet.lhe: example/GenJet/Standalone/standalone_genjets.py
 # in the ME venv. About two minutes.
 example/PU/event_PU.lhe: example/PU/Standalone/standalone_pileup.py example/GenJet/event_GenJet.lhe example/PU/pileup_library.lhe.gz
 	$(PYTHON) example/PU/Standalone/standalone_pileup.py -i example/GenJet/event_GenJet.lhe -o $@ -v --log example/PU/Standalone/standalone_pileup.log --summary example/PU/Standalone/standalone_pileup.json --quiet
+
+# Chapter 9: the hand-over of the window of chapter 8 to Geant4 (Generator.cc, the StackingAction, the PPS
+# transport), with the out-of-time collisions rebuilt from the library; also writes the -v log, the summary, the
+# LaTeX ledger and the library scan. Ten seconds.
+example/G4/event_G4.lhe: example/G4/Standalone/standalone_G4.py example/PU/event_PU.lhe example/PU/pileup_library.lhe.gz
+	$(PYTHON) example/G4/Standalone/standalone_G4.py -i example/PU/event_PU.lhe -o $@ -v --log example/G4/Standalone/standalone_G4.log \
+		--summary example/G4/Standalone/standalone_G4.json --tables example/G4/Standalone/handover_ledger --quiet
+	$(PYTHON) example/G4/Standalone/standalone_G4.py --library-scan example/G4/Standalone/standalone_G4_library.json > example/G4/Standalone/standalone_G4_library.log
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

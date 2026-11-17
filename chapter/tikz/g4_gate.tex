@@ -1,0 +1,70 @@
+% ---------------------------------------------------------------------------
+% The picture to carry of chapter 9: the road, the gate of Geant4 and the CMS
+% detector of Run 3 waiting. Three crowds arrive (the family, the in-time and
+% the out-of-time crowd of chapter 8), the gate (Generator.cc, the
+% StackingAction, the PPS transport) turns some members away and sends some
+% along the beam line, and the primaries gather in front of the detector,
+% ready to cross. Numbers: standalone_G4.py -v, seed 1 (example/G4/).
+% The detector is chapter/tikz/g4_cms3d.tex, written by
+% example/G4/Standalone/draw_cms3d.py.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  lab/.style={font=\scriptsize,align=center},
+  head/.style={font=\small\bfseries},
+  fam/.style={circle,fill=red!80!black,inner sep=0pt,minimum size=3.2pt},
+  intime/.style={circle,fill=olive!60!brown,inner sep=0pt,minimum size=2.4pt},
+  oot/.style={circle,fill=orange!70!yellow!80!brown,inner sep=0pt,minimum size=2.0pt},
+  turned/.style={-{Stealth[length=2mm]},thick,gray!70!black},
+  box/.style={draw=black!50,rounded corners=2pt,font=\scriptsize,align=left,inner sep=3pt,text width=#1},
+  sign/.style={draw=black!60,fill=yellow!12,rounded corners=1.5pt,font=\scriptsize,align=center,inner sep=2pt}]
+% ---------------- the road: three lanes ------------------------------------------------------------
+\node[head,anchor=west] at (-0.2,2.95) {the road};
+\fill[black!7] (-0.2,-1.6) -- (4.1,-1.6) -- (4.7,-0.8) -- (4.7,1.6) -- (4.1,2.4) -- (-0.2,2.4) -- cycle;
+\foreach \y in {1.15,-0.15} \draw[white,line width=1.2pt,dash pattern=on 6pt off 4pt] (-0.1,\y) -- (4.0,\y);
+\pgfmathsetseed{11}
+\foreach \i in {1,...,24} {\node[fam] at ({0.0+3.9*rnd},{1.3+0.75*rnd}) {};}
+\pgfmathsetseed{12}
+\foreach \i in {1,...,60} {\node[intime] at ({0.0+3.9*rnd},{0.0+0.9*rnd}) {};}
+\pgfmathsetseed{13}
+\foreach \i in {1,...,110} {\node[oot] at ({0.0+3.9*rnd},{-1.45+1.1*rnd}) {};}
+\node[lab,anchor=west,fill=white,fill opacity=0.85,text opacity=1,inner sep=1pt] at (-0.1,2.2) {\textcolor{red!80!black}{\textbf{the family}}: 749};
+\node[lab,anchor=west,fill=white,fill opacity=0.85,text opacity=1,inner sep=1pt] at (-0.1,0.93) {\textcolor{olive!50!black}{\textbf{in time}}: 63 coll., 13\,456};
+\node[lab,anchor=west,fill=white,fill opacity=0.85,text opacity=1,inner sep=1pt] at (-0.1,-0.37) {\textcolor{orange!50!black}{\textbf{out of time}}: 897 coll., 161\,696};
+% ---------------- the gate -------------------------------------------------------------------------
+\fill[black!55] (4.8,-1.6) rectangle (5.05,2.4);
+\fill[black!55] (7.2,-1.6) rectangle (7.45,2.4);
+\fill[black!75] (4.65,2.4) rectangle (7.6,2.8);
+\node[font=\scriptsize\bfseries,text=white] at (6.125,2.6) {\textsc{Geant4}};
+\node[head,anchor=south] at (6.125,2.85) {the gate};
+\draw[red!70!black,line width=2pt] (5.05,-0.1) -- (7.2,-0.1);
+\foreach \x in {5.25,5.7,6.15,6.6} \fill[white] (\x,-0.18) rectangle ({\x+0.2},-0.02);
+\node[sign,anchor=north,text width=1.95cm] at (6.125,2.3) {$|p|>40$\,MeV};
+\node[sign,anchor=north,text width=1.95cm] at (6.125,1.85) {the line leaves $r<2.9$\,cm before $|z|=3.55$\,m};
+\node[sign,anchor=south,text width=1.95cm] at (6.125,-1.5) {no neutrinos};
+% ---------------- the square of the primaries -------------------------------------------------------
+\node[head,anchor=south,text=green!30!black] at (8.6,2.85) {ready to cross};
+\fill[green!6,draw=green!40!black,rounded corners=3pt] (7.7,-1.6) rectangle (9.5,2.4);
+\pgfmathsetseed{21}
+\foreach \i in {1,...,22} {\node[fam] at ({7.85+1.5*rnd},{1.5+0.75*rnd}) {};}
+\pgfmathsetseed{22}
+\foreach \i in {1,...,50} {\node[intime] at ({7.85+1.5*rnd},{0.3+1.0*rnd}) {};}
+\pgfmathsetseed{23}
+\foreach \i in {1,...,85} {\node[oot] at ({7.85+1.5*rnd},{-1.45+1.55*rnd}) {};}
+\draw[-{Stealth[length=2.5mm]},line width=1.6pt,green!40!black] (9.6,0.4) -- (10.3,0.4);
+% ---------------- the detector waiting -------------------------------------------------------------
+\node[head,anchor=south] at (13.9,2.85) {CMS, Run 3 (2025): waiting};
+\begin{scope}[shift={(13.9,0.3)},scale=0.245]
+\draw[black!60,line width=0.6pt] (-15.5,0) -- (15.5,0);
+\input{chapter/tikz/g4_cms3d}
+\end{scope}
+% ---------------- the row below: who is turned away, who goes along the beam line, who crosses -------
+\node[box=3.3cm,anchor=north west] (pipe) at (-0.2,-2.15) {\textbf{down the beam pipe}: the line still inside $2.9$\,cm at $|z|=3.55$\,m, $|\eta|\gtrsim5.5$: $67+2442+30\,601$ members, almost all of the $13.6$\,TeV of every collision};
+\node[box=2.25cm,anchor=north west] (soft) at (3.35,-2.15) {\textbf{too soft}, $|p|<40$\,MeV: $5+143+1706$\\[1pt]\textbf{neutrinos}, killed before their first step: $5+10+48$};
+\node[box=3.1cm,anchor=north west,text=blue!45!black,draw=blue!50!black] (rail) at (6.0,-2.15) {\textbf{along the beam line}: n, $\bar n$, $\gamma$ beyond $|\eta|\simeq8.2$ handed over towards the ZDC at $140$\,m ($0+124+2071$); protons above $3$\,TeV to the Roman pots at $203$\,m ($0+27+363$)};
+\node[box=6.2cm,anchor=north west,draw=green!40!black] (cross) at (9.5,-2.15) {\textbf{the primaries}: $672+10\,825+128\,894$ (the family's $90\,\%$, $52\,\%$ of its energy; a quarter of the crowd's energy). The tracker (blue), ECAL (green), HCAL (orange), the solenoid (grey), the iron with the muon chambers (red, pale), HF at both ends; the quadrant facing you is cut away. \textbf{The crossing is chapter 10.}};
+\draw[turned] (5.6,-1.62) .. controls (4.6,-1.95) and (2.4,-1.85) .. (1.6,-2.12);
+\draw[turned] (6.0,-1.62) -- (4.5,-2.12);
+\draw[turned,blue!60!black] (6.6,-1.62) -- (7.3,-2.12);
+\draw[turned,green!40!black] (8.6,-1.62) .. controls (8.9,-1.9) and (10.0,-1.85) .. (10.7,-2.12);
+\end{tikzpicture}

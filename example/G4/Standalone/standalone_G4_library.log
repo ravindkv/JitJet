@@ -1,0 +1,7 @@
+library scan: 2000 collisions, vertices from the 2025 beam spot (seed 9), 4.8 s
+  per collision: 179.2 stable -> 142.7 primaries (median 86, 21 with none, max 757), 3463 GeV, pT 61.3 GeV; 0.393 PPS protons
+  handed over: 79.6 % of n, 25.5 % of E, 84.0 % of pT
+  CD: 37 collisions, 22.5 primaries, 138 GeV, 2.000 PPS protons each
+  DD: 219 collisions, 42.3 primaries, 4289 GeV, 0.452 PPS protons each
+  ND: 1425 collisions, 184.9 primaries, 3750 GeV, 0.168 PPS protons each
+  SD: 319 collisions, 36.9 primaries, 1997 GeV, 1.169 PPS protons each

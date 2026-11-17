@@ -1,0 +1,45 @@
+% ---------------------------------------------------------------------------
+% The hand-over as a flow chart: the steps of standalone_G4.py on the left
+% (the lines of Generator.cc, StackingAction.cc and the PPS transport they
+% port), the numbers of our window on the right (the -v log, seed 1: the
+% signal + the 63 in-time + the 897 out-of-time collisions). Names of the
+% classes and functions in grey.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm,
+  every node/.style={font=\footnotesize},
+  box/.style={draw,rounded corners=3pt,thick,fill=gray!8,align=left,inner sep=5pt,minimum height=10mm,text width=5.6cm},
+  stepbox/.style={box,fill=orange!12},
+  numbox/.style={draw,rounded corners=3pt,thin,fill=blue!6,align=left,inner sep=4pt,text width=8.6cm,font=\scriptsize},
+  stepno/.style={draw,circle,inner sep=1pt,font=\scriptsize\bfseries,fill=orange!45,minimum size=5mm},
+  flow/.style={-{Stealth[length=2.5mm,width=2mm]},thick},
+  fn/.style={font=\scriptsize\ttfamily,text=black!65},
+  head/.style={font=\small\bfseries}]
+\node[head,anchor=west] at (-0.6,1.4) {the recipe};
+\node[head,anchor=west] at (6.7,1.4) {our window (seed 1): signal / in time / out of time};
+\node[stepbox] (S1) at (2.5,0) {\textbf{1\; the crowds}\\ every stable particle with its production vertex: the signal at its smeared vertex plus its own displacement, every collision at its own};
+\node[stepbox,below=7mm of S1] (S2) {\textbf{2\; the generator's decays}\\ status 2, decay vertex inside $r<2.9$ cm: the daughters are primaries; outside: the parent, with its decay predefined};
+\node[stepbox,below=7mm of S2] (S3) {\textbf{3\; the very-forward rule}\\ line still inside $r<2.9$ cm at $|z|=52.8$ m: n, $\bar n$, $\gamma$ handed over, the rest not};
+\node[stepbox,below=7mm of S3] (S4) {\textbf{4\; the momentum cut}\\ $40\MeV<|p|<99\,999\GeV$};
+\node[stepbox,below=7mm of S4] (S5) {\textbf{5\; the eta cut, a line}\\ line still inside $r<2.9$ cm at $|z|=354.8$ cm: dropped};
+\node[stepbox,below=7mm of S5] (S6) {\textbf{6\; the StackingAction}\\ the neutrinos among the primaries are killed};
+\node[stepbox,below=7mm of S6] (S7) {\textbf{7\; the PPS transport}\\ protons with $|\eta|>8.2$, $|p_z|>3$ TeV to the Roman pots at $203$ m};
+\node[stepbox,below=7mm of S7] (S8) {\textbf{8\; the ledger, write}\\ by region, by kind, by reason; the record of chapter 8 and the tables of this stop};
+\foreach \a/\b in {S1/S2,S2/S3,S3/S4,S4/S5,S5/S6,S6/S7,S7/S8} {\draw[flow] ($(\a.south west)+(0.7,0)$) -- ($(\b.north west)+(0.7,0)$);}
+\foreach \n/\s in {1/S1,2/S2,3/S3,4/S4,5/S5,6/S6,7/S7,8/S8} {\node[stepno] at ($(\s.west)+(-0.35,0)$) {\n};}
+\node[fn,anchor=south east] at (S1.north east) {build\_crowd, Crowd};
+\node[fn,anchor=south east] at (S2.north east) {hepmc\_status2, Decays};
+\node[fn,anchor=south east] at (S3.north east) {Gate.decide: very\_forward};
+\node[fn,anchor=south east] at (S4.north east) {Gate.decide: p\_fail};
+\node[fn,anchor=south east] at (S5.north east) {Gate.decide: eta\_fail};
+\node[fn,anchor=south east] at (S6.north east) {Gate.decide: killed};
+\node[fn,anchor=south east] at (S7.north east) {Gate.decide: pps};
+\node[fn,anchor=south east] at (S8.north east) {ledger, Stage.record\_tables};
+\node[numbox,anchor=west] (N1) at (6.7,0) {749 / 13\,456 (63 collisions) / 161\,696 (897 collisions) stable particles; the signal at $z=+0.157$ cm, the crowd from $-12.4$ to $+13.9$ cm};
+\node[numbox,anchor=west] at (6.7,0 |- S2) {376 decays by PYTHIA in the signal, 14 of them weak; all inside $2.9$ cm, the farthest a $D^0$ at $r=1.48$ cm: no predefined decay};
+\node[numbox,anchor=west] at (6.7,0 |- S3) {0 / 333 / 5049 very forward; handed over 0 / 124 / 2071 n, $\bar n$, $\gamma$ ($124$ and $2014$ TeV)};
+\node[numbox,anchor=west] at (6.7,0 |- S4) {dropped 5 / 143 / 1706 ($0.12$, $3.6$, $45$ GeV): photons, a few electrons};
+\node[numbox,anchor=west] at (6.7,0 |- S5) {dropped 67 / 2269 / 28\,070 ($6.2$, $325$, $4140$ TeV); the line and the angle disagree for 114 kept beyond $5.5$ and 93 dropped inside};
+\node[numbox,anchor=west] at (6.7,0 |- S6) {killed 5 / 10 / 48 neutrinos ($229$, $121$, $728$ GeV)};
+\node[numbox,anchor=west] at (6.7,0 |- S7) {0 / 27 / 363 protons ($132$ and $1954$ TeV)};
+\node[numbox,anchor=west] at (6.7,0 |- S8) {primaries 672 / 10\,825 / 128\,894: $52.5$ / $25.3$ / $25.2\,\%$ of the energy, $95.5$ / $85.1$ / $84.1\,\%$ of the \pt; \file{event_G4.lhe}};
+\end{tikzpicture}

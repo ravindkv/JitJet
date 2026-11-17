@@ -1,0 +1,21 @@
+== validate_G4: the hand-over of event_PU.lhe (+ the out-of-time collisions of pileup_library.lhe.gz) against official packages
+-- 1. TGeo (ROOT 6.32.06): tubes r < 2.9 cm, |z| < 354.8 cm inside |z| < 5279.4 cm; 175901 stable particles navigated in 5.3 s
+   eta cut (line leaves through the end cap at 354.8 cm): TGeo 30400, script 30406
+   very forward (line leaves through the end cap at 52.8 m): TGeo 5382, script 5382
+   signal :     749 particles, decision identical for 749, 672 primaries
+   intime :   13456 particles, decision identical for 13456, 10825 primaries
+   oot    :  161696 particles, decision identical for 161690, 128900 primaries
+   decisions: 175895 identical, 6 different; codes E 30400, F 2797, M 1854, N 63, P 138202, R 390, V 2195
+     different: oot k=125 id -211 p = (+0.0968, -0.1581, -0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+     different: oot k=218 id 211 p = (+0.6172, -0.0699, +0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+     different: oot k=254 id 22 p = (+0.0645, -0.0405, +0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+     different: oot k=430 id 22 p = (-0.0345, -0.0227, +0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+     different: oot k=537 id -211 p = (-0.0881, -0.0103, +0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+     different: oot k=872 id 211 p = (-0.1834, +0.2159, -0.0000) GeV: script E, TGeo P (pz rounded to zero in the library: Generator.cc keeps the line at its vertex, minTan, and its eta test drops it; TGeo leaves through the side)
+   the closest call: oot k=801 id 310 eta +5.48628: the line at r = 2.899949 cm (0.51 um from the edge), E
+-- 2. PYTHIA 8.315 ParticleData with ParticleDecays:limitTau0 = on, tau0Max = 10 mm
+   18 stable species in the window (175901 particles), 28 species decayed by the generator in the signal (376 decays)
+   left to Geant4 (stable in the record): Sigma+ 24.04 mm, Omega- 24.61 mm, K_S0 26.84 mm, Sigma- 44.34 mm, Xi- 49.1 mm, Lambda0 78.9 mm, Xi0 87.1 mm, K+ 3713 mm, pi+ 7804 mm, K_L0 1.533e+04 mm, mu- 6.587e+05 mm, n0 2.655e+14 mm
+   decayed by the generator (signal): B0 0.459, Lambda_b0 0.44, D+ 0.312, D_s+ 0.15, D0 0.123, tau- 0.0871, Xi_c0 0.0336
+   stable species PYTHIA would decay: 0; decayed species PYTHIA would not: 0
+   the longest-lived decayed: B0 (0.459 mm); the shortest-lived left to Geant4: Sigma+ (24.04 mm)

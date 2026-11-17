@@ -1,0 +1,33 @@
+% ---------------------------------------------------------------------------
+% The eta cut is a line, not an angle: the cylinder r < R = 2.9 cm up to
+% |z| = Z_max = R sinh(5.5) = 354.8 cm (Generator.cc), with two vertices on
+% either side of the nominal point and two particles of the same |eta| just
+% above 5.5: from the vertex behind, the line has further to go and leaves the
+% cylinder (kept); from the vertex in front it is still inside at Z_max
+% (dropped). The radial scale is stretched about forty times.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=0.042cm, y=1.2cm, every node/.style={font=\scriptsize}, >={Stealth[length=1.8mm]}]
+% the cylinder (radial scale: 1 cm = 1.2 cm on paper; z: 1 cm = 0.042 cm)
+\fill[red!6] (-20,0) rectangle (354.8,2.9);
+\draw[red!70!black,thick] (-20,2.9) -- (354.8,2.9) -- (354.8,0);
+\fill[black!12] (-20,0) rectangle (380,2.25);
+\fill[red!6] (-20,2.25) rectangle (354.8,2.9);
+\node[anchor=west,text=black!60] at (-18,2.05) {beam pipe, $r<2.25$ cm};
+\node[anchor=south west,text=red!70!black] at (-18,2.92) {the cylinder of the gate, $r<R=2.9$ cm};
+\draw[->] (-25,0) -- (395,0) node[right] {$z$ [cm]};
+\draw[->] (-20,-0.05) -- (-20,3.45) node[left] {$r$ [cm]};
+\foreach \r in {1,2,3} \draw (-20,\r) -- (-23,\r) node[left] {\r};
+\draw (354.8,0) -- (354.8,-0.12) node[below] {$Z_{\max}=R\sinh5.5=354.8$};
+\draw (0,0) -- (0,-0.12) node[below] {$z=0$};
+% vertex behind (z_v = -3.6 cm) and in front (z_v = +3.6 cm), particles at eta = 5.505 towards +z
+\fill[blue!60!black] (-3.6,0) circle (2pt);
+\fill[orange!70!black] (3.6,0) circle (2pt);
+\draw[black!60] (2,0.05) -- (40,0.55) node[right,align=left] {two vertices: \textcolor{blue!60!black}{$z_v=-3.6$ cm} and \textcolor{orange!70!black}{$z_v=+3.6$ cm}};
+\draw[blue!60!black,thick,->] (-3.6,0) -- (390,{393.6/sinh(5.505)});
+\draw[orange!70!black,thick,->] (3.6,0) -- (390,{386.4/sinh(5.505)});
+\fill[blue!60!black] (354.8,{358.4/sinh(5.505)}) circle (1.6pt);
+\fill[orange!70!black] (354.8,{351.2/sinh(5.505)}) circle (1.6pt);
+\node[anchor=east,text=blue!60!black,align=right] at (350,3.25) {$r=(Z_{\max}-z_v)/\sinh|\eta|=2.915$ cm $>R$: kept};
+\node[anchor=north east,text=orange!70!black,align=right] at (350,1.75) {$2.856$ cm $<R$: dropped};
+\node[anchor=north west,text width=4.8cm,align=left] at (175,1.05) {both particles have $|\eta|=5.505$; the cut tests the straight line from the vertex, so the effective cut is $\eta_c=\sinh^{-1}[(Z_{\max}\mp z_v)/R]\simeq5.5\mp z_v/Z_{\max}$};
+\end{tikzpicture}

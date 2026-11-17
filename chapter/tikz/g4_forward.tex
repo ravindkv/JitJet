@@ -1,0 +1,39 @@
+% ---------------------------------------------------------------------------
+% The forward: one side of the beam line, not to scale. From the collision
+% the line of a particle beyond |eta| ~ 8.2 is still inside r < 2.9 cm at
+% |z| = 52.8 m (Z_hector): Generator.cc hands it to Geant4 only if it is a
+% neutron, an antineutron or a photon, for the Zero Degree Calorimeter at
+% 140 m. Forward protons with |pz| > 3 TeV are carried by the PPS transport
+% (LHCTransport, the optical functions of the LHC magnets) and handed to Geant4
+% at the Roman pots, 203 m away. Everything else beyond 5.5 is dropped.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm, every node/.style={font=\scriptsize}, >={Stealth[length=2mm]}]
+% the beam line
+\fill[black!10] (0,-0.12) rectangle (15.2,0.12);
+\draw[black!50] (0,0.12) -- (15.2,0.12) (0,-0.12) -- (15.2,-0.12);
+% CMS
+\fill[red!25] (0,-1.1) rectangle (1.4,1.1);
+\node[align=center] at (0.7,1.35) {CMS};
+\fill (0.15,0) circle (1.6pt);
+% the marks along the beam
+\foreach \x/\lab in {1.55/{3.55 m\\$|\eta|=5.5$}, 4.2/{52.8 m\\$|\eta|=8.2$}} {\draw[red!70!black,thick] (\x,-0.4) -- (\x,0.4); \node[align=center,text=red!70!black] at (\x,-0.85) {\lab};}
+% the magnets (inner triplet, separation dipole D1)
+\foreach \x in {2.4,5.3,6.5} \fill[blue!20,draw=blue!50!black] (\x,-0.3) rectangle ({\x+0.7},0.3);
+\node[text=blue!50!black] at (6.2,-0.55) {LHC magnets};
+% ZDC and the Roman pots
+\fill[green!25,draw=green!40!black] (10.0,-0.75) rectangle (10.7,0.75);
+\node[align=center,text=green!30!black] at (10.35,1.2) {ZDC\\140 m};
+\fill[violet!25,draw=violet!60!black] (14.0,0.35) rectangle (14.4,0.85);
+\fill[violet!25,draw=violet!60!black] (14.0,-0.35) rectangle (14.4,-0.85);
+\node[align=center,text=violet!60!black] at (14.2,1.3) {Roman pots\\203 m};
+% the neutral: straight
+\draw[->,thick,green!40!black,dashed] (0.15,0) -- (10.0,0.08);
+\node[text=green!30!black,anchor=south] at (5.6,0.75) {n, $\bar n$, $\gamma$ beyond $|\eta|\simeq8.2$: kept by Generator.cc, for the ZDC};
+\draw[green!40!black,thin] (7.6,0.75) -- (7.6,0.1);
+% the proton: bent out by the magnets
+\draw[->,thick,violet!60!black] (0.15,0) .. controls (6,0.02) and (10,-0.1) .. (14.0,-0.6) ;
+\node[text=violet!60!black,anchor=north] at (11.6,-1.0) {protons, $|p_z|>3$ TeV: the PPS transport, then \textsc{Geant4}};
+% what is dropped
+\draw[->,thick,black!45] (0.15,0) -- (3.8,0.0);
+\node[text=black!55,anchor=south] at (2.9,0.35) {the rest beyond $5.5$: dropped};
+\end{tikzpicture}

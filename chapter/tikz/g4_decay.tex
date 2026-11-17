@@ -1,0 +1,34 @@
+% ---------------------------------------------------------------------------
+% The decays the generator made, seen across the beam: the cylinder r < 2.9 cm
+% (RDecLenCut) and the beam pipe; a b hadron that PYTHIA decayed inside the
+% cylinder (its daughters become primaries at the decay point, as every decay
+% of our event), a decay outside it (the parent is handed over with its decay
+% predefined), and a K0S, which PYTHIA leaves alone (tau0 = 26.8 mm > 10 mm)
+% and Geant4 decays in flight. The transverse decay length is exponential with
+% mean (pT/m) c tau.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm,y=1cm, every node/.style={font=\scriptsize}, >={Stealth[length=2mm]}]
+\fill[red!5] (0,0) circle (2.9);
+\draw[red!70!black,thick] (0,0) circle (2.9);
+\fill[black!10] (0,0) circle (2.25);
+\draw[black!45,dashed] (0,0) circle (2.25);
+\node[text=red!70!black,anchor=south] at (0,2.92) {$r=2.9$ cm: \texttt{RDecLenCut}};
+\node[text=black!55,anchor=north] at (0,-2.3) {beam pipe, $2.25$ cm};
+\draw[black!40,thin] (-0.15,0) -- (0.15,0) (0,-0.15) -- (0,0.15);
+\fill (0,0) circle (1.5pt) node[below left=1pt] {collision};
+% (1) a B decaying inside: daughters start there
+\draw[->,thick,red!70!black] (0,0) -- (1.05,0.65) node[midway,above,sloped] {$B$};
+\fill[red!70!black] (1.05,0.65) circle (1.8pt);
+\foreach \a/\l in {10/1.9,35/1.6,-12/1.7} \draw[->,red!70!black] (1.05,0.65) -- ++(\a:\l);
+\node[anchor=west,text width=3.2cm,align=left,text=red!70!black] at (3.2,1.6) {\textbf{inside}: the decay is kept, the daughters are primaries from the decay point (all 14 weak decays of our signal, the farthest at $r=1.48$ cm)};
+% (2) a decay outside: the parent is the primary
+\draw[->,thick,blue!60!black] (0,0) -- (-1.6,1.9);
+\draw[thick,blue!60!black,dashed] (-1.6,1.9) -- (-2.45,2.9);
+\fill[blue!60!black] (-2.45,2.9) circle (1.8pt);
+\foreach \a in {120,140,100} \draw[->,blue!60!black] (-2.45,2.9) -- ++(\a:0.9);
+\node[anchor=east,text width=3.2cm,align=right,text=blue!60!black] at (-3.1,1.8) {\textbf{outside}: the parent is the primary, its decay attached as a predefined channel; it crosses the material first};
+% (3) a K0S: left to Geant4
+\draw[->,thick,black!70,dash pattern=on 4pt off 2pt] (0,0) -- (1.0,-3.1) node[pos=0.92,right,text=black!70] {$K^0_S$};
+\node[anchor=west,text width=3.2cm,align=left,text=black!70] at (2.4,-1.9) {\textbf{not decayed}: $c\tau=26.8$ mm $>$ \texttt{tau0Max} $=10$ mm; a primary, Geant4 decays it in flight};
+\node[anchor=north,text width=8cm,align=center] at (0,-3.35) {transverse distance to the decay: exponential, mean $\lambda_T=(p_T/m)\,c\tau$; $P(r>R)=e^{-R/\lambda_T}$};
+\end{tikzpicture}

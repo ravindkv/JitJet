@@ -179,8 +179,10 @@ solenoid to 3.8 m, the barrel yoke in four iron layers with the four muon statio
 disks to |z| = 10.6 m and HF between |z| = 11.15 and 12.80 m (12.5 to 159.5 cm from the beam). The quadrant
 0 < phi < 90 degrees, the one facing the viewer, is removed; every face turned towards the viewer is cut into quads of
 10 degrees and up to 0.9 m by 0.8 m, shaded with a fixed light and sorted from back to front (the painter's algorithm).
-The TikZ file draws in metres; `chapter/tikz/g4_gate.tex` scales it by 0.245. A schematic for the eye: the bands are
-the subdetectors, not their material.
+The TikZ file draws in metres. Drawn inside the book its quads cost about 15 s of every pdflatex pass, so `make`
+renders it once, scaled by 0.245, into `chapter/tikz/g4_cms3d.pdf` (`chapter/tikz/g4_cms3d_page.tex`, remade only when
+`g4_cms3d.tex` changes), and `chapter/tikz/g4_gate.tex` places that PDF centred on the origin of the detector. A
+schematic for the eye: the bands are the subdetectors, not their material.
 
 ### The film
 

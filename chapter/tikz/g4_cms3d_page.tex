@@ -1,0 +1,34 @@
+% ---------------------------------------------------------------------------
+% The 3D CMS detector of chapter/tikz/g4_cms3d.tex (6639 quads, written by
+% example/G4/Standalone/draw_cms3d.py) rendered once into a PDF of its own:
+%   make chapter/tikz/g4_cms3d.pdf      (also a prerequisite of make)
+% Drawn with TikZ inside the book it costs about 15 s of every pdflatex pass;
+% g4_gate.tex places the PDF instead. The scale and line width are those of the
+% scope of g4_gate.tex, and the page is made symmetric about the origin of the
+% detector (plus 1 pt for the strokes), so that g4_gate.tex can centre the PDF
+% on that origin. Compile from the top directory of the book (the \input path).
+% ---------------------------------------------------------------------------
+\documentclass{standalone}
+\usepackage{tikz}
+\newdimen\jjW \newdimen\jjH
+\makeatletter
+%% the bounding box so far, made symmetric about the origin and 1 pt wider
+\newcommand{\jjsymmetricbbox}{%
+  \pgfpointanchor{current bounding box}{south west}%
+  \jjW=-\pgf@x \jjH=-\pgf@y
+  \pgfpointanchor{current bounding box}{north east}%
+  \ifdim\pgf@x>\jjW \jjW=\pgf@x\fi
+  \ifdim\pgf@y>\jjH \jjH=\pgf@y\fi
+  \advance\jjW by 1pt \advance\jjH by 1pt
+  \pgfresetboundingbox
+  \pgfpathrectanglecorners{\pgfpoint{-\jjW}{-\jjH}}{\pgfpoint{\jjW}{\jjH}}%
+  \pgfusepath{use as bounding box}}
+\makeatother
+\begin{document}
+\begin{tikzpicture}
+\begin{scope}[x=1cm,y=1cm,scale=0.245]
+\input{chapter/tikz/g4_cms3d}
+\end{scope}
+\jjsymmetricbbox
+\end{tikzpicture}
+\end{document}

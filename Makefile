@@ -23,7 +23,9 @@ TEX    := pdflatex -shell-escape -interaction=nonstopmode -halt-on-error
 PYTHON ?= python3
 
 COVER := cover/cover.pdf
-SRC := $(MAIN).tex preamble.tex $(wildcard chapter/*.tex) reference/JitJet.bib $(COVER)
+# TikZ pictures too heavy to draw at every pass, rendered once into a PDF (rules below)
+PRERENDER := chapter/tikz/g4_cms3d.pdf
+SRC := $(MAIN).tex preamble.tex $(wildcard chapter/*.tex) reference/JitJet.bib $(COVER) $(PRERENDER)
 
 # The per-chapter .aux files are written to chapter/aux/ (see preamble.tex);
 # TeX cannot create the directory, so every build target depends on it.
@@ -34,7 +36,7 @@ $(MAIN).pdf: $(SRC) | chapter/aux
 	$(TEX) $(MAIN).tex
 	-$(PYTHON) tools/chapter_pages.py
 
-quick: $(COVER) | chapter/aux
+quick: $(COVER) $(PRERENDER) | chapter/aux
 	$(TEX) $(MAIN).tex
 
 chapter/aux:
@@ -340,6 +342,13 @@ example/G4/Standalone/handover_ledger.tex: example/G4/event_G4.lhe
 chapter/tikz/g4_cms3d.tex: example/G4/Standalone/draw_cms3d.py
 	$(PYTHON) example/G4/Standalone/draw_cms3d.py -o $@
 
+# Its 6639 quads cost ~15 s of every pdflatex pass when drawn inside the book, so
+# g4_gate.tex places this PDF instead; remade only when g4_cms3d.tex changes.
+chapter/tikz/g4_cms3d.pdf: chapter/tikz/g4_cms3d_page.tex chapter/tikz/g4_cms3d.tex
+	mkdir -p build/g4_cms3d
+	pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build/g4_cms3d $<
+	cp build/g4_cms3d/g4_cms3d_page.pdf $@
+
 # Chapter 3: one frame per beat of the ten-second film (the film itself is not a build product).
 example/MnM/animate_whose_child_stills.pdf: example/MnM/animate_whose_child.py
 	$(PYTHON) example/MnM/animate_whose_child.py --stills $@ --no-video
@@ -403,6 +412,6 @@ clean:
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
-	rm -f $(MAIN).pdf $(COVER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
+	rm -f $(MAIN).pdf $(COVER) $(PRERENDER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
 
 .PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean

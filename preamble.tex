@@ -186,3 +186,26 @@
 %% wide (~135 column) log excerpts and event records: 6 pt monospace, no wrapping
 \makeatletter\newcommand{\sixpt}{\@setfontsize\sixpt{6}{7.2}}\makeatother
 \newcommand{\widelisting}{fontsize=\sixpt,linenos=false,breaklines=false}
+
+%% -------- draft marks: line numbers and a DRAFT watermark -------------------
+%% Switched by \ifjitjetdraft in JitJet.tex; on by default while the book is a
+%% work in progress. Line numbers run through the whole book (unique, so a
+%% comment can cite "L1234" alone); lineno 5.x patches the amsmath displays
+%% itself. The watermark sits behind the page, in light grey; \nowatermark
+%% keeps it off the page shipped in the same group (the cover).
+\ifcsname ifjitjetdraft\endcsname\else
+  \expandafter\newif\csname ifjitjetdraft\endcsname \csname jitjetdrafttrue\endcsname
+\fi
+\ifjitjetdraft
+  \usepackage{lineno}
+  \renewcommand{\linenumberfont}{\normalfont\tiny\sffamily\color{black}}
+  \linenumbers
+  %% Trap: with lineno on, a breakable tcolorbox (pitfalls) and the text after
+  %% it are shipped invisible or over the running head. Number no lines there.
+  \BeforeBeginEnvironment{pitfalls}{\par\nolinenumbers}
+  \AfterEndEnvironment{pitfalls}{\par\linenumbers}
+  \usepackage{draftwatermark}
+  \DraftwatermarkOptions{text=DRAFT,angle=45,fontsize=0.07\paperwidth,color={[gray]0.88}}
+  \newcommand{\nowatermark}{\DraftwatermarkOptions{stamp=false}}
+\fi
+\providecommand{\nowatermark}{}

@@ -6,7 +6,8 @@
 % along the beam line, and the primaries gather in front of the detector,
 % ready to cross. Numbers: standalone_G4.py -v, seed 1 (example/G4/).
 % The detector is chapter/tikz/g4_cms3d.tex, written by
-% example/G4/Standalone/draw_cms3d.py.
+% example/G4/Standalone/draw_cms3d.py, and placed here as chapter/tikz/g4_cms3d.pdf,
+% rendered once by g4_cms3d_page.tex (make does it): drawn here it cost ~15 s a pass.
 % ---------------------------------------------------------------------------
 \begin{tikzpicture}[x=1cm,y=1cm,
   every node/.style={font=\footnotesize},
@@ -56,7 +57,8 @@
 \node[head,anchor=south] at (13.9,2.85) {CMS, Run 3 (2025): waiting};
 \begin{scope}[shift={(13.9,0.3)},scale=0.245]
 \draw[black!60,line width=0.6pt] (-15.5,0) -- (15.5,0);
-\input{chapter/tikz/g4_cms3d}
+% the PDF is already at this scale and symmetric about the origin of the detector
+\node[inner sep=0pt] at (0,0) {\includegraphics{chapter/tikz/g4_cms3d.pdf}};
 \end{scope}
 % ---------------- the row below: who is turned away, who goes along the beam line, who crosses -------
 \node[box=3.3cm,anchor=north west] (pipe) at (-0.2,-2.15) {\textbf{down the beam pipe}: the line still inside $2.9$\,cm at $|z|=3.55$\,m, $|\eta|\gtrsim5.5$: $67+2442+30\,601$ members, almost all of the $13.6$\,TeV of every collision};

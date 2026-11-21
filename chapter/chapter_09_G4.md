@@ -22,7 +22,8 @@ problems.
 | The library scan | [`standalone_G4_library.log`](../example/G4/Standalone/standalone_G4_library.log) / `.json`: the gate on the 2000 collisions of the library |
 | The ledger of the hand-over | [`example/G4/Standalone/handover_ledger.tex`](../example/G4/Standalone/handover_ledger.tex), written with the record (`--tables`); the chapter `\input`s it as `tab:crossing_the_border:handover_ledger` |
 | Validation with official packages | [`example/G4/Standalone/validate_G4.py`](../example/G4/Standalone/validate_G4.py): ROOT's TGeo navigator and PYTHIA 8.315's particle data on exactly our particles; log [`validate_G4.log`](../example/G4/Standalone/validate_G4.log), numbers [`validate_G4.json`](../example/G4/Standalone/validate_G4.json) |
-| The detector in 3D | [`example/G4/Standalone/draw_cms3d.py`](../example/G4/Standalone/draw_cms3d.py) -> [`chapter/tikz/g4_cms3d.tex`](tikz/g4_cms3d.tex) (the picture to carry) and the last scene of the film |
+| The detector in r-z | [`example/G4/CMS-MUO-19-001_Figure_001.png`](../example/G4/CMS-MUO-19-001_Figure_001.png): Figure 1 of CMS-MUO-19-001 (JINST 16 (2021) P07001, arXiv:2102.04790, CC BY 4.0), from the [public results page](https://cms-results.web.cern.ch/cms-results/public-results/publications/MUO-19-001/index.html) |
+| The detector in 3D | [`example/G4/Standalone/draw_cms3d_tgeo.py`](../example/G4/Standalone/draw_cms3d_tgeo.py) -> [`cms3d_tgeo.png`](../example/G4/Standalone/cms3d_tgeo.png), ray-traced with ROOT TGeo through [`cmsSimGeo2021.root`](../example/G4/geometry/cmsSimGeo2021.root) (the picture to carry, the first and last scenes of the film); the schematic [`draw_cms3d.py`](../example/G4/Standalone/draw_cms3d.py) -> [`chapter/tikz/g4_cms3d.tex`](tikz/g4_cms3d.tex) is the fallback |
 | CMSSW figure | [`example/G4/CMSSW/simAnalyzer_09_G4.pdf`](../example/G4/CMSSW/simAnalyzer_09_G4.pdf), page 6 of the companion's `simAnalyzer_signal_09_G4.pdf`, the lower panel of the chapter's display |
 | CMSSW write-up (JitJetSW) | physics details: [`chapter_09_G4.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_09_G4.tex); technical companion: [`chapter_09_G4.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_09_G4.md) |
 | Film | scene 9 of the [JitJet playlist](https://www.youtube.com/playlist?list=PLbSW20iyZFd4) |
@@ -154,19 +155,41 @@ mixing, 9 of 9, pT 81.97, eta -3.43) and their net pT 14.28 GeV.
 ### The theory plots
 
 ```bash
-python3 example/G4/Standalone/plot_theory_G4.py                 # -> theory_G4.pdf, 5 pages, 15 s
+python3 example/G4/Standalone/plot_theory_G4.py                 # -> theory_G4.pdf, 6 pages, 15 s
 python3 example/G4/Standalone/plot_theory_G4.py --page 2 -o p.png
 ```
 
 | page | subsection | panels |
 |---|---|---|
 | 1 | the edges | dN/deta and dE/deta of the signal and of an average in-time collision; the fraction of E and pT inside \|eta\| |
-| 2 | the line | the effective cut against the vertex z with the border particles; r of the line at 354.8 cm; the effective cut over the 961 vertices |
-| 3 | soft, invisible | the momentum spectrum by kind with the 40 MeV cut; photons below 40 MeV per pi0; the energy not handed over by reason |
-| 4 | the decays | P(r_dec > 2.9 cm) against pT; the 14 weak decays across the beam and in (z, r) |
-| 5 | the forward | the forward crowd in (\|eta\|, E); xi of the protons beyond 8.2; where the 13.6 TeV of a collision go, by kind (the library at beam-spot vertices, seed 9) |
+| 2 | one collision at a time | the border lines of the signal from its vertex to the two ends of the cylinder; the same for one in-time collision 6.39 cm from the centre (the one, chosen by the script, with a member kept beyond 5.5 on one side and one dropped inside it on the other); that collision's r at 354.8 cm against \|eta\| |
+| 3 | the line | the effective cut against the vertex position along the flight, s z_v, with the border particles of the window and the band +- r_v/R = 0.011 of the beam spot's 330 um offset from the axis; r of the line at 354.8 cm; the effective cut over the 961 vertices |
+| 4 | soft, invisible | the momentum spectrum by kind with the 40 MeV cut; photons below 40 MeV per pi0; the energy not handed over by reason |
+| 5 | the decays | P(r_dec > 2.9 cm) against pT; the 14 weak decays across the beam and in (z, r) |
+| 6 | the forward | the forward crowd in (\|eta\|, E), 57 305 particles beyond 4.5 = 21 582 handed over at the vertex + 2195 very-forward neutrals + 390 Roman-pot protons + 33 138 dropped (section 7 of the log); xi of the protons beyond 8.2; where the 13.6 TeV of a collision go, by kind (the library at beam-spot vertices, seed 9) |
 
 ### The detector in three dimensions
+
+The picture of the book and of the film is ray-traced through the CMS geometry itself with ROOT's TGeo:
+
+```bash
+PYTHONPATH=$(root-config --libdir) example/ME/Standalone/.venv/bin/python example/G4/Standalone/draw_cms3d_tgeo.py   # -> cms3d_tgeo.png, 1 min
+```
+
+[`draw_cms3d_tgeo.py`](../example/G4/Standalone/draw_cms3d_tgeo.py) loads
+[`example/G4/geometry/cmsSimGeo2021.root`](../example/G4/geometry/cmsSimGeo2021.root), the Run-3 simulation geometry CMS
+publishes for its event display ([cms-data/Fireworks-Geometry](https://github.com/cms-data/Fireworks-Geometry): tag
+2021, written with CMSSW_11_1_0_pre2 by `Fireworks/Geometry/python/dumpSimGeometry_cfg.py`; a TGeoManager with 3398
+volumes and 2.1 million nodes). For each of the 1500 x 950 pixels (2 cm) of an orthographic view a ray is started
+where it leaves the removed quadrant x > 0, y > 0 and stepped with the navigator (`InitTrack`,
+`FindNextBoundaryAndStep`) through air, gas and vacuum (density below 0.02 g/cm3) to the first solid volume, which is
+coloured by the subdetector in its path (`/tracker:Tracker`, `/eregalgo:ECAL`, `/hcalalgo:HCal`, `/mgnt:MGNT`,
+`muonYoke:` or a steel inside `/muonBase:MUON`, the rest of `MUON`, `/hcalforwardalgo:VCAL`, `/beampipe:`) and shaded
+by the normal of the surface (`FindNormalFast`); the cavern, the forward shielding around HF and the ZDC are left out.
+The pixel loop is C++ compiled by ROOT's interpreter. The geometry is the 2021 tag, not the 2025 one of the chapter's
+job: to draw the latter, dump it in the release (`cmsRun Fireworks/Geometry/python/dumpSimGeometry_cfg.py tag=2025`)
+and pass the file with `-g`. The schematic drawing below has the same view and frame and remains as the fallback of
+the film when the PNG is absent.
 
 ```bash
 python3 example/G4/Standalone/draw_cms3d.py                   # -> chapter/tikz/g4_cms3d.tex (6639 quads)
@@ -192,9 +215,25 @@ python3 example/G4/Standalone/animate_standalone_G4.py --stills animate_standalo
 python3 example/G4/Standalone/animate_standalone_G4.py --print-script
 ```
 
-Six scenes (road, line, soft, decays, forward, ready), one narrated line per phase (16 lines and the outro), voice
+Seven scenes (gate, road, line, soft, decays, forward, ready), one narrated line per phase (21 lines and the outro), voice
 edge-tts `en-GB-RyanNeural` cached in `build/narration/G4/`, the score of `example/soundtrack.py`. The last scene
-draws the detector of `draw_cms3d.py` with matplotlib.
+draws the detector of `draw_cms3d.py` with matplotlib. The first scene is the gate at work: one dot stands for 10
+particles of the family, 100 of the in-time and 1000 of the out-of-time crowd (at least one dot for every fate that is
+not empty), each dot walks its lane to the gate and then either falls out of the stream (down the beam pipe, into the
+bin of the soft and the neutrinos, onto the rail to the ZDC or the Roman pots) or walks on to the centre of CMS; the
+counters under each way out run up to the numbers of the ledger. The line scene follows the border lines of the family,
+then of one in-time collision, then of the whole window.
+
+### The two ledgers
+
+The chapter has two tables with an `n` and a `pT`, and they count different things. The energy ledger follows one jet:
+`n_const` = 31 is the number of constituents of `ak4GenJets` jet [0] and its pT the vector sum (99.83 GeV). The ledger
+of the hand-over counts whole collisions: `n` = 749 is every stable particle of the signal and its pT the scalar sum
+(743.0 GeV). Section 8 of the `-v` log reconciles them: the family loses 33.4 GeV of scalar pT at the gate (23.1 beyond
+|eta| = 5.5, 10.2 with five neutrinos, 0.07 with five soft particles) and none of those 77 particles is a member of the
+jet; inside the circle R = 0.4 around the jet (y = -1.43, phi = -2.71) the gate turns away 0 of 31 family particles, 2
+of 83 in-time ones (0.13 of 34.00 GeV) and 19 of 1000 out-of-time ones (0.22 of 401.30 GeV). The same numbers are in
+`standalone_G4.json` under `cone`, the forward census of the forward plot under `forward`.
 
 ## 4. Validation from official packages
 

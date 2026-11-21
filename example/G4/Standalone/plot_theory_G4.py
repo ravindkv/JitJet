@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The plots behind the theory sections of chapter 9, drawn from the standalone hand-over script.
 
-One page per theory subsection. Every curve is computed with the constants and functions of standalone_G4.py
+One page per theory subsection (two for the eta cut). Every curve is computed with the constants and functions of standalone_G4.py
 (the Gate of Generator.cc, the PPS selection, the edges of the detector), every marker is a particle or a decay
 of our window (the signal, the 63 in-time and the 897 out-of-time collisions of ../../PU/event_PU.lhe, rebuilt
 from the library), and the panels by collision kind read the 2000 collisions of the library, each at a vertex
@@ -9,14 +9,16 @@ drawn from the 2025 beam spot.
 
   page 1  the edges          the particles and the energy per unit of eta of the signal and of the crowd, with the
                              edges of the detector and of the gate; how much of each is handed over below |eta|
-  page 2  the line           the effective eta cut against the z of the vertex, with the border particles of
+  page 2  one collision      the eta cut on the signal and on one in-time collision: every border line from its own
+                             vertex to the end of the cylinder, and the radius it arrives at
+  page 3  the line           the effective eta cut against the z of the vertex, with the border particles of
                              the window; the radius of the line at |z| = 354.8 cm; the effective cut over the
                              961 vertices
-  page 3  soft, invisible    the momentum spectrum by kind with the 40 MeV cut; the chance that a photon of a
+  page 4  soft, invisible    the momentum spectrum by kind with the 40 MeV cut; the chance that a photon of a
                              pi0 decay falls below it; where the energy that is not handed over goes
-  page 4  the decays         the chance that a hadron decays outside r = 2.9 cm against its pT; the weak decays
+  page 5  the decays         the chance that a hadron decays outside r = 2.9 cm against its pT; the weak decays
                              of the signal in the transverse plane and in (z, r)
-  page 5  the forward        the forward particles of the crowd in (|eta|, E) with the very-forward rule and the
+  page 6  the forward        the forward particles of the crowd in (|eta|, E) with the very-forward rule and the
                              PPS selection; xi of the forward protons; where the energy of a collision goes, by kind
 
     python3 plot_theory_G4.py                    # -> theory_G4.pdf
@@ -141,31 +143,150 @@ def page_edges(S: Setup):
 
 
 # ---------------------------------------------------------------------------
-# page 2: the eta cut is a line
+# page 2: the eta cut, one collision at a time (the signal, then one collision of the in-time crowd)
+# ---------------------------------------------------------------------------
+def line_r(c, j, z):
+    """The distance from the axis of the cylinder of the straight line of particle j at the positions z (array)."""
+    E, px, py, pz = c.p4[j]
+    d = (z - c.vtx[j, 2]) / pz
+    return np.hypot(c.vtx[j, 0] + d * px, c.vtx[j, 1] + d * py)
+
+
+def pick_collision(S: Setup) -> int:
+    """The in-time collision that shows the line best: one with a particle kept beyond |eta| = 5.5 on one side and
+    one dropped inside it on the other, the farthest from the centre."""
+    c, g, G = S.c, S.g, S.G
+    a = np.abs(c.eta)
+    best, zbest = None, -1.0
+    for col in S.st.collisions:
+        if col["k"] == 0 or col["bx"] != 0:
+            continue
+        m = (c.block == 1) & (c.k == col["k"])
+        kept = m & g["primary"] & (a > G.eta_cut) & ~g["very_forward"]
+        drop = m & g["eta_fail"] & (a <= G.eta_cut)
+        if kept.any() and drop.any() and abs(col["z"]) > zbest:
+            best, zbest = col["k"], abs(col["z"])
+    return best
+
+
+def draw_case(ax, S: Setup, sel, zv, title, lo=5.3, hi=5.7, label_window=0.03, name=None):
+    """One collision in the (z, r) plane, r stretched: the cylinder of the gate and the lines of its border particles
+    from their own vertices to |z| = Z_max on their own side; blue handed over, grey dropped."""
+    c, g, G = S.c, S.g, S.G
+    a = np.abs(c.eta)
+    ax.axhspan(0, G.r, xmin=0, xmax=1, color="#fbe3e3", zorder=0)
+    ax.axhspan(0, core.R_BEAMPIPE, color="#ececec", zorder=0)
+    ax.plot([-G.z_lmax, G.z_lmax], [G.r, G.r], color="#cc0000", lw=1.5)
+    for s in (-1, 1):
+        ax.plot([s * G.z_lmax] * 2, [0, 3.75], color="#cc0000", lw=1.2, ls="--")
+    ax.text(0, G.r - 0.05, f"the cylinder, R = {G.r} cm", color="#cc0000", fontsize=8.5, ha="center", va="top")
+    ax.text(0, core.R_BEAMPIPE - 0.06, "beam pipe, 2.25 cm", color=TEXT2, fontsize=7.8, ha="center", va="top")
+    idx = np.where(sel & (a > lo) & (a < hi) & ~g["very_forward"] & ~g["p_fail"])[0]
+    nk = nd = 0
+    slots = {1: [1.72, 1.22, 0.72], -1: [1.72, 1.22, 0.72]}
+    # the particles to name: those the line decides against the angle, or else the nearest to the cut on each side
+    named = [j for j in idx if (g["primary"][j] and a[j] > G.eta_cut) or (g["eta_fail"][j] and a[j] <= G.eta_cut)]
+    if not named:
+        for s in (1, -1):
+            side = [j for j in idx if np.sign(c.p4[j, 3]) == s]
+            if side:
+                named.append(min(side, key=lambda j: abs(a[j] - G.eta_cut)))
+    for j in idx:
+        zt = G.z_lmax if c.p4[j, 3] > 0 else -G.z_lmax
+        zz = np.linspace(c.vtx[j, 2], zt * 1.06, 60)
+        kept = bool(g["primary"][j]) or bool(g["killed"][j])
+        nk, nd = nk + kept, nd + (not kept)
+        col = COL_KEPT if kept else "#7d7d7d"
+        ax.plot(zz, line_r(c, j, zz), color=col, lw=0.9, alpha=0.85, zorder=3)
+        ax.plot(zt, g["r_line"][j], "o", ms=4.2, color=col, zorder=4)
+        sgn = 1 if zt > 0 else -1
+        if j in named and slots[sgn]:
+            ax.annotate(f"$\\eta$ = {c.eta[j]:+.4f}: r = {g['r_line'][j]:.3f} cm\n{'handed over' if kept else 'dropped'}", (zt, g["r_line"][j]), xytext=(sgn * 215, slots[sgn].pop(0)),
+                        fontsize=7.6, color=col, ha="center", va="center", bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=col, lw=0.6),
+                        arrowprops=dict(arrowstyle="-", color=col, lw=0.6), zorder=6)
+    ax.plot([zv], [0.03], marker="*", ms=13, color=COL_SIG if name == "signal" else COL_PU, zorder=5, clip_on=False)
+    ax.annotate(f"vertex\n$z_v$ = {zv:+.2f} cm", (zv, 0.05), xytext=(zv, 0.75), fontsize=8.2, color=TEXT, ha="center",
+                arrowprops=dict(arrowstyle="-", color=TEXT2, lw=0.6))
+    for s, lab in ((1, "+"), (-1, "-")):
+        dist = G.z_lmax - s * zv
+        ax.annotate("", xy=(s * G.z_lmax, 3.52), xytext=(zv, 3.52), arrowprops=dict(arrowstyle="<->", color=TEXT2, lw=0.8))
+        ax.text((s * G.z_lmax + zv) / 2, 3.56, f"{dist:.1f} cm: $\\eta_c$ = {math.asinh(dist / G.r):.4f}", fontsize=8.0, color=TEXT2, ha="center", va="bottom")
+    ax.set_xlim(-400, 400)
+    ax.set_ylim(0, 3.95)
+    ax.set_xlabel("z [cm]")
+    ax.set_ylabel("r of the line [cm] (stretched about 100 times)")
+    ax.set_title(title)
+    ax.plot([], [], color=COL_KEPT, lw=1.4, label=f"outside the cylinder at $|z|$ = {G.z_lmax:.1f} cm: handed over ({nk})")
+    ax.plot([], [], color="#7d7d7d", lw=1.4, label=f"still inside: dropped ({nd})")
+    ax.legend(loc="center", bbox_to_anchor=(0.5, 0.815), fontsize=7.4, frameon=True)
+    return idx
+
+
+def page_cases(S: Setup):
+    c, g, G = S.c, S.g, S.G
+    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(15, 5.2), gridspec_kw=dict(width_ratios=[1.15, 1.15, 0.9]))
+    draw_case(a1, S, c.block == 0, S.st.pv[2], rf"(a) the signal: {int(((c.block == 0) & (np.abs(c.eta) > 5.3) & (np.abs(c.eta) < 5.7)).sum())} members with 5.3 < $|\eta|$ < 5.7",
+              label_window=0.055, name="signal")
+    k = pick_collision(S)
+    col = next(x for x in S.st.collisions if x["k"] == k)
+    sel = (c.block == 1) & (c.k == k)
+    draw_case(a2, S, sel, col["z"], rf"(b) one in-time collision ({col['kind']}), {abs(col['z']):.1f} cm from the centre", label_window=0.03)
+    # (c) the same collision at the two ends: r of the line against |eta|, with the curve of each side
+    a = np.abs(c.eta)
+    ee = np.linspace(5.38, 5.62, 200)
+    a3.axhspan(0, G.r, color="#fbe3e3", zorder=0)
+    a3.axhline(G.r, color="#cc0000", lw=1.3)
+    a3.plot(ee, G.z_lmax / np.sinh(ee), color=TEXT, lw=1.0, ls=":", label="from the centre")
+    for s, colr, lab in ((1, COL_KEPT, "towards $+z$"), (-1, COL_NU, "towards $-z$")):
+        dist = G.z_lmax - s * col["z"]
+        a3.plot(ee, dist / np.sinh(ee), color=colr, lw=1.5, label=f"{lab}: {dist:.1f} cm to go")
+        a3.axvline(math.asinh(dist / G.r), color=colr, lw=0.8, ls="--")
+        m = sel & (a > 5.38) & (a < 5.62) & (np.sign(c.p4[:, 3]) == s) & ~g["very_forward"] & ~g["p_fail"]
+        a3.scatter(a[m], g["r_line"][m], s=34, marker="o" if s > 0 else "s", facecolors=np.where(g["primary"][m], colr, "white"), edgecolors=colr, lw=1.2, zorder=4)
+    a3.axvline(G.eta_cut, color=TEXT2, lw=0.8, ls=":")
+    a3.text(5.385, G.r - 0.012, "inside: dropped (open)", fontsize=8, color="#cc0000", va="top")
+    a3.text(5.385, G.r + 0.012, "outside: handed over (full)", fontsize=8, color="#cc0000", va="bottom")
+    a3.set_xlim(5.38, 5.62)
+    a3.set_ylim(2.55, 3.3)
+    a3.set_xlabel(r"$|\eta|$ of the particle")
+    a3.set_ylabel(rf"$r$ of the line at $|z|$ = {G.z_lmax:.1f} cm [cm]")
+    a3.set_title("(c) the same collision at the two ends")
+    a3.legend(loc="upper right", fontsize=7.8, frameon=True)
+    fig.suptitle("The eta cut, one collision at a time: each line is followed from its own vertex to the end of the cylinder on its own side", fontsize=12.5)
+    fig.tight_layout()
+    return fig
+
+
+# ---------------------------------------------------------------------------
+# page 3: the eta cut is a line (the whole window)
 # ---------------------------------------------------------------------------
 def page_line(S: Setup):
     c, g, G = S.c, S.g, S.G
     fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(15, 5.2))
+    # (a) folded: the vertex position along the direction of flight, s z_v with s = sign(pz), so that both sides of
+    # the detector share one curve, eta_c = asinh[(Z_max - s z_v) / R]
     zv = np.linspace(-15, 15, 301)
-    fwd = np.arcsinh((G.z_lmax - zv) / G.r)       # a particle flying towards +z from z_v
-    bwd = np.arcsinh((G.z_lmax + zv) / G.r)       # towards -z
-    a1.plot(zv, fwd, color=COL_KEPT, lw=1.8, label=r"towards $+z$: $\eta_c=\sinh^{-1}[(Z_{\max}-z_v)/R]$")
-    a1.plot(zv, bwd, color=COL_NU, lw=1.8, label=r"towards $-z$: $\eta_c=\sinh^{-1}[(Z_{\max}+z_v)/R]$")
+    cur = np.arcsinh((G.z_lmax - zv) / G.r)
+    rb = S.R["r_beamspot"]
+    a1.fill_between(zv, cur - rb / G.r, cur + rb / G.r, color=TEXT2, alpha=0.13, lw=0, zorder=1, label=rf"$\pm r_v/R$ = $\pm${rb / G.r:.3f} (beam spot off axis)")
+    a1.plot(zv, cur, color=TEXT, lw=1.8, label=r"$\eta_c=\sinh^{-1}[(Z_{\max}-s\,z_v)/R]$", zorder=5)
     a1.axhline(G.eta_cut, color=TEXT2, lw=0.8, ls=":")
-    border = (c.block > 0) & (np.abs(c.eta) > G.eta_cut - 0.03) & (np.abs(c.eta) < G.eta_cut + 0.03) & ~g["very_forward"]
-    kept = border & g["primary"]
-    drop = border & ~g["primary"] & ~g["pps"]
-    for m, mk, col, lab in ((kept, "o", COL_KEPT, "crowd, handed over"), (drop, "x", COL_DROP, "crowd, dropped")):
-        a1.scatter(c.vtx[m, 2], np.abs(c.eta[m]), s=9, marker=mk, color=col, lw=0.8, label=f"{lab} ({int(m.sum())})", zorder=3)
+    sgn = np.sign(c.p4[:, 3])
+    border = (c.block > 0) & (np.abs(c.eta) > G.eta_cut - 0.03) & (np.abs(c.eta) < G.eta_cut + 0.03) & ~g["very_forward"] & ~g["p_fail"] & (sgn != 0)
+    kept = border & (g["primary"] | g["killed"])
+    drop = border & g["eta_fail"]
+    for m, mk, col, lab in ((drop, "x", COL_DROP, "crowd, dropped"), (kept, "o", COL_KEPT, "crowd, handed over")):
+        a1.scatter(sgn[m] * c.vtx[m, 2], np.abs(c.eta[m]), s=8, marker=mk, color=col, lw=0.7, label=f"{lab} ({int(m.sum())})", zorder=3)
     sb = (c.block == 0) & (np.abs(c.eta) > 5.3) & (np.abs(c.eta) < 5.7)
-    a1.scatter(c.vtx[sb, 2], np.abs(c.eta[sb]), s=36, marker="*", color=COL_SIG, zorder=4, label=f"signal, $|\\eta|$ 5.3-5.7 ({int(sb.sum())})")
+    a1.scatter(sgn[sb] * c.vtx[sb, 2], np.abs(c.eta[sb]), s=40, marker="*", color=COL_SIG, zorder=6, label=f"signal, $|\eta|$ 5.3-5.7 ({int(sb.sum())})")
     a1.set_xlim(-15, 15)
-    a1.set_ylim(G.eta_cut - 0.06, G.eta_cut + 0.045)
-    a1.set_xlabel(r"$z$ of the production vertex $z_v$ [cm]")
+    a1.set_ylim(G.eta_cut - 0.085, G.eta_cut + 0.045)
+    a1.set_xlabel(r"$s\,z_v$ [cm]: the vertex along the flight ($s=\pm1$ towards $\pm z$)")
     a1.set_ylabel(r"$|\eta|$ of the particle")
     a1.set_title(r"(a) the effective cut moves with the vertex")
-    a1.legend(loc="lower center", fontsize=7.3, frameon=True, ncol=2)
-    a1.text(14.5, G.eta_cut + 0.038, "above its own curve: dropped", ha="right", fontsize=8.5, color=TEXT2)
+    a1.legend(loc="lower center", fontsize=7.4, frameon=True, ncol=2, columnspacing=0.8, handletextpad=0.4)
+    a1.text(14.5, G.eta_cut + 0.038, "above the curve: dropped", ha="right", fontsize=8.5, color=TEXT2)
+    a1.text(-14.5, G.eta_cut - 0.040, "below the curve: handed over", ha="left", fontsize=8.5, color=COL_KEPT)
     # (b) the radius of the line at |z| = Z_lmax against |eta|, nominal and from the vertex
     m = (c.block > 0) & (np.abs(c.eta) > 5.40) & (np.abs(c.eta) < 5.60) & ~g["very_forward"]
     a2.scatter(np.abs(c.eta[m]), g["r_line"][m], s=4, color=np.where(g["primary"][m], COL_KEPT, COL_DROP), lw=0, zorder=3)
@@ -173,7 +294,7 @@ def page_line(S: Setup):
     a2.plot(ee, G.z_lmax / np.sinh(ee), color=TEXT, lw=1.3, label=r"from $z_v=0$: $r=Z_{\max}/\sinh|\eta|$")
     for dz, ls in ((3.6, "--"), (-3.6, "--")):
         a2.plot(ee, (G.z_lmax - dz) / np.sinh(ee), color=TEXT2, lw=0.9, ls=ls)
-    a2.text(5.405, (G.z_lmax + 3.6) / math.sinh(5.405) + 0.01, r"$z_v=\mp3.6$ cm", fontsize=8.2, color=TEXT2)
+    a2.plot([], [], color=TEXT2, lw=0.9, ls="--", label=r"from $s\,z_v=\mp3.6$ cm")
     a2.axhline(G.r, color="#cc0000", lw=1.2)
     a2.text(5.59, G.r + 0.01, "R = 2.9 cm", ha="right", va="bottom", fontsize=8.5, color="#cc0000")
     a2.axvline(G.eta_cut, color=TEXT2, lw=0.8, ls=":")
@@ -200,7 +321,7 @@ def page_line(S: Setup):
 
 
 # ---------------------------------------------------------------------------
-# page 3: the soft and the invisible
+# page 4: the soft and the invisible
 # ---------------------------------------------------------------------------
 def p_below(E_pi, e_cut=core.P_MIN, m=M_PI0):
     """The chance that one photon of pi0 -> gamma gamma has an energy below e_cut: the photon energy is uniform between
@@ -267,7 +388,7 @@ def page_soft(S: Setup):
 
 
 # ---------------------------------------------------------------------------
-# page 4: the decays the generator made
+# page 5: the decays the generator made
 # ---------------------------------------------------------------------------
 LIFETIMES = [  # (name, mass [GeV], c tau [cm], colour, dashed): PDG values, as PYTHIA 8.315 has them
     (r"$B^\pm$", 5.2793, 0.04911, "#c0392b", False), (r"$B^0$", 5.2797, 0.04587, "#e67e22", False), (r"$\Lambda_b^0$", 5.6196, 0.0440, "#a04000", False),
@@ -341,7 +462,7 @@ def page_decays(S: Setup):
 
 
 # ---------------------------------------------------------------------------
-# page 5: the forward
+# page 6: the forward
 # ---------------------------------------------------------------------------
 def page_forward(S: Setup):
     c, g = S.c, S.g
@@ -404,7 +525,7 @@ def page_forward(S: Setup):
     return fig
 
 
-PAGES = [page_edges, page_line, page_soft, page_decays, page_forward]
+PAGES = [page_edges, page_cases, page_line, page_soft, page_decays, page_forward]
 
 
 def main():
@@ -412,7 +533,7 @@ def main():
     ap.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "PU" / "event_PU.lhe")
     ap.add_argument("-l", "--library", type=Path, default=HERE.parent.parent / "PU" / "pileup_library.lhe.gz")
     ap.add_argument("-o", "--output", type=Path, default=HERE / "theory_G4.pdf")
-    ap.add_argument("--page", type=int, help="draw only this page (1-5)")
+    ap.add_argument("--page", type=int, help="draw only this page (1-6)")
     ap.add_argument("--seed", type=int, default=9, help="the beam-spot seed of the library panels (as --library-scan)")
     args = ap.parse_args()
     S = Setup(args.input, args.library, args.seed)

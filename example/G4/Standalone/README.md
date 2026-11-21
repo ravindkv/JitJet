@@ -16,8 +16,9 @@ python3 standalone_G4.py                          # -> ../event_G4.lhe (6 s)
 python3 standalone_G4.py -v --log standalone_G4.log --summary standalone_G4.json --tables handover_ledger
 python3 standalone_G4.py --library-scan standalone_G4_library.json   # the gate on the 2000 library collisions (5 s)
 python3 ../plot_journey_G4.py --png               # the (eta, phi) display of the hand-over
-python3 plot_theory_G4.py                         # the five theory pages
-python3 draw_cms3d.py                             # the CMS detector of Run 3 in 3D -> chapter/tikz/g4_cms3d.tex
+python3 plot_theory_G4.py                         # the six theory pages
+python3 draw_cms3d.py                             # the CMS detector of Run 3 in 3D, schematic -> chapter/tikz/g4_cms3d.tex
+PYTHONPATH=$(root-config --libdir) ../../ME/Standalone/.venv/bin/python draw_cms3d_tgeo.py   # the same from the CMS geometry with TGeo -> cms3d_tgeo.png
 python3 animate_standalone_G4.py --stills animate_standalone_G4_stills.pdf --no-video --no-narration --no-music
 PYTHONPATH=$(root-config --libdir) ../../ME/Standalone/.venv/bin/python validate_G4.py --log validate_G4.log --summary validate_G4.json
 ```
@@ -33,7 +34,11 @@ On this Mac use `/usr/bin/python3` (NumPy, matplotlib) for everything but the va
 * the in-time crowd (63 collisions): 13 456 -> 10 825 primaries, 25.3 % of the energy; 124 very forward n, nbar,
   gamma handed over (124 TeV), 27 protons to the Roman pots (132 TeV);
 * the out-of-time crowd (897): 161 696 -> 128 894, 25.2 % of the energy; 363 protons to the Roman pots;
-* the line against the angle: 114 particles kept beyond |eta| = 5.5, 93 dropped inside it;
+* the line against the angle: 114 particles kept beyond |eta| = 5.5, 93 dropped inside it; the cut moves by +-0.010
+  with the z of the vertex and by up to +-0.011 with the azimuth, since the beam spot sits 330 um off the axis;
+* the two ledgers: the family loses 4.5 % of its scalar pT (33.4 GeV: 23.1 beyond 5.5, 10.2 neutrinos), none of it
+  from the 31 constituents of jet [0]; inside the circle of the jet the gate drops 2 of 83 in-time and 19 of 1000
+  out-of-time particles;
 * the library: 142.7 primaries per collision, 25.5 % of the energy, 0.39 Roman-pot protons;
 * validation: TGeo agrees for 175 895 of 175 901 particles (the six others have pz rounded to zero in the library),
   PYTHIA's particle data for every species.

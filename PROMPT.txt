@@ -1,6 +1,62 @@
 --------------------------------------------
 Date: 2026-11-20
-Prompt 34: LineNumbersAndDraftModeAndPROMPTtxt 
+Prompt 35: ReviewedChapter_09_G4
+--------------------------------------------
+A few comments on chapter 09_G4:
+
+(1) In the film example/G4/Standalone/animate_standalone_G4.py, we need to show the stream 
+of particles from signal, in-time, out-time pileup  moving from left to right and then at
+the gate they hand-over drop should be visibile as the particles falling down on the gate
+. Then the selected particles keep going on right and assemble at the center of the CMS 
+detector waiting to be crossed.
+
+(2) If possible/feasible, create the CMS 3D figure using CMS geometry in ROOT's TGeo.
+
+(3) The subfigure b of the figure "The soft and the invisible ..." has overlapping txt
+
+(4) Recheck every equation and number of chapter/chapter_09_G4.tex and update the 
+corresponding python codes in example/G4/Standalone/ if any pitfalls, bugs found
+
+(5) Create a smpost/thumbnail/ and add entry into smpost/SMPost.md for chapter 09_G4
+
+(6) Explain the difference between n_const (31) in table "Energy ledger at the stage ..."
+and n (749) in the table "The ledger of the hand-over, standalone ..." in the txt or caption
+
+(7) From the table "The ledger of the hand-over, standalone ...", we clearly see 
+"handed over: 89.7% of n, 52.5% of E, 95.5% of pT;" which means the signal lost 4.5% pT
+the why the table "Energy ledger at the stage ..." shows 0.00 delta pT? Clarify/correct
+this insconsistency. Similarly for the in-time and out-time pileup
+
+(8) The figure "The detector of the SIM step in the ..." is not entirly accurate in the
+sense that it shows ECAL+HCAL beyond |eta| > 3.0 which is not true in reality. Also we 
+have magnet after HCAL and before muon chamber but this figure does not show that. Remove
+this figure from the official CMS figure which I have
+added in the path example/G4/CMS-MUO-19-001_Figure_001.png from https://cms-results.web.cern.ch/cms-results/public-results/publications/MUO-19-001/index.html. Then in the caption, we can
+mention the eta location of our b and bbar
+
+(9) In the caption of figure "Where the particles and the energy go ..." explain why we 
+see more particles and energy in the barrel for signal (red) compared to the crowd (gray)
+
+(10) The first figure of "The eta cut as a line, from ..." needs more elaboration. Maybe
+keep it as is and add a new figure before it which first illustrates for signal, then
+in-time pileup and then refers to this figure as summary. Include the new figure in the 
+film also. 
+
+(11) In the caption of figure "The soft and the invisible ...", show typical values of E,
+beta, and cos thetastar and computed value of the two photons 
+
+(12) In the section "The forward: the Zero Degree ...", let the readers know that the next
+chapters will focus only in the |eta| < 5.5 as our signal is in this range. The ZDC and
+roman pots are discussed for completion.
+
+(13) The numbers in the figure "The forward, from plot_theory_G4.py ..." such as 21582,
+2195, 390, 33138 need a bit explaination maybe in the text how we got them
+
+
+
+--------------------------------------------
+Date: 2026-11-20
+Prompt 34: AddedLineNumbersAndDraftModeAndPROMPTtxt 
 --------------------------------------------
 Can you display line numbers in entire JitJet.pdf and add draft watermark, as the book is 
 still work in progress maybe in the preamble.tex or JitJet.tex
@@ -24,7 +80,7 @@ content of fileName.md
 
 --------------------------------------------
 Date: 2026-11-17
-File: prompt_33_added_chapter_09_G4.md
+File: prompt/prompt_33_added_chapter_09_G4.md
 --------------------------------------------
 Let us complete the next chapter/chapter_09_G4.tex following the Constitution.md
 
@@ -36,7 +92,7 @@ This chapter might be shorter in the sense that we apply selections to drop some
 
 --------------------------------------------
 Date: 2026-11-16
-File: prompt_32_PU_bxUpdated_m12p3.md
+File: prompt/prompt_32_PU_bxUpdated_m12p3.md
 --------------------------------------------
 
 In the example/PU/CMSSW/README.md, we have 
@@ -54,7 +110,7 @@ where I added corresponding columns for out-time pileup and dropped the E (Energ
 
 --------------------------------------------
 Date: 2026-11-15
-File: prompt_31_PU_2024to25.md
+File: prompt/prompt_31_PU_2024to25.md
 --------------------------------------------
 
 I need a some changes in the PU chapter:
@@ -64,7 +120,7 @@ I need a some changes in the PU chapter:
 
 --------------------------------------------
 Date: 2026-11-15
-File: prompt_30_Part2_skeleton.md
+File: prompt/prompt_30_Part2_skeleton.md
 --------------------------------------------
 The Part-2 of the book needs a bit of expansion in terms of the number of chapters. Since the JitJet idea is centered around the fact that we cover every  stop in the journey where either energy is added to the event or removed or checkpoints which stamp on the event to pass it further, I would like to have the following chapters in Part-2:
 + 08_PU
@@ -81,7 +137,7 @@ I would like you to create/rename the corresponding chapters in the chapter/ dir
 
 --------------------------------------------
 Date: 2026-11-14
-File: prompt_29_FullFableAudit_Ch01to08.md
+File: prompt/prompt_29_FullFableAudit_Ch01to08.md
 --------------------------------------------
 Ravindra:
 It is high time to review all the numbers/formulae from the Standalone in the chapter/*.tex upto 08_PU:
@@ -136,7 +192,7 @@ One pileup jet now survives the subtraction above 30 GeV, so the "never" stateme
 
 --------------------------------------------
 Date: 2026-11-14
-File: prompt_28_newCMSSWResults.md
+File: prompt/prompt_28_newCMSSWResults.md
 --------------------------------------------
 We need to update the CMSSW part of the book. I have added new  example/*/CMSSW/README.md and new example/*/CMSSW/*.pdf files. 
 
@@ -155,7 +211,7 @@ PS: In case we need to update some .py scripts as well, please do so. However, w
 
 --------------------------------------------
 Date: 2026-11-13
-File: prompt_27_updated_frontmatter.md
+File: prompt/prompt_27_updated_frontmatter.md
 --------------------------------------------
 From Director’s Desk:
 
@@ -213,7 +269,7 @@ The idea is to have uniform formats for all three Desk. If you prefer better (di
 
 --------------------------------------------
 Date: 2026-11-06
-File: prompt_26_chapter_08_PU.md
+File: prompt/prompt_26_chapter_08_PU.md
 --------------------------------------------
 IDEA: Since we are writing the book in 2026 where the Run-3 data-taking is already ended. So the book will have more relevance for Phase2 HL-LHC. I am thinking of writing the next parts (Part-II,  Part-III, etc) by passing our event (which is for the Run-3 conditions, i think except the slight change in the energy everything else will remain the same) to the Phase2 Geometry. In summary:
 
@@ -251,7 +307,7 @@ Feel free to tweak (a), (b),  (c) a bit if needed :-)
 
 --------------------------------------------
 Date: 2026-10-23
-File: prompt_25_constitutional_amendment.md
+File: prompt/prompt_25_constitutional_amendment.md
 --------------------------------------------
 
 Since the book has evolved quite a lot with a lot of physics insights, it is the appropriate time to refactor a bit so that:
@@ -275,7 +331,7 @@ We can have a JitJetWorld Table in the frontmatter where we can have 2-3 columns
 
 --------------------------------------------
 Date: 2026-10-22
-File: prompt_24_part1_ch01_07_trailer_FurtherImproved.md
+File: prompt/prompt_24_part1_ch01_07_trailer_FurtherImproved.md
 --------------------------------------------
 
 I would like to have the  trailer a bit modified:
@@ -291,7 +347,7 @@ example/trailer/animate_trailer_part1_ch01_07.py
 
 --------------------------------------------
 Date: 2026-10-22
-File: prompt_23_chapter_07_GenJet_FurtherExplained.md
+File: prompt/prompt_23_chapter_07_GenJet_FurtherExplained.md
 --------------------------------------------
 
 Please implement the following comment in chapter_07_family_photograph.tex
@@ -317,7 +373,7 @@ Then we can run the clustering on the full event and show three plots side by si
 
 --------------------------------------------
 Date: 2026-10-22
-File: prompt_22_part1_ch01_07_trailer.md
+File: prompt/prompt_22_part1_ch01_07_trailer.md
 --------------------------------------------
 
 Since we have completed the Part1 (ch 01-07) of the book, it is time to create a 2 min trailer where we stich/mix each page of
@@ -330,7 +386,7 @@ Please create example/trailer/animate_trailer_part1_ch01_07.py
 
 --------------------------------------------
 Date: 2026-10-21
-File: prompt_21_chapter_07_GenJet.md
+File: prompt/prompt_21_chapter_07_GenJet.md
 --------------------------------------------
 Let us move to the next chapter which is chapter/chapter_07_family_photograph.tex which is on the GenJet.
 
@@ -341,7 +397,7 @@ Thanks. Write chapter/chapter_07_family_photograph.tex from these scripts, in th
 
 --------------------------------------------
 Date: 2026-10-21
-File: prompt_20_chapter_06_Hadron_decay_FurtherExplained.md
+File: prompt/prompt_20_chapter_06_Hadron_decay_FurtherExplained.md
 --------------------------------------------
 
 In the chapter:
@@ -360,7 +416,7 @@ Following the similar voice as in example/Had/Standalone/animate_standalone_hadr
 
 --------------------------------------------
 Date: 2026-10-19
-File: prompt_19_voice_in_other_videos.md
+File: prompt/prompt_19_voice_in_other_videos.md
 --------------------------------------------
 
 Using the same sound as in, example/ME/Standalone/animate_standalone_qqbar_bbbar_xsec.py, please add voice in the following other videos:
@@ -377,7 +433,7 @@ Feel free to adjust the length for seamless and immersive experience. Please pro
 
 --------------------------------------------
 Date: 2026-10-18
-File: prompt_18_voice_in_video.md
+File: prompt/prompt_18_voice_in_video.md
 --------------------------------------------
 Please add background  music and voice to the video cover/animate_short_cover_timeline.py. Feel free to adjust the length a bit for seamless and immersive experience. Try the best voice
 
@@ -391,7 +447,7 @@ Next we will use  example/soundtrack.py in other videso for consistency.
 
 --------------------------------------------
 Date: 2026-10-15
-File: prompt_17_chapter_06_Hadron_decay.md
+File: prompt/prompt_17_chapter_06_Hadron_decay.md
 --------------------------------------------
 Let us move to the next chapter which is chapter/chapter_06_children_producing_grandchildren.tex which is on the hadron decay. 
 
@@ -402,7 +458,7 @@ Write chapter/chapter_06_children_producing_grandchildren.tex (B-hadron decays) 
 
 --------------------------------------------
 Date: 2026-10-14
-File: prompt_16_chapter_03_MnM_animate.md
+File: prompt/prompt_16_chapter_03_MnM_animate.md
 --------------------------------------------
 
 For continuity on youtube playlist, I would like to have a very short video on chapter/chapter_03_whose_child.tex inside the example/MnM dir. The video can be 10 sec long where we basically try to convey that this stop is not for us but for other events (who have subprocess and NLO or higher order) so we do not stop here and move to the next stop.
@@ -410,7 +466,7 @@ For continuity on youtube playlist, I would like to have a very short video on c
 
 --------------------------------------------
 Date: 2026-10-14
-File: prompt_15_chapter_05_Hadronization_FurtherExplained.md
+File: prompt/prompt_15_chapter_05_Hadronization_FurtherExplained.md
 --------------------------------------------
 
 Please implement the following in chapter/chapter_05_children_getting_married.tex:
@@ -485,7 +541,7 @@ so that the video becomes more effective and illustrative of the hadronisation p
 
 --------------------------------------------
 Date: 2026-10-11
-File: prompt_14_chapter_05_Hadronization_Tex.md
+File: prompt/prompt_14_chapter_05_Hadronization_Tex.md
 --------------------------------------------
 I think now we have all inputs available in example/Had/ dir.
 
@@ -493,7 +549,7 @@ Please complete chapter/chapter_05_children_getting_married.tex enforcing the Co
 
 --------------------------------------------
 Date: 2026-10-11
-File: prompt_13_chapter_05_Hadronization.md
+File: prompt/prompt_13_chapter_05_Hadronization.md
 --------------------------------------------
 Let us move to the next chapter which is chapter/chapter_05_children_getting_married.tex 
 
@@ -501,7 +557,7 @@ I have the final plots (page-4) from CMSSW inside the example/Had/CMSSW/ dir. Pl
 
 --------------------------------------------
 Date: 2026-10-10
-File: prompt_12_chapter_split_rename.md
+File: prompt/prompt_12_chapter_split_rename.md
 --------------------------------------------
 We have finalised the chapter 04. Now for the next chapter/chapter_05_dressing_children.tex
 i am thinking of splitting it in to two:
@@ -514,7 +570,7 @@ where we can cover the hadronisation and decay separately into two chapters. Wha
 
 --------------------------------------------
 Date: 2026-10-09
-File: prompt_11_chapter_04_UE.md
+File: prompt/prompt_11_chapter_04_UE.md
 --------------------------------------------
 
 Let us move to the next chapter which is chapter/chapter_04_uninvited_cousins.tex
@@ -526,14 +582,14 @@ I think we have all the inputs avaialble now to complete chapter/chapter_04_unin
 
 --------------------------------------------
 Date: 2026-10-07
-File: prompt_10_MatchingMerging.md
+File: prompt/prompt_10_MatchingMerging.md
 --------------------------------------------
 
 Since our event u ubar -> b bbar is at LO and has no additional subprocess e.g. u ubar -> b bbar + q,  we do NOT need matching and merging. In view of this, we can just have 1-2 pages in chapter/chapter_03_whose_child.tex just to briefly talk about it with some illustrative diagrams and references. After that we can focus on the next chapter. Please update chapter 03.
 
 --------------------------------------------
 Date: 2026-10-03
-File: prompt_09_Constitution_On_Chapter_01.md
+File: prompt/prompt_09_Constitution_On_Chapter_01.md
 --------------------------------------------
 Please update chapter/tikz/ps_colour_dipoles.tex  to show color dipoles of:
 
@@ -547,7 +603,7 @@ Let us implement/enforce the Constitution.md on chapter/chapter_01_ancestral_hom
 
 --------------------------------------------
 Date: 2026-10-02
-File: prompt_08_chapter_02_elaborated_PS.md
+File: prompt/prompt_08_chapter_02_elaborated_PS.md
 --------------------------------------------
 For the learning purposes, add a lot of print statment to the script example/PS/Standalone/standalone_parton_showering.py so that when we run it, we can see detailed numbers  on the screen which would help us to understand the theory better.
 
@@ -580,7 +636,7 @@ larities" we can motivate the reader by stating why the shower last longer when 
 
 --------------------------------------------
 Date: 2026-09-29
-File: prompt_07_bookflow_top_bottom.md
+File: prompt/prompt_07_bookflow_top_bottom.md
 --------------------------------------------
 After giving some thought, I think we can re-shuffle the flow of the book to follow "top-to-bottom" approach. For example, we show first the video to the reader (passanger) and then show the standalone code. After that we can cover the theory part and then have a section "Validation from official packages" where we use different packages to reproduce them same numbers. Other sections can be at the same location as they are.
 
@@ -592,7 +648,7 @@ This "top to bottom" approach also fits in our "bottom to top" wording. A jet is
 
 --------------------------------------------
 Date: 2026-09-26
-File: prompt_06_book_cover.md
+File: prompt/prompt_06_book_cover.md
 --------------------------------------------
 Create the cover of the book in tikz latex package in cover/cover.tex maybe we can have pdf cover after compilation and include that as the first page of the book. The drawings in the cover should be as apt as possible. We can keep the current text but in nice format inside the tikz. Can you create another cover/cover_timeline.tex where instead of showing CMS we can show the timeline in a cone size similar to what we have in the evolution of universe (big bang)
 
@@ -604,7 +660,7 @@ The introduction vide is too big ~5 min. Let us create around 1 min video where 
 
 --------------------------------------------
 Date: 2026-09-26
-File: prompt_05_chapter_02_PS.md
+File: prompt/prompt_05_chapter_02_PS.md
 --------------------------------------------
 I think we have enough material in example/PS/ to complete chapter/chapter_02_mother_gives_birth.tex
 
@@ -613,7 +669,7 @@ This chapter will also have a similar theme as that of chapter/chapter_01_ancest
 
 --------------------------------------------
 Date: 2026-09-24
-File: prompt_04_chapter_01_ME_restruct_animate.md
+File: prompt/prompt_04_chapter_01_ME_restruct_animate.md
 --------------------------------------------
 Let us implement the following in chapter/chapter_01_ancestral_home.tex:
 
@@ -649,7 +705,7 @@ Please implement all these 7 points in the book.
 
 --------------------------------------------
 Date: 2026-09-19
-File: prompt_03_chapter_01_ME.md
+File: prompt/prompt_03_chapter_01_ME.md
 --------------------------------------------
 
 [To Claude Fable]
@@ -668,7 +724,7 @@ The whole idea is to give the reader full confidence. Finally the journey of eve
 
 --------------------------------------------
 Date: 2026-09-13
-File: prompt_02_TOC.md
+File: prompt/prompt_02_TOC.md
 --------------------------------------------
 [To Claude Fable]
 
@@ -685,7 +741,7 @@ Please implement these.
 
 --------------------------------------------
 Date: 2026-09-13
-File: prompt_01_Idea.md
+File: prompt/prompt_01_Idea.md
 --------------------------------------------
 
 [To Calude Fable]

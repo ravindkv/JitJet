@@ -238,3 +238,31 @@ and what the chapters ahead are about paying less of.
 Path:
 example/PU/Standalone/animate_standalone_pileup.mp4
 chapter/chapter_08_PU.tex
+
+
+### --------------------------------------
+(9/30) JitJet | Chapter-9 | The Hand-over at the Border: Geant4 Primaries
+
+The road ends at a gate. Before the CMS detector sees a single particle, every
+member of the event is handed to Geant4, and the hand-over is a selection. The
+film opens with the gate at work: the family, the 63 in-time and the 897
+out-of-time collisions stream in on three lanes, and at the gate the members
+that are turned away fall out of the stream, down the beam pipe, into the bin
+of the soft and the neutrinos, or onto the rail along the beam line to the
+Zero Degree Calorimeter and the Roman pots, while the rest walk on and gather
+at the centre of the detector. Then the rules, one scene each. The eta cut is
+a line, not an angle: a cylinder of 2.9 cm around the beam, 355 cm long, and
+every particle followed from its own vertex to its end, first for our family,
+then for one collision of the crowd six centimetres off centre, where a pion
+beyond 5.5 is kept on the long side and a photon inside 5.5 is dropped on the
+short one. Below 40 MeV nothing enters, and the neutrinos are killed before
+their first step: the missing transverse momentum of the event is decided
+here. The fourteen weak decays of the family all happened inside the cylinder,
+so every daughter starts as a primary. What is left waits at the centre of
+CMS: 672 of the family's 749 particles, 96 % of its transverse momentum, but
+only 52 % of its energy, and a quarter of the crowd's. Our b jet crosses whole,
+31 of 31. Nothing has moved yet: the crossing is the next film.
+
+Path:
+example/G4/Standalone/animate_standalone_G4.mp4
+chapter/chapter_09_G4.tex

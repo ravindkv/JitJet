@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """Animated companion to standalone_G4.py: the gate at the border of the detector.
 
-Six scenes, narrated, show the family of chapter 7 and the crowd of chapter 8 arriving at the gate of Geant4 and
+Seven scenes, narrated, show the family of chapter 7 and the crowd of chapter 8 arriving at the gate of Geant4 and
 the decision that is made there, member by member, before Geant4 takes its first step. Every number on screen and in
 the narration is computed by standalone_G4.py on the record of chapter 8 (../../PU/event_PU.lhe) and its library.
 The film picks up where the chapter-8 film ended (the crowd on the road, the border ahead) and ends with the CMS
 detector of 2025 waiting for the primaries: the crossing itself is the next film.
 
-  1  road       The three crowds arrive: the particles per unit of eta of the family, of the 63 in-time and of the
-                897 out-of-time collisions build up, with the edges of the detector and of the gate.
-  2  line       The eta cut is a line: the cylinder r < 2.9 cm to |z| = 354.8 cm (stretched), the vertices of the
-                window along the beam, and the lines of the border particles, kept or dropped by where they are at
-                354.8 cm, not by their angle.
-  3  soft       The momentum spectrum with the 40 MeV cut, and the neutrinos of the family, killed before their
+  1  gate       The gate at work: the family, the in-time and the out-of-time crowd stream in from the left on three
+                lanes (one dot stands for 10, 100 and 1000 particles); at the gate the members that are not handed
+                over fall out of the stream, down the beam pipe, into the bin of the soft and the neutrinos, or onto
+                the rail to the ZDC and the Roman pots; the rest walk on and gather at the centre of CMS.
+  2  road       The three crowds in pseudorapidity: the particles per unit of eta of the family, of the 63 in-time and
+                of the 897 out-of-time collisions build up, with the edges of the detector and of the gate.
+  3  line       The eta cut is a line: the cylinder r < 2.9 cm to |z| = 354.8 cm on both sides (stretched); the border
+                lines of the family from its vertex, then those of one in-time collision 6.4 cm from the centre, then
+                those of the whole window, kept or dropped by where they are at 354.8 cm, not by their angle.
+  4  soft       The momentum spectrum with the 40 MeV cut, and the neutrinos of the family, killed before their
                 first step: the missing transverse momentum of the event decided at the gate.
-  4  decays     The decays the generator made, across the beam: the fourteen weak decays of the family appear,
+  5  decays     The decays the generator made, across the beam: the fourteen weak decays of the family appear,
                 every one inside the 2.9 cm cylinder, so every daughter starts as a primary.
-  5  forward    The forward crowd in (|eta|, E): the neutrons and photons for the ZDC, the protons for the Roman
+  6  forward    The forward crowd in (|eta|, E): the neutrons and photons for the ZDC, the protons for the Roman
                 pots, the rest down the beam pipe.
-  6  ready      The primaries gathered in front of the CMS detector of 2025, its quadrant cut away: ready to cross.
+  7  ready      The primaries gathered at the centre of the CMS detector of 2025, its quadrant cut away: ready to cross.
 
 Narration and music: as in the other chapter films (example/soundtrack.py): one line per phase (--print-script),
 edge-tts or the macOS `say` voice, clips cached in build/narration/G4/, an .srt next to the .mp4.
@@ -59,7 +63,7 @@ COL_SIG, COL_IN, COL_OOT = "#d62728", "#8a7f5a", "#d4a017"
 COL_KEPT, COL_DROP, COL_VF, COL_PPS, COL_NU = "#2a78d6", "#9a9a9a", "#2f8f5b", "#8e5bb5", "#eb6834"
 TEXT, TEXT2, GRID = "#0b0b0b", "#52514e", "#d6d3ca"
 FIGSIZE = (12.8, 7.2)
-SCENE_NAMES = {"1": "road", "2": "line", "3": "soft", "4": "decays", "5": "forward", "6": "ready"}
+SCENE_NAMES = {"1": "gate", "2": "road", "3": "line", "4": "soft", "5": "decays", "6": "forward", "7": "ready"}
 
 
 def smooth(t: float) -> float:
@@ -80,6 +84,20 @@ class Physics:
         self.L = self.R["L"]
         self.view = cms.View()
         self.faces = cms.scene(self.view)
+        # the detector ray-traced through the CMS geometry with TGeo (draw_cms3d_tgeo.py), if it has been made;
+        # otherwise the schematic of draw_cms3d.py. Same view, same frame: 30 m x 19 m about the collision point.
+        png = HERE / "cms3d_tgeo.png"
+        self.cms_img = plt.imread(str(png)) if png.exists() else None
+        self.tokens = Tokens(self.L, cms_centre(self.view))
+        self.tokens.centre = cms_centre(self.view)
+
+
+def draw_cms(ax, ph, alpha=1.0):
+    """The CMS detector in the frame x -15 ... 15 m, y -9.5 ... 9.5 m of the view: the TGeo picture, or the schematic."""
+    if ph.cms_img is not None:
+        ax.imshow(ph.cms_img, extent=[-15, 15, -9.5, 9.5], alpha=alpha, interpolation="bilinear", zorder=1)
+    else:
+        cms.draw_matplotlib(ax, ph.faces, ph.view, alpha=alpha)
 
 
 def chrome(fig, scene_no: int, title: str, caption: str):
@@ -116,9 +134,181 @@ class Scene:
         return [("all", 0, self.nframes)]
 
 
-# --- scene 1: the three crowds arrive ---------------------------------------------------------------------
+# --- scene 1: the gate at work ------------------------------------------------------------------------------
+# The whole stop in one picture, in motion. Figure-wide coordinates: x 0..16, y 0..9.
+GX0, GXG = -0.4, 5.6                      # where the lanes start and where the gate stands
+LANES = {"signal": 6.35, "intime": 5.35, "oot": 4.35}
+PER_DOT = {"signal": 10, "intime": 100, "oot": 1000}
+T_ENTER, T_LANE, T_FALL, T_WALK, T_RAIL = 10.0, 4.0, 1.2, 3.0, 3.0      # seconds on the nominal clock
+RAIL_Y, PIPE_BOX, SOFT_BOX = 2.12, (5.9, 0.92, 8.4, 1.50), (8.9, 0.92, 11.0, 1.50)
+ZDC_X, PPS_X = 13.6, 15.2
+CMS_BOX = [0.52, 0.22, 0.47, 0.515]       # the axes of the detector in figure fractions (30 x 18.5 m, equal aspect)
+FATES = ["primary", "pipe", "soft", "nu", "zdc", "pps"]
+
+
+def fate_counts(Lb: dict) -> Dict[str, int]:
+    """What the gate does with one crowd, from its ledger: handed over at the vertex, down the beam pipe (the eta cut
+    as a line), too soft, neutrino, very forward neutral handed over (ZDC), proton to the Roman pots."""
+    d = Lb["drops"]
+    return dict(primary=Lb["primary"]["n"] - Lb["very_forward"]["n"], pipe=d["eta"]["n"] + d["other"]["n"], soft=d["p"]["n"], nu=d["nu"]["n"],
+                zdc=Lb["very_forward"]["n"], pps=Lb["pps"]["n"])
+
+
+def cms_centre(view) -> Tuple[float, float]:
+    """The centre of the detector in the figure-wide coordinates of the gate scene."""
+    c0 = view.project([0.0, 0.0, 0.0])
+    fx = CMS_BOX[0] + CMS_BOX[2] * (c0[0] + 15.0) / 30.0
+    fy = CMS_BOX[1] + CMS_BOX[3] * (c0[1] + 9.0) / 18.5
+    return 16.0 * fx, 9.0 * fy
+
+
+class Tokens:
+    """The dots of the gate scene: one per PER_DOT particles of each crowd and fate (at least one for a fate that is
+    not empty), with the time each enters its lane and where it ends."""
+
+    def __init__(self, L: dict, centre, seed=9):
+        rng = np.random.default_rng(seed)
+        self.counts = {b: fate_counts(L[b]) for b in LANES}
+        self.items = []
+        for b in LANES:
+            fates = []
+            for f in FATES:
+                n = self.counts[b][f]
+                fates += [f] * (max(1, int(round(n / PER_DOT[b]))) if n else 0)
+            rng.shuffle(fates)
+            t0 = np.sort(rng.uniform(0.0, T_ENTER, len(fates)))
+            for f, t in zip(fates, t0):
+                dy = rng.uniform(-0.3, 0.3)
+                if f == "primary":
+                    rr, aa = 0.55 * math.sqrt(rng.uniform()), rng.uniform(0, 2 * math.pi)
+                    end = (centre[0] + 1.25 * rr * math.cos(aa), centre[1] + rr * math.sin(aa))
+                elif f == "pipe":
+                    end = (rng.uniform(PIPE_BOX[0] + 0.12, PIPE_BOX[2] - 0.12), rng.uniform(PIPE_BOX[1] + 0.1, PIPE_BOX[3] - 0.1))
+                elif f in ("soft", "nu"):
+                    end = (rng.uniform(SOFT_BOX[0] + 0.12, SOFT_BOX[2] - 0.12), rng.uniform(SOFT_BOX[1] + 0.1, SOFT_BOX[3] - 0.1))
+                else:
+                    end = ((ZDC_X if f == "zdc" else PPS_X) + rng.uniform(-0.25, 0.25), RAIL_Y + rng.uniform(0.05, 0.3))
+                self.items.append(dict(block=b, fate=f, t0=float(t), y=LANES[b] + dy, end=end, phase=rng.uniform(0, 2 * math.pi)))
+        self.t_end = T_ENTER + T_LANE + T_FALL + T_RAIL
+
+    @staticmethod
+    def landed(tok, t) -> bool:
+        tau = t - tok["t0"] - T_LANE
+        return tau >= (T_WALK if tok["fate"] == "primary" else T_FALL + (T_RAIL if tok["fate"] in ("zdc", "pps") else 0.0))
+
+    @staticmethod
+    def position(tok, t):
+        """(x, y) of a dot at time t, or None before it has entered."""
+        if t < tok["t0"]:
+            return None
+        tau = t - tok["t0"] - T_LANE
+        y0 = tok["y"]
+        if tau < 0:
+            u = (t - tok["t0"]) / T_LANE
+            return GX0 + (GXG - GX0) * u, y0 + 0.05 * math.sin(7.0 * u + tok["phase"])
+        ex, ey = tok["end"]
+        f = tok["fate"]
+        if f == "primary":
+            u = smooth(tau / T_WALK)
+            return GXG + (ex - GXG) * u, y0 + (ey - y0) * u
+        if f in ("zdc", "pps"):
+            if tau < T_FALL:
+                u = tau / T_FALL
+                return GXG + 0.5 * u, y0 + (ey - y0) * u * u
+            u = smooth((tau - T_FALL) / T_RAIL)
+            return GXG + 0.5 + (ex - GXG - 0.5) * u, ey
+        u = min(tau / T_FALL, 1.0)
+        return GXG + (ex - GXG) * u, y0 + (ey - y0) * u * u       # thrown out of the stream: falling
+
+
+class GateScene(Scene):
+    number, title = 1, "the gate: who is handed to Geant4"
+
+    def __init__(self, phys, fps):
+        super().__init__(phys, fps)
+        self.tok = phys.tokens
+        self.k1, self.k2 = 5 * fps, 14 * fps
+        self.nframes = 21 * fps
+
+    def phases(self):
+        return [("stream", 0, self.k1), ("drop", self.k1, self.k2), ("gather", self.k2, self.nframes)]
+
+    def draw(self, fig, k):
+        ph = self.phys
+        L = ph.L
+        t = k / self.fps
+        chrome(fig, 1, self.title, "Who is not handed over falls out of the stream; the rest gather at the centre of CMS. One dot: 10 members of the family, 100 in time, 1000 out of time.")
+        axc = fig.add_axes(CMS_BOX)
+        axc.axis("off")
+        draw_cms(axc, ph, alpha=0.45)
+        axc.set_aspect("equal")
+        axc.set_xlim(-15, 15)
+        axc.set_ylim(-9, 9.5)
+        ax = fig.add_axes([0, 0, 1, 1])
+        ax.axis("off")
+        ax.patch.set_alpha(0.0)
+        ax.set_xlim(0, 16)
+        ax.set_ylim(0, 9)
+        cols = {"signal": COL_SIG, "intime": COL_IN, "oot": COL_OOT}
+        names = {"signal": "the family", "intime": f"in time: {ph.st.n_intime} collisions", "oot": f"out of time: {ph.st.n_oot} collisions"}
+        for b, y in LANES.items():
+            ax.add_patch(plt.Rectangle((0, y - 0.42), GXG, 0.84, color=cols[b], alpha=0.07, lw=0))
+            ax.text(0.15, y + 0.30, f"{names[b]}: {L[b]['stable']['n']:,} stable", fontsize=9.5, color=cols[b], va="center", weight="bold")
+        # the gate
+        ax.add_patch(plt.Rectangle((GXG - 0.09, 3.75), 0.18, 3.25, color="#333333", zorder=5))
+        ax.add_patch(plt.Rectangle((GXG - 2.7, 7.0), 5.4, 0.62, color="#333333", zorder=5))
+        ax.text(GXG, 7.31, "the gate:  Generator.cc  +  StackingAction", color="white", fontsize=9.5, ha="center", va="center", zorder=6, weight="bold")
+        # the ways out: the beam pipe, the bin, the rail
+        for box, lab in ((PIPE_BOX, r"down the beam pipe: $|\eta|$ > 5.5"), (SOFT_BOX, "too soft (< 40 MeV) or a neutrino")):
+            ax.add_patch(plt.Rectangle((box[0], box[1]), box[2] - box[0], box[3] - box[1], fc="#f1f1f1", ec="#666666", lw=1.2, zorder=1))
+            ax.text((box[0] + box[2]) / 2, box[3] + 0.07, lab, fontsize=9, color=TEXT2, ha="center", va="bottom")
+        ax.plot([GXG + 0.5, 15.8], [RAIL_Y, RAIL_Y], color="#666666", lw=2.2, zorder=1)
+        for x in np.arange(GXG + 0.7, 15.8, 0.35):
+            ax.plot([x, x], [RAIL_Y - 0.07, RAIL_Y + 0.07], color="#666666", lw=1.0, zorder=1)
+        ax.text(12.15, RAIL_Y - 0.14, "the rail along\nthe beam line", fontsize=9, color=TEXT2, va="top", ha="center")
+        ax.text(ZDC_X, RAIL_Y - 0.14, "ZDC, 140 m\n(n, $\\bar{n}$, $\\gamma$)", fontsize=9, color=COL_VF, va="top", ha="center")
+        ax.text(PPS_X, RAIL_Y - 0.14, "Roman pots\n203 m (p)", fontsize=9, color=COL_PPS, va="top", ha="center")
+        # the dots
+        xs, ys, cs, ec = [], [], [], []
+        done = {b: {f: [0, 0] for f in FATES} for b in LANES}
+        for tok in reversed(self.tok.items):          # the family is drawn last, on top
+            d = done[tok["block"]][tok["fate"]]
+            d[1] += 1
+            if Tokens.landed(tok, t):
+                d[0] += 1
+            pos = Tokens.position(tok, t)
+            if pos is None:
+                continue
+            xs.append(pos[0]); ys.append(pos[1]); cs.append(cols[tok["block"]])
+            ec.append(COL_NU if tok["fate"] == "nu" else (COL_VF if tok["fate"] == "zdc" else (COL_PPS if tok["fate"] == "pps" else cols[tok["block"]])))
+        if xs:
+            ax.scatter(xs, ys, s=30, c=cs, edgecolors=ec, linewidths=1.3, zorder=8)       # scatter keeps the order given
+
+        def shown(b, f):
+            n, m = done[b][f]
+            return int(round(self.tok.counts[b][f] * n / m)) if m else 0
+
+        def triple(x, y, fates, ha="center"):
+            parts = [(b, sum(shown(b, f) for f in fates)) for b in LANES]
+            dx = 0.82
+            x0 = x - dx if ha == "center" else x
+            for i, (b, n) in enumerate(parts):
+                ax.text(x0 + i * dx, y, f"{n:,}", fontsize=10.5, color=cols[b], ha="center", va="center", weight="bold", zorder=9)
+
+        triple((PIPE_BOX[0] + PIPE_BOX[2]) / 2, PIPE_BOX[1] - 0.17, ["pipe"])
+        triple((SOFT_BOX[0] + SOFT_BOX[2]) / 2, SOFT_BOX[1] - 0.17, ["soft", "nu"])
+        for x, f in ((ZDC_X, "zdc"), (PPS_X, "pps")):
+            n = sum(shown(b, f) for b in LANES)
+            if n:
+                ax.text(x, RAIL_Y + 0.45, f"{n:,}", fontsize=10.5, color=COL_VF if f == "zdc" else COL_PPS, ha="center", weight="bold", zorder=9)
+        cx, cy = self.tok.centre
+        ax.text(cx, cy + 3.05, "gathered at the centre of CMS", fontsize=10, color=TEXT2, ha="center")
+        triple(cx, cy + 2.72, ["primary"])
+
+
+# --- scene 2: the three crowds in pseudorapidity ----------------------------------------------------------------
 class RoadScene(Scene):
-    number, title = 1, "the road: three crowds arrive at the border"
+    number, title = 2, "the road: where the three crowds are"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -131,7 +321,7 @@ class RoadScene(Scene):
     def draw(self, fig, k):
         ph = self.phys
         c = ph.c
-        chrome(fig, 1, self.title, "Each crowd at its own vertex along the beam; the gate stands at |eta| = 5.5, where the particles thin out and the energy piles up.")
+        chrome(fig, 2, self.title, "Each crowd at its own vertex along the beam; the gate stands at |eta| = 5.5, where the particles thin out and the energy piles up.")
         ax = fig.add_axes([0.07, 0.14, 0.62, 0.74])
         style_2d(ax)
         bins = np.linspace(-13, 13, 53)
@@ -172,70 +362,136 @@ def core_edges():
     return [(2.5, "tracker", ":"), (3.0, "endcaps", ":"), (core.ETA_HF_FRONT, "HF hole", "--"), (core.ETA_CUT, "the gate 5.5", "-"), (core.ETA_HECTOR, "8.2", "-")]
 
 
-# --- scene 2: the line ------------------------------------------------------------------------------------
+# --- scene 3: the line ------------------------------------------------------------------------------------
 class LineScene(Scene):
-    number, title = 2, "the eta cut is a line, not an angle"
+    number, title = 3, "the eta cut is a line, not an angle"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
         c, g, G = phys.c, phys.g, phys.G
         a = np.abs(c.eta)
-        m = (c.block > 0) & (a > G.eta_cut - 0.02) & (a < G.eta_cut + 0.02) & ~g["very_forward"] & (c.p4[:, 3] > 0)
-        self.idx = np.where(m)[0]
-        self.k1, self.k2 = 3 * fps, 10 * fps
-        self.nframes = 14 * fps
+        ok = ~g["very_forward"] & ~g["p_fail"] & (c.p4[:, 3] != 0)
+        self.idx_sig = np.where((c.block == 0) & (a > 5.3) & (a < 5.7) & ok)[0]
+        # one in-time collision: a member kept beyond 5.5 on one side and one dropped inside it on the other
+        best, zbest = None, -1.0
+        for col in phys.st.collisions:
+            if col["k"] == 0 or col["bx"] != 0:
+                continue
+            m = (c.block == 1) & (c.k == col["k"])
+            if (m & g["primary"] & (a > G.eta_cut) & ~g["very_forward"]).any() and (m & g["eta_fail"] & (a <= G.eta_cut)).any() and abs(col["z"]) > zbest:
+                best, zbest = col, abs(col["z"])
+        self.col = best
+        self.idx_one = np.where((c.block == 1) & (c.k == best["k"]) & (a > 5.3) & (a < 5.7) & ok)[0] if best else np.array([], dtype=int)
+        self.idx_all = np.where((c.block > 0) & (a > G.eta_cut - 0.02) & (a < G.eta_cut + 0.02) & ok)[0]
+        self.k1, self.k2, self.k3, self.k4 = 3 * fps, 8 * fps, 13 * fps, 19 * fps
+        self.nframes = 24 * fps
 
     def phases(self):
-        return [("cylinder", 0, self.k1), ("lines", self.k1, self.k2), ("verdict", self.k2, self.nframes)]
+        return [("cylinder", 0, self.k1), ("lines", self.k1, self.k2), ("signal", self.k2, self.k3), ("intime", self.k3, self.k4), ("verdict", self.k4, self.nframes)]
+
+    def keyframe(self) -> int:
+        return self.k4 - 1
+
+    def _lines(self, ax, idx, grow, verdict, lw=1.0, alpha=0.85, dots=True):
+        c, g, G = self.phys.c, self.phys.g, self.phys.G
+        nk = nd = 0
+        for j in idx:
+            zt = (G.z_lmax if c.p4[j, 3] > 0 else -G.z_lmax)
+            z0 = c.vtx[j, 2]
+            zz = np.linspace(z0, z0 + (zt * 1.06 - z0) * grow, 30)
+            d = (zz - z0) / c.p4[j, 3]
+            rr = np.hypot(c.vtx[j, 0] + d * c.p4[j, 1], c.vtx[j, 1] + d * c.p4[j, 2])
+            kept = bool(g["primary"][j] or g["killed"][j])
+            nk, nd = nk + kept, nd + (not kept)
+            col = (COL_KEPT if kept else "#7d7d7d") if verdict else "#555555"
+            ax.plot(zz, rr, color=col, lw=lw, alpha=alpha, zorder=3)
+            if verdict and dots:
+                ax.plot(zt, g["r_line"][j], "o", ms=4.5, color=col, zorder=4)
+        return nk, nd
 
     def draw(self, fig, k):
         ph = self.phys
         c, g, G = ph.c, ph.g, ph.G
-        chrome(fig, 2, self.title, f"Followed from its own vertex to |z| = {G.z_lmax:.1f} cm: still inside r < {G.r} cm, dropped; outside, handed over. "
+        chrome(fig, 3, self.title, f"Followed from its own vertex to |z| = {G.z_lmax:.1f} cm on its own side: still inside r < {G.r} cm, dropped; outside, handed over. "
                                    f"In our window {len(ph.R['line_vs_angle']['kept_beyond'])} members are kept beyond |eta| = 5.5 and {len(ph.R['line_vs_angle']['dropped_inside'])} dropped inside it.")
-        ax = fig.add_axes([0.07, 0.15, 0.60, 0.73])
+        ax = fig.add_axes([0.07, 0.15, 0.62, 0.73])
         style_2d(ax)
         ax.axhspan(0, G.r, color="#fbe3e3", zorder=0)
         ax.axhspan(0, core.R_BEAMPIPE, color="#e6e6e6", zorder=0)
-        ax.plot([-20, G.z_lmax], [G.r, G.r], color="#cc0000", lw=1.8)
-        ax.plot([G.z_lmax, G.z_lmax], [0, G.r], color="#cc0000", lw=1.8)
-        ax.text(5, G.r + 0.05, f"the cylinder of the gate, r < {G.r} cm", color="#cc0000", fontsize=10)
-        ax.text(G.z_lmax - 2, 0.15, f"$Z_{{\\max}}$ = R sinh 5.5 = {G.z_lmax:.1f} cm", ha="right", fontsize=10, color="#cc0000")
-        zs = np.array([col["z"] for col in ph.st.collisions])
-        ax.scatter(zs, np.zeros_like(zs) + 0.02, s=6, color=TEXT2, zorder=3)
-        f = ramp(k, self.k1, self.k2)
-        n = int(round(f * len(self.idx)))
-        verdict = k >= self.k2
-        for j in self.idx[:n]:
-            z0 = c.vtx[j, 2]
-            z1 = 380.0
-            r1 = (z1 - z0) / math.sinh(abs(c.eta[j]))
-            col = (COL_KEPT if g["primary"][j] else COL_DROP) if verdict else "#555555"
-            ax.plot([z0, z1], [0, r1], color=col, lw=0.6, alpha=0.7)
-            if verdict:
-                ax.plot(G.z_lmax, g["r_line"][j], "o", ms=3.5, color=col)
-        ax.set_xlim(-20, 390)
-        ax.set_ylim(0, 3.4)
+        ax.plot([-G.z_lmax, G.z_lmax], [G.r, G.r], color="#cc0000", lw=1.8)
+        for sgn in (-1, 1):
+            ax.plot([sgn * G.z_lmax] * 2, [0, 3.75], color="#cc0000", lw=1.4, ls="--")
+        ax.text(0, G.r - 0.06, f"the cylinder of the gate, r < {G.r} cm", color="#cc0000", fontsize=10, ha="center", va="top")
+        ax.text(0, core.R_BEAMPIPE - 0.06, "beam pipe, 2.25 cm", color=TEXT2, fontsize=9, ha="center", va="top")
+        ax.text(G.z_lmax - 6, 0.12, f"$Z_{{\\max}}$ = R sinh 5.5\n= {G.z_lmax:.1f} cm", ha="right", fontsize=9.5, color="#cc0000")
+        ax.set_xlim(-400, 400)
+        ax.set_ylim(0, 3.95)
         ax.set_xlabel("z [cm]", fontsize=11)
-        ax.set_ylabel("r [cm] (stretched)", fontsize=11)
-        a2 = fig.add_axes([0.72, 0.40, 0.25, 0.42])
+        ax.set_ylabel("r of the line [cm] (stretched about 100 times)", fontsize=11)
+        side = []
+
+        def distances(zv):
+            for sgn in (1, -1):
+                dist = G.z_lmax - sgn * zv
+                ax.annotate("", xy=(sgn * G.z_lmax, 3.55), xytext=(zv, 3.55), arrowprops=dict(arrowstyle="<->", color=TEXT2, lw=0.9))
+                ax.text((sgn * G.z_lmax + zv) / 2, 3.60, f"{dist:.1f} cm: cut at {math.asinh(dist / G.r):.4f}", fontsize=9.5, color=TEXT2, ha="center", va="bottom")
+
+        if k < self.k3 and k >= self.k1:
+            # the family: the lines grow, then the verdict
+            zv = ph.st.pv[2]
+            verdict = k >= self.k2
+            nk, nd = self._lines(ax, self.idx_sig, ramp(k, self.k1, self.k2 - self.fps), verdict)
+            ax.plot([zv], [0.03], marker="*", ms=16, color=COL_SIG, zorder=5, clip_on=False)
+            side.append((COL_SIG, f"our family\nvertex at z = {zv:+.2f} cm\n{len(self.idx_sig)} members with 5.3 < |eta| < 5.7"))
+            if verdict:
+                distances(zv)
+                side.append((TEXT, f"{nk} handed over (blue)\n{nd} dropped (grey)\nnone decided against its angle"))
+        elif k >= self.k3 and k < self.k4 and self.col is not None:
+            zv = self.col["z"]
+            grow = ramp(k, self.k3, self.k3 + 2 * self.fps)
+            verdict = k >= self.k3 + 2 * self.fps
+            nk, nd = self._lines(ax, self.idx_one, grow, verdict)
+            ax.plot([zv], [0.03], marker="*", ms=16, color=COL_IN, zorder=5, clip_on=False)
+            distances(zv)
+            side.append((COL_IN, f"one in-time collision\nvertex at z = {zv:+.2f} cm\n{len(self.idx_one)} members with 5.3 < |eta| < 5.7"))
+            if verdict:
+                a = np.abs(c.eta)
+                odd = [j for j in self.idx_one if (g["primary"][j] and a[j] > G.eta_cut) or (g["eta_fail"][j] and a[j] <= G.eta_cut)]
+                slots = {1: [1.75, 1.3], -1: [1.75, 1.3]}
+                for j in odd:
+                    sgn = 1 if c.p4[j, 3] > 0 else -1
+                    if not slots[sgn]:
+                        continue
+                    kept = bool(g["primary"][j])
+                    col = COL_KEPT if kept else "#7d7d7d"
+                    ax.annotate(f"eta = {c.eta[j]:+.4f}: r = {g['r_line'][j]:.3f} cm\n{'handed over' if kept else 'dropped'}", (sgn * G.z_lmax, g["r_line"][j]), xytext=(sgn * 215, slots[sgn].pop(0)),
+                                fontsize=9.5, color=col, ha="center", va="center", bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=col, lw=0.8),
+                                arrowprops=dict(arrowstyle="-", color=col, lw=0.8), zorder=6)
+                side.append((TEXT, f"{nk} handed over, {nd} dropped\n{len(odd)} decided against their angle:\nthe long side keeps, the short side drops"))
+        elif k >= self.k4:
+            zs = np.array([col["z"] for col in ph.st.collisions])
+            ax.scatter(zs, np.zeros_like(zs) + 0.03, s=7, color=TEXT2, zorder=3)
+            n = int(round(ramp(k, self.k4, self.k4 + 3 * self.fps) * len(self.idx_all)))
+            nk, nd = self._lines(ax, self.idx_all[:n], 1.0, True, lw=0.5, alpha=0.55, dots=False)
+            side.append((TEXT2, f"the whole window: {len(zs)} vertices\n{n} lines within 0.02 of the cut"))
+            side.append((TEXT, f"{nk} handed over (blue)\n{nd} dropped (grey)"))
+        a2 = fig.add_axes([0.745, 0.50, 0.235, 0.34])
         style_2d(a2, 8)
-        zv = np.linspace(-15, 15, 100)
-        a2.plot(zv, np.arcsinh((G.z_lmax - zv) / G.r), color=COL_KEPT, lw=1.6, label=r"towards $+z$")
-        a2.plot(zv, np.arcsinh((G.z_lmax + zv) / G.r), color=COL_NU, lw=1.6, label=r"towards $-z$")
+        zv_ = np.linspace(-15, 15, 100)
+        a2.plot(zv_, np.arcsinh((G.z_lmax - zv_) / G.r), color=COL_KEPT, lw=1.6, label=r"towards $+z$")
+        a2.plot(zv_, np.arcsinh((G.z_lmax + zv_) / G.r), color=COL_NU, lw=1.6, label=r"towards $-z$")
         a2.axhline(G.eta_cut, color=TEXT2, lw=0.8, ls=":")
         a2.set_xlabel(r"vertex $z_v$ [cm]", fontsize=9)
         a2.set_ylabel(r"effective cut $\eta_c$", fontsize=9)
         a2.legend(fontsize=8, loc="upper center")
-        fig.text(0.72, 0.30, r"$\eta_c = \sinh^{-1}[(Z_{\max} \mp z_v)/R] \simeq 5.5 \mp z_v / Z_{\max}$", fontsize=11, color=TEXT)
-        if verdict:
-            nk = int(g["primary"][self.idx].sum())
-            fig.text(0.72, 0.22, f"{n} border lines towards +z:\n{nk} handed over (blue), {n - nk} dropped (grey)", fontsize=10.5, color=TEXT2, va="top")
+        fig.text(0.715, 0.41, r"$\eta_c = \sinh^{-1}[(Z_{\max} \mp z_v)/R] \simeq 5.5 \mp z_v / Z_{\max}$", fontsize=10, color=TEXT)
+        for i, (col, text) in enumerate(side):
+            fig.text(0.715, 0.35 - 0.115 * i, text, fontsize=10.5, color=col, va="top", linespacing=1.35)
 
 
-# --- scene 3: soft and invisible --------------------------------------------------------------------------
+# --- scene 4: soft and invisible --------------------------------------------------------------------------
 class SoftScene(Scene):
-    number, title = 3, "the soft and the invisible"
+    number, title = 4, "the soft and the invisible"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -249,7 +505,7 @@ class SoftScene(Scene):
         ph = self.phys
         c, g = ph.c, ph.g
         L = ph.L
-        chrome(fig, 3, self.title, f"Below 40 MeV: {L['signal']['drops']['p']['n']} of the family, {L['intime']['drops']['p']['n']} of the in-time crowd. "
+        chrome(fig, 4, self.title, f"Below 40 MeV: {L['signal']['drops']['p']['n']} of the family, {L['intime']['drops']['p']['n']} of the in-time crowd. "
                                    f"The {L['signal']['drops']['nu']['n']} neutrinos of the family pass every cut and are killed before their first step.")
         ax = fig.add_axes([0.07, 0.15, 0.40, 0.73])
         style_2d(ax)
@@ -288,9 +544,9 @@ class SoftScene(Scene):
             a2.legend(fontsize=9, loc="lower left")
 
 
-# --- scene 4: the decays ----------------------------------------------------------------------------------
+# --- scene 5: the decays ----------------------------------------------------------------------------------
 class DecayScene(Scene):
-    number, title = 4, "the decays the generator made"
+    number, title = 5, "the decays the generator made"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -306,7 +562,7 @@ class DecayScene(Scene):
         G = ph.G
         pv = ph.st.pv
         far = ph.R["decays"]["far"]
-        chrome(fig, 4, self.title, f"PYTHIA decays what lives less than 10 mm; {len(self.weak)} weak decays in the family, the farthest a D0 at r = {far['r_dec']:.2f} cm: "
+        chrome(fig, 5, self.title, f"PYTHIA decays what lives less than 10 mm; {len(self.weak)} weak decays in the family, the farthest a D0 at r = {far['r_dec']:.2f} cm: "
                                    f"all inside the {G.r} cm cylinder, so every daughter starts as a primary where its parent decayed.")
         ax = fig.add_axes([0.05, 0.13, 0.45, 0.76])
         style_2d(ax)
@@ -335,9 +591,9 @@ class DecayScene(Scene):
             a2.text(0.0, 0.08, "P(r > 2.9 cm) = exp(-R m / (pT c tau))\nall inside: no predefined decays", fontsize=12, color=TEXT, weight="bold", va="bottom")
 
 
-# --- scene 5: the forward ---------------------------------------------------------------------------------
+# --- scene 6: the forward ---------------------------------------------------------------------------------
 class ForwardScene(Scene):
-    number, title = 5, "the forward: the ZDC, the Roman pots, and the beam pipe"
+    number, title = 6, "the forward: the ZDC, the Roman pots, and the beam pipe"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -351,7 +607,7 @@ class ForwardScene(Scene):
         ph = self.phys
         c, g = ph.c, ph.g
         L = ph.L
-        chrome(fig, 5, self.title, f"In time: {L['intime']['very_forward']['n']} neutrons and photons handed over towards the ZDC, {L['intime']['pps']['n']} protons carried to the Roman pots, "
+        chrome(fig, 6, self.title, f"In time: {L['intime']['very_forward']['n']} neutrons and photons handed over towards the ZDC, {L['intime']['pps']['n']} protons carried to the Roman pots, "
                                    f"{L['intime']['drops']['eta']['n']:,} members down the beam pipe with {L['intime']['drops']['eta']['e'] / 1000:.0f} TeV.")
         ax = fig.add_axes([0.07, 0.14, 0.62, 0.74])
         style_2d(ax)
@@ -383,9 +639,9 @@ class ForwardScene(Scene):
             counter(fig, 0.73, 0.50, "to the Roman pots", f"{L['intime']['pps']['n']} ({L['intime']['pps']['e'] / 1000:.0f} TeV)", COL_PPS)
 
 
-# --- scene 6: ready to cross ------------------------------------------------------------------------------
+# --- scene 7: ready to cross ------------------------------------------------------------------------------
 class ReadyScene(Scene):
-    number, title = 6, "ready to cross: the primaries in front of CMS"
+    number, title = 7, "ready to cross: the primaries at the centre of CMS"
 
     def __init__(self, phys, fps):
         super().__init__(phys, fps)
@@ -398,23 +654,33 @@ class ReadyScene(Scene):
     def draw(self, fig, k):
         ph = self.phys
         L = ph.L
-        chrome(fig, 6, self.title, f"The family hands {L['signal']['primary']['n']} of its {L['signal']['stable']['n']} members to Geant4, "
+        chrome(fig, 7, self.title, f"The family hands {L['signal']['primary']['n']} of its {L['signal']['stable']['n']} members to Geant4, "
                                    f"{100 * L['signal']['fractions']['e']:.0f} % of its energy and {100 * L['signal']['fractions']['pt']:.0f} % of its pT; the crowd a quarter of its energy. The crossing is the next film.")
         ax = fig.add_axes([0.30, 0.10, 0.69, 0.80])
         ax.axis("off")
-        bl, br = ph.view.project([0, 0, -15]), ph.view.project([0, 0, 15])
-        ax.plot([bl[0], br[0]], [bl[1], br[1]], color="#555555", lw=1.0, zorder=0)
         u = ramp(k, 0, self.k1)
-        cms.draw_matplotlib(ax, ph.faces, ph.view, alpha=0.25 + 0.75 * u)
+        draw_cms(ax, ph, alpha=0.30 + 0.55 * u)
         ax.set_aspect("equal")
         ax.set_xlim(-15, 15)
         ax.set_ylim(-9, 9.5)
+        # the primaries of the gate scene, gathered at the collision point and waiting (a slow breathing)
+        if not hasattr(self, "cluster"):
+            rng = np.random.default_rng(7)
+            pr = [t for t in reversed(ph.tokens.items) if t["fate"] == "primary"]
+            rr, aa = 1.1 * np.sqrt(rng.uniform(size=len(pr))), rng.uniform(0, 2 * math.pi, len(pr))
+            cols = {"signal": COL_SIG, "intime": COL_IN, "oot": COL_OOT}
+            self.cluster = (1.6 * rr * np.cos(aa), rr * np.sin(aa), [cols[t["block"]] for t in pr])
+        cx, cy, cc = self.cluster
+        breathe = 1.0 + 0.06 * math.sin(2 * math.pi * k / (2.5 * self.fps))
+        ax.scatter(cx * breathe, cy * breathe, s=26, c=cc, edgecolors="white", linewidths=0.4, zorder=10)
+        ax.text(0, -1.75, "the primaries, waiting", fontsize=10.5, color=TEXT, ha="center", zorder=11,
+                bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="none", alpha=0.75))
         f = ramp(k, 0, self.k1)
         for i, (b, col, lab) in enumerate((("signal", COL_SIG, "the family"), ("intime", COL_IN, f"in time ({ph.st.n_intime})"), ("oot", COL_OOT, f"out of time ({ph.st.n_oot})"))):
             n = int(round(f * L[b]["primary"]["n"]))
             counter(fig, 0.03, 0.80 - 0.16 * i, lab + ": primaries", f"{n:,}", col)
         if k >= self.k1:
-            fig.text(0.03, 0.28, "the tracker, ECAL, HCAL,\nthe solenoid, the iron and\nthe muon chambers, HF:\nthe CMS detector of 2025", fontsize=10.5, color=TEXT2, va="top")
+            fig.text(0.03, 0.28, "the tracker, ECAL, HCAL,\nthe solenoid, the iron and\nthe muon chambers, HF:\nthe CMS geometry of Run 3,\nray-traced with ROOT TGeo", fontsize=10.5, color=TEXT2, va="top")
 
 
 def narration(ph: Physics, scenes) -> Dict[str, str]:
@@ -423,19 +689,29 @@ def narration(ph: Physics, scenes) -> Dict[str, str]:
     far = ph.R["decays"]["far"]
     nu = [j for j in np.where((ph.c.block == 0) & ph.c.nu)[0]]
     vx, vy = ph.c.p4[nu, 1].sum(), ph.c.p4[nu, 2].sum()
+    line = next((sc for sc in scenes if isinstance(sc, LineScene)), None) or LineScene(ph, snd.NOMINAL_FPS)
     lines = {
-        "road_signal": (f"The crowd has arrived, and the road ends at a gate. ... Before the detector can see a single particle, every member of the event is handed to Geant4, "
-                        f"the toolkit that carries particles through matter, and the hand-over is a selection. Our family comes first: {s['stable']['n']} stable particles, thirteen point six T e V."),
+        "gate_stream": ("The crowd has arrived, and the road ends at a gate. ... Before the detector can see a single particle, every member of the event is handed to Geant4, "
+                        "the toolkit that carries particles through matter. Three streams walk up to the gate: our family, the in-time crowd, and the out-of-time crowd of the neighbouring crossings."),
+        "gate_drop": ("And the hand-over is a selection. At the gate, members fall out of the stream. Most of them go down the beam pipe: they fly too close to the beam for any detector to see. "
+                      "A few are too soft, a few are neutrinos. And a handful take the rail along the beam line, to two detectors far away."),
+        "gate_gather": (f"The rest walk on, and gather at the centre of the C M S detector. {s['primary']['n'] - s['very_forward']['n']} members of our family, and {i['primary']['n'] - i['very_forward']['n']:,} and {o['primary']['n'] - o['very_forward']['n']:,} of the two crowds. "
+                        "With the neutral ones on the rail, they are the primaries of Geant4. Now the rules of the gate, one at a time."),
+        "road_signal": (f"First, where everybody is. Our family: {s['stable']['n']} stable particles, thirteen point six T e V, spread over pseudorapidity."),
         "road_intime": (f"Then the in-time crowd of chapter eight: {ph.st.n_intime} collisions, {i['stable']['n']:,} particles. Look at where they go: the plateau in the middle, and the beam remnants far forward."),
         "road_oot": (f"And the out-of-time crowd, {ph.st.n_oot} collisions of the neighbouring crossings, {o['stable']['n']:,} particles, simulated with the same rules. "
                      "The gate stands at an eta of five and a half, where the particles are already thinning out, and the energy is not."),
         "line_cylinder": (f"The rule of the gate is a cylinder. ... Two point nine centimetres around the beam, out to {ph.G.z_lmax:.0f} centimetres along it, which is two point nine times the sinh of five and a half."),
         "line_lines": ("Every particle is followed in a straight line from its own vertex. If the line is still inside the cylinder at the end, the particle is dropped. "
                        "From the centre of the detector, that is an eta cut at five and a half. From a vertex a few centimetres away, it is not."),
+        "line_signal": (f"Start with our family. Its vertex is a millimetre and a half from the centre, so its cut is five and a half on both sides. {len(line.idx_sig)} members fly near the edge: "
+                        f"{int((ph.g['primary'][line.idx_sig] | ph.g['killed'][line.idx_sig]).sum())} leave the cylinder and are handed over, the others are still inside, and dropped. None of them is a close call."),
+        "line_intime": (f"Now one collision of the crowd, {abs(line.col['z']):.0f} centimetres in front of the centre. Towards plus z its lines have only {ph.G.z_lmax - abs(line.col['z']):.0f} centimetres to go; towards minus z, {ph.G.z_lmax + abs(line.col['z']):.0f}. "
+                        "So on the long side, a pion beyond five and a half gets out of the cylinder, and is kept. On the short side, a photon inside five and a half does not, and is dropped."),
         "line_verdict": (f"So the verdict depends on where the collision happened. In our window, {len(ph.R['line_vs_angle']['kept_beyond'])} members beyond five and a half are kept, "
                          f"and {len(ph.R['line_vs_angle']['dropped_inside'])} inside it are dropped. The cut is a line, not an angle."),
         "soft_soft": (f"Below forty M e V of momentum, nothing enters: {s['drops']['p']['n']} soft members of the family, most of them photons from neutral pion decays, "
-                      f"and {i['drops']['p']['n']} of the crowd. A tenth of a GeV, all together."),
+                      f"and {i['drops']['p']['n']} of the in-time crowd. {s['drops']['p']['e']:.1f} GeV for the family, {i['drops']['p']['e']:.1f} for the crowd."),
         "soft_neutrinos": (f"The neutrinos are different. They pass every cut, and the stacking action kills them before their first step. Our family loses {s['drops']['nu']['n']}, "
                            f"{s['drops']['nu']['e']:.0f} GeV of energy. Whatever transverse momentum they carry, {math.hypot(vx, vy):.0f} GeV here, is missing from every detector, from now on."),
         "decays_decays": (f"Some members never reach the gate themselves. Pythia decays every hadron that lives less than ten millimetres. Our family had {len(ph.st.decays.weak())} weak decays, "
@@ -447,7 +723,7 @@ def narration(ph: Physics, scenes) -> Dict[str, str]:
                         "By default the simulation stops them in the dead region of the beam line, a metre before they arrive; a study of the forward region lets them through."),
         "forward_pps": (f"And the protons that survived the collision, with more than three T e V along the beam, are carried by the optics of the L H C to the Roman pots, two hundred and three metres away, "
                         f"and handed to Geant4 there. {i['pps']['n']} of them."),
-        "ready_gather": (f"What is left gathers in front of the detector. {s['primary']['n']} members of the family: ninety percent of them, {100 * s['fractions']['e']:.0f} percent of the energy, "
+        "ready_gather": (f"What is left waits at the centre of the detector. {s['primary']['n']} members of the family: ninety percent of them, {100 * s['fractions']['e']:.0f} percent of the energy, "
                          f"{100 * s['fractions']['pt']:.0f} percent of the transverse momentum. And {i['primary']['n']:,} and {o['primary']['n']:,} members of the two crowds, a quarter of their energy."),
         "ready_waiting": ("The detector of 2025 is waiting: the tracker, the calorimeters, the solenoid, the iron and the muon chambers."),
         "outro": ("Nothing has moved yet. The hand-over is a selection, not a transformation. ... The crossing, with the field, the material and the showers, is the next film."),
@@ -460,7 +736,7 @@ def score_spec(film: snd.Film) -> snd.ScoreSpec:
 
 
 def build_scenes(names, phys, args):
-    cls = dict(road=RoadScene, line=LineScene, soft=SoftScene, decays=DecayScene, forward=ForwardScene, ready=ReadyScene)
+    cls = dict(gate=GateScene, road=RoadScene, line=LineScene, soft=SoftScene, decays=DecayScene, forward=ForwardScene, ready=ReadyScene)
     return [cls[n](phys, args.fps) for n in names]
 
 

@@ -81,6 +81,8 @@ input event_PU.lhe: the signal of chapter 7 and the crowd of chapter 8; library 
      +5.5208   -211    50.6  0.405    1.98       2.840      2.853  E
      +5.6591   -211    42.7  0.298    0.16       2.473      2.441  E
      +5.6794    -13    27.1  0.185    0.53       2.424      2.447  E
+   what moves the cut: along the beam, z_v / Z_lmax = 3.55 / 354.8 = +-0.0100 (r.m.s. of the window; the signal: +0.0004);
+       across it, the beam spot of 2025 sits 330 um from the axis of the cylinder: r_v / R = 0.0330 / 2.9 = +-0.0114, by the azimuth of the particle
    kept although |eta| > 5.5 (the line from the vertex leaves the cylinder): 114: intime k=714 gamma eta +5.5008 z +1.10 cm r 2.900, intime k=725 pi+ eta -5.5050 z +6.39 cm r 2.966, intime k=725 gamma eta -5.5029 z +6.39 cm r 2.915, intime k=742 gamma eta +5.5004 z -2.02 cm r 2.901, intime k=761 pi- eta +5.5182 z -5.98 cm r 2.928, intime k=769 pi- eta +5.5019 z +0.28 cm r 2.901, oot k=24 gamma eta +5.5017 z +1.26 cm r 2.918, oot k=44 gamma eta +5.5101 z -1.89 cm r 2.905, oot k=58 pi+ eta +5.5160 z -1.93 cm r 2.903, oot k=63 pi- eta -5.5076 z +1.79 cm r 2.919, oot k=65 gamma eta +5.5063 z -5.04 cm r 2.951, oot k=78 gamma eta -5.5077 z +5.90 cm r 2.955
    dropped although |eta| < 5.5 (the line from the vertex stays inside): 93: intime k=715 p+ eta -5.4905 z -4.84 cm r 2.869, intime k=717 pi+ eta +5.4962 z +1.08 cm r 2.872, intime k=720 pi- eta +5.4990 z +0.97 cm r 2.864, intime k=721 gamma eta -5.4961 z -2.60 cm r 2.855, intime k=725 gamma eta +5.4762 z +6.39 cm r 2.886, intime k=751 K_L0 eta +5.4989 z +5.34 cm r 2.869, intime k=751 gamma eta +5.4996 z +5.34 cm r 2.852, intime k=758 gamma eta -5.4902 z -2.10 cm r 2.880, intime k=773 pi+ eta -5.4995 z -0.31 cm r 2.890, oot k=8 pi+ eta -5.4992 z +1.57 cm r 2.890, oot k=8 pi+ eta +5.4869 z +1.57 cm r 2.895, oot k=44 pi+ eta -5.4962 z -1.89 cm r 2.868
 
@@ -125,6 +127,8 @@ input event_PU.lhe: the signal of chapter 7 and the crowd of chapter 8; library 
       p k= 771 E   6660.2 xi 0.0206 eta  -10.11
       p k= 774 E   3379.1 xi 0.5031 eta   +9.21
    oot: 2071 very-forward n, nbar, gamma kept (2013814.3 GeV); 363 protons to the Roman pots (1953625.7 GeV, |eta| 8.42 to 12.94)
+   intime, beyond |eta| = 4.5: 4291 stable = 1689 handed over at the vertex + 124 very-forward neutrals (ZDC) + 27 protons to the Roman pots + 2451 dropped; protons beyond |eta| = 8.2: 51, 27 of them with |pz| > 3000 GeV
+   oot, beyond |eta| = 4.5: 53014 stable = 19893 handed over at the vertex + 2071 very-forward neutrals (ZDC) + 363 protons to the Roman pots + 30687 dropped; protons beyond |eta| = 8.2: 826, 363 of them with |pz| > 3000 GeV
 
 -- 8. the b systems and our jet as Geant4 receives them
    b: B*bar0 -> Bbar0 pT 78.26 eta -1.38: 15 stable descendants, pT 78.26 -> 15 primaries, pT 78.26
@@ -132,6 +136,14 @@ input event_PU.lhe: the signal of chapter 7 and the crowd of chapter 8; library 
    the photograph, ak4 jet [0]: pT 99.83, m 14.83, 31 constituents -> handed over 31: pT 99.83, m 14.83
    ak4 NoNu jet [0]: pT 99.83, m 14.83, 31 constituents -> handed over 31: pT 99.83, m 14.83
    with the crowd, mixed jet [1]: pT 133.53, 115 constituents -> handed over 114: pT 133.52, m 43.20
+   the two ledgers: the hand-over ledger (section 9) counts every stable particle of a collision, the jet only its members.
+   the circle of our jet (R = 0.4 around y = -1.429, phi = -2.712), stable -> primaries, n / scalar pT:
+      the family            31 /  100.07  ->    31 /  100.07   dropped: none
+      in-time crowd         83 /   34.00  ->    81 /   33.87   dropped: 1 p (0.02), 1 nu (0.12)
+      out-of-time crowd   1000 /  401.30  ->   981 /  401.08   dropped: 1 eta (0.01), 18 p (0.22)
+   where the scalar pT of the whole family is lost, 33.4 of 743.0 GeV (4.5 %): eta 23.1, p 0.1, nu 10.2, other 0.0; beyond |eta| = 5.5: 23.1
+   where the scalar pT of the whole in-time crowd is lost, 855.9 of 5725.4 GeV (14.9 %): eta 821.8, p 2.6, nu 13.1, other 3.4, Roman pots 14.9; beyond |eta| = 5.5: 836.7
+   where the scalar pT of the whole out-of-time crowd is lost, 10428.2 of 65501.2 GeV (15.9 %): eta 10167.5, p 31.1, nu 44.3, other 34.6, Roman pots 150.7; beyond |eta| = 5.5: 10318.2
 
 -- 9. the ledger: stable before -> primaries after (n / E / pT), and the drops
    signal: 749 / 13600.0 / 743.0 -> 672 / 7139.6 / 709.5 (+ PPS 0 / 0.0); dropped eta 67 (6230.9), p 5 (0.1), nu 5 (229.4), other 0 (0.0)

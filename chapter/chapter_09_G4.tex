@@ -93,7 +93,8 @@ handed over towards the Zero Degree Calorimeter and $27$ protons are
 carried along the beam line to the Roman pots. The cut that does it is a line, not an angle: the
 straight flight of a particle is followed from its own vertex to
 $|z|=354.8\cm$, so that a collision $4\cm$ from the centre moves the
-effective cut by $0.01$ in pseudorapidity, and in our window $114$
+effective cut by $0.01$ in pseudorapidity (and the beam spot, a third of a
+millimetre off the axis, by as much again), and in our window $114$
 particles beyond $|\eta|=5.5$ are kept and $93$ inside it dropped. And our
 jet crosses the gate whole, its $31$ particles and $99.83\GeV$ handed over
 untouched, while in the \CMSSW event the $b$ jet loses its
@@ -110,36 +111,45 @@ them.
 \paragraph{The film.}
 \label{sec:crossing_the_border:animation}
 The ninth film of the playlist of \jitjetworld picks up where the crowd of
-\cref{ch:crowd_on_the_road} left the road and walks the six scenes of this
-stop, every number on the screen computed by the script on our record. The
-three crowds arrive, the family, the in-time and the out-of-time collisions,
-and their particles pile up in pseudorapidity against the edges of the
-detector and the gate at $5.5$; the cylinder of the cut is drawn, stretched
-forty times across the beam, and the border particles of the window are
-followed from their vertices to its end, kept or dropped by where their
-line is and not by their angle; the momentum spectrum meets the $40\MeV$
-cut and the neutrinos of the family are circled and killed; the fourteen
-weak decays of the family appear across the beam, every one inside the
-cylinder; the forward crowd is sorted into what goes down the beam pipe,
-what is kept for the Zero Degree Calorimeter and what is carried to the
-Roman pots; and the primaries gather in front of the CMS detector of 2025,
-drawn in three dimensions with the quadrant facing the viewer cut away,
-waiting. \Cref{fig:crossing_the_border:stills} shows one key frame per
-scene.
+\cref{ch:crowd_on_the_road} left the road and walks the seven scenes of this
+stop, every number on the screen computed by the script on our record. It
+opens with the gate itself: the family, the in-time and the out-of-time
+crowd stream in from the left on three lanes, each dot a few of their
+particles; at the gate the members that are turned away fall out of the
+stream, down the beam pipe, into the bin of the soft and the invisible or
+onto the rail to the forward detectors, with a counter under each, and the
+rest walk on and gather at the centre of the CMS detector of 2025. Then the
+rules, one scene each: the particles pile up in pseudorapidity against the
+edges of the detector and the gate at $5.5$; the cylinder of the cut is
+drawn, stretched a hundred times across the beam, and the border lines are
+followed from their vertices to its two ends, first for the family, then
+for one in-time collision $6.4\cm$ from the centre, then for the whole
+window, kept or dropped by where their line is and not by their angle; the
+momentum spectrum meets the $40\MeV$ cut and the neutrinos of the family are
+circled and killed; the fourteen weak decays of the family appear across
+the beam, every one inside the cylinder; the forward crowd is sorted into
+what goes down the beam pipe, what is kept for the Zero Degree Calorimeter
+and what is carried to the Roman pots; and the primaries wait at the centre
+of the detector, drawn in three dimensions with the quadrant facing the
+viewer cut away. \Cref{fig:crossing_the_border:stills} shows one key frame
+per scene.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=1,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
 \includegraphics[page=2,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
 \includegraphics[page=3,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\\[1.5mm]
-\includegraphics[page=4,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
-\includegraphics[page=5,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
-\includegraphics[page=6,width=0.325\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}
-\caption[Key frames of the animated hand-over stage]{Key frames of the six
+\includegraphics[page=4,width=0.245\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
+\includegraphics[page=5,width=0.245\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
+\includegraphics[page=6,width=0.245\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}\hfill
+\includegraphics[page=7,width=0.245\textwidth]{G4/Standalone/animate_standalone_G4_stills.pdf}
+\caption[Key frames of the animated hand-over stage]{Key frames of the seven
 scenes of the animated hand-over, drawn by \file{animate_standalone_G4.py}
-with \code{--stills}, in reading order: the three crowds arriving; the eta
-cut as a line; the momentum cut and the neutrinos; the decays the
-generator made; the forward crowd; the primaries waiting in front of CMS.
-The film itself is the ninth on the playlist of \jitjetworld.}
+with \code{--stills}, in reading order: the gate, with the three streams,
+the members falling out of them and the primaries gathering at the centre
+of CMS; the three crowds in pseudorapidity; the eta cut as a line; the
+momentum cut and the neutrinos; the decays the generator made; the forward
+crowd; the primaries waiting at the centre of CMS. The film itself is the
+ninth on the playlist of \jitjetworld.}
 \label{fig:crossing_the_border:stills}
 \end{figure}
 
@@ -156,8 +166,8 @@ into the bin for what is too soft or a neutrino; and along the beam line,
 the rail to the Zero Degree Calorimeter for the very forward neutrons and
 photons and to the Roman pots for the protons that kept most of the beam's
 energy. To the right the square where the primaries gather, and the
-detector, drawn from the volumes of the release with the quadrant facing you
-removed: the tracker, the electromagnetic and hadronic calorimeters, the
+detector, drawn from the volumes of its simulation geometry with the
+quadrant facing you removed: the tracker, the electromagnetic and hadronic calorimeters, the
 solenoid, the iron of the return yoke with the muon chambers between its
 layers, and the forward calorimeter at both ends, eleven metres from the
 collision. Two things in the picture matter for everything that follows.
@@ -178,12 +188,17 @@ detector of 2025]{The gate at the border. Left: the three crowds of
 and their counts for the family, the in-time and the out-of-time crowd
 (\file{standalone_G4.py -v}, seed~1). Right: the primaries gathered, and the
 CMS detector of Run~3 in three dimensions with the quadrant facing the
-reader cut away, drawn by \file{draw_cms3d.py} from the dimensions of the
-release's geometry (\file{cms.xml}: the tracker volume to $r=123.3\cm$ and
-$|z|=293.2\cm$, the calorimeters to $r=295\cm$, the forward calorimeter
-between $|z|=11.15$ and $12.80$\,m) and the round numbers of the detector
-paper~\cite{CMS:2008xjf,CMS:2024aqx} for the solenoid and the yoke. The
-crossing is \cref{ch:crowd_at_the_border}.}
+reader cut away, drawn from the CMS geometry itself: \file{draw_cms3d_tgeo.py}
+loads the simulation geometry of Run~3 that CMS publishes for its event
+display (\file{cmsSimGeo2021.root}, $3398$ volumes placed $2.1$ million
+times) into ROOT's TGeo~\cite{Brun:2003TGeo} and sends one straight ray per
+pixel through it, from the viewer to the first solid volume, coloured by the
+subdetector it belongs to: the tracker (blue), the electromagnetic (green)
+and hadronic (orange) calorimeters, the solenoid (grey), the twelve-sided
+iron yoke in five wheels and two endcaps (red) with the muon chambers
+(pale), and HF (violet) on the beam pipe at both
+ends~\cite{CMS:2008xjf,CMS:2024aqx}. The crossing is
+\cref{ch:crowd_at_the_border}.}
 \label{fig:crossing_the_border:gate}
 \end{figure}
 
@@ -291,16 +306,22 @@ which in the forward direction is the forward calorimeter HF, between
 $|z|=11.15$ and $12.80$\,m, with a hole for the beams of radius $12.5\cm$.
 
 \begin{figure}[htbp]\centering
-\resizebox{\textwidth}{!}{\input{chapter/tikz/g4_edges}}
-\caption[The edges of the detector in the $r$--$z$ plane]{The detector of the
-\code{SIM} step in the $r$--$z$ plane for $z<0$, where both jets of our event
-go (\file{cms.xml}, \file{hcalforwardalgo.xml} and \file{beampipe.xml} of the
-release; the $r$ and $z$ scales differ). Blue: the \code{Tracker} volume with
-its nose along the beam pipe; green: \code{CALO}; red: HF; grey along the axis:
-the $2.9\cm$ cylinder of the hand-over. Dotted and dashed: lines of
-constant $\eta$ from the nominal point, the hole of HF between $5.18$ and
-$5.32$ and the gate at $5.5$ (red). Thick: the straight flights of the two
-$b$ systems of the standalone event from its vertex.}
+\includegraphics[width=\textwidth]{G4/CMS-MUO-19-001_Figure_001.png}
+\caption[A quadrant of the CMS detector in the $r$--$z$ plane]{A quadrant of
+the CMS detector in the $r$--$z$ plane, the collision point at the lower
+left: the silicon tracker, the electromagnetic and hadronic calorimeters,
+which end at $|\eta|=3.0$, the solenoid behind them, and the steel of the
+return yoke with the muon chambers between its layers; dashed, lines of
+constant $\eta$ from the collision point. The light-grey block beyond
+$z=11$\,m at the lower right is the forward calorimeter HF, which alone
+covers $3.0<|\eta|<5.2$. Our two jets fly into the mirror image of this
+quadrant, $z<0$: the $b$ system at $\eta=-1.38$, between the dashed lines of
+$1.3$ and $1.4$, through the tracker and the end of the barrel calorimeters
+where they hand over to the endcaps; the $\bar b$ system at $\eta=-3.43$,
+between the lines of $3.0$ and $4.0$, below the endcap calorimeters and into
+HF. The hole of HF ($5.18$ to $5.32$) and the gate ($5.5$) lie below the
+last line drawn, $5.0$, within $15\cm$ of the $z$ axis at the right edge.
+Figure~1 of~\cite{CMS:2021yvr}, by the CMS Collaboration (CC~BY~4.0).}
 \label{fig:crossing_the_border:edges}
 \end{figure}
 
@@ -312,19 +333,22 @@ is at radius
   \label{eq:crossing_the_border:line}
 \end{equation}
 so that an edge at $(r,z)$ is seen at $\eta=\sinh^{-1}(|z|/r)$. The corner of
-the tracker volume, $(123.3, 293.2)\cm$, is at $|\eta|=1.61$; the hole of HF
+the tracker volume, $(123.3, 293.2)\cm$, is at $|\eta|=1.60$; the hole of HF
 begins to cost particles at $|\eta|=5.18$, the $\sinh^{-1}$ of
 $1114.95/12.495$, where a line from the centre misses its front face, and
 swallows everything beyond $|\eta|=5.32$, the $\sinh^{-1}$ of
 $1280.05/12.495$, where the line passes through the whole hole. The
 gate of the next subsection sits just beyond, at $5.5$. Further out the
 detector is the beam line itself, the Zero Degree Calorimeter at $140$\,m and
-the Roman pots at $203$\,m, \cref{sec:crossing_the_border:forward}.
+the Roman pots at $203$\,m, \cref{sec:crossing_the_border:forward}. Between
+the edges the figure shows what will matter from the next stop on: the
+calorimeters sit inside the solenoid, the muon chambers outside it in the
+steel that returns its field, and nothing but HF looks beyond $|\eta|=3.0$.
 
 What the edges do to our event, from the \code{-v} log: the family's $b$
-system leaves its vertex at $\eta=-1.38$, $0.23$ inside the corner of the
-tracker, towards the barrel calorimeters, and the $\bar b$ system at
-$\eta=-3.43$ along the nose of the tracker into HF. But the edges matter
+system leaves its vertex at $\eta=-1.38$, $0.22$ inside the corner of the
+tracker, towards the end of the barrel calorimeters, and the $\bar b$ system at
+$\eta=-3.43$, beyond the endcap calorimeters, into HF. But the edges matter
 most for what is not ours. Beyond $|\eta|=5.5$ lie $67$ of the family's $749$
 particles, $9\,\%$ of them, with $3\,\%$ of its transverse momentum,
 $23\GeV$ of $743$, and $46\,\%$ of its energy, $6231$ of $13\,600\GeV$: the
@@ -335,7 +359,7 @@ on one page. The particles of a collision are spread almost evenly in
 pseudorapidity out to $|\eta|\approx5$ and thin out beyond, panel (a); the
 energy, $E=\pt\cosh\eta$, grows exponentially with $|\eta|$ and is piled up
 where the particles are fewest, panel (b); and so the fraction of the
-transverse momentum inside $|\eta|<5.5$ is $96\,\%$ for the family and
+transverse momentum inside $|\eta|<5.5$ is $97\,\%$ for the family and
 $85\,\%$ for the crowd, while the fraction of the energy is $54\,\%$ and
 $11\,\%$, panel (c). The gate at $5.5$ keeps nearly every particle a
 detector could measure and drops nearly all of the energy of the event.
@@ -349,7 +373,17 @@ out; (b) their energy per unit of $\eta$; (c) the fraction of the energy
 (solid) and of the transverse momentum (dashed) inside $|\eta|$, with the
 values at the gate. Vertical lines: the tracker ($2.5$), the end of the
 endcaps ($3.0$), the hole of HF ($5.18$, $5.32$, dashed), the gate ($5.5$)
-and the very-forward rule ($8.2$).}
+and the very-forward rule ($8.2$). The family (red) stands five times above
+an average collision of the crowd (grey) in the barrel, $396$ particles
+within $|\eta|<2.5$ against $5229/63=83$, and ten times in energy, $983$
+against $94\GeV$, because the two are different collisions: ours was
+selected for a hard scattering, two $b$ quarks of more than $100\GeV$ of
+\pt whose jets (the bumps of panel~(b) at $\eta=-1.4$ and $-3.4$), their
+radiation and the many parton interactions of a head-on collision
+(\cref{ch:uninvited_cousins}) fill the centre, while an average member of
+the crowd is a soft, glancing collision, three in ten of them diffractive with
+most of their particles along the beam. Beyond $|\eta|\simeq6$ the two
+agree: the remnants of two protons are the same in both.}
 \label{fig:crossing_the_border:plot_edges}
 \end{figure}
 
@@ -385,7 +419,19 @@ effective cut
 since $\mathrm{d}\sinh^{-1}u/\mathrm{d}u\simeq1/u$ for large $u$: a vertex
 $3.6\cm$ forward lowers the cut on its own side by $0.010$ and raises it on
 the other. From the nominal point the line and the angle are the same test;
-from any other vertex they are not.
+from any other vertex they are not. Nor is a vertex ever on the axis of the
+cylinder: the beam spot of 2025 sits $r_v=0.33$\,mm from it (the $961$
+vertices of our window are at $x=+285$, $y=-166\um$, each within $10\um$),
+and the line of a particle of azimuth $\phi$ arrives at
+\begin{equation}
+  r(\pm\Zmax)\simeq\frac{\Zmax\mp z_v}{\sinh|\eta|}+r_v\cos(\phi-\phi_v),
+  \qquad
+  \eta_c\simeq5.5\mp\frac{z_v}{\Zmax}+\frac{r_v}{R}\cos(\phi-\phi_v),
+  \label{eq:crossing_the_border:etac_rv}
+\end{equation}
+so that the offset across the beam moves the cut by up to
+$r_v/R=0.033/2.9=\pm0.011$, by the azimuth of the particle, as much as the
+spread of the vertices along the beam does.
 
 \begin{figure}[htbp]\centering
 \resizebox{0.92\textwidth}{!}{\input{chapter/tikz/g4_line}}
@@ -397,38 +443,83 @@ dropped. The radial scale is stretched about forty times.}
 \label{fig:crossing_the_border:line}
 \end{figure}
 
-For our event, from the \code{-v} log. The family's vertex is at
-$z=+0.157\cm$, so its own cut is $5.4996$ forward and $5.5004$ backward, and
-the six particles of the family between $|\eta|=5.4$ and $5.6$ are all far
-from it, on the same side of either: no member of the family is decided by the line.
-The crowd is spread over $\pm3.6\cm$, and there the line is at work: $114$
-particles of the window beyond $|\eta|=5.5$ are kept and $93$ inside it are
-dropped, $6$ and $9$ of them in the in-time crowd (six of the $93$ are the
-particles of the out-of-time crowd whose $p_z$ the library rounded to
-zero, \cref{sec:crossing_the_border:validation}). Two of them show the
-arithmetic. A $\pi^+$ of $150.4\GeV$ at $\eta=-5.5050$, born at
-$z=+6.39\cm$, flies $361.2\cm$ to $z=-\Zmax$ and arrives at
-$361.2/\sinh5.505=2.94\cm$, outside: kept. A proton of $71.9\GeV$ at
-$\eta=-5.4905$, born at $z=-4.84\cm$, flies only $350.0\cm$ and arrives at
-$2.89\cm$, inside: dropped, although its momentum points within $5.5$. The
-closest call of the window is a $K^0_S$ of the out-of-time crowd whose line
-passes $0.5\um$ inside the edge. \Cref{fig:crossing_the_border:plot_line}
-draws \cref{eq:crossing_the_border:etac} with every border particle of the
-window on it, the test of \cref{eq:crossing_the_border:etacut} for each, and
-the spread of the effective cut over the $961$ vertices, $\pm0.010$. The
-very-forward rule of \cref{sec:crossing_the_border:forward} uses the same
-construction with $5.5$ replaced by $8.2$.
+\Cref{fig:crossing_the_border:plot_cases} takes the test one collision at
+a time, from the \code{-v} log. Panel~(a) is the family. Its vertex is at
+$z=+0.157\cm$, so that a line has $354.6\cm$ to go towards $+z$ and
+$355.0\cm$ towards $-z$, and its own cut is $5.4996$ forward and $5.5004$
+backward. Sixteen of its members have $5.3<|\eta|<5.7$; each is followed
+from its own vertex to the end of the cylinder on its own side, six arrive
+outside $R$ and are handed over, ten are still inside and dropped. The
+nearest to the cut are a $\pi^-$ at $\eta=-5.5483$, which arrives at
+$2.789\cm$, and a $\pi^-$ at $\eta=+5.5208$ born in a decay at $z=+1.98\cm$,
+which arrives at $2.853\cm$: both a twentieth of a unit beyond the cut, and
+no member of the family is decided by the line. Panel~(b) is one of the
+$63$ in-time collisions, a non-diffractive one $6.39\cm$ in front of the
+centre. Its lines have $348.4\cm$ to go towards $+z$ and $361.2\cm$ towards
+$-z$, so that its cut is $5.4818$ on one side and $5.5178$ on the other, and
+three of its $27$ border particles are decided against their angle: a
+$\pi^+$ of $150.4\GeV$ at $\eta=-5.5050$ flies $361.2\cm$ and arrives at
+$361.2/\sinh5.505=2.94\cm$ ($2.97\cm$ with the transverse position of its
+vertex, \cref{eq:crossing_the_border:etac_rv}), outside: handed over; a
+photon at $\eta=-5.5029$ arrives at $2.92\cm$, handed over too; and a photon
+at $\eta=+5.4762$, well inside $5.5$, has only $348.4\cm$ to go and arrives
+at $2.89\cm$: dropped. Panel~(c) puts the same collision on the two curves
+$r=(\Zmax\mp z_v)/\sinh|\eta|$ of its two sides; the points scatter around
+their curve by the $\pm0.03\cm$ of the transverse offset.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=2,width=\textwidth]{G4/Standalone/theory_G4.pdf}
+\caption[The eta cut, one collision at a time]{The eta cut, one collision at
+a time, from \file{plot_theory_G4.py}; the radial scale is stretched about a
+hundred times. (a) The family: its sixteen members with $5.3<|\eta|<5.7$,
+each line drawn from its own vertex (star) to the end of the cylinder on
+its own side, blue if it arrives outside $R=2.9\cm$ (handed over), grey if
+still inside (dropped); above, the distance to each end and the effective
+cut of \cref{eq:crossing_the_border:etac} it gives. (b) The same for one
+in-time collision $6.39\cm$ from the centre, with the three particles that
+the line decides against their angle. (c) That collision at the two ends:
+the radius of each line at $|z|=354.8\cm$ against $|\eta|$ (circles towards
+$+z$, squares towards $-z$; full handed over, open dropped), with the curve
+and the effective cut (dashed) of each side and the curve from the centre
+(dotted). \Cref{fig:crossing_the_border:plot_line} repeats the test on all
+$961$ collisions of the window.}
+\label{fig:crossing_the_border:plot_cases}
+\end{figure}
+
+The whole window is the same test $961$ times. The crowd is spread over
+$\pm3.6\cm$ along the beam, and there the line is at work: $114$
+particles of the window beyond $|\eta|=5.5$ are kept and $93$ inside it are
+dropped, $6$ and $9$ of them in the in-time crowd (six of the $93$ are the
+particles of the out-of-time crowd whose $p_z$ the library rounded to
+zero, \cref{sec:crossing_the_border:validation}). A proton of $71.9\GeV$ at
+$\eta=-5.4905$, born at $z=-4.84\cm$, flies only $350.0\cm$ and arrives at
+$2.89\cm$ ($2.87\cm$ with the transverse offset), inside: dropped, although
+its momentum points within $5.5$. The closest call of the window is a
+$K^0_S$ of the out-of-time crowd whose line passes $0.5\um$ inside the edge.
+\Cref{fig:crossing_the_border:plot_line} is the summary: panel~(a) folds
+the two sides of the detector onto one curve by measuring the vertex along
+the flight of the particle, $s\,z_v$ with $s=\pm1$ for a particle towards
+$\pm z$, so that \cref{eq:crossing_the_border:etac} is a single line with
+every border particle of the window on it, dropped above the line and
+handed over below, mixed only inside the band of the transverse offset;
+panel~(b) is the test of \cref{eq:crossing_the_border:etacut} for each of
+them; and panel~(c) the spread of the effective cut over the $961$
+vertices, $\pm0.010$. The very-forward rule of
+\cref{sec:crossing_the_border:forward} uses the same construction with
+$5.5$ replaced by $8.2$.
+
+\begin{figure}[htbp]\centering
+\includegraphics[page=3,width=\textwidth]{G4/Standalone/theory_G4.pdf}
 \caption[The eta cut as a line, on the particles of the window]{The eta cut
-as a line, from \file{plot_theory_G4.py}: (a)
-\cref{eq:crossing_the_border:etac} for particles flying towards $+z$ and
-$-z$, with the border particles of the crowd at their vertex $z$ (blue kept,
-grey dropped) and the family's (stars); (b) the radius of each line at
-$|z|=354.8\cm$ against $|\eta|$, with the nominal curve and the curves for
-vertices at $\mp3.6\cm$; (c) the effective cut of the $961$ vertices of the
-window.}
+as a line, the summary of \cref{fig:crossing_the_border:plot_cases} over the
+whole window, from \file{plot_theory_G4.py}: (a)
+\cref{eq:crossing_the_border:etac} against the position of the vertex along
+the flight of the particle, $s\,z_v$, with the border particles of the crowd
+(blue handed over, grey dropped), the family's (stars) and the band
+$\pm r_v/R$ of \cref{eq:crossing_the_border:etac_rv}; (b) the radius of each
+line at $|z|=354.8\cm$ against $|\eta|$, with the nominal curve and the
+curves for vertices $3.6\cm$ behind and ahead; (c) the effective cut of the
+$961$ vertices of the window, on either side.}
 \label{fig:crossing_the_border:plot_line}
 \end{figure}
 
@@ -448,9 +539,16 @@ False}). Both are drawn in \cref{fig:crossing_the_border:soft}.
 \begin{figure}[htbp]\centering
 \resizebox{0.95\textwidth}{!}{\input{chapter/tikz/g4_soft}}
 \caption[The soft and the invisible]{The soft and the invisible. (a) A
-$\pi^0$ of energy $E$ decays into two photons whose laboratory energies are
-uniform between $(E-p)/2$ and $(E+p)/2$; the shaded part falls below the
-$40\MeV$ of \code{MinPCut}. (b) A neutrino passes the cuts of
+$\pi^0$ of energy $E$ and velocity $\beta=p/E$ decays into two photons
+emitted back to back at the angle $\theta^*$ to its flight in its rest
+frame, with the laboratory energies $E_{1,2}=\frac{E}{2}(1\pm\beta\cos\theta^*)$,
+uniform between $(E-p)/2$ and $(E+p)/2$ since $\cos\theta^*$ is; the shaded
+part falls below the $40\MeV$ of \code{MinPCut}. Typical values: a $\pi^0$
+of $E=1\GeV$ has $\beta=0.9909$; at $\cos\theta^*=0.50$ its photons carry
+$E_1=748$ and $E_2=252\MeV$ and both are handed over; at
+$\cos\theta^*=0.95$ they carry $971$ and $29\MeV$ and the second is
+dropped, which happens whenever $|\cos\theta^*|>(1-2E_c/E)/\beta=0.928$,
+in $7\,\%$ of the decays. (b) A neutrino passes the cuts of
 \code{Generator.cc} and is killed by the \code{StackingAction} before its
 first step; its transverse momentum is missing from the event from here on.}
 \label{fig:crossing_the_border:soft}
@@ -467,8 +565,9 @@ uniform between the two extremes, and the chance that it falls below $E_c$ is
   E>\frac{E_c^2+m_{\pi^0}^2/4}{E_c}=154\MeV ,
   \label{eq:crossing_the_border:pi0}
 \end{equation}
-the second condition being the energy above which the softer photon can
-reach $40\MeV$ at all. A $\pi^0$ of $1\GeV$ thus loses a photon to the cut
+the second condition being the energy below which no photon can be lost:
+a slower $\pi^0$ gives both photons more than $40\MeV$ whatever the angle
+(at rest, $67.5\MeV$ each). A $\pi^0$ of $1\GeV$ thus loses a photon to the cut
 seven times in a hundred, one of $10\GeV$ less than once in a hundred. The
 neutrinos carry what the detector will report as missing transverse
 momentum, which at the generator level is simply
@@ -497,7 +596,7 @@ the cut, \cref{eq:crossing_the_border:pi0}, and where the energy that is not
 handed over at the vertex goes.
 
 \begin{figure}[htbp]\centering
-\includegraphics[page=3,width=\textwidth]{G4/Standalone/theory_G4.pdf}
+\includegraphics[page=4,width=\textwidth]{G4/Standalone/theory_G4.pdf}
 \caption[The momentum cut and the energy not handed over]{The soft and the
 invisible, from \file{plot_theory_G4.py}: (a) the momentum of the stable
 particles of the family and the in-time crowd by kind, with the $40\MeV$
@@ -557,7 +656,7 @@ $\lambda_T=0.68\cm$ gives a chance of $1.4\,\%$ to reach $2.9\cm$; the
 $\bar B^0$ of the $\bar b$ jet, a $B^0$ that oscillated
 (\cref{ch:children_producing_grandchildren}), with $\beta\gamma=246$, flew $14.7\cm$ along the
 beam and decayed $0.97\cm$ from it, a $1.9\,\%$ chance; the farthest from the
-beam, a $D^0$ of $27\GeV$ from the $b$ side, decayed at $r=1.48\cm$. So every
+beam, a $D^0$ of $\pt=27\GeV$ from the $b$ side, decayed at $r=1.48\cm$. So every
 daughter of our event starts as a primary where its parent decayed, and no
 predefined decay is needed; the \CMSSW event says the same of its $28$ decay
 vertices, the farthest a $\bar D^0$ $25.8\cm$ from the collision but $1.2\cm$
@@ -568,7 +667,7 @@ $1\GeV$ would decay outside the cylinder $58\,\%$ of the time, which is why
 \code{tau0Max} leaves it to \GEANT.
 
 \begin{figure}[htbp]\centering
-\includegraphics[page=4,width=\textwidth]{G4/Standalone/theory_G4.pdf}
+\includegraphics[page=5,width=\textwidth]{G4/Standalone/theory_G4.pdf}
 \caption[The decays the generator made]{The decays the generator made, from
 \file{plot_theory_G4.py}: (a) $P(r_{\mathrm{dec}}>2.9\cm)$ of
 \cref{eq:crossing_the_border:decay} against \pt for the weakly decaying
@@ -591,6 +690,12 @@ charged ones are bent away by the magnets of the LHC. And $203$\,m away, the
 Roman pots of the Precision Proton Spectrometer~\cite{CMS:2014sdw,CMS:2022dmc}
 approach the beam to a few millimetres to catch the protons that survived
 the collision with a small loss of momentum. Both are fed by the hand-over.
+They are described here for completeness, because the gate has a rule for
+each: our signal, its two jets and everything the later stops will measure
+of them, lies within $|\eta|<5.5$, and from the next stop on the journey
+follows only the primaries handed over there, into the tracker, the
+calorimeters and the muon chambers. The Zero Degree Calorimeter and the
+Roman pots will not appear again.
 \code{Generator.cc} follows the line of every stable particle to
 $|z|=\Zhec=R\sinh8.2=52.8$\,m (\code{EtaCutForHector}) and, if it is still
 inside the cylinder there, hands it to \GEANT only if it is a neutron, an
@@ -635,12 +740,26 @@ survived, a single-diffractive one $1.17$, a double-diffractive one $0.45$
 and a non-diffractive one $0.17$. \Cref{fig:crossing_the_border:plot_forward}
 shows the forward crowd sorted by the two rules, the $\xi$ of its protons
 against \cref{eq:crossing_the_border:pps}, and where the $13.6\TeV$ of each
-kind of collision go.
+kind of collision go. The four numbers in the legend of its panel~(a) are a
+census, printed in section~7 of the log: the two crowds together, $63$
+in-time and $897$ out-of-time collisions, have $57\,305$ stable particles
+beyond $|\eta|=4.5$, the left edge of the panel ($4291$ in time and
+$53\,014$ out of time), and the gate sorts them into four groups. The
+$21\,582$ ($1689+19\,893$) handed over at the vertex are those whose line
+leaves the cylinder before $3.55$\,m, the particles between $|\eta|=4.5$ and
+the cut at $5.5$; the $2195$ ($124+2071$) are the very forward neutrons,
+antineutrons and photons handed over towards the ZDC; the $390$ ($27+363$)
+are the protons carried to the Roman pots; and the $33\,138$
+($2451+30\,687$) are everything else beyond the cut, dropped. Panel~(b)
+counts the protons alone: $877$ of them fly beyond $|\eta|=8.2$ ($51$ in
+time, $826$ out of time), the $390$ with $|p_z|>3\TeV$ go to the Roman pots
+and the other $487$ are dropped.
 
 \begin{figure}[htbp]\centering
-\includegraphics[page=5,width=\textwidth]{G4/Standalone/theory_G4.pdf}
+\includegraphics[page=6,width=\textwidth]{G4/Standalone/theory_G4.pdf}
 \caption[The forward crowd]{The forward, from \file{plot_theory_G4.py}: (a)
-the particles of the crowd beyond $|\eta|=4.5$ in $(|\eta|,E)$: handed over at
+the $57\,305$ particles of the in-time and out-of-time crowd beyond
+$|\eta|=4.5$ in $(|\eta|,E)$, with the number in each group: handed over at
 the vertex, very forward neutrals handed over towards the ZDC, protons carried to the
 Roman pots, and dropped; (b) $\xi$ of the protons beyond $|\eta|=8.2$, with
 the bound of \cref{eq:crossing_the_border:pps}; (c) the share of the energy
@@ -689,12 +808,71 @@ it all happened within $1.5\cm$ of the beam, so that every member becomes a
 primary and the ledger of \cref{tab:crossing_the_border:ledger} has the
 rare line with a $\Delta\pt$ of zero; with the crowd, the mixed jet of
 \cref{ch:crowd_on_the_road} loses one soft stranger of its $115$, $0.02\GeV$.
+
+A zero in one table and a loss of $4.5\,\%$ in another are not a
+contradiction, because the two ledgers of this stop count different
+things. The energy ledger, \cref{tab:crossing_the_border:ledger}, follows
+one jet: its $n_{\mathrm{const}}=31$ is the number of constituents of jet
+[0], the stable particles that anti-$k_T$ gathered within $R=0.4$ of the
+$b$ quark's direction in \cref{ch:family_photograph}, and its \pt is the
+length of their vector sum. The ledger of the hand-over,
+\cref{tab:crossing_the_border:handover_ledger}, counts a whole collision:
+its $n=749$ is every stable particle of the family, in every jet and in
+none, from one beam remnant to the other, and its \pt is the scalar sum
+over all of them, $743.0\GeV$. The $31$ are four in a hundred of the $749$.
+The family does lose $4.5\,\%$ of that scalar \pt at the gate, $33.4\GeV$,
+and the log says where: $23.1\GeV$ with the $67$ particles beyond
+$|\eta|=5.5$, $10.2\GeV$ with the five neutrinos (at $\eta=+5.2$, $+5.3$,
+$-3.4$, $+1.8$ and $+0.9$) and $0.07\GeV$ with the five soft ones. None of
+these $77$ particles is one of the $31$ members of our jet at $y=-1.43$,
+and so the jet loses nothing while the family loses $33\GeV$. The crowds
+repeat the pattern, \cref{tab:crossing_the_border:cone}: the in-time
+collisions lose $14.9\,\%$ of their scalar \pt, $856$ of $5725\GeV$, but
+$837\GeV$ of it beyond $|\eta|=5.5$, and of the $83$ in-time particles
+inside the circle of our jet only one particle below $40\MeV$ and a neutrino of
+$0.12\GeV$ are turned away; the out-of-time collisions lose $15.9\,\%$,
+$10\,318$ of $10\,428\GeV$ of it beyond $5.5$, and inside the circle
+$19$ soft particles of $1000$, $0.2$ of $401\GeV$. At the gate the loss is
+forward and the jet is central: what the gate takes from a central jet is
+its neutrinos, when it has any, and a few photons of a few tens of MeV.
+
+\begin{table}[htbp]\centering\small
+\caption[The two ledgers reconciled: whole collisions and the circle of our
+jet]{The two ledgers reconciled (section~8 of the \code{-v} log). Left, the
+whole crowd, as in \cref{tab:crossing_the_border:handover_ledger}: the
+stable particles and their scalar \pt before the gate, the fraction of the
+\pt handed over, and the \pt lost with the part of it beyond $|\eta|=5.5$.
+Right, only the particles within $R=0.4$ of the axis of our jet [0]
+($y=-1.43$, $\phi=-2.71$): number and scalar \pt before and after the gate
+(the family's $31$ are the constituents of
+\cref{tab:crossing_the_border:ledger}; their scalar sum is $100.07\GeV$,
+their vector sum the jet's $99.83\GeV$). The out-of-time crowd is not part
+of any jet at this stop; its row says what its signals will add to the
+circle in \cref{ch:customs_form}.}
+\label{tab:crossing_the_border:cone}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrcrrrr@{}}\toprule
+ & \multicolumn{4}{c}{the whole crowd} & & \multicolumn{4}{c}{inside the circle of our jet} \\
+\cmidrule(lr){2-5}\cmidrule(lr){7-10}
+ & $n$ & $\sum\pt$ & handed & lost (beyond $5.5$) & & \multicolumn{2}{c}{before: $n$, $\sum\pt$} & \multicolumn{2}{c}{after: $n$, $\sum\pt$} \\ \midrule
+the family & $749$ & $743.0$ & $95.5\,\%$ & $33.4$ ($23.1$) & & $31$ & $100.07$ & $31$ & $100.07$ \\
+in-time crowd & $13\,456$ & $5725.4$ & $85.1\,\%$ & $855.9$ ($836.7$) & & $83$ & $34.00$ & $81$ & $33.87$ \\
+out-of-time crowd & $161\,696$ & $65\,501.2$ & $84.1\,\%$ & $10\,428.2$ ($10\,318.2$) & & $1000$ & $401.30$ & $981$ & $401.08$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 The \CMSSW event is the instructive one: the antineutrino of its $B^-$ is a
 member of its jet [0], and the gate removes $37.5\GeV$ of transverse
 momentum from it, the difference between the jet with neutrinos and the jet
 without them that \cref{ch:family_photograph} met as two collections.
 
-\begin{ledgerboth}{Crossing the Border}{tab:crossing_the_border:ledger}{The
+\begin{ledgerboth}{Crossing the Border}{tab:crossing_the_border:ledger}{Here
+$n_{\mathrm{const}}$ is the number of constituents of one jet and \pt the
+length of their vector sum, not the $n=749$ and the scalar \pt of the whole
+family in \cref{tab:crossing_the_border:handover_ledger}; the particles the
+family loses at the gate are not members of this jet
+(\cref{tab:crossing_the_border:cone}). The
 standalone rows are read from \file{example/G4/event_G4.lhe} (seed~1): the
 jet and its members before and after the hand-over, alone and with the crowd
 of \cref{ch:crowd_on_the_road}. The \CMSSW rows: the photograph of
@@ -718,7 +896,11 @@ nearest the companion quotes to the jet's members after the gate.}
 \caption[The ledger of the hand-over, standalone]{The ledger of the
 hand-over, standalone: the stable particles before and the \GEANT primaries
 after, number and scalar \pt [GeV], by region and by kind, for the family,
-its $63$ in-time and its $897$ out-of-time collisions; below, the fractions
+its $63$ in-time and its $897$ out-of-time collisions. Here $n$ counts every
+stable particle of a collision, whichever jet it belongs to or none (the
+$31$ constituents of our jet in \cref{tab:crossing_the_border:ledger} are
+among the $396$ of the first row), and almost all of the \pt that is lost
+is lost in the last row of the regions, beyond $|\eta|=5.5$; below, the fractions
 handed over, the drops by reason (energy in GeV) and the sum of the family
 and its in-time crowd. Written by \file{standalone_G4.py --tables} in the
 layout of the \CMSSW companion's ledger.}
@@ -838,7 +1020,10 @@ are a model rather than a port carry their caveats:
     very-forward rule and the decay cylinder are tests on straight lines and
     points; they ignore the field, as \code{Generator.cc} does, so that a
     soft charged particle that would curl back into the beam pipe is handed
-    over if its line leaves the cylinder.
+    over if its line leaves the cylinder. The lines start where the vertices
+    are: $0.33$\,mm from the axis of the cylinder in 2025, which moves the
+    cut by up to $0.011$ with the azimuth
+    (\cref{eq:crossing_the_border:etac_rv}).
   \item \textbf{The crowd has no displaced vertices.} The library of
     \cref{ch:crowd_on_the_road} stores the final particles of each collision
     at its vertex, so that a pileup particle from a heavy-flavour decay starts
@@ -884,6 +1069,11 @@ geometry package of the validation is TGeo~\cite{Brun:2003TGeo}.
     to $|z|=354.8\cm$; from a vertex $3.6\cm$ away the effective cut moves by
     $0.010$, and a particle at $\eta=5.505$ can be kept while one at $5.4905$
     is dropped.
+  \item \emph{``The event loses $4.5\,\%$ of its \pt at the gate, so our
+    jet does too.''} The $4.5\,\%$ is of the scalar \pt of all $749$
+    particles and is lost beyond $|\eta|=5.5$ and with the neutrinos; the
+    $31$ constituents of our jet are all handed over. A loss booked for a
+    collision is not a loss of a jet: ask where it happens.
   \item \emph{``Particles between $|\eta|=5.2$ and $5.5$ will be seen by HF.''}
     They are handed over, but from the centre a line beyond $5.32$ passes
     through the hole of HF entirely: most of them leave no hit.

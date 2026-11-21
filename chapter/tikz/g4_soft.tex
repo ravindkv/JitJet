@@ -23,17 +23,20 @@
 \draw[red!70!black,thick] (0.75,-0.08) -- (0.75,1.15) node[above right=0pt and -4pt,text=red!70!black] {$E_c=40$ MeV};
 \node[below] at (0.25,0) {$\tfrac{E-p}{2}$};
 \node[below] at (3.2,0) {$\tfrac{E+p}{2}$};
-\node[anchor=west,text width=2.9cm,align=left] at (4.1,0.55) {uniform: $P(E_\gamma<E_c)=\dfrac{E_c-(E-p)/2}{p}\simeq\dfrac{E_c}{E}$};
+\node[anchor=west,text width=3.7cm,align=left] at (3.9,0.55) {uniform: $P(E_\gamma<E_c)=\dfrac{E_c-(E-p)/2}{p}\simeq\dfrac{E_c}{E}$};
 \end{scope}
+% typical values (E = 1 GeV, beta = 0.9909)
+\node[anchor=west,text width=6.6cm,align=left,text=black!75] at (-0.3,-3.75) {$E=1$ GeV, $\beta=0.9909$:\quad $\cos\theta^*=0.50\Rightarrow E_{1,2}=748,\ 252$ MeV (both kept);\quad $\cos\theta^*=0.95\Rightarrow 971,\ \textcolor{red!70!black}{29}$ MeV (one dropped)};
 % ---- (b) the neutrino
-\begin{scope}[shift={(7.6,0)}]
+\begin{scope}[shift={(8.2,0)}]
 \node[font=\small\bfseries,anchor=west] at (-0.6,2.6) {(b) the neutrino: a primary, then killed};
-\draw[black!30,line width=6pt] (-0.4,0.8) -- (4.6,0.8);
-\node[text=black!50] at (4.2,0.45) {beam};
+\draw[black!30,line width=6pt] (-0.4,0.8) -- (4.9,0.8);
+\node[text=black!50,anchor=west] at (4.1,0.5) {beam};
 \fill (0,0.8) circle (2pt);
-\draw[->,thick,dashed,orange!70!black] (0,0.8) -- (2.3,2.1) node[above right,text=orange!70!black] {$\bar\nu$: passes $p$ and $\eta$};
-\draw[orange!70!black,thick] (1.55,1.5) -- ++(0.25,0.25) ++(-0.25,0) -- ++(0.25,-0.25);
-\node[anchor=west,text width=4.3cm,align=left] at (-0.5,-0.4) {\texttt{StackingAction}, \texttt{TrackNeutrino = False}: classified \texttt{fKill} before the first step, no \texttt{SimTrack}.};
-\node[anchor=west,text width=4.3cm,align=left] at (-0.5,-1.55) {the transverse momentum it carries is missing from every detector, from here on: $\vec p_T^{\,\rm miss}=-\sum_{\rm visible}\vec p_T=\sum_\nu\vec p_T$ (at generator level).};
+\draw[->,thick,dashed,orange!70!black] (0,0.8) -- (2.3,2.0);
+\node[anchor=west,text=orange!70!black] at (2.4,2.05) {$\bar\nu$: passes $p$ and $\eta$};
+\draw[orange!70!black,thick] (1.50,1.50) -- ++(0.25,0.25) ++(-0.25,0) -- ++(0.25,-0.25);
+\node[anchor=north west,text width=5.4cm,align=left] (SA) at (-0.5,0.3) {\texttt{StackingAction}, \texttt{TrackNeutrino = False}: classified \texttt{fKill} before the first step, no \texttt{SimTrack}.};
+\node[anchor=north west,text width=5.4cm,align=left] at ([yshift=-3mm]SA.south west) {The transverse momentum it carries is missing from every detector, from here on (at generator level):\\[1mm] $\vec p_T^{\,\rm miss}=-\sum_{\rm visible}\vec p_T=\sum_\nu\vec p_T$.};
 \end{scope}
 \end{tikzpicture}

@@ -5,9 +5,10 @@
 % StackingAction, the PPS transport) turns some members away and sends some
 % along the beam line, and the primaries gather in front of the detector,
 % ready to cross. Numbers: standalone_G4.py -v, seed 1 (example/G4/).
-% The detector is chapter/tikz/g4_cms3d.tex, written by
-% example/G4/Standalone/draw_cms3d.py, and placed here as chapter/tikz/g4_cms3d.pdf,
-% rendered once by g4_cms3d_page.tex (make does it): drawn here it cost ~15 s a pass.
+% The detector is example/G4/Standalone/cms3d_tgeo.png, ray-traced through the CMS
+% simulation geometry of Run 3 with ROOT's TGeo by draw_cms3d_tgeo.py: 30 m x 19 m,
+% centred on the collision point, placed at the scale of this scope (0.245 cm per metre).
+% (The schematic of draw_cms3d.py, chapter/tikz/g4_cms3d.pdf, has the same view and frame.)
 % ---------------------------------------------------------------------------
 \begin{tikzpicture}[x=1cm,y=1cm,
   every node/.style={font=\footnotesize},
@@ -58,13 +59,13 @@
 \begin{scope}[shift={(13.9,0.3)},scale=0.245]
 \draw[black!60,line width=0.6pt] (-15.5,0) -- (15.5,0);
 % the PDF is already at this scale and symmetric about the origin of the detector
-\node[inner sep=0pt] at (0,0) {\includegraphics{chapter/tikz/g4_cms3d.pdf}};
+\node[inner sep=0pt] at (0,0) {\includegraphics[width=7.35cm]{G4/Standalone/cms3d_tgeo.png}};
 \end{scope}
 % ---------------- the row below: who is turned away, who goes along the beam line, who crosses -------
 \node[box=3.3cm,anchor=north west] (pipe) at (-0.2,-2.15) {\textbf{down the beam pipe}: the line still inside $2.9$\,cm at $|z|=3.55$\,m, $|\eta|\gtrsim5.5$: $67+2442+30\,601$ members, almost all of the $13.6$\,TeV of every collision};
 \node[box=2.25cm,anchor=north west] (soft) at (3.35,-2.15) {\textbf{too soft}, $|p|<40$\,MeV: $5+143+1706$\\[1pt]\textbf{neutrinos}, killed before their first step: $5+10+48$};
 \node[box=3.1cm,anchor=north west,text=blue!45!black,draw=blue!50!black] (rail) at (6.0,-2.15) {\textbf{along the beam line}: n, $\bar n$, $\gamma$ beyond $|\eta|\simeq8.2$ handed over towards the ZDC at $140$\,m ($0+124+2071$); protons above $3$\,TeV to the Roman pots at $203$\,m ($0+27+363$)};
-\node[box=6.2cm,anchor=north west,draw=green!40!black] (cross) at (9.5,-2.15) {\textbf{the primaries}: $672+10\,825+128\,894$ (the family's $90\,\%$, $52\,\%$ of its energy; a quarter of the crowd's energy). The tracker (blue), ECAL (green), HCAL (orange), the solenoid (grey), the iron with the muon chambers (red, pale), HF at both ends; the quadrant facing you is cut away. \textbf{The crossing is chapter 10.}};
+\node[box=6.2cm,anchor=north west,draw=green!40!black] (cross) at (9.5,-2.15) {\textbf{the primaries}: $672+10\,825+128\,894$ (the family's $90\,\%$, $52\,\%$ of its energy; a quarter of the crowd's energy). The tracker (blue), ECAL (green), HCAL (orange), the solenoid (grey), the iron with the muon chambers (red, pale), HF (violet) at both ends; the quadrant facing you is cut away. \textbf{The crossing is chapter 10.}};
 \draw[turned] (5.6,-1.62) .. controls (4.6,-1.95) and (2.4,-1.85) .. (1.6,-2.12);
 \draw[turned] (6.0,-1.62) -- (4.5,-2.12);
 \draw[turned,blue!60!black] (6.6,-1.62) -- (7.3,-2.12);

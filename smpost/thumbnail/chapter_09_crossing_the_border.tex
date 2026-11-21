@@ -1,0 +1,62 @@
+%% smpost/thumbnail/chapter_09_crossing_the_border.tex : thumbnail of video 9/30,
+%% "Chapter-9 | The Hand-over Drop at the Border: Geant4 Primaries". Motif: the
+%% gate of the film's first scene. Three streams walk in from the left, the
+%% family (red), the in-time crowd (grey) and the out-of-time crowd (gold);
+%% at the gate the members that are not handed over fall out of the stream,
+%% and the rest gather at the centre of the detector, drawn as the barrel of
+%% CMS seen along the beam: tracker, ECAL, HCAL, solenoid, iron.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_09_crossing_the_border)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{9}{Chapter 9}{9 / 30}{The Hand-over\\at the Border}{Geant4 primaries: who enters the detector, and the energy that does not}
+
+\begin{scope}[shift={(\mx+0.15,\my-0.55)}]
+\def\gx{-0.85}    % the gate
+\def\cx{1.95}     % the centre of the detector
+\def\cy{0.55}
+%% the detector behind the gate: the barrel seen along the beam
+\foreach \r/\c/\o in {2.05/bred/0.55, 1.72/steel/0.75, 1.42/hcalcol/0.85, 1.02/ecalcol/0.9, 0.74/muoncol/0.55}
+  \fill[\c, opacity=\o] (\cx,\cy) circle[radius=\r];
+\fill[navy] (\cx,\cy) circle[radius=0.56];
+\draw[gold, line width=0.8pt, opacity=0.8] (\cx,\cy) circle[radius=2.05];
+%% the three lanes
+\foreach \y/\c in {1.75/bred, 0.55/pu, -0.65/gold}
+  \fill[\c, opacity=0.13] (-3.85,\y-0.42) rectangle (\gx,\y+0.42);
+%% the streams: dots walking towards the gate
+\pgfmathsetseed{9}
+\foreach \y/\c in {1.75/bred, 0.55/pu, -0.65/gold}{
+  \foreach \i in {1,...,9}{
+    \pgfmathsetmacro{\xx}{-3.95+0.3*\i+0.1*rnd}
+    \pgfmathsetmacro{\yy}{\y+0.5*(rnd-0.5)}
+    \node[circle, fill=\c, inner sep=0pt, minimum size=5.5pt] at (\xx,\yy) {};}}
+%% the gate
+\fill[trackcol] (\gx-0.09,-1.25) rectangle (\gx+0.09,2.45);
+\fill[trackcol, rounded corners=1.5pt] (\gx-1.25,2.45) rectangle (\gx+1.25,2.95);
+\node[navy, font=\sffamily\bfseries\footnotesize] at (\gx,2.7) {GEANT4 GATE};
+%% the handed over: from the gate to the centre of the detector
+\foreach \y/\c in {1.75/bred, 0.55/pu, -0.65/gold}{
+  \foreach \u in {0.25,0.55,0.8}{
+    \pgfmathsetmacro{\xx}{\gx+(\cx-\gx)*\u}
+    \pgfmathsetmacro{\yy}{\y+(\cy-\y)*\u*\u*(3-2*\u)}
+    \node[circle, fill=\c, draw=navy, line width=0.3pt, inner sep=0pt, minimum size=5.5pt] at (\xx,\yy) {};}}
+\foreach \a/\r/\c in {20/0.2/bred, 95/0.3/pu, 170/0.22/gold, 250/0.3/bred, 320/0.28/gold, 60/0.42/gold, 205/0.42/pu, 290/0.08/bred, 135/0.4/gold}
+  \node[circle, fill=\c, draw=navy, line width=0.3pt, inner sep=0pt, minimum size=5.5pt] at ($(\cx,\cy)+(\a:\r)$) {};
+%% the dropped: falling out of the stream at the gate
+\foreach \x/\y/\c/\o in {-0.65/-1.55/gold/0.95, -0.35/-2.05/pu/0.85, -0.15/-2.6/gold/0.7, 0.2/-1.9/bred/0.9, 0.35/-2.75/pu/0.6, -0.5/-2.9/gold/0.5, 0.65/-2.4/gold/0.65}{
+  \draw[\c, opacity=0.35*\o, line width=1pt, line cap=round] (\x-0.12,\y+0.5) -- (\x,\y);
+  \node[circle, fill=\c, opacity=\o, inner sep=0pt, minimum size=5.5pt] at (\x,\y) {};}
+\draw[arrowg] (\gx+0.35,-1.2) to[out=-80,in=110] (\gx+0.75,-2.2);
+%% the beam pipe the dropped go down
+\draw[steel, line width=5pt, line cap=round, opacity=0.55] (-1.2,-3.2) -- (3.6,-3.2);
+\node[steel!40!white, font=\sffamily\scriptsize\itshape, anchor=west] at (1.0,-2.85) {down the beam pipe};
+\end{scope}
+%% the numbers to take away
+\node[bred, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,9.05)
+  {the family: 749 $\to$ 672 primaries};
+\node[gold, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,8.45)
+  {52\,\% of its energy, 96\,\% of its $p_T$};
+\end{tikzpicture}
+\end{document}

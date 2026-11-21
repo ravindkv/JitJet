@@ -339,6 +339,11 @@ example/G4/Standalone/animate_standalone_G4_stills.pdf: example/G4/Standalone/an
 
 example/G4/Standalone/handover_ledger.tex: example/G4/event_G4.lhe
 
+# The picture of the book is example/G4/Standalone/cms3d_tgeo.png, ray-traced through the CMS geometry with ROOT's
+# TGeo (needs PyROOT: not remade by make figures):  make cms3d-tgeo
+cms3d-tgeo:
+	PYTHONPATH=$$(root-config --libdir) example/ME/Standalone/.venv/bin/python example/G4/Standalone/draw_cms3d_tgeo.py
+
 chapter/tikz/g4_cms3d.tex: example/G4/Standalone/draw_cms3d.py
 	$(PYTHON) example/G4/Standalone/draw_cms3d.py -o $@
 

@@ -494,8 +494,37 @@ class Stage:
             before, after = vector_pt(c, m), vector_pt(c, m & g["primary"])
             jets["mixed"] = dict(rank=mj["rank"], pt=mj["pt"], m=mj["m"], n=mj["n"], pt_sub=mj["pt_sub"], rho_area=mj["rho_area"],
                                  pt_rebuilt=before[0], n_rebuilt=int(m.sum()), pt_after=after[0], m_after=after[1], n_after=int((m & g["primary"]).sum()))
+        # the cone of our jet: every stable particle of the three crowds within R = 0.4 of the axis of jet [0]
+        # (rapidity and phi, as the jets are built), before and after the gate. This is what links the two ledgers of
+        # the chapter: the hand-over ledger counts whole collisions, the energy ledger counts the members of one jet.
+        cone = {}
+        if "ak4" in jets:
+            E_, px_, py_, pz_ = c.p4.T
+            with np.errstate(divide="ignore", invalid="ignore"):
+                yrap = np.where(E_ > np.abs(pz_), 0.5 * np.log((E_ + pz_) / np.maximum(E_ - pz_, 1e-300)), np.sign(pz_) * 99.0)
+            j0m = np.zeros(len(c), bool)
+            j0m[[row_index[r] for r, rank in self.genjets_of["ak4"].items() if rank == 0 and r in row_index]] = True
+            v = c.p4[j0m].sum(axis=0)
+            y0, phi0 = 0.5 * math.log((v[0] + v[3]) / (v[0] - v[3])), math.atan2(v[2], v[1])
+            dphi = (c.phi - phi0 + math.pi) % (2 * math.pi) - math.pi
+            inside = np.hypot(yrap - y0, dphi) < 0.4
+            for i, b in enumerate(BLOCKS):
+                m = inside & (c.block == i)
+                cone[b] = dict(stable=book(c, m), primary=book(c, m & g["primary"]),
+                               drops={r: book(c, m & (g["reason"] == r)) for r in REASONS})
+            cone["axis"] = dict(y=y0, phi=phi0, r=0.4)
         # border particles: where the line and the angle disagree
         a = np.abs(c.eta)
+        # the forward census of the crowd (in time and out of time) beyond |eta| = 4.5: the four groups of the forward plot
+        forward = {}
+        for i, b in ((1, "intime"), (2, "oot")):
+            m = (c.block == i) & (a > 4.5)
+            forward[b] = dict(all=int(m.sum()), vertex=int((m & g["primary"] & ~g["very_forward"]).sum()), zdc=int((m & g["primary"] & g["very_forward"]).sum()),
+                              pps=int((m & g["pps"]).sum()), dropped=int((m & ~g["primary"] & ~g["pps"]).sum()),
+                              protons_beyond=int((m & (c.ids == 2212) & (a > PPS_ETA)).sum()))
+        # the transverse position of the vertices: the beam spot is not on the axis of the cylinder
+        vx_all = np.array([[col["x"] * 1e-4, col["y"] * 1e-4] for col in self.collisions])
+        r_bs = float(np.hypot(*vx_all.mean(axis=0)))
         line_vs_angle = dict(
             kept_beyond=[int(j) for j in np.where(g["primary"] & (a > self.gate.eta_cut) & ~g["very_forward"])[0]],
             dropped_inside=[int(j) for j in np.where(g["eta_fail"] & (a <= self.gate.eta_cut))[0]])
@@ -513,7 +542,7 @@ class Stage:
             dv = d["dec"]
             if np.linalg.norm(dv - self.pv) > 1e-4 and all(np.linalg.norm(dv - p) > 1e-4 for p in pts):
                 pts.append(dv)
-        return dict(L=L, per=per, b=bs, net=net, jets=jets, line_vs_angle=line_vs_angle, vf=vf, pps=pps,
+        return dict(L=L, per=per, b=bs, net=net, jets=jets, cone=cone, forward=forward, r_beamspot=r_bs, line_vs_angle=line_vs_angle, vf=vf, pps=pps,
                     decays=dict(n=len(D.items), n_weak=len(weak), n_outside=len(D.outside()), n_points=len(pts), r_max=r_max, far=far))
 
     # ---------------------------------------------------------------- narration
@@ -581,6 +610,9 @@ class Stage:
         for j in sorted(np.where(m)[0], key=lambda j: c.eta[j]):
             rn = G.z_lmax / math.sinh(abs(c.eta[j]))
             say(f"   {c.eta[j]:+9.4f}{c.ids[j]:7d}{c.p4[j, 0]:8.1f}{c.pt[j]:7.3f}{c.vtx[j, 2]:8.2f}{rn:12.3f}{g['r_line'][j]:11.3f}  {g['code'][j]}")
+        zs_all = np.array([col["z"] for col in self.collisions])
+        say(f"   what moves the cut: along the beam, z_v / Z_lmax = {float(np.std(zs_all)):.2f} / {G.z_lmax:.1f} = +-{float(np.std(zs_all)) / G.z_lmax:.4f} (r.m.s. of the window; the signal: {self.pv[2] / G.z_lmax:+.4f});")
+        say(f"       across it, the beam spot of 2025 sits {R['r_beamspot'] * 1e4:.0f} um from the axis of the cylinder: r_v / R = {R['r_beamspot']:.4f} / {G.r} = +-{R['r_beamspot'] / G.r:.4f}, by the azimuth of the particle")
         lva = R["line_vs_angle"]
         for key, text in (("kept_beyond", f"kept although |eta| > {G.eta_cut} (the line from the vertex leaves the cylinder)"),
                           ("dropped_inside", f"dropped although |eta| < {G.eta_cut} (the line from the vertex stays inside)")):
@@ -611,6 +643,11 @@ class Stage:
             if b != "oot":
                 for j in pp[:30]:
                     say(f"      p k={c.k[j]:4d} E {c.p4[j, 0]:8.1f} xi {1 - c.p[j] / E_BEAM:.4f} eta {c.eta[j]:+7.2f}", level=1)
+        for b in ("intime", "oot"):
+            f = R["forward"].get(b)
+            if f and f["all"]:
+                say(f"   {b}, beyond |eta| = 4.5: {f['all']} stable = {f['vertex']} handed over at the vertex + {f['zdc']} very-forward neutrals (ZDC) + {f['pps']} protons to the Roman pots + {f['dropped']} dropped;"
+                    f" protons beyond |eta| = {PPS_ETA}: {f['protons_beyond']}, {f['pps']} of them with |pz| > {PPS_PZ:.0f} GeV")
         say("")
         say("-- 8. the b systems and our jet as Geant4 receives them")
         for key in ("b", "bbar"):
@@ -626,6 +663,24 @@ class Stage:
         mj = R["jets"].get("mixed")
         if mj:
             say(f"   with the crowd, mixed jet [{mj['rank']}]: pT {mj['pt']:.2f}, {mj['n']} constituents -> handed over {mj['n_after']}: pT {mj['pt_after']:.2f}, m {mj['m_after']:.2f}")
+        if R["cone"]:
+            ax = R["cone"]["axis"]
+            say(f"   the two ledgers: the hand-over ledger (section 9) counts every stable particle of a collision, the jet only its members.")
+            say(f"   the circle of our jet (R = 0.4 around y = {ax['y']:+.3f}, phi = {ax['phi']:+.3f}), stable -> primaries, n / scalar pT:")
+            for b, label in (("signal", "the family"), ("intime", "in-time crowd"), ("oot", "out-of-time crowd")):
+                x = R["cone"].get(b)
+                if x is None or (b == "oot" and not self.n_oot):
+                    continue
+                dr = ", ".join(f"{x['drops'][r]['n']} {r} ({x['drops'][r]['pt']:.2f})" for r in REASONS if x["drops"][r]["n"])
+                say(f"      {label:<18s} {x['stable']['n']:5d} / {x['stable']['pt']:7.2f}  -> {x['primary']['n']:5d} / {x['primary']['pt']:7.2f}   dropped: {dr or 'none'}")
+            for b, label in (("signal", "family"), ("intime", "in-time crowd"), ("oot", "out-of-time crowd")):
+                if b == "oot" and not self.n_oot:
+                    continue
+                Lb = L[b]
+                lost = Lb["stable"]["pt"] - Lb["primary"]["pt"]
+                say(f"   where the scalar pT of the whole {label} is lost, {lost:.1f} of {Lb['stable']['pt']:.1f} GeV ({100 * lost / Lb['stable']['pt']:.1f} %): "
+                    + ", ".join(f"{r} {Lb['drops'][r]['pt']:.1f}" for r in REASONS) + (f", Roman pots {Lb['pps']['pt']:.1f}" if Lb["pps"]["n"] else "")
+                    + f"; beyond |eta| = 5.5: {Lb['regions']['>5.5']['stable']['pt'] - Lb['regions']['>5.5']['primary']['pt']:.1f}")
         say("")
         say("-- 9. the ledger: stable before -> primaries after (n / E / pT), and the drops")
         for b, label in (("signal", "signal"), ("intime", "in-time crowd"), ("oot", "out-of-time crowd"), ("all", "signal + in-time crowd")):
@@ -721,7 +776,7 @@ class Stage:
             n_intime=self.n_intime, n_oot=self.n_oot, pv=self.pv.tolist(), ledger=L,
             per_collision=[dict(k=p["k"], bx=p["bx"], lib=p["lib"], kind=p["kind"], z=p["z"], n_stable=p["stable"]["n"], n_primary=p["primary"]["n"],
                                 e_stable=p["stable"]["e"], e_primary=p["primary"]["e"], pt_primary=p["primary"]["pt"], n_pps=p["pps"]["n"], drops=p["drops"]) for p in R["per"]],
-            b=R["b"], net=R["net"], jets=R["jets"],
+            b=R["b"], net=R["net"], jets=R["jets"], cone=R["cone"], forward=R["forward"], r_beamspot=R["r_beamspot"],
             soft=plist(np.where(sig & g["p_fail"])[0]), neutrinos=plist(np.where(sig & c.nu)[0]), border=plist(border),
             kept_beyond=plist(lva["kept_beyond"]), dropped_inside=plist(lva["dropped_inside"]),
             very_forward=plist(R["vf"][c.block[R["vf"]] < 2]) if len(R["vf"]) else [], pps=plist(R["pps"][c.block[R["pps"]] < 2]) if len(R["pps"]) else [],

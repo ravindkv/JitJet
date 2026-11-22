@@ -1,0 +1,27 @@
+% chapter 10: the helix in the transverse plane, the sagitta and the looper.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]}]
+% (a) the circle and the sagitta
+\begin{scope}
+\node[font=\small\bfseries] at (2.2,3.6) {(a) a stiff track};
+\draw[black!35] (0,0) circle (0.25); \draw[black!35] (0,0) ++(-10:3.3) arc (-10:75:3.3) node[above,black!60]{calorimeter, $r$};
+\fill (0,0) circle (1.4pt) node[below left]{beam};
+% circle of radius 6 through the origin, centre at (0,-6) rotated
+\draw[red!80!black,thick] (0,0) arc (120:86.5:6.2);
+\draw[dashed] (0,0)--(3.19,0.93) node[midway,above,sloped]{chord $L$};
+\draw[<->] (1.6,0.47)--(1.47,0.92) node[midway,right=1pt]{$s=L^2/8R$};
+\draw[->,black!60] (0,0)--(1.6,0.95) node[above,black!60]{$\vec p_T$};
+\node[align=left] at (2.3,-1.0) {$R\,[\mathrm{m}]=\dfrac{p_T\,[\mathrm{GeV}]}{0.3\,B\,[\mathrm{T}]}$\\[2pt]$\sin\Delta\phi=r/2R$};
+\node at (0.9,2.5) {$\odot\ \vec B$, 3.8 T};
+\end{scope}
+% (b) the looper
+\begin{scope}[xshift=7.3cm]
+\node[font=\small\bfseries] at (1.4,3.6) {(b) a looper};
+\foreach \r in {0.5,1.0,1.5,2.0} \draw[black!25] (0,0) circle (\r);
+\draw[black!35] (0,0) circle (3.0); \node[black!60] at (2.5,2.3) {$r$};
+\fill (0,0) circle (1.4pt);
+\draw[blue!70!black,thick] (0,-1.1) circle (1.1);
+\draw[<->] (0,0)--(0,-2.2) node[midway,right]{$2R<r$};
+\node[align=left] at (4.6,0.8) {never reaches $r$ if\\[2pt]$p_T<0.3\,B\,r/2$\\[2pt]$=0.735$~GeV\\for $r=1.29$~m};
+\node[align=left] at (4.6,-1.4) {it crosses the\\same layers\\on every turn};
+\end{scope}
+\end{tikzpicture}

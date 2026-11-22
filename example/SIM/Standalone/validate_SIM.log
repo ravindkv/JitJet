@@ -1,0 +1,29 @@
+== 1. material in front of the calorimeters: CMS geometry (TGeo, mean over 24 azimuths) against the layer model ==
+     eta  x/X0 CMS   model  x/lambda CMS   model
+     0.0     0.342   0.368         0.134   0.104
+     0.5     0.667   0.585         0.230   0.165
+     1.0     1.403   1.367         0.378   0.385
+     1.5     1.622   1.640         0.446   0.462
+     2.0     1.286   1.420         0.379   0.402
+     2.5     1.273   1.333         0.381   0.381
+     3.0     1.362   1.413         0.361   0.408
+   |eta| < 2.5: mean x/X0 1.170 (CMS) against 1.164 (model), ratio 0.99, point-by-point rms 8 %; mean x/lambda 0.331 against 0.329, ratio 0.99; lambda per X0 in CMS: 0.28
+   the maximum of the CMS curve: 2.04 X0 at eta = -1.4 (model there: 1.89)
+
+== 2. silicon sensors on the straight lines of the 307 charged primaries of the signal (the hits of the stage 'transport') ==
+           CMS geometry  layer model
+   PXB              565          558
+   PXF              349          231
+   TIB              687          640
+   TID              299          277
+   TOB              676          657
+   TEC             1060         1056
+   total           3636         3419   ratio 0.94
+
+== 3. the formulas against the Particle Data Group ==
+   minimum of dE/dx in silicon [MeV cm2/g]                  script    1.6662   reference    1.6640   (+0.1 %)
+   most probable loss of a MIP in 320 um of silicon [keV]   script   84.1351   reference   84.0000   (+0.2 %)
+   helix radius at 1 GeV in 3.8 T [cm]                      script   87.7807   reference   87.7800   (+0.0 %)
+   looper threshold for r = 129 cm [GeV]                    script    0.7348   reference    0.7348   (-0.0 %)
+   conversion probability in 1 X0                           script    0.5406   reference    0.5406   (+0.0 %)
+   Highland angle, 1 GeV pion, 10 % X0 [mrad]               script    3.9624   reference    3.9624   (-0.0 %)

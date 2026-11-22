@@ -160,7 +160,11 @@ FIGURES := example/ME/journey_ME.pdf \
            example/G4/Standalone/theory_G4.pdf \
            example/G4/Standalone/animate_standalone_G4_stills.pdf \
            example/G4/Standalone/handover_ledger.tex \
-           chapter/tikz/g4_cms3d.tex
+           chapter/tikz/g4_cms3d.tex \
+           example/SIM/Standalone/sim_ledger.tex \
+           example/SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_etaphi.png \
+           example/SIM/Standalone/theory_SIM.pdf \
+           example/SIM/Standalone/animate_standalone_SIM_stills.pdf
 
 figures: $(FIGURES)
 
@@ -367,7 +371,7 @@ example/PS/Standalone/veto_algorithm.pdf: example/PS/Standalone/plot_veto_algori
 # Event records produced by the standalone scripts. They are committed; run
 # `make records` after changing a script (needs numpy + scipy).
 RECORDS := example/PS/event_PS.lhe example/MPI/event_MPI.lhe example/Had/event_Had.lhe example/Decay/event_Decay.lhe example/GenJet/event_GenJet.lhe \
-           example/PU/event_PU.lhe example/G4/event_G4.lhe
+           example/PU/event_PU.lhe example/G4/event_G4.lhe example/SIM/event_SIM.lhe
 
 records: $(RECORDS)
 
@@ -405,6 +409,30 @@ example/G4/event_G4.lhe: example/G4/Standalone/standalone_G4.py example/PU/event
 	$(PYTHON) example/G4/Standalone/standalone_G4.py -i example/PU/event_PU.lhe -o $@ -v --log example/G4/Standalone/standalone_G4.log \
 		--summary example/G4/Standalone/standalone_G4.json --tables example/G4/Standalone/handover_ledger --quiet
 	$(PYTHON) example/G4/Standalone/standalone_G4.py --library-scan example/G4/Standalone/standalone_G4_library.json > example/G4/Standalone/standalone_G4_library.log
+
+# Chapter 10: the primaries of chapter 9 through the detector of standalone_SIM.py. The family (with its -v log),
+# the in-time crowd and the out-of-time crowd are simulated separately (simhits_*.npz; the 27 MB out-of-time file
+# is not in git), then add_hits_SIM.py adds the hits and writes the record and the tables. About two minutes.
+SIMDIR := example/SIM/Standalone
+SIMHITS := example/SIM/simhits_signal.npz example/SIM/simhits_intime.npz example/SIM/simhits_oot.npz
+example/SIM/simhits_signal.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
+	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample signal -v --log $(SIMDIR)/standalone_SIM.log --quiet
+example/SIM/simhits_intime.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
+	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample intime --quiet
+example/SIM/simhits_oot.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
+	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample oot --quiet
+example/SIM/event_SIM.lhe: $(SIMDIR)/add_hits_SIM.py $(SIMHITS)
+	$(PYTHON) $(SIMDIR)/add_hits_SIM.py -v > $(SIMDIR)/add_hits_SIM.log
+$(SIMDIR)/sim_ledger.tex: example/SIM/event_SIM.lhe
+$(SIMDIR)/pages/simHits_mixed_10_SIM_ALL_etaphi.png: $(SIMDIR)/plot_simhits_SIM.py example/SIM/event_SIM.lhe
+	$(PYTHON) $(SIMDIR)/plot_simhits_SIM.py
+# the scan of the CMS geometry with ROOT's TGeo (validate_SIM.json feeds page 4 of the theory plots)
+sim-validate:
+	PYTHONPATH=$$(root-config --libdir) example/ME/Standalone/.venv/bin/python $(SIMDIR)/validate_SIM.py > $(SIMDIR)/validate_SIM.log
+$(SIMDIR)/theory_SIM.pdf: $(SIMDIR)/plot_theory_SIM.py example/SIM/event_SIM.lhe $(SIMDIR)/validate_SIM.json
+	$(PYTHON) $(SIMDIR)/plot_theory_SIM.py -o $@ > $(SIMDIR)/plot_theory_SIM.log
+$(SIMDIR)/animate_standalone_SIM_stills.pdf: $(SIMDIR)/animate_standalone_SIM.py example/SIM/event_SIM.lhe
+	$(PYTHON) $(SIMDIR)/animate_standalone_SIM.py --stills $@ --no-video
 
 clean:
 	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).log $(MAIN).out $(MAIN).toc \

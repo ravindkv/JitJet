@@ -1,0 +1,302 @@
+{
+ "sample": "signal",
+ "stage": "full",
+ "seed": 1,
+ "field": 3.8,
+ "stages": [
+  {
+   "stage": "transport",
+   "primaries": 672,
+   "boundary": 672,
+   "secondaries": 0,
+   "sec_decay": 0,
+   "sec_em": 0,
+   "sec_had": 0,
+   "trk": 3419,
+   "mu": 0,
+   "de": 0.0,
+   "cells": 0,
+   "calhits": 0,
+   "jet_n": 31,
+   "jet_bnd_n": 31,
+   "jet_bnd_pt": 99.83009128013457,
+   "jet_ecal": 0.0,
+   "jet_hcal": 0.0,
+   "EB": 0.0,
+   "EE": 0.0,
+   "ES": 0.0,
+   "HB": 0.0,
+   "HE": 0.0,
+   "HO": 0.0,
+   "HF": 0.0
+  },
+  {
+   "stage": "B",
+   "primaries": 672,
+   "boundary": 672,
+   "secondaries": 0,
+   "sec_decay": 0,
+   "sec_em": 0,
+   "sec_had": 0,
+   "trk": 3830,
+   "mu": 0,
+   "de": 0.0,
+   "cells": 0,
+   "calhits": 0,
+   "jet_n": 31,
+   "jet_bnd_n": 31,
+   "jet_bnd_pt": 94.42666276463996,
+   "jet_ecal": 0.0,
+   "jet_hcal": 0.0,
+   "EB": 0.0,
+   "EE": 0.0,
+   "ES": 0.0,
+   "HB": 0.0,
+   "HE": 0.0,
+   "HO": 0.0,
+   "HF": 0.0
+  },
+  {
+   "stage": "B_Decay",
+   "primaries": 672,
+   "boundary": 607,
+   "secondaries": 124,
+   "sec_decay": 124,
+   "sec_em": 0,
+   "sec_had": 0,
+   "trk": 5033,
+   "mu": 0,
+   "de": 0.0,
+   "cells": 0,
+   "calhits": 0,
+   "jet_n": 31,
+   "jet_bnd_n": 30,
+   "jet_bnd_pt": 85.44038188854302,
+   "jet_ecal": 0.0,
+   "jet_hcal": 0.0,
+   "EB": 0.0,
+   "EE": 0.0,
+   "ES": 0.0,
+   "HB": 0.0,
+   "HE": 0.0,
+   "HO": 0.0,
+   "HF": 0.0
+  },
+  {
+   "stage": "B_Decay_EM",
+   "primaries": 672,
+   "boundary": 464,
+   "secondaries": 1164,
+   "sec_decay": 125,
+   "sec_em": 1039,
+   "sec_had": 0,
+   "trk": 7012,
+   "mu": 955,
+   "de": 1.2555921077728271,
+   "cells": 6155,
+   "calhits": 42728,
+   "jet_n": 31,
+   "jet_bnd_n": 20,
+   "jet_bnd_pt": 67.74911746861324,
+   "jet_ecal": 51.50299072265625,
+   "jet_hcal": 0.45130655169487,
+   "EB": 94.26253509521484,
+   "EE": 240.08291625976562,
+   "ES": 0.10059542953968048,
+   "HB": 0.7737194299697876,
+   "HE": 2.3070504665374756,
+   "HO": 0.0,
+   "HF": 455.0
+  },
+  {
+   "stage": "full",
+   "primaries": 672,
+   "boundary": 407,
+   "secondaries": 2008,
+   "sec_decay": 289,
+   "sec_em": 1302,
+   "sec_had": 417,
+   "trk": 8585,
+   "mu": 0,
+   "de": 2.102370262145996,
+   "cells": 9486,
+   "calhits": 75881,
+   "jet_n": 31,
+   "jet_bnd_n": 13,
+   "jet_bnd_pt": 44.321578394442554,
+   "jet_ecal": 133.5107879638672,
+   "jet_hcal": 0.3062998950481415,
+   "EB": 205.65513610839844,
+   "EE": 410.8138122558594,
+   "ES": 0.10841219127178192,
+   "HB": 0.6413925886154175,
+   "HE": 1.8706471920013428,
+   "HO": 0.0,
+   "HF": 1936.0
+  }
+ ],
+ "n": {
+  "had_start_ecal": 221,
+  "decays": 87,
+  "decay_3122": 7,
+  "sec_decay": 289,
+  "nuclear": 163,
+  "nucl_TEC": 23,
+  "sec_nuclear interaction": 417,
+  "had_start_hcal": 78,
+  "nucl_services": 78,
+  "stopped": 469,
+  "nucl_TID": 10,
+  "nucl_TOB": 20,
+  "decay_321": 7,
+  "neutrinos": 48,
+  "conversions": 313,
+  "conv_services": 159,
+  "sec_conversion": 626,
+  "brems": 676,
+  "sec_bremsstrahlung": 676,
+  "beside_calorimeters": 168,
+  "decay_211": 43,
+  "conv_TEC": 49,
+  "nucl_beam pipe": 10,
+  "nucl_PXB": 7,
+  "nucl_TIB": 12,
+  "conv_TIB": 19,
+  "decay_3222": 6,
+  "conv_TOB": 44,
+  "decay_310": 23,
+  "conv_PXB": 9,
+  "conv_TID": 21,
+  "nucl_PXF": 3,
+  "conv_PXF": 5,
+  "decay_130": 1,
+  "conv_beam pipe": 7
+ },
+ "e": {
+  "invisible": 158.30186150656567,
+  "calo_dead": 124.32584293367285,
+  "binding": 1.312000000000001,
+  "stopped": 14.761582088460337,
+  "absorbed": 1.2703099804607019,
+  "neutrino": 10.270954949530022,
+  "beside": 819.0671123655255,
+  "es_absorber": 20.695904471264594
+ },
+ "stations": {
+  "tracker": {
+   "PXB": {
+    "hits": 847,
+    "de": 0.19403395056724548,
+    "layers": {
+     "1": 251,
+     "2": 251,
+     "3": 194,
+     "4": 151
+    }
+   },
+   "PXF": {
+    "hits": 339,
+    "de": 0.045471154153347015,
+    "layers": {
+     "1": 119,
+     "2": 113,
+     "3": 107
+    }
+   },
+   "TIB": {
+    "hits": 1563,
+    "de": 0.36944496631622314,
+    "layers": {
+     "1": 700,
+     "2": 492,
+     "3": 187,
+     "4": 184
+    }
+   },
+   "TID": {
+    "hits": 680,
+    "de": 0.130892813205719,
+    "layers": {
+     "1": 203,
+     "2": 243,
+     "3": 234
+    }
+   },
+   "TOB": {
+    "hits": 1595,
+    "de": 0.654651403427124,
+    "layers": {
+     "1": 466,
+     "2": 406,
+     "3": 237,
+     "4": 173,
+     "5": 146,
+     "6": 167
+    }
+   },
+   "TEC": {
+    "hits": 3561,
+    "de": 0.7078759670257568,
+    "layers": {
+     "1": 476,
+     "2": 534,
+     "3": 527,
+     "4": 386,
+     "5": 383,
+     "6": 411,
+     "7": 296,
+     "8": 309,
+     "9": 239
+    }
+   }
+  },
+  "muon": {
+   "DT": 0,
+   "CSC": 0,
+   "RPC": 0,
+   "GEM": 0
+  },
+  "calo": {
+   "EB": {
+    "cells": 2984,
+    "e": 205.65513610839844
+   },
+   "EE": {
+    "cells": 2937,
+    "e": 410.8138122558594
+   },
+   "ES": {
+    "cells": 1783,
+    "e": 0.10841219127178192
+   },
+   "HB": {
+    "cells": 339,
+    "e": 0.6413925886154175
+   },
+   "HE": {
+    "cells": 947,
+    "e": 1.8706471920013428
+   },
+   "HO": {
+    "cells": 0,
+    "e": 0.0
+   },
+   "HF": {
+    "cells": 496,
+    "e": 1936.0
+   }
+  }
+ },
+ "primaries": 672,
+ "simtracks": 2680,
+ "calhits": 75881,
+ "cells": {
+  "EB": 61200,
+  "EE": 17376,
+  "HB": 9072,
+  "HE": 6768,
+  "HO": 2160,
+  "HF": 1728
+ },
+ "seconds": 6.481304168701172
+}

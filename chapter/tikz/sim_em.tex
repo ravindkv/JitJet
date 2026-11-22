@@ -1,0 +1,28 @@
+% chapter 10: electromagnetic physics. What a layer of material does, and the shower in a crystal.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]}]
+% (a) a layer of the tracker
+\node[font=\small\bfseries] at (2.3,3.3) {(a) one layer of silicon and its support};
+\fill[black!15] (2.0,-0.3) rectangle (2.5,2.9); \node[rotate=90] at (2.25,1.3) {$t=x/X_0$};
+% charged hadron
+\draw[thick] (0,2.5)--(2.25,2.5); \draw[thick,->] (2.25,2.5)--(4.6,2.75) node[right]{$\pi$: loses $dE/dx$, scattered by $\theta_0$};
+\fill[red] (2.25,2.5) circle (2pt) node[above left,red!70!black]{hit};
+% electron
+\draw[thick,orange!90!black] (0,1.5)--(2.25,1.5); \draw[thick,orange!90!black,->] (2.25,1.5) to[bend right=12] (4.6,1.05) node[right]{$e$: bremsstrahlung};
+\draw[decorate,decoration={snake,amplitude=1pt,segment length=4pt},green!50!black,->] (2.25,1.5)--(4.6,1.62) node[right]{$\gamma$};
+\fill[red] (2.25,1.5) circle (2pt);
+% photon
+\draw[decorate,decoration={snake,amplitude=1pt,segment length=4pt},green!50!black] (0,0.4)--(2.25,0.4);
+\draw[thick,orange!90!black,->] (2.25,0.4) to[bend left=10] (4.6,0.85) node[right]{$e^+$};
+\draw[thick,orange!90!black,->] (2.25,0.4) to[bend right=10] (4.6,-0.05) node[right]{$e^-$\quad conversion, $P=1-e^{-7t/9}$};
+% (b) the shower in a crystal
+\begin{scope}[xshift=9.6cm,yshift=1.3cm]
+\node[font=\small\bfseries] at (2.4,2.0) {(b) the shower in a crystal};
+\draw[fill=green!10] (0,-0.55) rectangle (5.0,0.55); \draw[black!40] (0,-1.65) rectangle (5.0,-0.55); \draw[black!40] (0,0.55) rectangle (5.0,1.65);
+\draw[decorate,decoration={snake,amplitude=1pt,segment length=4pt},green!50!black,->] (-1.2,0)--(0.5,0);
+\foreach \a in {-22,-12,-4,4,12,22} \draw[orange!90!black] (0.5,0)--++(\a:1.5);
+\foreach \a in {-30,-20,-10,0,10,20,30} \draw[orange!90!black!70] (1.9,0.0)++(0,{\a/60})--++(\a:1.1);
+\draw[<->] (0,-1.9)--(5.0,-1.9) node[midway,below]{23 cm $=25.8\,X_0$};
+\draw[<->] (5.25,-0.55)--(5.25,0.55) node[midway,right]{2.2 cm $=1\,R_M$};
+\draw[->] (1.75,1.95)--(1.75,0.6); \node[above] at (1.75,1.95) {$t_{max}\approx\ln(E/E_c)$};
+\end{scope}
+\end{tikzpicture}

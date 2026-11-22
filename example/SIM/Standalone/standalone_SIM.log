@@ -1,0 +1,80 @@
+== The crossing of the border: the family through the detector (standalone_SIM.py, learning mode) ==
+
+-- 0. the detector of this script
+   tracker: beam pipe r = 2.25 cm; pixel barrel r = 2.9, 6.8, 10.9, 16.0 cm; inner barrel 25.5 ... 49.8; outer barrel 60.8 ... 108.0;
+            3 + 3 + 9 pairs of disks at |z| = 29 ... 266 cm; the boundary to the calorimeters at r = 123.3 cm, |z| = 293.5 cm
+   ECAL: 61200 barrel crystals from r = 129 cm, |eta| < 1.479; 17376 endcap crystals at |z| = 320 cm, to |eta| = 3.0; preshower 1.653 < |eta| < 2.6
+   HCAL: HB 9072 cells, HE 6768, HO 2160, HF 1728 (long and short fibres) at |z| = 1115 cm
+   lead tungstate: X0 = 0.89 cm, Moliere radius 2.19 cm, critical energy 9.3 MeV, interaction length 20.3 cm; a crystal is 25.8 X0 and 1.13 lambda_I deep
+
+-- 1. the magnetic field
+   B = 3.8 T: R = pT / (0.3 B) = 87.8 cm x pT[GeV]; a track from the beam line reaches radius r only if pT > 0.3 B r / 2:
+   pT > 0.735 GeV for the barrel ECAL (r = 129 cm), 0.702 for the edge of the tracker, 16.5 MeV for the first pixel layer
+   307 of the 672 primaries are charged, 175 of them in |eta| < 2.5; 113 of those have pT < 0.735 GeV (median pT 0.55 GeV): they cannot reach the barrel ECAL
+   in |eta| < 1.479: 107 charged, 65 of them loopers
+   sensor crossings: 3419 on straight lines -> 3830 on helices; primaries at the boundary 672 -> 672
+   the leading charged member of our jet: pi+ pT 14.27 GeV, eta -1.336: R = 12.5 m; over L = 1.1 m its sagitta is L^2 / 8R = 1.21 cm, its azimuth turns by asin(L / 2R) = 0.0439 rad
+
+-- 2. decays in flight
+   pi+-    c tau =   780.45 cm: at p = 1 GeV it flies beta gamma c tau =   5591.8 cm on average
+   K+-     c tau =   371.30 cm: at p = 1 GeV it flies beta gamma c tau =    752.1 cm on average
+   K0L     c tau =  1533.00 cm: at p = 1 GeV it flies beta gamma c tau =   3080.7 cm on average
+   K0S     c tau =     2.68 cm: at p = 1 GeV it flies beta gamma c tau =      5.4 cm on average
+   Lambda  c tau =     7.89 cm: at p = 1 GeV it flies beta gamma c tau =      7.1 cm on average
+   Sigma+  c tau =     2.40 cm: at p = 1 GeV it flies beta gamma c tau =      2.0 cm on average
+   Sigma-  c tau =     4.43 cm: at p = 1 GeV it flies beta gamma c tau =      3.7 cm on average
+   decays in flight in the full simulation: 87 (pi+ 43, K_S0 23, Lambda0 7, K+ 7, Sigma+ 6, K_L0 1); 289 daughters stored, 48 neutrinos not tracked
+   where: beam pipe and pixel volume (r < 20 cm) 36, among the strips 51
+
+-- 3. electromagnetic physics
+   silicon: minimum of the Bethe-Bloch curve 1.666 MeV cm2/g at beta gamma = 3.5; a minimum-ionising particle loses on average 124 keV in 320 um, most probably 84 keV
+   tracker hits: 8585 with 2.102 GeV of energy loss in the sensors, 0.245 MeV per hit (median 128 keV)
+   Highland: a 1 GeV pion crossing 2.5 % X0 is deflected by 1.87 mrad (rms, one plane), a 10 GeV one by 0.185
+   conversions: 313 (services 159, TEC 49, TOB 44, TID 21, TIB 19, PXB 9, beam pipe 7, PXF 5); bremsstrahlung photons above 10 MeV: 676
+   of the 61 primary photons above 1 GeV in |eta| < 2.5, 40 converted in the tracker: 1 - exp(-7t/9) = 0.66 -> t = 1.37 X0 on average
+   particles stopped in the tracker (kinetic energy below 10 MeV): 469
+
+-- 4. hadronic physics
+   nuclear interactions in the tracker: 163 (services 78, TEC 23, TOB 20, TIB 12, TID 10, beam pipe 10, PXB 7, PXF 3), 417 secondaries stored
+   of the 93 charged hadrons with pT > 0.5 GeV in |eta| < 2.5, 32 (34 %) interact before the calorimeters: as if the tracker were 0.42 lambda_I thick
+   hadrons whose shower starts in the crystals: 221, in the HCAL: 78, punch-through: 0
+   a pion of     1 GeV: electromagnetic fraction 1 - (E/0.8)^(0.82 - 1) = 0.04; seen by the HCAL as 0.73 of an electron
+   a pion of    10 GeV: electromagnetic fraction 1 - (E/0.8)^(0.82 - 1) = 0.37; seen by the HCAL as 0.82 of an electron
+   a pion of   100 GeV: electromagnetic fraction 1 - (E/0.8)^(0.82 - 1) = 0.58; seen by the HCAL as 0.88 of an electron
+   invisible energy of the hadronic showers: 158.3 GeV; in dead material between and behind the calorimeters: 124.3 GeV; beside every calorimeter (|eta| > 5.191): 819.1 GeV in 168 particles
+
+-- 5. the stages: one ingredient more each time
+   stage        bound. second.    dec/EM/had trk hits    mu  sum dE  cells      EB      EE     HB     HE  HF pe  jet: pT bnd, E_ECAL
+   transport       672       0         0/0/0     3419     0   0.000      0     0.0     0.0  0.000  0.000      0   99.83 (31/31),   0.00
+   B               672       0         0/0/0     3830     0   0.000      0     0.0     0.0  0.000  0.000      0   94.43 (31/31),   0.00
+   B_Decay         607     124       124/0/0     5033     0   0.000      0     0.0     0.0  0.000  0.000      0   85.44 (30/31),   0.00
+   B_Decay_EM      464    1164    125/1039/0     7012   955   1.256   6155    94.3   240.1  0.774  2.307    455   67.75 (20/31),  51.50
+   full            407    2008  289/1302/417     8585     0   2.102   9486   205.7   410.8  0.641  1.871   1936   44.32 (13/31), 133.51
+
+-- 6. the stations of the full simulation
+   tracker: PXB 847, PXF 339, TIB 1563, TID 680, TOB 1595, TEC 3561 = 8585 hits
+      PXB by layer: 251, 251, 194, 151
+      TIB by layer: 700, 492, 187, 184
+      TOB by layer: 466, 406, 237, 173, 146, 167
+      hits later than 25 ns after the collision: 448
+   calorimeters: EB 2984 cells 205.66, EE 2937 cells 410.81, ES 1783 cells 0.11, HB 339 cells 0.64, HE 947 cells 1.87, HO 0 cells 0.00, HF 496 cells 1936.00  (GeV; HB, HE, HO scintillator energy; HF photoelectrons)
+   muon chambers: DT 0, CSC 0, RPC 0, GEM 0
+   what ended each primary as a primary: calorimeter 371, conversion 123, nuclear 84, decay 50, beam pipe 36, stopped 8
+   primaries that left at least one hit: 622 of 672
+
+-- 7. our jet (the members of ak4 jet [0], the photograph of chapter 7)
+   31 members handed to the simulation, E = 222.8 GeV, vector pT 99.83 GeV
+           pi+ E   29.01 pT  14.27 eta -1.336: calorimeter tracker hits   16, ECAL   13.70 GeV in   22 cells, HCAL  0.087
+            K- E   22.52 pT  10.57 eta -1.389: nuclear     tracker hits   63, ECAL   15.31 GeV in   88 cells, HCAL  0.009
+            K+ E   19.11 pT   8.55 eta -1.444: calorimeter tracker hits   19, ECAL   12.49 GeV in   26 cells, HCAL  0.004
+          K_S0 E   18.65 pT   8.99 eta -1.359: decay       tracker hits  102, ECAL   12.63 GeV in  131 cells, HCAL  0.014
+           pi- E   11.41 pT   4.49 eta -1.584: calorimeter tracker hits   22, ECAL    5.35 GeV in   30 cells, HCAL  0.020
+           pi- E   11.23 pT   5.41 eta -1.359: nuclear     tracker hits   41, ECAL    7.53 GeV in   76 cells, HCAL  0.007
+           pi- E    9.43 pT   4.45 eta -1.383: calorimeter tracker hits   17, ECAL    5.30 GeV in   30 cells, HCAL  0.011
+         gamma E    8.66 pT   4.08 eta -1.384: conversion  tracker hits    2, ECAL    8.37 GeV in   43 cells, HCAL  0.000
+           pi- E    8.47 pT   4.34 eta -1.290: calorimeter tracker hits   16, ECAL    0.46 GeV in    2 cells, HCAL  0.058
+           pi+ E    8.06 pT   3.31 eta -1.539: calorimeter tracker hits   20, ECAL    5.33 GeV in   18 cells, HCAL  0.008
+   reaching the boundary as primaries: 13 of 31, vector pT 44.32 GeV
+   in the crystals: 133.50 GeV in 1216 cells, vector pT 56.33 GeV
+   in the HCAL scintillator: 0.306 GeV in 167 cells; x sampling factor (125 HB, 190 HE) = 46.2 GeV, vector pT 17.24 GeV
+   crystals + HCAL x factor: vector pT 73.52 GeV

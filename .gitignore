@@ -89,3 +89,7 @@ smpost/thumbnail/*.png
 
 example/G4/Standalone/animate_standalone_G4.mp4
 example/G4/Standalone/*.json
+# chapter 10: the out-of-time SimHits (27 MB), remade by make records
+example/SIM/simhits_oot.npz
+example/SIM/Standalone/*.srt
+example/SIM/Standalone/*.mp4

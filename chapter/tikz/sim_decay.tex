@@ -1,0 +1,14 @@
+% chapter 10: who decays where. Mean flight beta gamma c tau on a scale of the detector.
+\begin{tikzpicture}[x=0.085cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]}]
+% the detector along a radius, in cm (0..160)
+\fill[black!8] (2.25,-0.25) rectangle (16,2.95); \node[rotate=90,black!60] at (9,1.35) {pixel};
+\fill[black!14] (22,-0.25) rectangle (110,2.95); \node[black!60] at (66,2.75) {strip tracker};
+\fill[green!18] (129,-0.25) rectangle (152,2.95); \node[rotate=90,green!40!black] at (140.5,1.35) {ECAL crystals};
+\draw[->] (0,-0.25)--(165,-0.25) node[right]{$r$ [cm]};
+\foreach \x in {0,25,50,75,100,125,150} \draw (\x,-0.25)--(\x,-0.35) node[below]{\x};
+% mean flights at p = 5 GeV
+\draw[->,very thick,red!80!black] (0,2.3)--(27,2.3) node[right]{$K^0_S$, 5 GeV: $\beta\gamma c\tau=27$ cm $\to\pi^+\pi^-$ (a displaced vertex)};
+\draw[->,very thick,violet] (0,1.6)--(35,1.6) node[right]{$\Lambda$, 5 GeV: 35 cm $\to p\,\pi^-$};
+\draw[->,very thick,blue!70!black] (0,0.9)--(160,0.9); \node[blue!70!black,fill=white,inner sep=1pt] at (80,0.9) {$K^\pm$, 5 GeV: 38 m: 3\,\% decay before the ECAL};
+\draw[->,very thick] (0,0.2)--(160,0.2); \node[fill=white,inner sep=1pt] at (80,0.2) {$\pi^\pm$, 5 GeV: 280 m: 0.5\,\% decay, $\pi\to\mu\nu$};
+\end{tikzpicture}

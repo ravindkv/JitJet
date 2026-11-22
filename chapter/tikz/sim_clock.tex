@@ -1,0 +1,17 @@
+% chapter 10: sixteen bunch crossings on one clock, and one cell that adds them.
+\begin{tikzpicture}[x=0.72cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]}]
+\draw[->] (-13,0)--(5,0) node[right]{$t$};
+\foreach \b/\n in {-12/60,-11/56,-10/68,-9/61,-8/66,-7/56,-6/55,-5/50,-4/53,-3/66,-2/61,-1/60} {
+  \fill[olive!70] (\b-0.3,0) rectangle (\b+0.3,{\n/45}); \node[font=\tiny] at (\b,{\n/45+0.15}) {\n}; \node[font=\tiny,below] at (\b,0) {\b};}
+\fill[blue!60] (-0.3,0) rectangle (0.3,{63/45}); \node[font=\tiny] at (0.15,{63/45+0.15}) {63};
+\fill[red!80!black] (-0.3,{63/45}) rectangle (0.3,{63/45+0.25}); \node[font=\tiny,red!80!black,anchor=west] at (0.35,{63/45+0.32}) {+ the family};
+\node[font=\tiny,below] at (0,0) {\textbf{0}};
+\foreach \b/\n in {1/63,2/59,3/63} {\fill[red!45] (\b-0.3,0) rectangle (\b+0.3,{\n/45}); \node[font=\tiny] at (\b,{\n/45+0.15}) {\n}; \node[font=\tiny,below] at (\b,0) {+\b};}
+\node[below] at (-12,-0.3) {$-300$ ns}; \node[below] at (0,-0.3) {0}; \node[below] at (3,-0.3) {$+75$ ns};
+\draw[decorate,decoration={brace,amplitude=5pt}] (-12.3,2.0)--(-0.7,2.0) node[midway,above=5pt]{early: 712 collisions, simulated one by one};
+\draw[decorate,decoration={brace,amplitude=5pt}] (0.7,2.0)--(3.3,2.0) node[midway,above=5pt]{late: 185};
+% one cell
+\node[draw,fill=green!12,minimum width=1.6cm,minimum height=1.1cm,align=center] (c) at (-4,-2.3) {one cell\\$E=\sum_{bx}\sum_{hits}E_{hit}$};
+\foreach \b in {-10,-7,-3,0,2} \draw[->,black!60] (\b,-0.75) -- (c);
+\node[align=left,anchor=west] at (-1.6,-2.3) {every hit keeps its time $t=t_{flight}+25\,\mathrm{ns}\times bx$\\and the collision it came from; nothing is lost in the sum};
+\end{tikzpicture}

@@ -1,3 +1,30 @@
+
+--------------------------------------------
+Date: 2026-11-22
+Prompt 36: Added_chapter_10_SIM
+--------------------------------------------
+Let us complete the next chapter example/SIM/, chapter/chapter_10_SIM.tex/.md where:
+
+(1) Simulate the full chain on (B field + decays + EM Physics + hadronic)
+
+(2) Simulate separtly the signal, in-time pileup, and out-time pileup
+
+(3) Hits can be added by hand for signal + in-time pileup + out-time pileup 
+
+(4) We can have separate tables for TRK, ECAL, HCAL, etc to demonstrate various numbers 
+and also the ledger table similar to \label{tab:10_ledger} from https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.tex (the link is mentioned in the 
+example/SIM/CMSSW/README.md)
+
+(5) The Standalone plots can be similar to what we have in example/SIM/CMSSW/*.png
+
+(6) A NOTE from Opus: "A PDF page takes about half a minute, while ROOT's PNG of the same 
+page takes about 50 min. Rendering the three tracker pages from the PDF with pdftoppm 
+-cropbox -png takes 32 s; ROOT's PNGs of them took 2 h 07". Keep this in mind in case we
+also see similar issue though we use matplotlib mostly.
+
+(7) Finally, the full chapter should comply by the Constitution.md
+
+
 --------------------------------------------
 Date: 2026-11-20
 Prompt 35: ReviewedChapter_09_G4

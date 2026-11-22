@@ -1,0 +1,19 @@
+% chapter 10: the recipe of standalone_SIM.py for one particle.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]},
+  b/.style={draw,rounded corners=2pt,fill=black!5,minimum height=9mm,text width=2.9cm,align=center,inner sep=2pt},
+  d/.style={draw,diamond,aspect=2.4,fill=yellow!15,inner sep=1pt,align=center,text width=2.1cm}]
+\node[b] (a) at (0,0) {take a particle from the stack; draw its decay path $\beta\gamma c\tau(-\ln u)$};
+\node[b] (h) at (4.2,0) {helix (or line) to the next surface of the tracker};
+\node[d] (q) at (8.5,0) {decay path reached first?};
+\node[b] (dc) at (12.6,0) {decay: daughters on the stack};
+\node[b] (m) at (8.5,-2.3) {at the surface: hit, $dE/dx$, scattering, bremsstrahlung, conversion, nuclear interaction};
+\node[d] (e) at (4.2,-2.3) {boundary of the tracker?};
+\node[b] (c) at (0,-2.3) {to the face of ECAL or HF; shower, or ionise through to the muon stations};
+\node[b,fill=green!12] (o) at (0,-4.3) {cells: energy and time per primary};
+\node[b,fill=red!10] (t) at (8.5,-4.3) {tracker hit: position, time, $dE$, primary};
+\draw[->] (a)--(h); \draw[->] (h)--(q); \draw[->] (q)--node[above]{yes}(dc); \draw[->] (q)--node[right]{no}(m);
+\draw[->] (m)--(e); \draw[->] (e)--node[above]{yes}(c); \draw[->] (e)--node[right]{no}(h);
+\draw[->] (c)--(o); \draw[->] (m)--(t);
+\draw[->] (dc.north) -- ++(0,0.5) -| (a.north);
+\draw[->] (m.east) -- ++(1.0,0) node[right,align=left]{secondaries\\on the stack};
+\end{tikzpicture}

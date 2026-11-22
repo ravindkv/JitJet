@@ -1,0 +1,24 @@
+% chapter 10: the picture to carry. Three samples through the same detector, separately; their hits added by hand.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]},
+  box/.style={draw,rounded corners=2pt,minimum height=11mm,text width=2.55cm,align=center,inner sep=2pt},
+  phys/.style={box,fill=black!6,text width=2.1cm},
+  sig/.style={box,fill=red!12},it/.style={box,fill=blue!12},oot/.style={box,fill=olive!22},mx/.style={box,fill=orange!22}]
+% the physics, switched on one after the other
+\node[phys] (b) at (0,2.9)  {magnetic field\\{\scriptsize $R=p_T/0.3B$}};
+\node[phys] (d) at (2.6,2.9) {decays in flight\\{\scriptsize $\beta\gamma c\tau$}};
+\node[phys] (e) at (5.2,2.9) {EM physics\\{\scriptsize $X_0$}};
+\node[phys] (h) at (7.8,2.9) {hadronic physics\\{\scriptsize $\lambda_I$}};
+\draw[->] (b)--(d); \draw[->] (d)--(e); \draw[->] (e)--(h);
+\draw[decorate,decoration={brace,amplitude=5pt,mirror}] (-1.2,2.2)--(9.0,2.2) node[midway,below=5pt]{the same detector and the same physics for every collision};
+% three samples
+\node[sig] (s)  at (-0.2,0.2)  {the family\\1 collision\\672 primaries};
+\node[it]  (i)  at (3.9,0.2)  {in-time crowd\\63 collisions, bx $=0$\\10\,825 primaries};
+\node[oot] (o)  at (8.0,0.2)  {out-of-time crowd\\897 collisions, 15 bx\\128\,894 primaries};
+\node[sig] (sh) at (-0.2,-1.9) {8585 tracker hits\\617 GeV in crystals};
+\node[it]  (ih) at (3.9,-1.9) {92\,942 tracker hits\\4290 GeV};
+\node[oot] (oh) at (8.0,-1.9) {1\,104\,486 tracker hits\\50\,064 GeV};
+\foreach \a/\b in {s/sh,i/ih,o/oh} \draw[->] (\a)--(\b) node[midway,right,font=\scriptsize]{simulated alone};
+\node[mx,text width=5.2cm] (m) at (3.9,-4.0) {added by hand: $t\to t+25\,\mathrm{ns}\times\mathrm{bx}$,\\energies summed cell by cell\\1\,206\,013 tracker hits, 184\,475 ECAL cells};
+\draw[->] (sh.south) |- (m.west); \draw[->] (ih)--(m); \draw[->] (oh.south) |- (m.east);
+\draw[->] (m.south)--++(0,-0.55) node[below,font=\scriptsize,text=black!60]{the electronics: chapter 11};
+\end{tikzpicture}

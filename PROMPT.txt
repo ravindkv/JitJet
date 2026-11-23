@@ -1,5 +1,37 @@
 
 --------------------------------------------
+2026-11-23|Prompt 37| AddedSpiralRoadCover 
+--------------------------------------------
+I would like to have new cover/cover_timeline_spiral.tex which could be based on cover/cover_timeline_minimal.tex where I would like to have the jet cone in vertical position and
+from the bottom we will have spiral road which spirals and goes to the top. The jet will
+still be it's journery however, the JitJet book will serve as the tour on spiral road
+which takes a reader all the way up to the top. 
+
+This also gives the  msg that anyone in
+CMS can reach at the top by reading JetJet. Currently, in CMS/JME/JERC we have "the peak
+problem" where the peak of few individual have become too big compare to others
+ which leads to the fact that the rest of the collaborators have hard time to communicate.
+Due to which most of the time, the big peak has to bend to come to the levels of others 
+which creates strain for the bigger peaks. Unfortunatly, the bigger peaks have no ladder,
+stairs, lifts that could help new comers to reach to the bigger peaks easily. On the other
+hand, there are sinks, swamps, grave in the way in form of poor/incomplete documentation/presentation which affects the new comers in negative ways. So the JitJet spiral road is badly needed.
+
+In view of these:
++ Please create the spiral cover
++ Please update the section "From the JitJet Desk" to also describe the spirit of above msg in  chapter/chapter_00_frontmatter.tex 
+
+Followups:
++ Thanks a lot.  in  the cover we do not have to write "the JitJet tour starts here" in  the bottom. Also the road is a bit hiding  the  initial luminous region. Slightly adjust that.
++ "I" should sit in the middle of the luminous region and the road should start from "I" goes on right and spirals
++ wow, perfect. Just few more small tweaks:
+* show the bus at 2-3 more points and also at the top
+* Remove flag and "the top, open to every reader" from top
+* Show the small portion of road on top where bus stands
++ thanks a lot. One final slight tweak:
+* the road on top has stretched more. Maybe just keep that close to the edge and bus on top of road
++ thanks. maybe a bit shorter so that the bus is on the right side of the subjet ellipse
+
+--------------------------------------------
 Date: 2026-11-22
 Prompt 36: Added_chapter_10_SIM
 --------------------------------------------

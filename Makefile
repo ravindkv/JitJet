@@ -4,6 +4,7 @@
 #   make cover     -> cover/cover.pdf, the TikZ front cover (first page of the book)
 #   make cover-timeline -> cover/cover_timeline.pdf, the alternative timeline-cone cover
 #   make cover-timeline-minimal -> cover/cover_timeline_minimal.pdf, the same cone without part labels
+#   make cover-timeline-spiral -> cover/cover_timeline_spiral.pdf, the upright cone with the spiral road of the tour
 #   make cover-video -> cover/animate_cover_timeline.mp4, the narrated trailer of the cover
 #   make cover-video-short -> cover/animate_short_cover_timeline.mp4, the narrated cone-growth trailer (~80 s)
 #   make trailer-part1 -> example/trailer/animate_trailer_part1_ch01_07.mp4, the narrated Part I trailer (~100 s)
@@ -65,6 +66,12 @@ cover-timeline-minimal: cover/cover_timeline_minimal.pdf
 
 cover/cover_timeline_minimal.pdf: cover/cover_timeline_minimal.tex
 	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover_timeline_minimal.tex
+
+# The spiral variant: the cone upright, the book as a spiral road to the top.
+cover-timeline-spiral: cover/cover_timeline_spiral.pdf
+
+cover/cover_timeline_spiral.pdf: cover/cover_timeline_spiral.tex
+	cd cover && pdflatex -interaction=nonstopmode -halt-on-error cover_timeline_spiral.tex
 
 # The trailer: a narrated flight along the timeline cone (about 5 min, 1080p).
 # Needs numpy + Pillow (on this Mac: PYTHON=/usr/bin/python3), ffmpeg, gs and
@@ -439,12 +446,13 @@ clean:
 	      $(MAIN).lof $(MAIN).lot $(MAIN).fls $(MAIN).fdb_latexmk $(MAIN).pyg chapter/*.aux chapter/aux/*.aux \
 	      cover/cover.aux cover/cover.log cover/cover_timeline.aux cover/cover_timeline.log \
 	      cover/cover_timeline_minimal.aux cover/cover_timeline_minimal.log \
+	      cover/cover_timeline_spiral.aux cover/cover_timeline_spiral.log \
 	      smpost/cover_photo_youtube.aux smpost/cover_photo_youtube.log \
 	      smpost/profile_photo_youtube.aux smpost/profile_photo_youtube.log \
 	      smpost/thumbnail/*.aux smpost/thumbnail/*.log
 	rm -rf _minted-$(MAIN) build
 
 distclean: clean
-	rm -f $(MAIN).pdf $(COVER) $(PRERENDER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf
+	rm -f $(MAIN).pdf $(COVER) $(PRERENDER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf cover/cover_timeline_spiral.pdf
 
-.PHONY: quick cover cover-timeline cover-timeline-minimal cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean
+.PHONY: quick cover cover-timeline cover-timeline-minimal cover-timeline-spiral cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean

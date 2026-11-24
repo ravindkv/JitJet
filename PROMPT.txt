@@ -1,5 +1,12 @@
 
 --------------------------------------------
+2026-11-23| P38_CorrectedSpellGeant4
+--------------------------------------------
+In the following video example/G4/Standalone/animate_standalone_G4.mp4
+(1) The "Geant4" is spelled as "Gene 4" i.e. missing "a" and "t". Please correct that.
+(2) Remove the background music, just keep the narration.
+
+--------------------------------------------
 2026-11-23|Prompt 37| AddedSpiralRoadCover 
 --------------------------------------------
 I would like to have new cover/cover_timeline_spiral.tex which could be based on cover/cover_timeline_minimal.tex where I would like to have the jet cone in vertical position and

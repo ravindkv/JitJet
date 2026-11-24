@@ -53,7 +53,8 @@ def display_text(text: str) -> str:
 
 
 # Written -> spoken: words the voices read as initials or mangle. Subtitles and --print-script keep the written form.
-SPOKEN = {"JitJet": "Jit Jet"}       # "JitJet" comes out as "J-I-T Jet"
+SPOKEN = {"JitJet": "Jit Jet",       # "JitJet" comes out as "J-I-T Jet"
+          "Geant4": "Jee-ant four"}  # "Geant4" comes out as "Gene 4"
 
 
 def spoken_text(text: str) -> str:

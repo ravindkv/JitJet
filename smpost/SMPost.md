@@ -31,8 +31,8 @@ experiment can follow at their own pace, running the same code the author ran.
 
 
 ### ---------------------------------
-Channel Name: JitJet
-Channel Handle: JourneyIsTheJet
+Channel Name: JetMET
+Channel Handle: JetMETCMS
 Channel Playlist: JitJet Book, JitJet bTour, JitJet tTour, etc
 ### ---------------------------------
 

@@ -24,8 +24,9 @@ detector of 2025 waiting for the primaries: the crossing itself is the next film
                 pots, the rest down the beam pipe.
   7  ready      The primaries gathered at the centre of the CMS detector of 2025, its quadrant cut away: ready to cross.
 
-Narration and music: as in the other chapter films (example/soundtrack.py): one line per phase (--print-script),
-edge-tts or the macOS `say` voice, clips cached in build/narration/G4/, an .srt next to the .mp4.
+Narration: as in the other chapter films (example/soundtrack.py): one line per phase (--print-script),
+edge-tts or the macOS `say` voice, clips cached in build/narration/G4/, an .srt next to the .mp4. This film carries
+the voice alone; --music puts the score of the other films back under it.
 
 Examples (matplotlib is needed; on this Mac use /usr/bin/python3):
   python3 animate_standalone_G4.py                       # -> .mp4 + .srt next to this file (1920x1080)
@@ -764,6 +765,7 @@ def main():
     p.add_argument("--jobs", type=int, default=4)
     p.add_argument("--cache-dir", type=Path, default=REPO / "build" / "narration" / "G4")
     snd.add_narration_args(p)
+    p.add_argument("--music", action="store_true", help="add the background score (off by default: narration only)")
     p.add_argument("-i", "--input", type=Path, default=HERE.parent.parent / "PU" / "event_PU.lhe")
     p.add_argument("--library", type=Path, default=HERE.parent.parent / "PU" / "pileup_library.lhe.gz")
     args = p.parse_args()
@@ -789,7 +791,7 @@ def main():
     clips = snd.load_narration(lines, args, args.cache_dir, ffmpeg) if ffmpeg else {}
     film = snd.Film(scenes, snd.clip_lengths(clips), {int(n): name for n, name in SCENE_NAMES.items()}, slow_max=4.0)
     print(f"film: {film.describe()}")
-    score = None if args.no_music else score_spec(film)
+    score = score_spec(film) if args.music and not args.no_music else None
     audio = None
     tmp = tempfile.TemporaryDirectory(prefix="jitjet_g4_")
     if ffmpeg and (clips or score):

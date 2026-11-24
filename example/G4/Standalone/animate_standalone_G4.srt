@@ -1,264 +1,264 @@
 1
-00:00:00,400 --> 00:00:03,615
+00:00:00,400 --> 00:00:03,629
 The crowd has arrived, and the road ends at a gate.…
 
 2
-00:00:03,665 --> 00:00:12,656
+00:00:03,679 --> 00:00:12,709
 Before the detector can see a single particle, every member of the event is handed to Geant4, the toolkit that carries particles through matter.
 
 3
-00:00:12,706 --> 00:00:14,790
+00:00:12,759 --> 00:00:14,853
 Three streams walk up to the gate:
 
 4
-00:00:14,840 --> 00:00:20,252
+00:00:14,903 --> 00:00:20,339
 our family, the in-time crowd, and the out-of-time crowd of the neighbouring crossings.
 
 5
-00:00:21,402 --> 00:00:23,802
+00:00:21,489 --> 00:00:23,889
 And the hand-over is a selection.
 
 6
-00:00:23,852 --> 00:00:27,069
+00:00:23,939 --> 00:00:27,156
 At the gate, members fall out of the stream.
 
 7
-00:00:27,119 --> 00:00:29,667
+00:00:27,206 --> 00:00:29,754
 Most of them go down the beam pipe:
 
 8
-00:00:29,717 --> 00:00:33,750
+00:00:29,804 --> 00:00:33,837
 they fly too close to the beam for any detector to see.
 
 9
-00:00:33,800 --> 00:00:36,720
+00:00:33,887 --> 00:00:36,807
 A few are too soft, a few are neutrinos.
 
 10
-00:00:36,770 --> 00:00:42,288
+00:00:36,857 --> 00:00:42,375
 And a handful take the rail along the beam line, to two detectors far away.
 
 11
-00:00:43,438 --> 00:00:49,439
+00:00:43,525 --> 00:00:49,562
 The rest walk on, and gather at the centre of the C M S detector.
 
 12
-00:00:49,489 --> 00:00:55,769
+00:00:49,612 --> 00:00:55,929
 672 members of our family, and 10,701 and 126,823 of the two crowds.
 
 13
-00:00:55,819 --> 00:01:02,100
+00:00:55,979 --> 00:01:02,297
 With the neutral ones on the rail, they are the primaries of Geant4.
 
 14
-00:01:02,150 --> 00:01:05,917
+00:01:02,347 --> 00:01:06,136
 Now the rules of the gate, one at a time.
 
 15
-00:01:07,067 --> 00:01:10,658
+00:01:07,286 --> 00:01:10,878
 First, where everybody is. Our family:
 
 16
-00:01:10,708 --> 00:01:17,845
+00:01:10,928 --> 00:01:18,065
 749 stable particles, thirteen point six T e V, spread over pseudorapidity.
 
 17
-00:01:18,995 --> 00:01:22,186
+00:01:19,215 --> 00:01:22,406
 Then the in-time crowd of chapter eight:
 
 18
-00:01:22,236 --> 00:01:26,642
+00:01:22,456 --> 00:01:26,862
 63 collisions, 13,456 particles. Look at where they go:
 
 19
-00:01:26,692 --> 00:01:31,585
+00:01:26,912 --> 00:01:31,805
 the plateau in the middle, and the beam remnants far forward.
 
 20
-00:01:32,735 --> 00:01:42,242
+00:01:32,955 --> 00:01:42,462
 And the out-of-time crowd, 897 collisions of the neighbouring crossings, 161,696 particles, simulated with the same rules.
 
 21
-00:01:42,292 --> 00:01:51,172
+00:01:42,512 --> 00:01:51,392
 The gate stands at an eta of five and a half, where the particles are already thinning out, and the energy is not.
 
 22
-00:01:52,322 --> 00:01:54,737
+00:01:52,542 --> 00:01:54,957
 The rule of the gate is a cylinder.…
 
 23
-00:01:54,787 --> 00:02:03,980
+00:01:55,007 --> 00:02:04,200
 Two point nine centimetres around the beam, out to 355 centimetres along it, which is two point nine times the sinh of five and a half.
 
 24
-00:02:05,130 --> 00:02:09,607
+00:02:05,350 --> 00:02:09,827
 Every particle is followed in a straight line from its own vertex.
 
 25
-00:02:09,657 --> 00:02:14,888
+00:02:09,877 --> 00:02:15,108
 If the line is still inside the cylinder at the end, the particle is dropped.
 
 26
-00:02:14,938 --> 00:02:19,758
+00:02:15,158 --> 00:02:19,978
 From the centre of the detector, that is an eta cut at five and a half.
 
 27
-00:02:19,808 --> 00:02:23,050
+00:02:20,028 --> 00:02:23,270
 From a vertex a few centimetres away, it is not.
 
 28
-00:02:24,200 --> 00:02:25,713
+00:02:24,420 --> 00:02:25,933
 Start with our family.
 
 29
-00:02:25,763 --> 00:02:32,745
+00:02:25,983 --> 00:02:32,965
 Its vertex is a millimetre and a half from the centre, so its cut is five and a half on both sides.
 
 30
-00:02:32,795 --> 00:02:34,805
+00:02:33,015 --> 00:02:35,025
 16 members fly near the edge:
 
 31
-00:02:34,855 --> 00:02:40,701
+00:02:35,075 --> 00:02:40,921
 6 leave the cylinder and are handed over, the others are still inside, and dropped.
 
 32
-00:02:40,751 --> 00:02:42,761
+00:02:40,971 --> 00:02:42,981
 None of them is a close call.
 
 33
-00:02:43,911 --> 00:02:49,345
+00:02:44,131 --> 00:02:49,565
 Now one collision of the crowd, 6 centimetres in front of the centre.
 
 34
-00:02:49,395 --> 00:02:55,622
+00:02:49,615 --> 00:02:55,842
 Towards plus z its lines have only 348 centimetres to go; towards minus z, 361.
 
 35
-00:02:55,672 --> 00:03:02,695
+00:02:55,892 --> 00:03:02,915
 So on the long side, a pion beyond five and a half gets out of the cylinder, and is kept.
 
 36
-00:03:02,745 --> 00:03:08,734
+00:03:02,965 --> 00:03:08,954
 On the short side, a photon inside five and a half does not, and is dropped.
 
 37
-00:03:09,884 --> 00:03:14,194
+00:03:10,104 --> 00:03:14,414
 So the verdict depends on where the collision happened.
 
 38
-00:03:14,244 --> 00:03:21,249
+00:03:14,464 --> 00:03:21,469
 In our window, 114 members beyond five and a half are kept, and 93 inside it are dropped.
 
 39
-00:03:21,299 --> 00:03:23,786
+00:03:21,519 --> 00:03:24,006
 The cut is a line, not an angle.
 
 40
-00:03:24,936 --> 00:03:28,872
+00:03:25,156 --> 00:03:29,092
 Below forty M e V of momentum, nothing enters:
 
 41
-00:03:28,922 --> 00:03:38,057
+00:03:29,142 --> 00:03:38,277
 5 soft members of the family, most of them photons from neutral pion decays, and 143 of the in-time crowd.
 
 42
-00:03:38,107 --> 00:03:41,697
+00:03:38,327 --> 00:03:41,917
 0.1 GeV for the family, 3.5 for the crowd.
 
 43
-00:03:42,847 --> 00:03:45,084
+00:03:43,067 --> 00:03:45,304
 The neutrinos are different.
 
 44
-00:03:45,134 --> 00:03:51,618
+00:03:45,354 --> 00:03:51,838
 They pass every cut, and the stacking action kills them before their first step.
 
 45
-00:03:51,668 --> 00:03:54,722
+00:03:51,888 --> 00:03:54,942
 Our family loses 5, 229 GeV of energy.
 
 46
-00:03:54,772 --> 00:04:02,645
+00:03:54,992 --> 00:04:02,865
 Whatever transverse momentum they carry, 9 GeV here, is missing from every detector, from now on.
 
 47
-00:04:03,795 --> 00:04:07,007
+00:04:04,015 --> 00:04:07,227
 Some members never reach the gate themselves.
 
 48
-00:04:07,057 --> 00:04:11,647
+00:04:07,277 --> 00:04:11,867
 Pythia decays every hadron that lives less than ten millimetres.
 
 49
-00:04:11,697 --> 00:04:20,491
+00:04:11,917 --> 00:04:20,711
 Our family had 14 weak decays, B and D hadrons, a b baryon, a tau, and each happened a few millimetres from the collision.
 
 50
-00:04:21,641 --> 00:04:28,210
+00:04:21,861 --> 00:04:28,471
 The farthest, a D zero, decayed one point five centimetres from the beam: inside the cylinder.
 
 51
-00:04:28,260 --> 00:04:32,505
+00:04:28,521 --> 00:04:32,793
 So every daughter starts as a primary, where its parent died.
 
 52
-00:04:32,555 --> 00:04:37,645
+00:04:32,843 --> 00:04:37,964
 Only a decay outside the cylinder would hand the parent itself to Geant4.
 
 53
-00:04:38,795 --> 00:04:41,900
+00:04:39,114 --> 00:04:42,219
 Far forward the crowd is all energy.
 
 54
-00:04:41,950 --> 00:04:51,014
+00:04:42,269 --> 00:04:51,333
 2,442 members of the in-time crowd go down the beam pipe, 508 T e V, and no detector will ever see them.
 
 55
-00:04:52,164 --> 00:05:02,075
+00:04:52,483 --> 00:05:02,394
 But beyond an eta of eight point two, neutrons and photons are handed over, 124 of them here, for the zero degree calorimeter one hundred and forty metres away.
 
 56
-00:05:02,125 --> 00:05:11,413
+00:05:02,444 --> 00:05:11,733
 By default the simulation stops them in the dead region of the beam line, a metre before they arrive; a study of the forward region lets them through.
 
 57
-00:05:12,563 --> 00:05:26,654
+00:05:12,883 --> 00:05:27,111
 And the protons that survived the collision, with more than three T e V along the beam, are carried by the optics of the L H C to the Roman pots, two hundred and three metres away, and handed to Geant4 there. 27 of them.
 
 58
-00:05:27,804 --> 00:05:32,161
+00:05:28,261 --> 00:05:32,618
 What is left waits at the centre of the detector.
 
 59
-00:05:32,211 --> 00:05:34,499
+00:05:32,668 --> 00:05:34,956
 672 members of the family:
 
 60
-00:05:34,549 --> 00:05:42,413
+00:05:35,006 --> 00:05:42,870
 ninety percent of them, 52 percent of the energy, 96 percent of the transverse momentum.
 
 61
-00:05:42,463 --> 00:05:49,248
+00:05:42,920 --> 00:05:49,705
 And 10,825 and 128,894 members of the two crowds, a quarter of their energy.
 
 62
-00:05:50,398 --> 00:05:52,681
+00:05:50,855 --> 00:05:53,138
 The detector of 2025 is waiting:
 
 63
-00:05:52,731 --> 00:05:58,223
+00:05:53,188 --> 00:05:58,680
 the tracker, the calorimeters, the solenoid, the iron and the muon chambers.
 
 64
-00:05:59,573 --> 00:06:01,143
+00:06:00,030 --> 00:06:01,600
 Nothing has moved yet.
 
 65
-00:06:01,193 --> 00:06:04,972
+00:06:01,650 --> 00:06:05,429
 The hand-over is a selection, not a transformation.…
 
 66
-00:06:05,022 --> 00:06:10,641
+00:06:05,479 --> 00:06:11,099
 The crossing, with the field, the material and the showers, is the next film.
 

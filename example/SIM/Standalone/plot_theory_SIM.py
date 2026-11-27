@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""The theory figures of chapter 10: one page per equation, drawn with the functions of standalone_SIM.py.
+"""The theory figures of chapter 10: one page per equation. The curves are the formulas (the functions of
+standalone_SIM.py); every point, histogram and number is Geant4's: the family and the crowd of the record
+(../simhits_*.npz, ../g4tracks_signal.npz) and the single particles of guns_SIM.py (guns_SIM.json).
 
-  python3 plot_theory_SIM.py -o theory_SIM.pdf        (about a minute: pages 4 to 7 shoot single particles)
+  python3 plot_theory_SIM.py -o theory_SIM.pdf        (a few seconds; writes plot_theory_SIM.json with the numbers the chapter quotes)
 
  page 1  the helix: R = pT / (0.3 B) and the looper thresholds, with the pT spectrum of our charged primaries
  page 2  decays in flight: the probability to decay inside the tracker, and where our event's decays happened
  page 3  the Bethe-Bloch curve in silicon and the energy loss of our tracker hits (Landau)
- page 4  the material in front of the calorimeters: the layer model against the CMS geometry (TGeo), and what it
-         does to photons (conversions) and hadrons (nuclear interactions)
- page 5  a radiography of the detector model: the vertices of conversions and nuclear interactions
+ page 4  the material in front of the calorimeters in the CMS geometry (geantinos), and what it does to photons
+         (conversions) and hadrons (nuclear interactions)
+ page 5  a radiography of the tracker: the vertices of conversions and nuclear interactions in Geant4
  page 6  the electromagnetic shower: longitudinal profile, and how many crystals share it
  page 7  the hadronic shower: the electromagnetic fraction and the response of ECAL + HCAL to pions
  page 8  the three crowds in time: the hits after the shift by 25 ns x bx, and the energy in the circle of our jet
@@ -34,27 +36,6 @@ import standalone_SIM as sim
 HERE = Path(__file__).resolve().parent
 plt.rcParams.update({"font.size": 11, "axes.grid": True, "grid.alpha": 0.3, "figure.dpi": 100})
 C = {"sig": "#cc0000", "it": "#3366cc", "early": "#999900", "late": "#ff6666", "cms": "black", "model": "#cc6600"}
-
-
-def gun(pid, p, eta, n, stage="full", seed=7, first_only=False, flat_eta=None):
-    out = []
-    m = sim.dec.m0(pid)
-    for i in range(n):
-        rng = np.random.default_rng([seed, abs(pid), int(p * 1000), i])
-        s = sim.Sim(rng, stage=stage, record=True)
-        e = rng.uniform(-flat_eta, flat_eta) if flat_eta else eta
-        phi = rng.uniform(-math.pi, math.pi)
-        pt = p / math.cosh(e)
-        s.push(pid, (0.0, 0.0, 0.0), np.array([pt * math.cos(phi), pt * math.sin(phi), pt * math.sinh(e)]), 0.0, 0, 0, primary=True)
-        first = True
-        while s.stack:
-            s.track(s.stack.pop())
-            if first_only and first:
-                s.stack.clear()
-            first = False
-        s.eta0 = e
-        out.append(s)
-    return out
 
 
 def outline(ax):
@@ -166,44 +147,41 @@ def page_material(pdf):
     fig, (a, b) = plt.subplots(1, 2, figsize=(13, 5.4))
     x0, rms = np.array([s["x0"] for s in sc]), np.array([s["x0_rms"] for s in sc])
     a.fill_between(eta, x0 - rms, x0 + rms, color="0.85", label="rms over azimuth")
-    a.plot(eta, x0, color="k", lw=1.8, label="CMS simulation geometry (TGeo): $x/X_0$")
-    a.plot(eta, [s["model_x0"] for s in sc], color=C["model"], lw=1.8, ls="--", label="layer model of the script: $x/X_0$")
-    a.plot(eta, [s["lam"] for s in sc], color="#3366cc", lw=1.8, label=r"CMS: $x/\lambda_I$")
-    a.plot(eta, [s["model_lam"] for s in sc], color="#3366cc", lw=1.8, ls="--", label=r"layer model: $x/\lambda_I$")
+    a.plot(eta, x0, color="k", lw=1.8, label="CMS geometry in Geant4 (geantinos): $x/X_0$")
+    a.plot(eta, [s["lam"] for s in sc], color="#3366cc", lw=1.8, label=r"CMS geometry: $x/\lambda_I$")
     a.set_xlabel(r"$\eta$"); a.set_ylabel("material before the calorimeters"); a.set_ylim(0, 2.6)
-    a.set_title(f"tracker material: model / CMS = {V['mean_ratio_x0']:.2f} ($X_0$), {V['mean_ratio_lam']:.2f} ($\\lambda_I$) for $|\\eta|<2.5$")
+    inside = np.abs(eta) <= 2.5
+    a.set_title(f"tracker material, mean over $|\\eta|<2.5$: {x0[inside].mean():.2f} $X_0$, {np.array([s['lam'] for s in sc])[inside].mean():.2f} $\\lambda_I$")
     a.legend(fontsize=8.5, ncol=2, loc="upper center")
-    # what it does: photons and pions shot through the model
+    # what it does: photons and pions of 5 GeV shot through the tracker in Geant4 (guns_SIM.py)
+    G = json.loads((HERE / "guns_SIM.json").read_text())["radiography"]
     bins = np.linspace(-3, 3, 25)
     cen = 0.5 * (bins[1:] + bins[:-1])
-    for pid, p, col, lab, fate in ((22, 5.0, "#009900", "5 GeV photons that convert", "conversion"), (211, 5.0, "#aa00aa", r"5 GeV $\pi^+$ with a nuclear interaction", "nuclear")):
-        g = gun(pid, p, 0.0, 4000, first_only=True, flat_eta=3.0)
-        e = np.array([s.eta0 for s in g])
-        hit = np.array([s.fate.get(0) == fate for s in g])
+    for name, col, lab in (("photon", "#009900", "5 GeV photons that convert"), ("pion", "#aa00aa", r"5 GeV $\pi^+$ with a nuclear interaction")):
+        e, hit = np.array(G[name]["eta"]), np.array(G[name]["lost"], bool)
         n, _ = np.histogram(e, bins)
         k, _ = np.histogram(e[hit], bins)
         f = k / np.maximum(n, 1)
-        b.errorbar(cen, f, yerr=np.sqrt(f * (1 - f) / np.maximum(n, 1)), fmt="o", ms=4, color=col, label=f"{lab}: {100 * hit.mean():.0f} % on average")
+        b.errorbar(cen, f, yerr=np.sqrt(f * (1 - f) / np.maximum(n, 1)), fmt="o", ms=4, color=col, label=f"Geant4, {lab}: {100 * hit.mean():.0f} % on average")
     mx = np.array([s["x0"] for s in sc]); ml = np.array([s["lam"] for s in sc])
     b.plot(eta, 1 - np.exp(-7 / 9 * mx * sim.pair_fraction(5.0)), color="#009900", lw=1.5, label=r"$1-e^{-7t/9}$ with $t$ of the CMS geometry")
     b.plot(eta, 1 - np.exp(-ml), color="#aa00aa", lw=1.5, label=r"$1-e^{-x/\lambda_I}$ with the CMS geometry")
     b.set_xlabel(r"$\eta$"); b.set_ylabel("fraction lost before the calorimeters"); b.set_ylim(0, 1.0)
-    b.set_title("what the material does to a photon and to a hadron")
+    b.set_title("what the material does to a photon and to a hadron (Geant4)")
     b.legend(fontsize=8.5, loc="upper center")
     fig.tight_layout(); pdf.savefig(fig); plt.close(fig)
 
 
 def page_radiography(pdf):
+    G = json.loads((HERE / "guns_SIM.json").read_text())["radiography"]
     fig, ax = plt.subplots(figsize=(13, 5.6))
-    outline(ax)
-    for pid, n, col, lab in ((22, 9000, "#009900", "conversions of 5 GeV photons"), (211, 6000, "#aa00aa", r"nuclear interactions of 5 GeV $\pi^+$")):
-        g = gun(pid, 5.0, 0.0, n, first_only=True, flat_eta=3.2, seed=11)
-        v = np.array([s.vtx[0][2:5] for s in g if s.vtx and s.vtx[0][0] in (sim.PROC["conv"], sim.PROC["had"])])
-        ax.plot(v[:, 2], np.hypot(v[:, 0], v[:, 1]), ".", ms=2.5, color=col, label=f"{lab}: {len(v)} of {n}", rasterized=True)
+    for name, col, lab in (("photon", "#009900", "conversions of 5 GeV photons"), ("pion", "#aa00aa", r"nuclear interactions of 5 GeV $\pi^+$")):
+        v = np.array(G[name]["vertices"]).reshape(-1, 3)
+        ax.plot(v[:, 2], np.hypot(v[:, 0], v[:, 1]), ".", ms=2.5, color=col, label=f"{lab}: {len(v)} of {G[name]['n']}", rasterized=True)
     ax.set_xlim(-300, 300); ax.set_ylim(0, 125); ax.set_xlabel("z [cm]"); ax.set_ylabel("r [cm]")
-    ax.set_title("a radiography of the detector model: where photons convert and hadrons interact (flat in $\\eta$, $|\\eta|<3.2$)")
+    ax.set_title("a radiography of the CMS tracker inside Geant4: where photons convert and hadrons interact (flat in $\\eta$, $|\\eta|<3$)")
     ax.legend(fontsize=9, loc="upper right", markerscale=5)
-    fig.tight_layout(); pdf.savefig(fig); plt.close(fig)
+    fig.tight_layout(); pdf.savefig(fig, dpi=110); plt.close(fig)
 
 
 def page_em(pdf):
@@ -220,30 +198,18 @@ def page_em(pdf):
     a.set_xlabel("depth t [$X_0$ = 0.89 cm of PbWO$_4$]"); a.set_ylabel(r"$(1/E)\,dE/dt$")
     a.set_title(r"$dE/dt \propto (\beta t)^{\alpha-1}e^{-\beta t}$, $t_{max}=(\alpha-1)/\beta$", fontsize=11)
     a.legend(fontsize=9)
-    g = gun(22, 10.0, 0.5, 400, seed=5)
-    rows = {"unconverted": [], "converted in the tracker": []}
-    for s in g:
-        r = s.result(compress=True)
-        c = r["cal"]
-        m = (c["code"] // sim.CODE) == sim.EB
-        e = np.sort(c["e"][m])[::-1]
-        if len(e) == 0:
-            continue
-        tot = e.sum()
-        cum = np.cumsum(e) / 10.0
-        key = "converted in the tracker" if s.fate.get(0) == "conversion" else "unconverted"
-        rows[key].append((e[0] / 10.0, e[:9].sum() / 10.0, e[:25].sum() / 10.0, tot / 10.0, int(np.searchsorted(cum, 0.9 * tot / 10.0) + 1), len(e)))
+    G = json.loads((HERE / "guns_SIM.json").read_text())["photon10"]
     w = 0.38
-    for i, (key, col) in enumerate((("unconverted", "#009900"), ("converted in the tracker", "#ff8800"))):
-        r_ = np.array(rows[key])
-        mean = r_[:, :4].mean(axis=0)
-        b.bar(np.arange(4) + (i - 0.5) * w, mean, w, color=col, yerr=r_[:, :4].std(axis=0), capsize=3,
-              label=f"{key}: {len(r_)} photons; 90 % of the deposit in {np.median(r_[:, 4]):.0f} crystals (median)")
+    for i, (key, lab, col) in enumerate((("unconverted", "unconverted", "#009900"), ("converted", "converted in the tracker", "#ff8800"))):
+        r_ = G[key]
+        mean = np.array(r_["mean"])
+        b.bar(np.arange(4) + (i - 0.5) * w, mean, w, color=col, yerr=r_["rms"], capsize=3,
+              label=f"{lab}: {r_['n']} photons; 90 % of the deposit in {r_['n90']:.0f} crystals (median)")
         for j, v in enumerate(mean):
             b.text(j + (i - 0.5) * w, 0.03, f"{v:.2f}", ha="center", color="w", fontsize=9, fontweight="bold")
     b.set_xticks(range(4)); b.set_xticklabels(["hottest crystal", "9 hottest", "25 hottest", "all barrel crystals"])
     b.set_ylabel("fraction of the photon's energy"); b.set_ylim(0, 1.25)
-    b.set_title(r"400 photons of 10 GeV at $\eta=0.5$", fontsize=11)
+    b.set_title(f"{G['unconverted']['n'] + G['converted']['n']} photons of 10 GeV at $\\eta=0.5$ in Geant4", fontsize=11)
     b.legend(fontsize=8.5, loc="upper left")
     fig.tight_layout(); pdf.savefig(fig); plt.close(fig)
 
@@ -260,29 +226,16 @@ def page_had(pdf):
     a.set_xscale("log"); a.set_ylim(0, 1.05); a.set_xlabel("E [GeV]"); a.set_ylabel("fraction")
     a.set_title("the electromagnetic fraction, and what a calorimeter sees", fontsize=11)
     a.legend(fontsize=8.5, loc="lower right")
-    es = [2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 300.0]
-    res, rms, fe, mipf = [], [], [], []
-    for x in es:
-        g = gun(211, x, 0.5, 250, seed=3)
-        vals, ecal_frac, nm = [], [], 0
-        for s in g:
-            if s.fate.get(0) != "calorimeter":
-                continue
-            c = s.result(compress=True)["cal"]
-            det = c["code"] // sim.CODE
-            ee, eh = c["e"][det == sim.EB].sum(), c["e"][det == sim.HB].sum() * 125.0
-            vals.append((ee + eh) / x)
-            ecal_frac.append(ee / max(ee + eh, 1e-9))
-            nm += ee < 0.6
-        res.append(np.mean(vals)); rms.append(np.std(vals)); fe.append(np.mean(ecal_frac)); mipf.append(nm / max(len(vals), 1))
-    b.errorbar(es, res, yerr=rms, fmt="o-", color=C["sig"], capsize=3, label=r"(crystals + 125 $\times$ HB scintillator) / E: mean, bars = rms")
+    G = json.loads((HERE / "guns_SIM.json").read_text())["pions"]
+    es = [g["e"] for g in G]
+    res, rms, fe, mipf = [g["response"] for g in G], [g["rms"] for g in G], [g["ecal_share"] for g in G], [g["mip"] for g in G]
+    b.errorbar(es, res, yerr=rms, fmt="o-", color=C["sig"], capsize=3, label=r"(crystals + 125 $\times$ scintillator light) / E: mean, bars = rms")
     b.plot(es, fe, "s--", color="#009900", label="share of the crystals in that sum")
     b.plot(es, mipf, "^:", color="0.4", label="pions crossing the crystals as a MIP (< 0.6 GeV there)")
-    b.set_xscale("log"); b.set_ylim(0, 1.3); b.set_xlabel(r"$E_\pi$ [GeV]"); b.set_ylabel("fraction")
-    b.set_title(r"250 $\pi^+$ per energy at $\eta = 0.5$", fontsize=11)
+    b.set_xscale("log"); b.set_ylim(0, 1.6); b.set_xlabel(r"$E_\pi$ [GeV]"); b.set_ylabel("fraction")
+    b.set_title(f"$\\pi^+$ at $\\eta = 0.5$ in Geant4 ({G[0]['n']} to {G[-1]['n']} per energy), Birks' law applied", fontsize=11)
     b.legend(fontsize=8.5, loc="upper left")
     fig.tight_layout(); pdf.savefig(fig); plt.close(fig)
-    return dict(e=es, response=[float(x) for x in res], rms=[float(x) for x in rms], ecal_share=[float(x) for x in fe], mip=[float(x) for x in mipf])
 
 
 def page_time(pdf, S, N):
@@ -335,13 +288,88 @@ def page_scaling(pdf, S):
                 median_hits=float(np.median(tr)), max_hits=int(tr.max()), min_hits=int(tr.min()))
 
 
+def chapter_numbers(S) -> dict:
+    """The numbers the theory sections quote for our event, from what Geant4 recorded."""
+    sg = S["signal"]
+    T = dict(np.load(HERE.parent / "g4tracks_signal.npz"))
+    V, tr = T["V"], T["T"]                      # vertices (proc, prim, x, y, z, pid, ekin, nsec, t, g4track); trajectories (prim, pid, parent, proc, x, y, z, t, ekin, outer)
+    names = [str(x) for x in T["proc_names"]]
+    p4, pid, kind, fate = sg["prim_p4"], sg["prim_id"], sg["prim_kind"], sg["prim_fate"]
+    fates = [str(x) for x in sg["fate_names"]]
+    pt = np.hypot(p4[:, 1], p4[:, 2])
+    p = np.sqrt(pt ** 2 + p4[:, 3] ** 2)
+    eta = np.arcsinh(p4[:, 3] / np.maximum(pt, 1e-9))
+    ch = np.array([sim.dec.charge3(int(i)) != 0 for i in pid])
+    acc = np.abs(eta) < 2.5
+    out = {}
+    thr = sim.looper_pt(sim.R_EB)
+    out["field"] = dict(primaries=int(len(pid)), charged=int(ch.sum()), charged_in_tracker=int((ch & acc).sum()), median_pt=float(np.median(pt[ch & acc])),
+                        threshold=float(thr), below_threshold=int((ch & acc & (pt < thr)).sum()))
+    # who is at the gate and what becomes of them
+    out["fates"] = {}
+    for k, name in list(enumerate(sim.KINDS)) + [(-1, "all")]:
+        m = np.ones(len(pid), bool) if k < 0 else kind == k
+        out["fates"][name] = dict(n=int(m.sum()), e=float(p4[m, 0].sum()), in_tracker=int((m & acc).sum()), loopers=int((m & ch & acc & (pt < thr)).sum()),
+                                  **{f: int((m & (fate == i)).sum()) for i, f in enumerate(fates)})
+    # decays in the tracker volume, by the particle that decayed
+    dec = V[V[:, 0] == names.index("decay")]
+    sp = {}
+    for a_ in np.abs(dec[:, 5]).astype(int):
+        key = {211: "pi+-", 321: "K+-", 310: "K0S", 130: "K0L", 3122: "Lambda", 111: "pi0", 13: "mu+-", 221: "eta", 3222: "Sigma+", 3112: "Sigma-", 3312: "Xi-", 3322: "Xi0"}.get(int(a_), "other")
+        sp[key] = sp.get(key, 0) + 1
+    prim_dec = pid[fate == fates.index("decay")]
+    sp_prim = {}
+    for a_ in np.abs(prim_dec).astype(int):
+        key = sim.dec.name(int(a_))
+        sp_prim[key] = sp_prim.get(key, 0) + 1
+    nu = int((np.isin(np.abs(tr[:, 1]), (12, 14, 16)) & (tr[:, 3] == names.index("decay"))).sum())
+    out["decays"] = dict(all=int(len(dec)), by_particle=sp, primaries=int(len(prim_dec)), primaries_by_particle=sp_prim, neutrinos=nu)
+    # the tracker hits
+    de = sg["trk_de"].astype(float)
+    out["hits"] = dict(n=int(len(de)), sum_gev=float(de.sum()), mean_kev=float(1e6 * de.mean()), median_kev=float(1e6 * np.median(de)),
+                       by_kind={sim.KINDS[k]: int((kind[sg["trk_prim"]] == k).sum()) for k in range(5)})
+    # photons and hadrons in the material
+    g1 = (pid == 22) & acc & (p4[:, 0] > 1.0)
+    h1 = (kind == 0) & acc & (p > 0.5)
+    out["material"] = dict(photons_above_1gev=int(g1.sum()), converted=int((g1 & (fate == fates.index("conversion"))).sum()),
+                           photons=int(((pid == 22) & acc).sum()), photons_converted=int(((pid == 22) & acc & (fate == fates.index("conversion"))).sum()),
+                           charged_hadrons_above_500mev=int(h1.sum()), interacted=int((h1 & (fate == fates.index("nuclear"))).sum()))
+    conv = V[V[:, 0] == names.index("conversion")]
+    nuc = V[V[:, 0] == names.index("nuclear interaction")]
+    out["vertices"] = dict(conversions=int(len(conv)), nuclear=int(len(nuc)), nuclear_secondaries_mean=float(nuc[:, 7].mean()) if len(nuc) else 0.0)
+    # our jet, member by member
+    jm = np.flatnonzero(sg["prim_jet0"])
+    o = jm[np.argsort(-p4[jm, 0])]
+    ntrk = np.bincount(sg["trk_prim"], minlength=len(pid))
+    cdet = sg["cal_code"] // sim.CODE
+    ecal = np.bincount(sg["cal_prim"][np.isin(cdet, (sim.EB, sim.EE))], weights=sg["cal_e"][np.isin(cdet, (sim.EB, sim.EE))], minlength=len(pid))
+    hcal = np.bincount(sg["cal_prim"][np.isin(cdet, (sim.HB, sim.HE, sim.HO))], weights=sg["cal_e"][np.isin(cdet, (sim.HB, sim.HE, sim.HO))], minlength=len(pid))
+    out["jet_members"] = [dict(rank=int(i), name=sim.dec.name(int(pid[j])), e=float(p4[j, 0]), pt=float(pt[j]), eta=float(eta[j]), fate=fates[int(fate[j])], trk_hits=int(ntrk[j]),
+                               ecal=float(ecal[j]), scint=float(hcal[j])) for i, j in enumerate(o[:10])]
+    # what reaches the gas of the muon chambers
+    mp, md = sg["mu_pid"].astype(int), sg["mu_det"].astype(int)
+    who = {}
+    for a_ in mp:
+        key = {11: "e-", -11: "e+", 13: "mu-", -13: "mu+", 2212: "p", 211: "pi+", -211: "pi-"}.get(int(a_), "other")
+        who[key] = who.get(key, 0) + 1
+    out["muon_hits"] = dict(n=int(len(mp)), by_particle=who, by_detector={sim.DET_NAME[d]: int((md == d).sum()) for d in sim.MUON},
+                            by_station={int(s): int((sg["mu_lay"] == s).sum()) for s in np.unique(sg["mu_lay"])},
+                            primaries=int(len(np.unique(sg["mu_prim"]))), by_kind={sim.KINDS[k]: int((kind[sg["mu_prim"]] == k).sum()) for k in range(5)},
+                            median_p_mev=float(1e3 * np.median(sg["mu_p"])) if len(mp) else 0.0,
+                            outer_charged=int(((tr[:, 9] == 1) & (tr[:, 2] >= -1)).sum()), outer_muons=int(((tr[:, 9] == 1) & (np.abs(tr[:, 1]) == 13)).sum()))
+    lead = jm[np.argmax(np.where(ch[jm], pt[jm], 0.0))]
+    R = sim.helix_radius(float(pt[lead]))
+    out["jet_leading_charged"] = dict(name=sim.dec.name(int(pid[lead])), pt=float(pt[lead]), radius_m=R / 100.0, sagitta_cm=110.0 ** 2 / (8 * R), turn_rad=float(math.asin(min(1.0, 110.0 / (2 * R)))))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("-o", "--output", type=Path, default=HERE / "theory_SIM.pdf")
     args = ap.parse_args()
     S = add.load(HERE.parent)
     N = json.loads((HERE / "add_hits_SIM.json").read_text())
-    extra = {}
+    extra = {"event": chapter_numbers(S)}
     with PdfPages(args.output) as pdf:
         page_field(pdf, S)
         page_decay(pdf, S)
@@ -349,12 +377,12 @@ def main():
         page_material(pdf)
         page_radiography(pdf)
         page_em(pdf)
-        extra["pion_response"] = page_had(pdf)
+        page_had(pdf)
         page_time(pdf, S, N)
         extra["scaling"] = page_scaling(pdf, S)
     (HERE / "plot_theory_SIM.json").write_text(json.dumps(extra, indent=1))
     print(f"{args.output} written (9 pages)")
-    print(json.dumps(extra))
+    print(json.dumps(extra, indent=1))
 
 
 if __name__ == "__main__":

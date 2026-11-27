@@ -1,0 +1,75 @@
+====================================================================================================
+Geant4 in the CMS detector: the family of the b bbar event, 672 primaries (7140 GeV)
+====================================================================================================
+1. The toolkit: geant4-11-04-patch-01 [MT], physics list FTFP_BERT; 10 processes, 136 s (1214 s of processor time)
+2. The detector: cmsSimGeo2021.gdml, 3398 volume types, 2.1 million placed volumes. Sensitive volume types:
+   dead 169, eb 34, ee 2, esx 1, esy 1, hb 34, he 40, hf 1, ho 22, in 1168, mu11 5, mu12 17, mu13 55, mu14 50, out 1091, trk1 4, trk2 4, trk3 3, trk4 5, trk5 4, trk6 10
+   (trk1..6 = PXB PXF TIB TID TOB TEC, mu11..14 = DT CSC RPC GEM, in / out = the other volumes of the tracker and of
+   the muon system, where only the trajectory is recorded)
+3. The field: uniform 3.8 T in the tracker and the calorimeters, the map of field_map_SIM.py elsewhere
+   The settings of CMSSW: production cuts by region [mm] (number of root volumes): TrackerDeadRegion 1 (1), TrackerPixelDeadRegion 1 (3), TrackerSensRegion 0.1 (22), TrackerPixelSensRegion 0.01 (8), BeamPipe 0.01 (1), BeamPipeOutside 1 (5), CaloRegion 1 (8), PreshowerSensRegion 0.1 (2), Muon 10 (1), MuonIron 1 (314), MuonChamber 0.002 (29), MuonSensitive_DT-CSC 1 (15), MuonSensitive_GEM 0.002 (16), MuonSensitive_RPC 8 (55)
+   elsewhere 10 mm; Birks' law on (scintillator: kB = 0.006 g/MeV/cm2, C = 0.142, kB / 1.75 for charge >= 2; crystals: weight = 1 - 0.253694 ln(kB dE/dx), kB = 0.03333 g/MeV/cm2, at least 0.1); particles stopped 500 ns after the bunch crossing
+4. What happened in the tracker volume (Geant4 process: number of steps that ended with it and made a secondary or stopped the particle)
+   eIoni                           27838   delta ray
+   hIoni                           27596   delta ray
+   compt                           15786   Compton scattering
+   eBrem                            9719   bremsstrahlung
+   ionIoni                          3111   delta ray
+   phot                             2205   photoelectric effect
+   hadElastic                       2080   elastic scattering
+   muIoni                           1511   delta ray
+   conv                              655   conversion
+   annihil                           392   annihilation
+   Decay                             369   decay
+   neutronInelastic                  243   nuclear interaction
+   pi-Inelastic                       95   nuclear interaction
+   pi+Inelastic                       62   nuclear interaction
+   hBertiniCaptureAtRest              29   capture at rest
+   protonInelastic                    19   nuclear interaction
+   muMinusCaptureAtRest               12   capture at rest
+   photonNuclear                       7   photonuclear
+   kaon-Inelastic                      6   nuclear interaction
+   kaon+Inelastic                      5   nuclear interaction
+   anti_neutronInelastic               4   nuclear interaction
+   kaon0SInelastic                     3   nuclear interaction
+   anti_protonInelastic                2   nuclear interaction
+   nKiller                             2   other
+   alphaInelastic                      2   nuclear interaction
+   dInelastic                          2   nuclear interaction
+   nCapture                            2   neutron capture
+   kaon0LInelastic                     2   nuclear interaction
+   lambdaInelastic                     1   nuclear interaction
+   tInelastic                          1   nuclear interaction
+   in words: 369 decays, 655 conversions, 9719 bremsstrahlung photons, 447 nuclear interactions,
+   60056 delta rays, 15786 Compton scatterings, 2205 photoelectric absorptions, 392 annihilations
+   behind the calorimeters (charged particles in the muon system): eBrem 4869, hIoni 3375, eIoni 1045, annihil 224, muIoni 120, pi+Inelastic 19, Decay 17, protonInelastic 17
+5. The primaries: 286 of 672 leave the tracker volume towards the calorimeters; the fates of the others:
+   calorimeter 286, conversion 143, nuclear 89, beam pipe 80, decay 64, stopped 10
+   secondaries born in the tracker above 10 MeV: 4403 (704 from decays, 2359 electromagnetic, 1231 from nuclear interactions)
+6. The hits: 12623 tracker hits (2979.4 MeV left in the silicon), 82 muon-chamber hits
+   PXB    1327 hits    325.71 MeV   layers 1:455 2:352 3:289 4:231
+   PXF     835 hits    121.23 MeV   layers 1:253 2:311 3:271
+   TIB    2225 hits    546.67 MeV   layers 1:912 2:746 3:289 4:278
+   TID    1023 hits    159.49 MeV   layers 1:332 2:328 3:363
+   TOB    2159 hits    646.66 MeV   layers 1:633 2:544 3:267 4:213 5:290 6:212
+   TEC    5054 hits   1179.65 MeV   layers 1:598 2:623 3:665 4:488 5:571 6:658 7:511 8:516 9:424
+   DT 0, CSC 82, RPC 0, GEM 0
+7. The calorimeters: 1390956 energy deposits (steps) in 33603 cells
+   EB   18128 cells     180.966 GeV
+   EE   10199 cells     456.996 GeV
+   ES    1611 cells       0.405 GeV
+   HB    1281 cells       0.834 GeV
+   HE    1858 cells       2.641 GeV
+   HO       2 cells       0.000 GeV
+   HF     524 cells    1671.000 photoelectrons
+   forward calorimeter: 2381 particles with 4758 GeV stopped at its steel and parametrised; 50 particles with 270 GeV of kinetic energy stopped in the dead region behind it
+8. Our jet [0]: 31 members, 18 reach the calorimeters as primaries (vector pT 42.52 GeV); its descendants leave 99.1 GeV in the crystals and 0.587 GeV in the scintillator
+9. For the displays: 29669 trajectories with 429228 points, 31707 vertices, 350957 shower voxels
+10. Who leaves how much where, in GeV (all primaries of a group; the light is the deposit after Birks' law):
+   group           number    energy tracker vol.  silicon  crystals     light   scint.    light  at the HF   behind muon sys.
+   charged hadron     300    4021.5        57.93   2.0078    333.87    327.93   3.4230   2.5130     2698.0    180.1    41.798
+   neutral hadron      70    1553.7        11.65   0.3732     72.95     71.56   1.1625   0.8530     1285.6      0.0     6.174
+   photon             295    1546.6        20.36   0.5561    238.18    238.10   0.1117   0.1095      768.6     81.0     4.740
+   electron             6       6.6         0.49   0.0423      0.38      0.38   0.0001   0.0001        5.5      0.0     0.000
+   muon                 1      11.3         0.03   0.0000      0.00      0.00   0.0000   0.0000        0.0      8.8     0.000
+   all                672    7139.6        90.46   2.9794    645.38    637.96   4.6974   3.4756     4757.8    269.9    52.712

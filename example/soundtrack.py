@@ -53,14 +53,38 @@ def display_text(text: str) -> str:
 
 
 # Written -> spoken: words the voices read as initials or mangle. Subtitles and --print-script keep the written form.
-SPOKEN = {"JitJet": "Jit Jet",       # "JitJet" comes out as "J-I-T Jet"
-          "Geant4": "Jee-ant four"}  # "Geant4" comes out as "Gene 4"
+SPOKEN = {"JitJet": "Jit Jet",          # "JitJet" comes out as "J-I-T Jet"
+          "Geant4": "Jee-antt fore",    # "Geant4" comes out as "Gene 4", and "Jee-antt four" as "Jee-antt for"
+          "Geant 4": "Jee-antt fore",
+          "Ampere": "Am-pee-ar", "ampere": "am-pee-ar",   # not "am-pair"
+          "looper": "loo-per", "Looper": "Loo-per"}        # not "lopper"
+# Patterns. A lone "4" or "four" is swallowed to an unstressed "for" by the voices; "fore" is the same sound and is
+# never swallowed ("fourteen", "forty", "0.4" and "ak4" are left alone). Large numbers are written short in the
+# script, 13K and 1.4M, so that the subtitle stays short, and spoken as thousand and million.
+SPOKEN_RE = [(re.compile(r"(?<![\w.,])(\d+(?:\.\d+)?)\s?K\b"), r"\1 thousand"),
+             (re.compile(r"(?<![\w.,])(\d+(?:\.\d+)?)\s?M\b"), r"\1 million"),
+             (re.compile(r"\bfour\b"), "fore"), (re.compile(r"\bFour\b"), "Fore"),
+             (re.compile(r"(?<![\w.,])4(?![\w]|[.,]\d)"), "fore")]
 
 
 def spoken_text(text: str) -> str:
     for written, spoken in SPOKEN.items():
         text = text.replace(written, spoken)
+    for rx, spoken in SPOKEN_RE:
+        text = rx.sub(spoken, text)
     return text
+
+
+def short_number(x: float) -> str:
+    """12 623 -> 12.6K, 1 209 419 -> 1.2M, 655 -> 655: big numbers as a film says and shows them."""
+    a = abs(x)
+    if a >= 999_500:
+        return f"{x / 1e6:.1f}M"
+    if a >= 99_950:
+        return f"{x / 1e3:.0f}K"
+    if a >= 1000:
+        return f"{x / 1e3:.1f}K"
+    return f"{x:.0f}"
 
 
 def spoken_for_say(text: str) -> str:

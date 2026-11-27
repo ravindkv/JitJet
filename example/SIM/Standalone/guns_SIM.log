@@ -1,0 +1,11 @@
+radiography: 4000 photons of 5 GeV, flat in |eta| < 3: 2391 end with a conversion before the calorimeters (59.8 %; 58.7 % inside |eta| < 2.5); fates {'stopped': 8, 'calorimeter': 1591, 'beam pipe': 10, 'conversion': 2391}   [113 s]
+radiography: 4000 pions of 5 GeV, flat in |eta| < 3: 1034 end with a nuclear before the calorimeters (25.9 %; 25.3 % inside |eta| < 2.5); fates {'nuclear': 1034, 'calorimeter': 2924, 'beam pipe': 19, 'decay': 23}   [273 s]
+10 GeV photons at eta 0.5, unconverted: 183; hottest crystal 0.678, 9 hottest 0.932, 25 hottest 0.970, all barrel crystals 0.985; 90 % of the deposit in 5 crystals   [348 s]
+10 GeV photons at eta 0.5, converted: 117; hottest crystal 0.438, 9 hottest 0.828, 25 hottest 0.913, all barrel crystals 0.963; 90 % of the deposit in 12 crystals   [348 s]
+pi+ of     2 GeV at eta 0.5: 63 of 80 reach the calorimeters; (crystals + 125 x scintillator) / E = 0.83 +- 0.45; crystals 65 % of it; 27 % cross the crystals with less than 0.6 GeV; scintillator 6 MeV   [389 s]
+pi+ of     5 GeV at eta 0.5: 66 of 80 reach the calorimeters; (crystals + 125 x scintillator) / E = 0.97 +- 0.34; crystals 45 % of it; 30 % cross the crystals with less than 0.6 GeV; scintillator 24 MeV   [433 s]
+pi+ of    10 GeV at eta 0.5: 51 of 60 reach the calorimeters; (crystals + 125 x scintillator) / E = 1.01 +- 0.26; crystals 35 % of it; 35 % cross the crystals with less than 0.6 GeV; scintillator 56 MeV   [479 s]
+pi+ of    20 GeV at eta 0.5: 43 of 50 reach the calorimeters; (crystals + 125 x scintillator) / E = 1.05 +- 0.27; crystals 28 % of it; 40 % cross the crystals with less than 0.6 GeV; scintillator 127 MeV   [526 s]
+pi+ of    50 GeV at eta 0.5: 27 of 30 reach the calorimeters; (crystals + 125 x scintillator) / E = 1.10 +- 0.17; crystals 18 % of it; 41 % cross the crystals with less than 0.6 GeV; scintillator 366 MeV   [576 s]
+pi+ of   100 GeV at eta 0.5: 17 of 20 reach the calorimeters; (crystals + 125 x scintillator) / E = 1.11 +- 0.13; crystals 12 % of it; 47 % cross the crystals with less than 0.6 GeV; scintillator 797 MeV   [624 s]
+guns_SIM.json written, 624 s

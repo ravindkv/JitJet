@@ -89,7 +89,17 @@ smpost/thumbnail/*.png
 
 example/G4/Standalone/animate_standalone_G4.mp4
 example/G4/Standalone/*.json
-# chapter 10: the out-of-time SimHits (27 MB), remade by make records
+# chapter 10: the out-of-time SimHits through Geant4 (large), remade by make sim-oot
 example/SIM/simhits_oot.npz
 example/SIM/Standalone/*.srt
 example/SIM/Standalone/*.mp4
+
+# chapter 10: remade by make gdml, make shapes and geant4_SIM.py
+example/G4/geometry/cmsSimGeo2021.gdml
+example/SIM/cms_shapes_SIM.npz
+example/SIM/g4tracks_signal.npz
+example/SIM/simhits_*_fast.npz
+example/SIM/g4pileup_display.npz
+example/SIM/Standalone/*.out
+example/SIM/Standalone/geant4_worker_*.out
+example/SIM/Standalone/.venv/

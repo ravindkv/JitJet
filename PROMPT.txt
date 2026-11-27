@@ -1,5 +1,116 @@
 
 --------------------------------------------
+2026-11-24| P39_MajorCommentsOnCh10SIM
+--------------------------------------------
+Few major comments on chapter 10 (example/SIM/, chapter/chapter_10_SIM.tex):
+
+(1) The chapter title can change to "The footprints and fingurprints at the crossings: 
+The simulated RAW Hits"
+
+(2) For the table "The number, three ways ..." and everywhere in this chapter we can use
+Geant4 in place of TGeo. I think the Geant4 can be downloaded and run on local laptop.
+
+(3) No background music in the video
+
+(4) Let us do the entire simulation of our SIGNAL inside Geant4 CMS Detector
+ 4a) show the 3D solenoid and magnetic field lines (also showing trackers/ECAL/HCAL/ and
+ some portion of muon chambers).
+ 4b) then show the 3D trackers and show the tracks/hits of our signal (e.g. similar to
+the https://cds.cern.ch/record/1074317/files/gen-2007-004.jpg?subformat=icon-1440)
+ 4c) then focus on the ECAL crystals and show the 3D view and the particles trajectory or
+ hits as they depoisited
+ 4d) then the HCAL and correspondig deposits
+ 4e) and then the muon chambers
+The full chain we can have display for ONLY SIGNAL and say that similar chain follows for 
+the pileup.
+
+(5) We can also mention that this is the only chapter where our "Standalone" script uses
+the official Geant4 for accuracy
+
+(6) Then we can use few more Standalone scripts to which can pull or make plots similar to
+what we have three plots from the CMSSW in example/SIM/CMSSW/*.png. In one page we can
+show these three plots (3 rows, 1 column) from Standalone script and in the next page from
+CMSSW.
+
+(7) In the film also show the video inside Geant4 CMS detector where our SIGNAL family
+passes through different layers of the CMS. The video should give the realstic feeling
+of how the particles really travels inside the actual collision data. In the video, the
+Geant4 should be spelled as "Jee..antt4". In the video we can also explain/show helix, 
+loopers, decays, ionisation, bremsstrahlung, scattering, conversion, energy loss, nuclear
+interactions, etc. The idea is to again feel the physics. Then in the end of the film, we 
+can show the figures obtained from (6) which has Signal+PU.
+
+(8) Then accordingly the figure "Key frames of the animated crossing ..." should be 
+updated and the figure "The family station by station ..." can be removed.
+
+(9) I think then the figure "The sum station by station ..." could be removed as we will
+ have it after we implement the (6)
+
+-----------------------
+Followups (2026-11-25/26): 
+-----------------------
+Few more comments on chapter 10 SIM:
++ Let us pass the crowd (pileup) also through the Geant 4 as later chapters need accurate
+simulation of pileup as well. We do NOT need to explain the ALL steps of pileup crossings 
+inside the film though. Just after the scene 5 of signal, show similar scene for pileup. 
+Then show the signal and signal + pilep overalied in z-r plot inside the film as we have 
+currently.
+
++ Since the Geant 4 simulation is costly, try to use the closer geometry that corresponds
+to 2025 CMS data-taking so that it closer to the results obtained from CMSSW. We can also 
+store the separate output from signal, in-time pileup and out-of-time pileup in separate 
+file so that in case something changes for signal, we do not need to simulate pileup every 
+time. We can also emphasise in the book that we only have liberty to simulate separtly in
+ MC only. In data everything goes simultaneously.
+
++ The size of geant4 3D figures example/SIM/Standalone/pages/geant4*.png are a bit high
+which results in 5.7 MB for stills only (example/SIM/Standalone/animate_standalone_SIM_stills.pdf) 
+and hence JitJet.pdf size increases to 18 MB. Similarly for example/SIM/Standalone/pages/simHits_*.png. 
+Maybe once they are generated we can compress them using a shell script
+and include the compressed on book, git tracking. We can also maybe follow "binned" 
+approach of "TH2F" where in every bin we fill counter not individual hits. I will leave the
+decision on you. The idea is to minimise the size without compromising with the physics
+goals.
+
++ Except for the table "The crossing obtained three ways", every number in this chapter
+can be qouted from Geant 4 that we installed locally.
+
++ Move the paragraph "Inside Geant 4: the magnet ..." in the begining of section "The wind: 
+the magnetic field ...". Similarly othe paragraphs such as "Inside Geant 4: the tracker ...",
+ "Inside Geant 4: the crystals ...", "Inside Geant 4: the brass and the iron ..." in the 
+begining of the corresponding sections. In fact we can split "Inside Geant 4: the brass and 
+the iron" into "Inside Geant 4: the HCAL ..." and "Inside Geant 4: the muon chambers". The 
+idea is to show each sub-detector first and then explain what happens there.
+
++ The tables "The tracker: hits by subdetector ...", "The calorimeters: cells of the detector...", 
+"The muon system: hits by origin ..." can be moved in the beging of the corresponding
+sections. Maybe split the table "The calorimeters: cells of the detector ..." by ECAL and
+HCAL separatly.
+
++ In each theory section, put a table showing grouped members (e.g. charged hadrons, 
+neutral hadrons, electrons, photons, muons) and how much energy they loose/deposit in
+the TRK, ECAL, HCAL. The physics formulae can also be tailored to explain losses/deposits
+towards the grouped particles. If useful, pull the exact formulae used inside the Geant 4
+for accuracy.
+
++ Update the z-r plot where r range is from 0 to 450 cm. This way we will cover most 
+of plots which is otherwise mostly empty. We can write in the text and spell in the video 
+that we only show first muon chamber. Similarly keep both x = [-450, 450] and y = [-450, 
+450] for the x-y plot.
+
++ In the film:
+++ big numbers can be rounded and spelled in "K" and "M" for thousands and millions
+++ Fix the two cosmetic issues: Tracker close-ups are busy, Scene 4 title overlaps
+++ Spell corectly the "Ampere" as "Ampee..ar", the "looper" as "looo..par", the "Geant 4"
+as "Jee..antt ..four"
+++ In the end when we describe the 2D plots, just show z-r plot and spell where
+our b bbar family is located (no need to show x-y plot and eta-phi plot in the film). 
+++ In the film (I also noticed from past films), the 4 is spelled as "for" not "four".
+please fix that. 
+
+
+
+--------------------------------------------
 2026-11-23| P38_CorrectedSpellGeant4
 --------------------------------------------
 In the following video example/G4/Standalone/animate_standalone_G4.mp4

@@ -1,13 +1,16 @@
 % ---------------------------------------------------------------------------
-% Chapter 10: The Crossing of the Border: The Simulated Hits
+% Chapter 10: The Footprints and Fingerprints at the Crossings: The Simulated RAW Hits
 % Laid out after Constitution.md rules B-E. The scripts, records, logs and
 % displays of this stop are in example/SIM/, the technical companion is
 % chapter/chapter_10_SIM.md, and the CMSSW side (the full Geant4 physics stage
 % by stage, the library and the MixingModule at SimHit level) is chapter 10 of
 % JitJetSW, linked from example/SIM/CMSSW/README.md.
-% Every standalone number is read from example/SIM/Standalone/standalone_SIM.log
-% (-v, seed 1), add_hits_SIM.log, validate_SIM.log and plot_theory_SIM.json; the
-% tables are the macros of example/SIM/Standalone/sim_ledger.tex.
+% Every number of this chapter is Geant4's, run on the laptop by geant4_SIM.py in the CMS geometry: the signal,
+% the in-time and the out-of-time crowd (geant4_SIM.log, geant4_SIM_<sample>.json, the stages
+% geant4_SIM_signal_<stage>.json), the single particles of guns_SIM.py (guns_SIM.log), the addition
+% (add_hits_SIM.log) and the numbers of the theory sections (plot_theory_SIM.json). The one exception is the
+% table "The crossing obtained three ways", which compares Geant4 with the hand-written standalone_SIM.py
+% (validate_SIM.log) and with CMSSW. The tables are the macros of example/SIM/Standalone/sim_ledger.tex.
 % What this stop is: the primaries of chapter 9 cross the detector. The family,
 % the in-time crowd and the out-of-time crowd are simulated separately and their
 % hits are added by hand. The hits become ADC counts in chapter 11.
@@ -24,8 +27,8 @@
 \providecommand{\lamI}{\ensuremath{\lambda_I}\xspace}
 \providecommand{\Mix}{\code{MixingModule}\xspace}
 \input{example/SIM/Standalone/sim_ledger}
-\chapter{The Crossing of the Border: The Simulated Hits}
-\chaptermark{The Crossing of the Border}
+\chapter{The Footprints and Fingerprints at the Crossings: The Simulated RAW Hits}
+\chaptermark{Footprints and Fingerprints at the Crossings}
 \label{ch:crowd_at_the_border}
 
 \begin{journeybox}
@@ -48,13 +51,16 @@ flight; the energy loss of Bethe and Bloch and its Landau fluctuation in a
 silicon sensor; multiple scattering, bremsstrahlung and photon conversion in
 the material of the tracker, measured in radiation lengths; the
 electromagnetic shower in the crystals; nuclear interactions, the hadronic
-shower, its electromagnetic fraction, its invisible energy and the sampling
-of the HCAL; the simulated hit; the signal, the in-time and the out-of-time
-pileup simulated separately and added with a shift of $25\ns$ per bunch
-crossing. The one number to take away: of the $1.2$ million hits the
-tracker receives, the family owns $0.7\,\%$, and in the circle of our jet the
-calorimeters receive $66\GeV$ from the family and $231\GeV$ from the crowd,
-of which only $15\GeV$ arrive in our own bunch crossing.}
+shower, its electromagnetic fraction, its invisible energy, the sampling of
+the HCAL and Birks' law; what reaches the muon chambers; the simulated hit;
+the signal, the in-time and the out-of-time pileup simulated separately and
+added with a shift of $25\ns$ per bunch crossing. The one number to take
+away: of the $2.1$ million hits
+the tracker receives, the family owns $0.6\,\%$,
+and in the circle of our jet the calorimeters receive
+$69\GeV$ from the family and
+$302\GeV$ from the crowd,
+of which only $25\GeV$ arrive in our own bunch crossing.}
 
 \section{What we will see at this stop}
 \label{sec:crowd_at_the_border:what_we_compute}
@@ -74,46 +80,78 @@ point with a time and an energy loss, for a calorimeter the energy left in
 one cell. The SimHits are what the detector \emph{received}. What its
 electronics make of them is \cref{ch:customs_form}.
 
-The standalone script of this stop, \file{standalone_SIM.py}, is not a port
-of \GEANT: that toolkit and the CMS geometry it runs in are a million lines
-and two million volumes. It is a simulation in the same spirit, small
-enough to read: a detector written on one page with the layers, cells and
-material of CMS, and for every step the formula of the textbook. Four
-ingredients are switched on one after the other, as the \CMSSW companion of
-this stop does with \GEANT itself: the magnetic field, the decays in flight,
-the electromagnetic physics and the hadronic physics. Where \GEANT follows
-the thousands of particles of a shower, the script places the energy of the
-shower in the cells with a parametrisation, the idea of
-\textsc{Gflash}~\cite{Grindhammer:1989zg,Grindhammer:1993kw} and of the fast
-simulation of CMS~\cite{Abdullin:2011zz}.
+This is the one stop of the road where the standalone script is not
+written from the textbook. \GEANT can be installed on a laptop (its Python
+bindings, \code{geant4-pybind}, and two gigabytes of data tables), and the
+geometry CMS gives to it is public, so \file{geant4_SIM.py} runs the official
+toolkit, version~11.4 with its reference physics list \code{FTFP\_BERT}, in
+the simulation geometry of Run~3: $3398$ kinds of volume and $2.1$ million
+placed volumes, every pixel module, crystal, scintillator layer and drift
+cell. We let \GEANT do it here, and only here, for accuracy: a hand-written
+shower is a caricature, and the next stops digitise and reconstruct these
+hits. To come as close as a laptop can to what \CMSSW does for the data of
+2025, the script takes three settings from it: the \emph{production cuts}
+region by region (a $\delta$ ray is created in a pixel sensor if it would
+travel $10\um$, in a crystal only if it would travel $1$~mm), \emph{Birks'
+law} for the light of the scintillator and of the crystals, and the stop of
+every particle $500\ns$ after its bunch crossing. Three things in that
+script are ours: the field map (\cref{sec:crowd_at_the_border:field}), the
+few lines that say which volumes are sensitive, and the forward calorimeter,
+which is parametrised as in \CMSSW.
 
 The second half of the stop is about the crowd. The detector cannot tell
 whose particle crossed it, so the crowd must be simulated too, every
-collision of it. We do it the way the production does, and make the three
-steps visible: the family, the in-time crowd and the out-of-time crowd are
-simulated \emph{separately}, each collision as if it were alone, and their
-hits are then \emph{added by hand} by a second script,
+collision of it, through the same chain as the family; the later stops
+need its hits to be as accurate as the family's, so the crowd goes through
+\GEANT as well. The price is time: the family takes
+$70$ seconds on ten processor cores, the $63$ collisions of
+its crossing $5$ minutes, the $897$ others
+$49$ minutes, together
+$9.1$ hours of
+processor time, $51$ times
+the family alone. So the three samples, the family, the in-time crowd and
+the out-of-time crowd, are simulated \emph{separately}, each collision as
+if it were alone, and written to three files; if anything changes for the
+family, the crowd is not simulated again, and the same crowd can be laid
+over any family. Their hits are then \emph{added by hand} by
 \file{add_hits_SIM.py}: times shifted by $25\ns$ per bunch crossing,
-energies summed cell by cell. This is the last stop at which one can still
-say which hit belongs to whom.
+energies summed cell by cell. \emph{Only a simulation has this freedom.} In
+data everything crosses at once, and nobody can take the three sheets apart
+again. This is the last stop at which one can still say which hit belongs
+to whom.
+
+Next to \file{geant4_SIM.py} stays \file{standalone_SIM.py}, the same
+crossing small enough to read: a detector written on one page and for every
+step the formula of the textbook, with showers placed by a parametrisation
+in the spirit of \textsc{Gflash}~\cite{Grindhammer:1989zg,Grindhammer:1993kw}
+and of the fast simulation of CMS~\cite{Abdullin:2011zz}. It is compared
+with \GEANT in \cref{tab:crowd_at_the_border:numbers}, and nowhere else:
+every other number of this chapter is \GEANT's.
 
 \paragraph{The film.}
 \label{sec:crowd_at_the_border:animation}
-The tenth film of the playlist of \jitjetworld shows the hits in the order
-in which the detector receives them, in the longitudinal view of
-\cref{fig:crowd_at_the_border:stills}: the family alone, the crowd of our
-crossing alone, the fifteen other crossings each on its own clock, and then
-one clock for all, on which the family is one flash among sixteen.
+The tenth film of the playlist of \jitjetworld is shot inside the \GEANT
+detector (\cref{fig:crowd_at_the_border:stills}). CMS is built from the
+inside out and the field lines are drawn; then the clock runs and the family
+crosses the tracker, and five things that happened in this event are shown
+from close by: a looper, a decay in flight, a photon conversion, an
+electron radiating, a nuclear interaction. The showers light up the crystals
+and the scintillator, and the iron stays almost dark. Then the crowd crosses
+the same detector, first the collisions of our own bunch crossing and then
+all sixteen crossings, and the film ends on one page, the $r$--$z$ view of
+the family alone and of the sum, with the directions of the $b$ jets drawn
+in.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\textwidth]{SIM/Standalone/animate_standalone_SIM_stills.pdf}
 \caption[Key frames of the animated crossing]{Key frames of the animated
-crossing (\file{animate_standalone_SIM.py}), $r$--$z$ view; dots are tracker
-and muon hits, discs calorimeter cells. Top: the family $12\ns$ after the
-collision (black), and the $63$ collisions of the same crossing (blue), each
-sample simulated on its own. Bottom: the $897$ out-of-time collisions (olive
-early, red late) on the clocks of their own crossings, and the sum on one
-clock, $12\ns$ after our collision.}
+crossing (\file{animate_standalone_SIM.py}), drawn from the trajectories and
+deposits of \GEANT inside its geometry. From the top: the magnet with its
+field lines, and the tracker $14\ns$ after the collision (hits in yellow); a
+photon conversion from close by, and one electromagnetic shower in the
+crystals; the deposits in the scintillator of the HCAL, and the muon system;
+the crowd of all sixteen bunch crossings in the same detector, and the sum
+in the $r$--$z$ view.}
 \label{fig:crowd_at_the_border:stills}
 \end{figure}
 
@@ -128,7 +166,7 @@ it can be simulated once and laid over any number of signal events.
 \resizebox{0.9\textwidth}{!}{\input{chapter/tikz/sim_chain}}
 \caption[The stop on one page: three samples, one addition]{The stop on one
 page. Top: the four ingredients of the simulation, switched on one after the
-other in \cref{sec:crowd_at_the_border:theory}. Middle: the three samples and
+other in \cref{tab:crowd_at_the_border:stages}. Middle: the three samples and
 what the tracker and the ECAL crystals receive from each. Bottom: the
 addition by hand.}
 \label{fig:crowd_at_the_border:chain}
@@ -137,50 +175,61 @@ addition by hand.}
 
 \paragraph{The number, three ways.}
 \label{sec:crowd_at_the_border:validation}
-\Cref{tab:crowd_at_the_border:numbers} compares the stop three ways. The
-official package for the \emph{detector} is the CMS geometry itself: its
-\textsc{TGeo} dump, the file of \cref{ch:crossing_the_border}, carries every
-volume with its material, and ROOT's navigator~\cite{Brun:2003TGeo} follows
-straight lines through it. The one-page detector of the script agrees with
-it in the material in front of the calorimeters, to $1\,\%$ on average and
-$8\,\%$ point by point in pseudorapidity (the layer thicknesses were tuned to
-this scan, so the agreement is a closure, not a prediction), and in the
-number of sensors a charged particle crosses, which was not tuned. For the
-\emph{physics} the reference is the \CMSSW companion, which runs \GEANT
-with the production list \code{FTFP\_BERT\_EMM} on its own event of the
-same process. The two events are different draws, so the rows are compared
-per primary or per collision; they agree to the tens of per cent a
-parametrised simulation can claim, with one systematic difference: \GEANT
-makes about $40\,\%$ more tracker hits per primary, the soft electrons and
-nuclear fragments that the script does not create
-(\cref{sec:crowd_at_the_border:caveats}). How each number is produced is in
-the companion,
+\Cref{tab:crowd_at_the_border:numbers} compares the stop three ways: the
+hand-written script, \GEANT on the same primaries on the laptop
+(\file{geant4_SIM.py}), and \GEANT in \CMSSW with the production list
+\code{FTFP\_BERT\_EMM} and the 2025 geometry on the companion's own event of
+the same process. The first two are the same event, so they compare number
+by number. The \emph{detector} of the script holds: geantinos, \GEANT's
+particle that feels nothing, find $1.24$ radiation lengths in front of
+the calorimeters where the layer model has $1.16$ (it was tuned to a
+scan with ROOT's \textsc{TGeo}~\cite{Brun:2003TGeo}, whose radiation lengths
+are a few per cent longer), and $11.8$
+sensors per charged primary where the model has
+$11.1$. Its
+\emph{calorimeters} hold to $15\,\%$ in the crystals and in the forward
+calorimeter. What the script lacks is everything soft: \GEANT makes
+$60\,056$ $\delta$ rays, $15\,786$ Compton
+electrons and nearly three times as many nuclear interactions (it counts
+those of every secondary, down to slow neutrons), and with them
+$47\,\%$ more tracker
+hits and twice the secondaries. And its hadronic shower is too tame: the
+cascade of \GEANT is far more uneven than a smooth profile, with twice
+the spread from pion to pion (\cref{sec:crowd_at_the_border:caveats}).
+The two \GEANT columns are different events and compare per primary. How
+each number is produced is in the companion,
 \begin{center}
   \companion{chapter_10_SIM}
 \end{center}
 
-\begin{table}[htbp]\centering\small
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{5pt}
 \caption[The crossing obtained three ways]{The crossing obtained three ways:
-the standalone script (seed~1), the CMS simulation geometry scanned with
-\textsc{TGeo}, and \GEANT in \CMSSW (run~1, event~1 of JitJetSW, another
-event of the same process: $571$ primaries, $995$ pileup collisions).}
+the hand-written script and \GEANT~11.4 in the CMS geometry on the same
+$672$ primaries (seed~1; \file{validate_SIM.log}), and \GEANT in \CMSSW
+(run~1, event~1 of JitJetSW, another event of the same process: $571$
+primaries, $995$ pileup collisions). The crowd rows of the first column are
+the hand-written script's.}
 \label{tab:crowd_at_the_border:numbers}
 \begin{tabular}{@{}lrrr@{}}\toprule
- & standalone & \textsc{TGeo} & \CMSSW 2025 \\ \midrule
-material before the calorimeters, mean $x/\Xzero$ in $|\eta|<2.5$ & $1.16$ & $1.17$ & -- \\
-\quad in interaction lengths, $x/\lamI$ & $0.33$ & $0.33$ & $\approx0.3$ \\
+ & hand-written & \GEANT & \CMSSW 2025 \\ \midrule
+material before the calorimeters, mean $x/\Xzero$ in $|\eta|<2.5$ & $1.16$ & $1.24$ & -- \\
+\quad in interaction lengths, $x/\lamI$ & $0.33$ & $0.37$ & $\approx0.3$ \\
 sensors crossed per charged primary, straight lines & $11.1$ & $11.8$ & $12.5$ \\
-transverse momentum to reach the barrel ECAL [GeV] & $0.735$ & -- & $0.735$ \\ \midrule
-tracker hits per primary, family, full physics & $12.8$ & -- & $18.0$ \\
-energy loss per tracker hit [MeV] & $0.245$ & -- & $0.23$ \\
-decays in flight per primary & $0.13$ & -- & $0.07$ \\
-photons above $1\GeV$ that convert in the tracker & $40$ of $61$ & -- & $15$ of $29$ \\
-charged hadrons that interact in the tracker & $34\,\%$ & -- & $26\,\%$ \\
-HF photoelectrons, family & $1936$ & -- & $1849$ \\ \midrule
-tracker hits per pileup collision & $1247$ & -- & $2107$ \\
-ECAL energy per in-time collision [GeV] & $68$ & -- & $54$ \\
-family's share of all tracker hits & $0.71\,\%$ & -- & $0.49\,\%$ \\
-ECAL cells still dominated by the family & $1364$ of $7704$ & -- & $699$ of $12\,804$ \\
+transverse momentum to reach the barrel ECAL [GeV] & $0.735$ & $0.735$ & $0.735$ \\ \midrule
+tracker hits per primary, family, full physics & $12.8$ & $18.8$ & $18.0$ \\
+energy loss per tracker hit [MeV] & $0.245$ & $0.236$ & $0.23$ \\
+primaries leaving the tracker towards the calorimeters & $407$ & $286$ & $310$ of $571$ \\
+photons above $1\GeV$ that convert in the tracker & $40$ of $61$ & $39$ of $61$ & $15$ of $29$ \\
+charged hadrons that interact in the tracker & $34\,\%$ & $36\,\%$ & $26\,\%$ \\
+energy in the crystals, family [GeV] & $616$ & $638$ & -- \\
+energy in the HB and HE scintillator, family [GeV] & $2.5$ & $3.5$ & -- \\
+HF photoelectrons, family & $1936$ & $1671$ & $1849$ \\
+$10\GeV$ photon: share of its energy in the $9$ hottest crystals & $0.95$ & $0.93$ & -- \\
+$20\GeV$ $\pi^+$: (crystals $+\,125\times$ scintillator)$/E$ & $0.83\pm0.11$ & $1.04\pm0.24$ & -- \\ \midrule
+tracker hits per pileup collision & $1247$ & $2125$ & $2107$ \\
+ECAL energy per in-time collision [GeV] & $68$ & $66$ & $54$ \\
+family's share of all tracker hits & $0.99\,\%$ & $0.61\,\%$ & $0.49\,\%$ \\
+ECAL cells still dominated by the family & $1904$ of $29\,047$ & $1\,254$ of $29\,938$ & $699$ of $12\,804$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -188,8 +237,57 @@ ECAL cells still dominated by the family & $1364$ of $7704$ & -- & $699$ of $12\
 \section{Let us dive into the details: the theory}
 \label{sec:crowd_at_the_border:theory}
 
+Each subsection starts inside \GEANT: the piece of the detector as the
+toolkit has it, and a table of what it received. Then comes the physics,
+with the formula \GEANT evaluates and the number it gives for our event.
+The travellers are taken in five groups, as the detector will meet them
+again in every later chapter: charged hadrons, neutral hadrons, photons,
+electrons and muons. The models named below are those the physics list
+prints when it starts (\file{geant4_SIM_physics.log}).
+
 \subsection{The wind: the magnetic field}
 \label{sec:crowd_at_the_border:field}
+\paragraph{Inside \GEANT: the magnet.}
+The coil and the iron are in the geometry, so the field can be computed
+from them. CMSSW gives \GEANT a map computed by the magnet group; we compute
+our own. \file{field_map_SIM.py} asks \GEANT's navigator which material sits
+at each point of a grid in $(r,z)$ and solves Amp\`ere's law,
+$\nabla\times(\mathbf{B}/\mu)=\mu_0\mathbf{J}$, with a current in the coil
+and a saturating $B(H)$ curve in the steel
+(\cref{fig:crowd_at_the_border:g4_magnet}). $39.6$ million ampere-turns give
+$3.8$~T at the centre; the field is still $3.7$~T at the end of the tracker
+and $3.3$~T in the endcap HCAL, almost nothing between the coil and the
+yoke, and in the steel it runs backwards, $-2.1$ and $-1.7$~T in the barrel
+layers and $2.3$~T radially in the first endcap disk. \GEANT integrates the
+equation of motion, $d\mathbf{p}/dt=q\,\mathbf{v}\times\mathbf{B}$, through
+this map with a Runge-Kutta stepper, a step at a time; inside the tracker
+and the calorimeters, where a shower makes millions of steps, we give it a
+uniform $3.8$~T. \Cref{tab:crowd_at_the_border:fates} says who stands at the
+gate and, in advance, what becomes of them.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{SIM/Standalone/pages/geant4_magnet.png}
+\caption[The magnet of CMS inside Geant4]{The magnet inside \GEANT (\file{display_geant4_SIM.py}). Left: the detector of \file{cmsSimGeo2021.gdml} with one third of the azimuth removed, from the inside out the pixel and strip tracker (blue), the crystals (green), the HCAL scintillator (gold), the coil (grey), the steel of the yoke (red) with the muon chambers (yellow) between its layers, and the forward calorimeters; the field lines of \file{field_map_SIM.py} are drawn in three planes, coloured by the field strength. Right: the same field in the $(z,r)$ plane, averaged over azimuth.}
+\label{fig:crowd_at_the_border:g4_magnet}
+\end{figure}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption[Who is at the gate, and what becomes of them]{Who is at the gate,
+and what becomes of them (\file{geant4_SIM.log}): the $672$ primaries of the
+family in five groups, their energy [GeV], how many point into the tracker,
+$|\eta|<2.5$, and how many of those are loopers, charged with
+$\pt<0.735\GeV$; then the end of each as a primary in \GEANT: it reaches
+the calorimeters as itself, decays, converts, has a nuclear interaction or
+stops in the tracker volume, or leaves along the beam pipe.}
+\label{tab:crowd_at_the_border:fates}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{at the gate} & \multicolumn{2}{c}{$|\eta|<2.5$} & \multicolumn{6}{c}{what ends it as a primary} \\
+group & number & energy & number & loopers & calo. & decay & conv. & nuclear & stops & beam pipe \\ \midrule
+\simFateRows
+\bottomrule
+\end{tabular}
+\end{table}
+
 Why does a detector need a field? Because a tracker measures positions,
 and only a curved path turns positions into a momentum. The solenoid of CMS
 fills the tracker and the calorimeters with $3.8$~T along the beam. A
@@ -223,17 +321,24 @@ turn.}
 \label{fig:crowd_at_the_border:helix_sketch}
 \end{figure}
 
-For our event the log says: $307$ of the $672$ primaries are charged, $175$
-of them inside the tracker, $|\eta|<2.5$, with a median \pt of $0.55\GeV$,
-and $113$ of those are below $0.735\GeV$. Two thirds of the charged
-particles a tracker sees can never reach the barrel calorimeter
-(\cref{fig:crowd_at_the_border:field}). Switching the field on raises the
-sensor crossings of the family from $3419$ on straight lines to $3830$ on
-helices: the loopers cross the same layers again. The leading charged member
-of our jet, a $\pi^+$ of $\pt=14.27\GeV$, has $R=12.5$~m; over $1.1$~m its
-sagitta is $1.2\cm$ and its azimuth turns by $0.044$~rad. The jet as a
-whole arrives at the calorimeters with $94.4$ instead of $99.8\GeV$ of
-vector \pt: thirty-one tracks that no longer point where they were aimed.
+For our event: $307$ of the $672$ primaries are
+charged, $175$ of them inside the tracker,
+$|\eta|<2.5$, with a median \pt of $0.55\GeV$,
+and $113$ of those are below $0.735\GeV$. Two
+thirds of the charged particles a tracker sees can never reach the barrel
+calorimeter (\cref{fig:crowd_at_the_border:field}). The field acts on
+charged hadrons, electrons and muons alike, by their momentum alone; photons
+and neutral hadrons fly straight. In \GEANT, with every other process
+switched off, the family crosses $3\,636$ sensors on straight
+lines and $4\,443$ on helices (\cref{tab:crowd_at_the_border:stages}):
+the loopers cross the same layers again and again. The leading charged
+member of our jet, a $\pi^+$ of $\pt=14.27\GeV$,
+has $R=12.5$~m; over $1.1$~m its sagitta is
+$1.2\cm$ and its azimuth turns by
+$0.044$~rad. The jet as a whole
+arrives at the calorimeters with $91.2$ instead of
+$99.8\GeV$ of vector \pt: thirty-one tracks that no
+longer point where they were aimed.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=1,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
@@ -271,58 +376,144 @@ $\beta\gamma c\tau$ at $p=5\GeV$ on the radial scale of the detector.}
 \label{fig:crowd_at_the_border:decay_sketch}
 \end{figure}
 
-The script draws the flight path of every such particle when it is born, as
-$\beta\gamma c\tau\,(-\ln u)$ with $u$ uniform, and lets it decay there if
-nothing else happens first, with the branching ratios of the table of
-\cref{ch:children_producing_grandchildren}. In the full simulation of the
-family $87$ particles decay in flight: $23$ $K^0_S$, $7$ $\Lambda$, $6$
-$\Sigma^+$, one $K^0_L$, and $43$ pions and $7$ kaons, most of them
-loopers, whose path of tens of metres makes up for their long lifetime
-(\cref{fig:crowd_at_the_border:decay}). $48$ neutrinos leave unseen. The
-fourth-hardest member of our jet, a $K^0_S$ of $18.7\GeV$, is one of them;
-its two pions leave $102$ tracker hits that point back to no collision.
+\GEANT treats a decay as one more process that competes for the next step:
+for every unstable particle it draws a proper time from $e^{-t/\tau}$ when
+the particle is born, lets it decay when that time is used up, at rest if
+the particle has stopped first, and takes the daughters from its own table
+of branching ratios. In the tracker volume it counts
+$369$ decays for the family, of every generation:
+$208$ $\pi^0$, $69$ $\pi^\pm$, $27$ $K^0_S$, $9$ $\mu^\pm$, $9$ $\Lambda$, $9$ $K^\pm$, $8$ $\eta$, $6$ $\Sigma^+$, $2$ $K^0_L$, $1$ $\Xi^0$, $1$ $\Sigma^-$ and $20$ others (\cref{fig:crowd_at_the_border:decay}). Of the primaries
+themselves, $64$ end by a decay
+(\cref{tab:crowd_at_the_border:fates}): $23$ $K^0_S$, $22$ $\pi^\pm$, $7$ $K^\pm$, $6$ $\Sigma^+$, $5$ $\Lambda$, $1$ $K^0_L$.
+$147$ neutrinos leave unseen. The fourth-hardest member of our jet, a $K^0_S$ of $18.6\GeV$, is one of them; its two pions leave $175$ tracker hits that point back to no collision.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=2,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
 \caption[Decays in flight]{\Cref{eq:crowd_at_the_border:decay}. Left: the
-probability to decay within $1.23$~m of straight flight. Right: the $87$
-decays in flight of the family in the $r$--$z$ plane of the tracker, the
-$K^0_S$ and $\Lambda$ close to the beam, the looping pions everywhere.}
+probability to decay within $1.23$~m of straight flight. Right: the
+decays in flight of the family and its secondaries in the $r$--$z$ plane of
+the tracker, as \GEANT placed them: the $K^0_S$ and $\Lambda$ close to the
+beam, the looping pions everywhere.}
 \label{fig:crowd_at_the_border:decay}
 \end{figure}
 
-\subsection{Footprints and tolls: electromagnetic physics in the tracker}
+\subsection{Footprints and tolls: the tracker}
 \label{sec:crowd_at_the_border:em}
 \label{sec:crowd_at_the_border:every_collision}
+\paragraph{Inside \GEANT: the tracker.}
+\Cref{fig:crowd_at_the_border:g4_tracker} is the crossing as \GEANT does it,
+in the $17\,004$ silicon modules of the real tracker, with nothing switched
+off and nothing parametrised: the helices of the hadrons, the loopers, the
+$V$ of a converted photon, electrons that radiate and curl up, and the fine
+orange spirals of $\delta$ rays and Compton electrons of a few \MeV. \GEANT
+writes $12\,623$ hits with $2.98\GeV$ left in the
+silicon, and counts $655$ conversions,
+$9\,719$ bremsstrahlung photons, $60\,056$ $\delta$
+rays and $447$ nuclear interactions in the tracker volume
+(\file{geant4_SIM.log}). \Cref{tab:crowd_at_the_border:trk} lists the hits
+by subdetector, already with those of the crowd next to them, and
+\cref{tab:crowd_at_the_border:budget_trk} says which group pays how much.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{SIM/Standalone/pages/geant4_tracker.png}
+\caption[The tracker inside Geant4]{The tracker inside \GEANT: the trajectories of the family in the tracker volume (charged particles above $2\MeV$, photons above $100\MeV$) and its $12\,623$ hits (yellow), in the silicon modules of the CMS geometry, one third of them removed. White: charged hadrons; orange: electrons and positrons; green: photons; violet: neutral hadrons; blue: muons. A thick line is an energetic particle.}
+\label{fig:crowd_at_the_border:g4_tracker}
+\end{figure}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\caption[The tracker, subdetector by subdetector]{The tracker: hits by
+subdetector and origin (the family, the in-time crowd, the early and the
+late crossings, and their sum; \file{add_hits_SIM.log}), the mean energy
+loss per hit of the family, and the family's share of all hits and of the
+hits of its own bunch crossing.}
+\label{tab:crowd_at_the_border:trk}
+\begin{tabular}{@{}llrrrrrrrr@{}}\toprule
+ & & \multicolumn{2}{c}{the family} & in time & early & late & added & \multicolumn{2}{c}{family's share [\%]} \\
+ & & hits & MeV/hit & & & & & of all & of \bx 0 \\ \midrule
+\simTrackerRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption[Who leaves how much in the tracker]{Who leaves how much in the
+tracker: the primaries of the family inside $|\eta|<2.5$ by group, the
+energy they bring, the energy they and their descendants leave in all the
+material of the tracker volume (silicon, supports, cables, cooling, beam
+pipe), the part of it left in the silicon sensors, and the hits. What is
+not left here goes on to the calorimeters.}
+\label{tab:crowd_at_the_border:budget_trk}
+\begin{tabular}{@{}lrrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{at the gate} & \multicolumn{2}{c}{left in the tracker volume} & in silicon & \multicolumn{2}{c}{tracker hits} \\
+group & number & energy [GeV] & [GeV] & [\%] & [MeV] & all & per primary \\ \midrule
+\simBudgetTrkRows
+\bottomrule
+\end{tabular}
+\end{table}
+
 A tracker should see a particle without disturbing it, and cannot: to be
 seen the particle must lose energy in the sensor, and the sensor needs
-supports, cables and cooling. Three things happen in every layer
-(\cref{fig:crowd_at_the_border:em_sketch}a). A charged particle
-\emph{ionises}: its mean energy loss per unit of matter is the Bethe-Bloch
-formula~\cite{ParticleDataGroup:2024cfk},
+supports, cables and cooling. What happens in a layer depends on who
+crosses it (\cref{fig:crowd_at_the_border:em_sketch}a).
+
+\emph{Charged hadrons and muons} ionise. Their mean energy loss per unit of
+matter is the Bethe-Bloch formula~\cite{ParticleDataGroup:2024cfk}, a
+function of $\beta\gamma=p/m$ alone, with a minimum of
+$1.67\MeV\,\mathrm{cm^2/g}$ in silicon at $\beta\gamma\approx3.5$. \GEANT
+uses it (its model \code{BetheBloch}, above $2\MeV$ of kinetic energy for a
+proton) in a split form. Collisions that give an electron more than a
+threshold $T_{\mathrm{cut}}$ are simulated one by one, and the electron
+becomes a track of its own, a $\delta$ ray; all softer collisions are
+summed into a continuous loss along the step,
 \begin{equation}
-  \Big\langle-\frac{dE}{dx}\Big\rangle = K\frac{Z}{A}\frac{1}{\beta^2}
-  \Big[\tfrac12\ln\frac{2m_ec^2\beta^2\gamma^2T_{\max}}{I^2}-\beta^2-\frac{\delta}{2}\Big],
+  \Big\langle-\frac{dE}{dx}\Big\rangle_{T<T_{\mathrm{cut}}} = K\frac{Z}{A}\frac{1}{\beta^2}
+  \Big[\tfrac12\ln\frac{2m_ec^2\beta^2\gamma^2T_{\mathrm{up}}}{I^2}
+  -\frac{\beta^2}{2}\Big(1+\frac{T_{\mathrm{up}}}{T_{\max}}\Big)-\frac{\delta}{2}\Big],
+  \qquad T_{\mathrm{up}}=\min(T_{\mathrm{cut}},T_{\max}),
   \label{eq:crowd_at_the_border:bethe}
 \end{equation}
-a function of $\beta\gamma=p/m$ alone, with a minimum of $1.67\MeV\,\mathrm{cm^2/g}$
-in silicon at $\beta\gamma\approx3.5$; in a thin sensor the loss fluctuates
-with the long tail of Landau~\cite{Landau:1944if,Bichsel:1988if}, most
-probably $84\keV$ and on average $124\keV$ in $320\um$. It is
-\emph{scattered} by the nuclei, by an angle of width~\cite{Highland:1975pq,Lynch:1990sq}
+which is the full formula when $T_{\mathrm{cut}}$ exceeds the largest
+possible transfer $T_{\max}$. The threshold is the production cut of the
+region: $10\um$ of range in a pixel sensor, which is $32\keV$, $100\um$ or
+$122\keV$ in a strip sensor, $1$~mm or $0.55\MeV$ in the dead silicon
+around them. In a thin sensor the loss fluctuates with the long tail of
+Landau~\cite{Landau:1944if,Bichsel:1988if}, most probably $84\keV$ in
+$320\um$; our family's hits lose $236\keV$ on
+average and $142\keV$ in the median
+(\cref{fig:crowd_at_the_border:bethe}). The nuclei also \emph{scatter}
+every charged particle, by an angle of width~\cite{Highland:1975pq,Lynch:1990sq}
 \begin{equation}
   \theta_0=\frac{13.6\MeV}{\beta p}\sqrt{t}\,\big(1+0.038\ln t\big),\qquad t=x/\Xzero ,
   \label{eq:crowd_at_the_border:highland}
 \end{equation}
 $1.9$~mrad for a pion of $1\GeV$ crossing a layer of $2.5\,\%$ of a
-radiation length. And the two lightest travellers pay a toll measured in the
-same unit, the radiation length \Xzero~\cite{Tsai:1973py}: an electron
-radiates, keeping on average $e^{-t}$ of its energy, and a photon converts
-into an $e^+e^-$ pair with the probability
+radiation length; \GEANT samples the angle and the sideways shift of every
+step from the Wentzel model for hadrons and muons and from Urban's model
+for electrons below $100\MeV$. In \cref{tab:crowd_at_the_border:budget_trk}
+the charged hadrons own most of the hits and leave
+$5.3\,\%$
+of their energy in the tracker, far more than ionisation alone would take
+from them: the rest is the nuclear interactions of
+\cref{sec:crowd_at_the_border:hadronic}.
+
+\emph{Electrons} ionise too (M\o ller and Bhabha scattering, with the same
+split at $T_{\mathrm{cut}}$), but their toll is \emph{bremsstrahlung},
+measured in the radiation length \Xzero~\cite{Tsai:1973py}: an electron
+keeps on average $e^{-t}$ of its energy after $t$ radiation lengths. \GEANT
+draws each photon from the Seltzer-Berger tables below $1\GeV$ and from a
+relativistic model with the Landau-Pomeranchuk-Migdal suppression above.
+
+\emph{Photons} leave nothing until one of three things happens: the
+photoelectric effect and Compton scattering (the Klein-Nishina formula) at
+the \MeV scale, and above it the conversion into an $e^+e^-$ pair in the
+field of a nucleus (the Bethe-Heitler cross section), whose probability
+after $t$ radiation lengths is
 \begin{equation}
   P_{\mathrm{conv}}=1-e^{-7t/9}.
   \label{eq:crowd_at_the_border:conversion}
 \end{equation}
+\emph{Neutral hadrons} leave nothing at all in the tracker unless they
+decay or hit a nucleus.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/sim_em}}
@@ -334,36 +525,34 @@ electromagnetic shower in a crystal of the ECAL
 \end{figure}
 
 How many radiation lengths? \Cref{fig:crowd_at_the_border:material} is the
-answer of the CMS geometry: $0.34\,\Xzero$ at $\eta=0$, rising to $2.0$ at
-$|\eta|=1.4$, where the cables and pipes of the barrel leave the tracker,
-and about $1.3$ beyond; in interaction lengths, the unit of
-\cref{sec:crowd_at_the_border:hadronic}, $0.13$ to $0.45$. The script
-reproduces the curve with $54$ surfaces. The consequence is on the right of
-the figure: more than half of the photons convert before they reach the
-calorimeter.
+answer of the CMS geometry: $0.35\,\Xzero$ at $\eta=0$, rising to
+$2.0$ at $|\eta|=1.4$, where the
+cables and pipes of the barrel leave the tracker, and
+$1.24$ on average; in interaction lengths, the unit of
+\cref{sec:crowd_at_the_border:hadronic}, $0.37$ on average. The
+consequence is on the right of the figure: of $4000$ photons of $5\GeV$
+shot through the tracker in \GEANT,
+$60\,\%$
+convert before they reach a calorimeter, and of as many pions
+$26\,\%$
+break up. In our event, of the
+$61$ primary photons above $1\GeV$
+inside the tracker, $39$ convert; a photon group
+that brings $254\GeV$ and should be invisible
+here leaves $3\,331$ hits, all of them made by its
+electrons.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=4,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
 \caption[The material of the tracker and what it does]{Left: the material
 between the beam and the calorimeters in radiation lengths and in
-interaction lengths, in the CMS simulation geometry (solid, \textsc{TGeo};
-band: spread over azimuth) and in the layer model of the script (dashed).
-Right: \cref{eq:crowd_at_the_border:conversion} and its hadronic twin
-evaluated with the CMS material (lines), and the fraction of $5\GeV$ photons
-and pions lost in the script before the calorimeters (points): $57\,\%$ and
-$28\,\%$ on average.}
+interaction lengths, in the CMS geometry inside \GEANT (geantinos; band:
+spread over azimuth). Right: \cref{eq:crowd_at_the_border:conversion} and
+its hadronic twin evaluated with that material (lines), and the fraction of
+$5\GeV$ photons and pions that \GEANT loses before the calorimeters
+(points).}
 \label{fig:crowd_at_the_border:material}
 \end{figure}
-
-With electromagnetic physics on, the family's tracker hits carry an energy
-loss, $2.10\GeV$ in $8585$ hits of the full simulation, $0.245\MeV$ per hit
-(median $128\keV$; \cref{fig:crowd_at_the_border:bethe}). $313$ photons
-convert, half of them in the services at the ends of the barrels, and the
-electrons radiate $676$ photons above $10\MeV$. Of the $61$ primary photons
-above $1\GeV$ inside the tracker, $40$ convert: by
-\cref{eq:crowd_at_the_border:conversion} they crossed $1.4\,\Xzero$ on
-average, as most of them fly towards the endcaps. $469$ particles, soft
-electrons and loopers, stop in the tracker and never reach a calorimeter.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=3,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
@@ -375,8 +564,56 @@ tail of slow particles.}
 \label{fig:crowd_at_the_border:bethe}
 \end{figure}
 
-\subsection{The wall of crystal: the electromagnetic shower}
+\subsection{The wall of crystal: the ECAL}
 \label{sec:crowd_at_the_border:shower}
+\paragraph{Inside \GEANT: the crystals.}
+\GEANT does not parametrise a shower: it follows every electron and photon
+of it down to a range of $1$~mm of lead tungstate, about $1\MeV$,
+$1.4$ million steps with an energy deposit for the
+family. \Cref{fig:crowd_at_the_border:g4_ecal} shows where they land:
+$181\GeV$ in the barrel and $457\GeV$ in the
+endcap crystals, and from close by one shower, deposit by deposit, inside
+the frames of the real crystals. \Cref{tab:crowd_at_the_border:ecal} counts
+the cells, with the crowd, and \cref{tab:crowd_at_the_border:budget_ecal}
+says whose energy it is.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{SIM/Standalone/pages/geant4_ecal.png}
+\caption[The crystals inside Geant4]{The crystals inside \GEANT. Left: the front faces of the $61\,200$ barrel and $14\,648$ endcap crystals of the CMS geometry, one third removed, coloured by the energy they received from the family; the lines are the trajectories above $0.3\GeV$ in the tracker. Right: one shower from close by, every energy deposit on a $5$~mm grid inside the wire frames of the real crystals.}
+\label{fig:crowd_at_the_border:g4_ecal}
+\end{figure}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3.2pt}
+\caption[The ECAL, subdetector by subdetector]{The ECAL: cells of the
+detector, cells with energy and the energy by origin [GeV], the cells hit
+after the addition and their share of the detector, and the cells in which
+the family is still the largest depositor. EB, EE: crystals; ES: the
+silicon strips of the preshower.}
+\label{tab:crowd_at_the_border:ecal}
+\label{tab:crowd_at_the_border:calo}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
+ & cells in & \multicolumn{2}{c}{the family} & \multicolumn{2}{c}{in time} & early & late & \multicolumn{2}{c}{added} & family \\
+ & detector & cells & energy & cells & energy & energy & energy & cells & [\%] & keeps \\ \midrule
+\simEcalRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{5pt}
+\caption[Who leaves how much in the ECAL]{Who leaves how much in the ECAL:
+the primaries of the family inside $|\eta|<3$ by group, the energy they
+bring, and what they and their descendants leave in the barrel crystals, in
+the endcap crystals and in the silicon of the preshower; the last column is
+the share of the group's energy that ends in the crystals.}
+\label{tab:crowd_at_the_border:budget_ecal}
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{at the gate} & EB & EE & ES & in the crystals \\
+group & number & energy [GeV] & [GeV] & [GeV] & [MeV] & [\%] \\ \midrule
+\simBudgetEcalRows
+\bottomrule
+\end{tabular}
+\end{table}
+
 What stops a photon of $40\GeV$ in $23\cm$? Its own multiplication. In
 lead tungstate, $\Xzero=0.89\cm$, a photon converts and an electron radiates
 every centimetre, so the number of particles doubles and their energy
@@ -393,32 +630,114 @@ with a maximum that moves only logarithmically with the energy: $3.9$,
 $6.2$ and $8.5\,\Xzero$ at $1$, $10$ and $100\GeV$. A crystal of $25.8\,\Xzero$
 contains them all. Across, the scale is the Moli\`ere radius, $2.19\cm$ in
 lead tungstate and the width of a barrel crystal: $90\,\%$ of the energy
-falls within one. The script draws $\alpha$ and $t_{\max}$ with their
-fluctuations and correlation for every shower, places up to $250$ spots of
-equal energy by \cref{eq:crowd_at_the_border:gamma} and a two-component
-radial profile, and adds each spot to the crystal it falls in.
+falls within one. This is the wall for \emph{photons and electrons}: in
+\cref{tab:crowd_at_the_border:budget_ecal} the photons leave
+$72\,\%$
+of their energy in the crystals; what is missing was left in the tracker,
+fell into the gaps between barrel and endcap or passed through the beam
+hole. For the others the crystal is something else. A \emph{muon} crosses
+it as a minimum-ionising particle and leaves $0.25\GeV$. A \emph{charged
+hadron} does the same, unless it meets a nucleus on the way: the crystals
+are $1.1$ interaction lengths deep, so two hadrons in three start their
+shower here (\cref{sec:crowd_at_the_border:hadronic}), and the charged
+hadrons leave $36\,\%$
+of their energy in the crystals. A \emph{neutral hadron} leaves nothing
+before its first collision; as a group the neutral hadrons leave
+$30\,\%$
+of their energy here.
+
+The light of a crystal is not quite proportional to the energy left in it:
+a slow, heavily ionising particle makes less light per \MeV. \CMSSW applies
+to every step in a crystal the weight
+\begin{equation}
+  w = 1-0.2537\,\ln\!\Big(k_B\frac{dE}{dx}\Big),\qquad 0.1\le w\le1,\qquad k_B=\frac{0.0333\ \mathrm{g\,MeV^{-1}cm^{-2}}}{\rho} ,
+  \label{eq:crowd_at_the_border:birks_ecal}
+\end{equation}
+and so does our script. It bites only above $250\MeV/\mathrm{cm}$, twenty
+five times the loss of a minimum-ionising particle, so only on the slow
+protons and nuclear fragments of a hadronic shower: for the family the
+light is $1.10\,\%$
+below the deposited energy.
 
 \Cref{fig:crowd_at_the_border:shower} shows what the tracker in front does
-to this picture. Of $400$ photons of $10\GeV$ at $\eta=0.5$, the $263$
-that arrive unconverted put $71\,\%$ of their energy into one crystal and
-$90\,\%$ into four. The $137$ that converted arrive as two or more particles
-bent apart by the field: $44\,\%$ in the hottest crystal, $90\,\%$ in ten.
-Same photon, same calorimeter. The family leaves $206\GeV$ in $2984$ barrel
-crystals and $411\GeV$ in $2937$ endcap crystals.
+to the picture. Of $300$
+photons of $10\GeV$ shot at $\eta=0.5$ in \GEANT, the
+$183$ that arrive unconverted put
+$68\,\%$ of their energy into
+one crystal and $93\,\%$ into
+nine. The $117$ that converted arrive as two
+or more particles bent apart by the field:
+$44\,\%$ in the hottest crystal,
+$83\,\%$ in nine, and $90\,\%$
+of what arrives only in $12$ crystals
+instead of $5$. Same photon, same
+calorimeter.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=6,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
 \caption[The electromagnetic shower]{\Cref{eq:crowd_at_the_border:gamma}.
 Left: the mean longitudinal profile in lead tungstate for three energies.
 Right: the share of the hottest, the $9$ and the $25$ hottest crystals for
-photons of $10\GeV$, unconverted (green) and converted in the tracker
-(orange); bars are the spread from photon to photon.}
+photons of $10\GeV$ in \GEANT, unconverted (green) and converted in the
+tracker (orange); bars are the spread from photon to photon.}
 \label{fig:crowd_at_the_border:shower}
 \end{figure}
 
-\subsection{The wall of brass: hadronic physics}
+\subsection{The wall of brass: the HCAL}
 \label{sec:crowd_at_the_border:hadronic}
 \label{sec:crowd_at_the_border:in_out_of_time}
+\paragraph{Inside \GEANT: the HCAL.}
+Behind the crystals stand plates of brass, five to eight centimetres thick,
+with a sheet of plastic scintillator after each, seventeen sheets in the
+barrel. The brass is not read out, so
+\cref{fig:crowd_at_the_border:g4_hcal} shows only what the scintillator
+received: $3.5\GeV$ of light for the family in
+the barrel and the endcap, where the hadrons of
+\cref{tab:crowd_at_the_border:budget_hcal} brought hundreds of \GeV.
+\Cref{tab:crowd_at_the_border:hcal} lists the cells of the four parts: the
+barrel HB, the endcap HE, the outer layers HO behind the coil, and the
+forward calorimeter HF, a different instrument, quartz fibres in steel that
+see only Cherenkov light and count it in photoelectrons.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{SIM/Standalone/pages/geant4_hcal.png}
+\caption[The hadron calorimeter inside Geant4]{The hadron calorimeter inside \GEANT. Left: the scintillator layers of the barrel and endcap HCAL (gold, one third removed) with every energy deposit of the family's showers in them on a $1\cm$ grid; the crystals are faint green. Right: one hadronic shower from the side, small dots in the crystals, large dots in the scintillator layers.}
+\label{fig:crowd_at_the_border:g4_hcal}
+\end{figure}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3.2pt}
+\caption[The HCAL, subdetector by subdetector]{The HCAL: cells of the
+detector, cells with light and the light by origin (HB, HE, HO: energy in
+the scintillator after Birks' law [GeV]; HF: photoelectrons), the cells hit
+after the addition and their share of the detector, and the cells in which
+the family is still the largest depositor.}
+\label{tab:crowd_at_the_border:hcal}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
+ & cells in & \multicolumn{2}{c}{the family} & \multicolumn{2}{c}{in time} & early & late & \multicolumn{2}{c}{added} & family \\
+ & detector & cells & light & cells & light & light & light & cells & [\%] & keeps \\ \midrule
+\simHcalRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption[Who leaves how much in the HCAL]{Who leaves how much in the HCAL.
+Left: the primaries of the family inside $|\eta|<3$ by group, the energy
+they bring, the energy they and their descendants leave in the scintillator
+of HB, HE and HO, the light after Birks' law and its share of the deposit,
+and the share of the group's energy that becomes light. Right: the
+primaries beyond $|\eta|=3$, the energy that arrives at the steel of the HF
+(from all primaries of the group) and the photoelectrons.}
+\label{tab:crowd_at_the_border:budget_hcal}
+\begin{tabular}{@{}lrrrrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{at the gate, $|\eta|<3$} & \multicolumn{4}{c}{scintillator of HB, HE, HO} & \multicolumn{3}{c}{forward} \\
+group & number & energy & deposit & light & light/dep. & light/energy & number & at the HF & HF \\
+ & & [GeV] & [GeV] & [GeV] & [\%] & [\%] & $|\eta|>3$ & [GeV] & [p.e.] \\ \midrule
+\simBudgetHcalRows
+\bottomrule
+\end{tabular}
+\end{table}
+
 A hadron also meets the nuclei through the strong force, and its unit of
 length is the nuclear interaction length \lamI, the mean path before an
 inelastic collision: $20\cm$ in lead tungstate, twenty times the radiation
@@ -427,13 +746,20 @@ length. After a thickness $x$ a fraction
   P_{\mathrm{int}}=1-e^{-x/\lamI}
   \label{eq:crowd_at_the_border:lambda}
 \end{equation}
-has interacted. Three consequences follow. In the tracker, $0.3\,\lamI$ on
-average, a third of the hadrons break up before any calorimeter: in our
-event $163$ nuclear interactions, and $32$ of the $93$ charged hadrons above
-$0.5\GeV$, $34\,\%$. In the crystals, $1.13\,\lamI$ deep, two hadrons in
-three start their shower already in the ECAL, and one in three crosses it
-as a minimum-ionising particle leaving a quarter of a \GeV. And the shower
-itself is not like a photon's
+has interacted. \GEANT draws the distance to the next collision from the
+inelastic cross sections of Barashenkov and of the Glauber-Gribov model,
+and then builds the collision itself: the Bertini cascade, nucleon by
+nucleon inside the nucleus, below $6\GeV$, and the Fritiof string model
+above $3\GeV$ (between the two it chooses at random), each followed by the
+de-excitation of what is left of the nucleus. Three consequences follow for
+the \emph{charged and neutral hadrons}. In the tracker,
+$0.37\,\lamI$ on average, a third of them break up before any
+calorimeter: in our event $45$ of the
+$126$ charged hadrons above
+$0.5\GeV$, and \GEANT counts $447$ nuclear interactions in the
+tracker volume, those of the secondaries included. In the crystals,
+$1.1\,\lamI$ deep, two hadrons in three start their shower already in the
+ECAL. And the shower itself is not like a photon's
 (\cref{fig:crowd_at_the_border:had_sketch})~\cite{Wigmans:2000vf,Fabjan:2003aq}.
 The $\pi^0$ made in every interaction decay at once to photons, and that
 part of the energy showers electromagnetically; its mean fraction grows
@@ -447,9 +773,15 @@ to the next. Of the rest a part is \emph{invisible}: it breaks nuclei, or
 leaves as slow neutrons and neutrinos. A calorimeter therefore sees a
 hadron as $f_{em}+(1-f_{em})\,h/e$ of an electron of the same energy, with
 $h/e\approx0.6$ to $0.7$. Finally the HCAL is a \emph{sampling}
-calorimeter: brass plates stop the shower and only the thin scintillator
-tiles between them are sensitive, about $1\,\%$ of the energy. A calorimeter
-hit of the HCAL is that $1\,\%$; the digitisation of
+calorimeter: the brass stops the shower and only the thin scintillator
+between the plates is sensitive. In \cref{tab:crowd_at_the_border:budget_hcal}
+the charged hadrons turn $0.27\,\%$
+of their energy into scintillator light and the neutral hadrons
+$0.38\,\%$:
+a third of that energy stayed in the crystals, and of what the brass
+absorbs the plastic samples about one per cent. \emph{Photons and
+electrons}, stopped by the crystals, leave almost nothing here. A
+calorimeter hit of the HCAL is that small part; the digitisation of
 \cref{ch:customs_form} multiplies it back.
 
 \begin{figure}[htbp]\centering
@@ -460,33 +792,115 @@ part hadronic, part invisible.}
 \label{fig:crowd_at_the_border:had_sketch}
 \end{figure}
 
-The script draws the depth of the first interaction from
-\cref{eq:crowd_at_the_border:lambda}, the electromagnetic fraction from
-\cref{eq:crowd_at_the_border:fem} with its fluctuation, and places the
-hadronic part with the longitudinal profile of Bock et
-al.~\cite{Bock:1980rs} in interaction lengths. For the family, $221$ hadrons
-start their shower in the crystals and $78$ in the HCAL; $158\GeV$ are
-invisible, $124\GeV$ fall into the dead material between and behind the
-calorimeters, and the scintillator of the barrel and endcap HCAL holds
-$2.5\GeV$. \Cref{fig:crowd_at_the_border:hadronic} sends single pions into
-the barrel: crystals and scintillator together, the latter multiplied by its
-sampling factor, give back $0.77$ of a pion of $2\GeV$ and $0.85$ of one of
-$50\GeV$, with $41\,\%$ of it in the crystals. This is the non-linear
-response the jet energy corrections of \cref{ch:fair_price} exist for, and
-the test beams of CMS measured the same shape~\cite{USCMS:2009fxn}. The
-forward calorimeter is a different instrument: quartz fibres in steel that
-see only Cherenkov light, counted in photoelectrons; the family leaves
-$1936$ of them.
+The plastic has its own non-linearity, Birks' law: a dense track of
+ionisation quenches its own light. \CMSSW weights the energy of every step
+in the scintillator by
+\begin{equation}
+  w=\frac{1}{1+k_B\,\dfrac{dE}{dx}+C\,\Big(k_B\,\dfrac{dE}{dx}\Big)^{2}},
+  \qquad k_B=\frac{0.0060\ \mathrm{g\,MeV^{-1}cm^{-2}}}{\rho},\quad C=0.142 ,
+  \label{eq:crowd_at_the_border:birks}
+\end{equation}
+with $k_B$ divided by $1.75$ for a particle of charge two or more, and
+\file{geant4_SIM.py} does the same. A minimum-ionising particle, $2\MeV$
+per centimetre, keeps $99\,\%$ of its light; a slow proton at
+$100\MeV$ per centimetre keeps $61\,\%$. For the family the light is
+$74\,\%$ of the energy
+left in the plastic, and for the neutral hadrons, whose showers are made of
+slow protons, $73\,\%$.
+
+\Cref{fig:crowd_at_the_border:hadronic} sends single pions into the barrel
+in \GEANT: crystals and scintillator together, the latter multiplied by its
+sampling factor, give back $0.83$ of a pion of
+$2\GeV$, $1.05$ of one of $20\GeV$ and
+$1.11$ of one of $100\GeV$, with a spread of
+$25\,\%$ from pion to
+pion at $20\GeV$. This is the non-linear response the jet energy
+corrections of \cref{ch:fair_price} exist for, and the test beams of CMS
+measured the same shape~\cite{USCMS:2009fxn}. In the forward calorimeter
+\GEANT is not asked to shower at all, here as in \CMSSW: a particle that
+reaches its steel is stopped and a parametrisation answers with
+photoelectrons, $1671$ for the $4758\GeV$ the
+family sends there.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=7,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
 \caption[The hadronic shower: electromagnetic fraction and response]{\Cref{eq:crowd_at_the_border:fem}.
 Left: the electromagnetic fraction for pions and protons, and what the HCAL
 and the crystals see. Right: the response of crystals plus HCAL to single
-pions in the script, the share of the crystals in it, and the fraction of
-pions that cross the crystals without interacting, $e^{-1.13}=0.32$.}
+pions in \GEANT, with Birks' law, the share of the crystals in it, and the
+fraction of pions that cross the crystals as minimum-ionising particles.}
 \label{fig:crowd_at_the_border:hadronic}
 \end{figure}
+
+\subsection{Behind the walls: the iron and the muon chambers}
+\label{sec:crowd_at_the_border:muon}
+\paragraph{Inside \GEANT: the muon chambers.}
+Outside the coil the steel of the return yoke alternates with four
+stations of gas chambers: drift tubes in the barrel, cathode strip chambers
+in the endcaps, resistive plate chambers in both and the first GEM
+detectors in front of the endcap (\cref{fig:crowd_at_the_border:g4_muon}).
+A muon hit is the crossing of a gas volume by a charged particle. Behind
+the coil \GEANT still follows $616$ charged
+trajectories of the family above $20\MeV$, most of them at the ends, where
+the beam pipe and the endcaps leave gaps;
+$19$ are muons from the decays of pions and
+kaons. \Cref{tab:crowd_at_the_border:muon} counts the hits and
+\cref{tab:crowd_at_the_border:budget_muon} the energy that got this far.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{SIM/Standalone/pages/geant4_muon.png}
+\caption[The muon system inside Geant4]{The muon system inside \GEANT: the steel of the return yoke (red) and the muon chambers (yellow), one third removed, with the trajectories of the family in the tracker, the glow of its showers in the calorimeters, and the charged trajectories above $20\MeV$ that \GEANT followed behind the coil.}
+\label{fig:crowd_at_the_border:g4_muon}
+\end{figure}
+
+\begin{table}[htbp]\centering\footnotesize
+\caption[The muon system]{The muon system: hits in the gas by detector and
+origin.}
+\label{tab:crowd_at_the_border:muon}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+ & the family & in time & early & late & added \\ \midrule
+\simMuonRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{5pt}
+\caption[Who leaves how much behind the calorimeters]{Who leaves how much
+behind the calorimeters: all primaries of the family by group, their
+energy, the energy their descendants leave in the muon system (the steel of
+the yoke and the chambers), the part of it left in the gas of the chambers,
+and the hits.}
+\label{tab:crowd_at_the_border:budget_muon}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{at the gate} & in the muon system & in the gas & hits \\
+group & number & energy [GeV] & [GeV] & [keV] & \\ \midrule
+\simBudgetMuonRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+What gets through ten interaction lengths of calorimeter and coil? Of the
+five groups, only the \emph{muons}. A muon does not feel the strong force,
+and being two hundred times heavier than an electron it radiates forty
+thousand times less: its critical energy in iron is about $350\GeV$. So it
+loses energy by ionisation alone, \cref{eq:crowd_at_the_border:bethe} with
+the mass of the muon (\GEANT's model \code{MuBetheBloch}), about
+$1.1\GeV$ per metre of iron at the minimum. Crystals, brass and coil take
+about $1.5\GeV$ from a muon and the field curls it, so that in the barrel
+it needs a \pt of some $3\GeV$ to arrive at the first station at all; each
+layer of the yoke costs another $0.3$ to $0.7\GeV$. On the way the return
+field, $2$~T in the other direction, bends it back, and the track draws a
+flat S. Everything else that arrives is leakage: the tail of
+a hadronic shower that punches through, a pion or kaon that decayed to a
+muon in flight, slow neutrons that wander for microseconds, and the
+$\delta$ rays these knock out of the chamber walls.
+
+The family has one muon at the gate, of $11\GeV$, and it flies
+forward at $\eta=-3.3$, where there are no chambers. Its
+$82$ hits are leakage, and almost all of them one accident:
+a pion of $46\GeV$ that left along the beam pipe interacts far forward, a slow proton from that collision reaches a cathode strip chamber of the third endcap disk, $9.5$~m from the collision point, $45\ns$ later and stops in its gas, and $80$ of the hits are the $\delta$ electrons of a few tens of \keV that it knocks out there. For an event without an energetic muon the muon system is almost
+silent, which is what ten interaction lengths are for. The crowd is $960$ collisions, and some of its
+particles do get through: \cref{tab:crowd_at_the_border:muon}.
 
 \subsection{Three crowds, one clock: the addition}
 \label{sec:crowd_at_the_border:crossing_frame}
@@ -506,7 +920,11 @@ $t_{\mathrm{flight}}$ after its own crossing appears at
 \end{equation}
 That is all \file{add_hits_SIM.py} does, and all the \Mix of \CMSSW does at
 this level~\cite{Hildreth:2017caz}: it stamps every hit with its crossing
-and its collision, and lays them in one frame.
+and its collision, and lays them in one frame. The three files stay what
+they are. This separation is a privilege of the simulation, and the reason
+it can afford the crowd at all: in the experiment the family, its own
+crossing and the fifteen others arrive in the same electronics, and the
+sum is all there is.
 
 \begin{figure}[htbp]\centering
 \resizebox{0.95\textwidth}{!}{\input{chapter/tikz/sim_clock}}
@@ -516,19 +934,25 @@ cell that adds what all of them leave in it.}
 \label{fig:crowd_at_the_border:clock}
 \end{figure}
 
-The crowd is very unequal. A collision leaves $8.6$ tracker hits per
-primary and $1247$ on average, but the median is $725$ and the largest
-leaves $8102$; in the crystals $57\GeV$ on average. On one clock
+The crowd went through the same \GEANT, collision by collision, and it is
+very unequal. A collision leaves $14.6$ tracker hits
+per primary and $2125$ on average, but the median
+is $1220$ and the largest leaves $14\,002$;
+in the crystals $52\GeV$ on average. On one clock
 (\cref{fig:crowd_at_the_border:time}) the sixteen crossings are sixteen
 bursts of hits $25\ns$ apart, each with a tail of loopers and slow
-particles that reaches into the next; the family's $8585$ hits are one line
-under the burst of the $92\,942$ of its own crossing. In the circle of our
-jet, $\Delta R<0.4$, the cells receive $66\GeV$ of transverse energy from
-the family and $231\GeV$ from the crowd, $14.5\GeV$ per crossing and
-$15.5\GeV$ from our own. Which of the fifteen other crossings a detector
-still sees is decided by its electronics: the tracker listens for one
-crossing, the crystals and the tiles for several. That is
-\cref{ch:customs_form}; here every hit is kept, with its time.
+particles that reaches into the next; the family's $12\,623$ hits
+are one line under the burst of the $163\,143$
+of its own crossing. In the circle of our jet, $\Delta R<0.4$, the cells
+receive $69\GeV$ of
+transverse energy from the family and
+$302\GeV$
+from the crowd, $18.9\GeV$
+per crossing and $24.5\GeV$
+from our own. Which of the fifteen other crossings a detector still sees is
+decided by its electronics: the tracker listens for one crossing, the
+crystals and the tiles for several. That is \cref{ch:customs_form}; here
+every hit is kept, with its time.
 
 \begin{figure}[htbp]\centering
 \includegraphics[page=8,width=\textwidth]{SIM/Standalone/theory_SIM.pdf}
@@ -540,23 +964,25 @@ each bunch crossing (HCAL cells multiplied by their sampling factor).}
 \end{figure}
 
 \paragraph{The recipe.}
-\Cref{fig:crowd_at_the_border:flow} is the loop the script runs for every
-particle. (1)~Take a particle from the stack and, if it is unstable, draw
-its decay path. (2)~Follow the helix, or the line, to the next surface of
-the tracker. (3)~If the decay path ends first, decay and stack the
-daughters. (4)~At the surface: record a hit if it is a sensor; subtract the
-energy loss of \cref{eq:crowd_at_the_border:bethe}; scatter by
-\cref{eq:crowd_at_the_border:highland}; let an electron radiate, a photon
-convert by \cref{eq:crowd_at_the_border:conversion}, a hadron interact by
-\cref{eq:crowd_at_the_border:lambda}, and stack what comes out. (5)~At the
-boundary of the tracker follow the particle to the face of the ECAL or of
-the HF. (6)~There a photon or electron showers by
-\cref{eq:crowd_at_the_border:gamma}; a hadron ionises to its first
-interaction and showers by \cref{eq:crowd_at_the_border:fem}; a muon ionises
-through everything to the muon stations. (7)~Repeat for the $672$ primaries
-of the family, then, with other random numbers, for each collision of the
-crowd on the clock of its own crossing. (8)~Add by
-\cref{eq:crowd_at_the_border:sum}.
+\GEANT's loop is the same for every particle, and \file{standalone_SIM.py}
+runs it in miniature, with surfaces instead of steps and formulas instead
+of processes (\cref{fig:crowd_at_the_border:flow}). (1)~Take a particle
+from the stack and, if it is unstable, draw its decay time. (2)~For every
+process the particle can undergo, draw the distance to its next
+occurrence from the cross section; the shortest wins, unless a boundary
+of the geometry comes first. (3)~Move the particle there along its helix,
+subtract the continuous energy loss of \cref{eq:crowd_at_the_border:bethe}
+and scatter it by \cref{eq:crowd_at_the_border:highland}. (4)~If the step
+lies in a sensitive volume, record it: a hit in a sensor, an energy in a
+cell, weighted by \cref{eq:crowd_at_the_border:birks}. (5)~Let the winning
+process happen, a decay, a $\delta$ ray, a radiated photon, a conversion
+by \cref{eq:crowd_at_the_border:conversion}, a nuclear interaction by
+\cref{eq:crowd_at_the_border:lambda}, and put what comes out on the stack
+if it is above the production cut of the region; otherwise leave its
+energy on the spot. (6)~Repeat until the stack is empty or the clock shows
+$500\ns$. (7)~Repeat for the $672$ primaries of the family, then, with
+other random numbers, for each collision of the crowd on the clock of its
+own crossing. (8)~Add by \cref{eq:crowd_at_the_border:sum}.
 
 \begin{figure}[htbp]\centering
 \resizebox{\textwidth}{!}{\input{chapter/tikz/sim_flow}}
@@ -572,21 +998,29 @@ The record \file{example/SIM/event_SIM.lhe} is the record of
 \cref{ch:crossing_the_border} followed by three tables: the summary of the
 hits, one row per primary of the family (what ended it as a primary, where
 it left the tracker, its hits and the energy it left in each calorimeter),
-and one row per collision of the crowd. The hits themselves, $1.2$ million
-points and $200\,000$ cells, are in three binary files, one per sample.
-\Cref{tab:crowd_at_the_border:stages} is the family alone, one ingredient
-more in each row, and \cref{tab:crowd_at_the_border:hits_ledger} is the
-ledger of the three samples and of their sum.
+and one row per collision of the crowd. The hits themselves,
+$2.1$ million points and
+$177\,000$
+cells, are in three binary files, one per sample.
+\Cref{tab:crowd_at_the_border:stages} is the family alone in \GEANT, with
+one family of processes more in each row (\code{geant4\_SIM.py --stage}):
+transport on straight lines, the field, the decays, the electromagnetic
+processes and the hadronic ones. Its last line is the signal of the record.
+\Cref{tab:crowd_at_the_border:hits_ledger} is the ledger of the three
+samples and of their sum.
 
 \begin{table}[htbp]\centering\scriptsize\setlength{\tabcolsep}{2.6pt}
 \caption[The physics switched on stage by stage]{The physics switched on
-stage by stage, for the family (\file{standalone_SIM.log}): primaries
-leaving the tracker intact (of $672$), stored secondaries and their origin
-(decay / electromagnetic / hadronic), tracker and muon-chamber hits, the
-energy lost in the sensors [GeV], calorimeter cells, energy per subdetector
-(GeV; HB, HE: in the scintillator; HF: photoelectrons), and our jet: vector
-\pt [GeV] of its members still primaries at the boundary (their number) and
-the energy they leave in the crystals. The $955$ muon-chamber hits of the
+stage by stage in \GEANT, for the family (\file{geant4_SIM_signal_<stage>.json}):
+primaries leaving the tracker intact (of $672$), secondaries above $10\MeV$
+born in the tracker and their origin (decay / electromagnetic / hadronic),
+tracker and muon-chamber hits (without ionisation a hit is the crossing of
+a sensor), the energy lost in the sensors [GeV], calorimeter cells, energy
+per subdetector (GeV; HB, HE: light of the scintillator; HF:
+photoelectrons), and our jet: vector \pt [GeV] of its members still
+primaries at the boundary (their number) and the energy they leave in the
+crystals. On straight lines every charged primary flies on through the muon
+chambers ($5\,908$ hits); the $1\,179$ hits of the
 fourth row are hadrons crossing the calorimeters like muons, as long as
 nothing makes them interact.}
 \label{tab:crowd_at_the_border:stages}
@@ -603,10 +1037,10 @@ stage & bound. & \multicolumn{2}{c}{secondaries} & \multicolumn{2}{c}{hits} & $\
 \caption[The ledger of the hits: three samples and their sum]{The ledger of
 the hits (\file{add_hits_SIM.log}): the family, the in-time crowd and the
 out-of-time crowd, split into its twelve early and three late crossings,
-each simulated separately, and their sum. For cells the last column is the
-number of distinct cells. Below the line every cell of the sum is given to
-the origin that deposited most of its energy, as the \CMSSW companion's
-ledger does.}
+each simulated separately by \GEANT, and their sum. For cells the last
+column is the number of distinct cells. Below the line every cell of the
+sum is given to the origin that deposited most of its energy, as the
+\CMSSW companion's ledger does.}
 \label{tab:crowd_at_the_border:hits_ledger}
 \begin{tabular}{@{}lrrrrr@{}}\toprule
  & the family & in time & early & late & added \\
@@ -618,104 +1052,43 @@ ledger does.}
 
 \paragraph{Station by station.}
 \label{sec:crowd_at_the_border:stations}
-\Cref{tab:crowd_at_the_border:trk,tab:crowd_at_the_border:calo,tab:crowd_at_the_border:muon}
-take the same sum detector by detector, and
-\cref{fig:crowd_at_the_border:stations_signal,fig:crowd_at_the_border:stations_mixed}
-draw it. In the \emph{tracker} the endcap disks of the strip tracker hold $41\,\%$ of the hits,
-the family's and the crowd's alike, and the family is $8.5\,\%$ of the hits
-of its own crossing and $0.7\,\%$ of all sixteen. In the \emph{ECAL} the
-crowd reaches $99\,\%$ of the barrel crystals and every endcap crystal; the
-family deposits in $7704$ cells and remains the largest depositor in $1364$
-of them, which hold $428$ of its $617\GeV$: the cores of its showers
+The tables of the theory sections already hold the sum detector by
+detector (\cref{tab:crowd_at_the_border:trk,tab:crowd_at_the_border:ecal,tab:crowd_at_the_border:hcal,tab:crowd_at_the_border:muon}),
+and the displays of \cref{fig:crowd_at_the_border:displays,fig:crowd_at_the_border:cmssw}
+draw it. In the \emph{tracker} the endcap disks of the strip tracker hold
+$39\,\%$
+of the hits, the family's and the crowd's alike, and the family is
+$7\,\%$
+of the hits of its own crossing and
+$0.6\,\%$ of all
+sixteen. In the \emph{ECAL} the crowd reaches every barrel
+crystal and $95\,\%$ of the endcap cells; the family, whose showers leave their last \keV far
+from the core, deposits in $29\,938$ cells and
+remains the largest depositor in $1\,254$ of them,
+which hold $241$
+of its $638\GeV$: the cores of its showers
 survive, their edges belong to someone else. In the \emph{HCAL} the early
-crossings own four cells in five. The \emph{muon chambers} receive nothing
-from this family and $562$ hits from the crowd: muons of pion and kaon
-decays and of the crowd's own heavy flavour, most of them in the endcap.
-
-\begin{table}[htbp]\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
-\caption[The tracker, subdetector by subdetector]{The tracker: hits by
-subdetector and origin, the mean energy loss per hit of the family, and the
-family's share of all hits and of the hits of its own bunch crossing.}
-\label{tab:crowd_at_the_border:trk}
-\begin{tabular}{@{}llrrrrrrrr@{}}\toprule
- & & \multicolumn{2}{c}{the family} & in time & early & late & added & \multicolumn{2}{c}{family's share [\%]} \\
- & & hits & MeV/hit & & & & & of all & of \bx 0 \\ \midrule
-\simTrackerRows
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[htbp]\centering\scriptsize\setlength{\tabcolsep}{3pt}
-\caption[The calorimeters, subdetector by subdetector]{The calorimeters:
-cells of the detector of the script, cells with energy and the energy by
-origin (GeV; HB, HE, HO: energy in the scintillator; HF: photoelectrons),
-the cells hit after the addition and their share of the detector, and the
-cells in which the family is still the largest depositor.}
-\label{tab:crowd_at_the_border:calo}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lrrrrrrrrrr@{}}\toprule
- & cells in & \multicolumn{2}{c}{the family} & \multicolumn{2}{c}{in time} & early & late & \multicolumn{2}{c}{added} & family \\
- & detector & cells & energy & cells & energy & energy & energy & cells & [\%] & keeps \\ \midrule
-\simEcalRows
-\midrule
-\simHcalRows
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\begin{table}[htbp]\centering\footnotesize
-\caption[The muon system]{The muon system: hits by origin.}
-\label{tab:crowd_at_the_border:muon}
-\begin{tabular}{@{}lrrrrr@{}}\toprule
- & the family & in time & early & late & added \\ \midrule
-\simMuonRows
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[htbp]\centering
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_signal_10_SIM_TRK_rz.png}\hfill
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_signal_10_SIM_TRK_xy.png}\\[2pt]
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_signal_10_SIM_ECAL_rz.png}\hfill
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_signal_10_SIM_HCAL_rz.png}
-\caption[The family station by station]{The family station by station
-(\file{plot_simhits_SIM.py}). Top: the tracker in $r$--$z$ and its barrel in
-$x$--$y$; bottom: ECAL and HCAL in $r$--$z$. A hit takes the colour of the
-kind of primary it descends from: black charged hadrons, purple neutral
-hadrons, green photons, orange electrons. The leading charged member of our
-jet and the hardest photon are joined hit by hit.}
-\label{fig:crowd_at_the_border:stations_signal}
-\end{figure}
-
-\begin{figure}[htbp]\centering
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_mixed_10_SIM_TRK_xy.png}\hfill
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_mixed_10_SIM_ECAL_etaphi.png}\\[2pt]
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_mixed_10_SIM_HCAL_rz.png}\hfill
-\includegraphics[width=0.495\textwidth]{SIM/Standalone/pages/simHits_mixed_10_SIM_MUON_rz.png}
-\caption[The sum station by station]{The sum station by station: the
-tracker barrel in $x$--$y$, the ECAL in $\eta$--$\phi$, the HCAL and the
-muon system in $r$--$z$. The crowd is drawn underneath by bunch crossing,
-olive early, blue in time, red late; a cell takes the colour of whoever
-deposits most in it.}
-\label{fig:crowd_at_the_border:stations_mixed}
-\end{figure}
+crossings own four cells in five. The \emph{muon chambers} receive
+$82$ hits from this family and
+$1\,320$ from the
+crowd.
 
 \paragraph{Our jet.}
 \Cref{tab:crowd_at_the_border:ledger} follows the photograph of
 \cref{ch:family_photograph} across the border. Its $31$ members carry
 $222.8\GeV$ towards $\eta=-1.44$, the corner where the barrel meets the
-endcap. Only $13$ of them reach the calorimeters as themselves, with
-$44.3\GeV$ of vector \pt: ten photons converted, seven hadrons interacted in
-the tracker, the $K^0_S$ decayed. Nothing is lost by that; the energy
-arrives as secondaries. What is lost shows in the next row: the cells
-record $133.5\GeV$ in $942$ crystals and $0.31\GeV$ in the scintillator of
-$151$ HCAL cells, $46\GeV$ after the sampling factor, and their vector sum
-is $73.5\GeV$ of the $99.8$. The difference is the physics of
-\cref{sec:crowd_at_the_border:hadronic}: invisible energy, the response of
-the calorimeters to hadrons, loopers that never arrive, and the gap between
-barrel and endcap that this jet happens to point at.
-\Cref{tab:crowd_at_the_border:circle} then counts everything the detector
-receives inside the circle of the jet.
+endcap. Only $18$ of them reach the calorimeters as themselves,
+with $42.5\GeV$ of vector \pt: six photons converted, five hadrons interacted in the tracker, one decayed, one left along the beam pipe. Nothing is lost
+by that; the energy arrives as secondaries. The next row is what the cells
+record: $99.0\GeV$ in the crystals and
+$0.59\GeV$ of light in the scintillator of
+$477$ HCAL cells, $98\GeV$ after the
+sampling factor, and their vector sum is $79.2\GeV$ of the
+$99.8$. The difference is the physics of
+\cref{sec:crowd_at_the_border:hadronic}: invisible energy, loopers that
+never arrive, and the gap between barrel and endcap that this jet happens
+to point at. \Cref{tab:crowd_at_the_border:circle} then counts everything
+the detector receives inside the circle of the jet.
 
 \begin{ledgerboth}{The Crossing of the Border}{tab:crowd_at_the_border:ledger}{From
 the third row on, \pt is the vector sum of calorimeter cells seen from the
@@ -723,14 +1096,14 @@ collision point, HCAL cells multiplied by the sampling factors of
 \cref{ch:customs_form} ($125$ barrel, $190$ endcap), and
 $n_{\mathrm{const}}$ counts cells. The \CMSSW rows follow its $b$ system, the
 visible descendants of the $B^-$.}
-\ledgerblock{Standalone (seed 1, \file{event_SIM.lhe})}
+\ledgerblock{Standalone (seed 1, \file{event_SIM.lhe}; all through \GEANT)}
 \ledgerrow{the photograph, \akfour jet [0], handed to \GEANT (chapter 9)}{99.83}{14.83}{31}{--}
-\ledgerrow{its members reaching the calorimeters as primaries}{44.32}{--}{13}{$-55.51$}
-\ledgerrow{what the cells record of its members and their secondaries}{73.52}{--}{1093}{$+29.20$}
-\ledgerrow{all cells of the family in the circle $\Delta R<0.4$}{65.21}{--}{560}{$-8.31$}
-\ledgerrow{\quad with the in-time crowd}{80.41}{--}{--}{$+15.20$}
-\ledgerrow{\quad with the early crowd, $\bx=-12\ldots-1$}{247.03}{--}{--}{$+166.62$}
-\ledgerrow{\quad with the late crowd, $\bx=+1\ldots+3$}{291.97}{--}{1655}{$+44.94$}
+\ledgerrow{its members reaching the calorimeters as primaries}{42.52}{--}{18}{$-57.31$}
+\ledgerrow{what the cells record of its members and their secondaries}{79.16}{--}{4739}{$+36.64$}
+\ledgerrow{all cells of the family in the circle $\Delta R<0.4$}{68.28}{--}{1316}{$-10.89$}
+\ledgerrow{\quad with the in-time crowd}{92.21}{--}{--}{$+23.93$}
+\ledgerrow{\quad with the early crowd, $\bx=-12\ldots-1$}{304.09}{--}{--}{$+211.88$}
+\ledgerrow{\quad with the late crowd, $\bx=+1\ldots+3$}{364.35}{--}{1625}{$+60.26$}
 \ledgerblock{\CMSSW (run 1, event 1)}
 \ledgerrow{the photograph, \akfour jet [0] (chapter 7)}{117.79}{16.72}{24}{--}
 \ledgerrow{the $b$ system handed to \GEANT (chapter 9)}{56.82}{--}{8}{--}
@@ -770,49 +1143,84 @@ jet. One of its photons, $44\GeV$, is the lesson of
 one run, it puts two thirds of its energy in one crystal; converted in the
 first pixel layer in another, it lights $466$. In the sum the signal is
 $0.49\,\%$ of $2.1$ million tracker hits and keeps $699$ of its $12\,804$
-ECAL cells. The displays of \cref{fig:crowd_at_the_border:displays} are the
-two events at this stage.
+ECAL cells. \Cref{fig:crowd_at_the_border:displays,fig:crowd_at_the_border:cmssw}
+are the two events at this stage, in the same three views.
 
 \begin{figure}[p]\centering
-\ledgerdisplays
-  {SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_etaphi.png}
-  {Standalone: the family with the $960$ collisions of its crowd underneath (\file{plot_simhits_SIM.py}).}
-  {fig:crowd_at_the_border:journey}
-  {SIM/CMSSW/simHits_mixed_10_SIM_ALL_etaphi_run1_event1.png}
-  {\CMSSW: the signal with its $995$ pileup collisions, the \code{SimHitAnalyzer} page of \code{JitJetSW}.}
-  {fig:crowd_at_the_border:cmssw}
-\caption[The simulated hits in the $(\eta,\phi)$ plane, standalone and
-\CMSSW]{Every simulated hit and cell in the $(\eta,\phi)$ plane, standalone
-(a) and \CMSSW (b): the family by kind of primary, the crowd by bunch
-crossing (olive early, blue in time, red late), cells sized by energy. In
-both the family survives as the strings of its charged tracks and the cores
-of its jets, ours at $(-1.4,-2.7)$ in (a).}
+\includegraphics[height=0.29\textheight]{SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_rz.png}\\[1pt]
+\includegraphics[height=0.29\textheight]{SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_xy.png}\\[1pt]
+\includegraphics[height=0.29\textheight]{SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_etaphi.png}
+\caption[The simulated hits of signal and pileup, standalone]{Standalone,
+all through \GEANT: every simulated hit and cell of the family, by kind of
+primary, cells sized by energy, over the $960$ collisions of its crowd. The
+crowd is two million hits and is counted in bins, as a histogram: a bin
+takes the colour of the group that fills it most per bunch crossing (olive
+early, blue in time, red late) and is the darker the more it holds
+(\file{plot_simhits_SIM.py}). From the top: $r$--$z$ up to $r=450\cm$,
+which holds the tracker, the calorimeters and the first muon station of the
+barrel (the stations further out are not drawn); the barrel in $x$--$y$,
+$\pm450\cm$; and the $(\eta,\phi)$ plane. The red dashed lines and circles
+are the $b$ jets of \cref{ch:family_photograph}: ours at
+$(\eta,\phi)=(-1.4,-2.7)$, the others in the forward calorimeter.}
 \label{fig:crowd_at_the_border:displays}
+\label{fig:crowd_at_the_border:journey}
+\end{figure}
+
+\begin{figure}[p]\centering
+\includegraphics[height=0.29\textheight]{SIM/CMSSW/simHits_mixed_10_SIM_ALL_rz_run1_event1.png}\\[1pt]
+\includegraphics[height=0.29\textheight]{SIM/CMSSW/simHits_mixed_10_SIM_ALL_xy_run1_event1.png}\\[1pt]
+\includegraphics[height=0.29\textheight]{SIM/CMSSW/simHits_mixed_10_SIM_ALL_etaphi_run1_event1.png}
+\caption[The simulated hits of signal and pileup, \CMSSW]{\CMSSW: the same
+three views of the companion's event, the signal with its $995$ pileup
+collisions, all through \GEANT (the \code{SimHitAnalyzer} pages of
+\code{JitJetSW}). In both events the family survives as the strings of its
+charged tracks and the cores of its jets.}
+\label{fig:crowd_at_the_border:cmssw}
 \end{figure}
 
 \subsection{What this stop is, and what it is not}
 \label{sec:crowd_at_the_border:caveats}
 \begin{itemize}
-  \item \textbf{A simulation in the spirit of \GEANT, not \GEANT.} The
-    detector is $54$ surfaces and seven kinds of cells; a shower is a
-    parametrised cloud of spots, a nuclear interaction in the tracker a toy
-    model of pions and nucleons. The material is tuned to the CMS geometry;
-    the calorimeter constants ($h/e$, the sampling fractions, the
-    photoelectrons per \GeV of the HF) are chosen to give the scale of
-    test beams and of the companion, not derived.
-  \item \textbf{Fewer soft hits than \GEANT.} The script creates no
-    $\delta$ rays, no Compton electrons and no nuclear fragments, and stops
-    a particle below $10\MeV$. It has $12.8$ tracker hits per primary where
-    \GEANT has $18.0$, and counts as hit only cells that received a spot of
-    a few \MeV, where \GEANT keeps every deposit above $15\keV$. Cell
-    counts of the two are not comparable; energies are.
-  \item \textbf{The field is a box.} $3.8$~T inside $|z|<6.5$~m and nothing
-    outside; the return field in the yoke, which bends muons back, is not
-    there, and a muon flies straight from the HCAL to its stations.
+  \item \textbf{Our \GEANT is close to the production's, not identical.}
+    The geometry is the public simulation geometry of Run~3, written in
+    $2021$. The tracker and the calorimeters of the $2025$ description are
+    the same; what the release added since is in the muon endcaps (more GEM
+    and RPC chambers and a modified shielding), in the forward proton
+    detectors and around the ZDC, $140$~m away. The physics list is
+    \code{FTFP\_BERT}, the same hadronic physics as CMS's
+    \code{FTFP\_BERT\_EMM} with \GEANT's standard electromagnetic physics
+    instead of the faster variant CMS uses in the calorimeters. The
+    production cuts and Birks' law are those of \CMSSW; in the muon system,
+    where \CMSSW gives photons and electrons different cuts, we use the
+    electron's for both. Not done: the dependence of the light of a
+    crystal on the depth, and the Russian roulette with which \CMSSW thins
+    out slow neutrons and soft photons in the calorimeters.
+  \item \textbf{The cells are found from positions.} A deposit is given to
+    the cell whose volume, on the grid of \file{standalone_SIM.py}, contains
+    its position; \CMSSW takes the cell from the copy number of the crystal
+    or tile, a few millimetres more exact at the edges.
+  \item \textbf{The HF is parametrised} (as in \CMSSW, which uses a library
+    of showers there), and particles are stopped behind it and after
+    $500\ns$.
+  \item \textbf{The field is our own map.} It is solved in two dimensions
+    for an azimuthally averaged yoke and agrees with the published numbers
+    of the magnet at the level of a tenth of a tesla; inside the tracker and
+    the calorimeters \GEANT is given a uniform $3.8$~T.
+  \item \textbf{The sampling factors are not a calibration.} The factors
+    $125$ and $190$ of \cref{ch:customs_form} turn the light of the
+    scintillator back into energy; with them a pion of $2\GeV$ comes back
+    as $0.83$ of itself, one of $20\GeV$ as
+    $1.05$ and one of $100\GeV$ as
+    $1.11$. They are kept as they are here;
+    \cref{ch:customs_form} is where a calibration belongs.
   \item \textbf{SimHits are energy, not signals.} No pulse shape, no noise,
     no threshold, no time window: all sixteen crossings are in the sum with
-    equal weight. The $231\GeV$ of the crowd in our circle is what the
-    detector receives, not what it will read out.
+    equal weight. The $302\GeV$
+    of the crowd in our circle is what the detector receives, not what it
+    will read out.
+  \item \textbf{Three files exist only in a simulation.} The family, its
+    crossing and the other fifteen are separate here because we made them
+    so. Data has one sheet.
   \item \textbf{One event is one sample}, and the two events of the stop are
     different events.
 \end{itemize}
@@ -837,20 +1245,24 @@ in~\cite{Hildreth:2017caz}.
   \item \emph{``A particle below $0.7\GeV$ leaves no energy in the
     calorimeter.''} It leaves none in the barrel. It spirals to the endcap
     and arrives there, late and far from where it was aimed.
-  \item \emph{``The primaries at the boundary fell from $672$ to $407$, so a
-    third of the energy is lost.''} The count is of particles that arrive
+  \item \emph{``The primaries at the boundary fell from $672$ to $286$, so
+    more than half of the energy is lost.''} The count is of particles that arrive
     as themselves. A converted photon arrives as two electrons with all of
     its energy.
-  \item \emph{``The HCAL holds $2.5\GeV$, so the hadrons deposit almost
-    nothing.''} A SimHit of a sampling calorimeter is the energy in the
-    scintillator, about $1\,\%$ of what the calorimeter absorbed. And an HF
+  \item \emph{``The HCAL holds $3.5\GeV$, so the hadrons deposit almost
+    nothing.''} A SimHit of a sampling calorimeter is the light of the
+    scintillator, one or two per cent of what the calorimeter absorbed. And an HF
     hit is not an energy at all but a number of photoelectrons.
   \item \emph{Radiation length and interaction length are different units.}
     The crystals are $26\,\Xzero$ but $1.1\,\lamI$ deep: a wall for a
     photon, a window for one pion in three.
+  \item \emph{A production cut is not an energy threshold of the detector.}
+    It decides whether a soft secondary becomes a track of its own or is
+    added to the energy of the step. The energy is deposited either way;
+    only the number of hits and of steps changes.
   \item \emph{Is the signal simulated together with its pileup?} Never. They
     meet at the level of hits here, and in the production one step later,
-    as digitised signals (premixing).
+    as digitised signals (premixing). And in data they were never apart.
   \item \emph{``Out-of-time pileup is out of the event.''} At this stop it
     is three quarters of the event. The electronics decide how much of it
     stays.
@@ -860,16 +1272,21 @@ in~\cite{Hildreth:2017caz}.
 \begin{exercises}
 \item From \cref{eq:crowd_at_the_border:looper}: what field would let a
   pion of $0.3\GeV$ reach the barrel ECAL? Run
-  \code{standalone\_SIM.py --sample signal --field 2 -v} and compare the
-  loopers and the tracker hits with the $3.8$~T run.
-\item Run the family with \code{--stage B\_Decay\_EM} and explain the $955$
-  muon-chamber hits. Which hadrons make them, and why are they gone in the
-  full simulation?
+  \code{standalone\_SIM.py --sample signal --field 2 -v}, the hand-written
+  script, and compare its loopers and tracker hits with its $3.8$~T run.
+\item Run the family in \GEANT with \code{geant4\_SIM.py --stage B\_Decay\_EM}
+  and explain the $1\,179$ muon-chamber hits. Which hadrons make
+  them, and why are almost all of them gone in the full simulation?
 \item From the primary listing of \file{event_SIM.lhe}, take the photons
   above $1\GeV$ in $|\eta|<1$ and in $1.5<|\eta|<2.5$ and count the
   conversions. Deduce the material in each region with
   \cref{eq:crowd_at_the_border:conversion} and compare with
   \cref{fig:crowd_at_the_border:material}.
+\item Run \code{geant4\_SIM.py --no-regions --tag \_cut}: \GEANT's default
+  cut of $0.7$~mm everywhere. Which numbers of \file{geant4_SIM.log} move,
+  the hits or the energies? Then \code{--no-birks}: by how much does the
+  light of the scintillator rise, and for which group of
+  \cref{tab:crowd_at_the_border:budget_hcal} most?
 \item With \cref{eq:crowd_at_the_border:fem}, compute the response
   $f_{em}+(1-f_{em})h/e$ for one pion of $100\GeV$ and for ten pions of
   $10\GeV$. Which jet looks more energetic to the calorimeter?
@@ -890,7 +1307,7 @@ in~\cite{Hildreth:2017caz}.
     the words of the collaboration, very ambitious~\cite{Srimanobhas:2024nmy,Srimanobhas:2025abv},
     and the community asks for large factors~\cite{HEPSoftwareFoundation:2018fmg,Apostolakis:2022nnf}
     within a computing model that is itself being
-    revised~\cite{Perez-CaleroYzquierdo:2026dvu}. Our crowd costs $140$ times
+    revised~\cite{Perez-CaleroYzquierdo:2026dvu}. Our crowd costs $51$ times
     the family at $60$ collisions and sixteen crossings; at $200$ the ratio
     more than triples.
   \item \textbf{A calorimeter of six million channels.} The HGCAL~\cite{CMS:2017jpq}

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Add the hits of the signal, the in-time crowd and the out-of-time crowd by hand.
 
-standalone_SIM.py simulated the three samples separately (../simhits_signal.npz, ../simhits_intime.npz,
-../simhits_oot.npz). Here they are laid on top of each other, which is all that CMSSW's MixingModule does at
+The three samples were simulated separately, all three by Geant4 in the CMS geometry (geant4_SIM.py): the signal
+(../simhits_signal.npz), the 63 collisions of its own bunch crossing (../simhits_intime.npz) and the 897
+collisions of the fifteen crossings around it (../simhits_oot.npz). One file per sample: if the signal changes,
+the crowd need not be simulated again, and the same crowd can be laid over any signal. Only a simulation has
+this freedom. In data everything happens at once and nobody can take the three apart again.
+Here they are laid on top of each other, which is all that CMSSW's MixingModule does at
 this level: every hit of a collision of bunch crossing bx is shifted in time by 25 ns x bx, the tracker and
 muon hits are put in one list, and the energies of the calorimeter cells are added cell by cell. No physics
 happens in this script; a hit never learns that the others exist. What the electronics make of the sum, and
@@ -85,7 +89,15 @@ def in_circle(codes, eta0, phi0, r=R_JET):
 
 def numbers(S, M, st) -> dict:
     sg, it, oo = S["signal"], S["intime"], S["oot"]
-    J = {s: json.loads((HERE / f"standalone_SIM_{s}.json").read_text()) for s in ("signal", "intime", "oot")}
+    # all three samples went through Geant4 (geant4_SIM.py); the stage-by-stage table is Geant4 with one family of
+    # processes more in each row (geant4_SIM.py --stage), the last row being the signal of the record
+    J = {s: json.loads((HERE / f"geant4_SIM_{s}.json").read_text()) for s in ("signal", "intime", "oot")}
+    stages = []
+    for s in ("transport", "B", "B_Decay", "B_Decay_EM"):
+        f = HERE / f"geant4_SIM_signal_{s}.json"
+        if f.exists():
+            stages += json.loads(f.read_text())["stages"]
+    J["signal"]["stages"] = stages + J["signal"]["stages"]
     early_k = oo["col_bx"] < 0
     late_k = oo["col_bx"] > 0
     N = {"collisions": dict(signal=1, intime=int(len(it["col_k"])), early=int(early_k.sum()), late=int(late_k.sum())),
@@ -181,6 +193,9 @@ def numbers(S, M, st) -> dict:
         acc += np.array([circ[o]["px"], circ[o]["py"]])
         N["circle_ledger"].append(dict(origin=o, pt=float(np.hypot(*acc)), scalar=circ[o]["ecal_et"] + circ[o]["hcal_et"], cells=circ[o]["ecal_cells"] + circ[o]["hcal_cells"]))
     N["stages"] = J["signal"]["stages"]
+    N["budget"] = budget(S)
+    N["geant4"] = {s: dict(version=J[s]["version"], physics=J[s]["physics"], geometry=J[s].get("geometry"), birks=J[s].get("birks"),
+                           seconds=J[s]["seconds"], cpu_seconds=J[s]["cpu_seconds"], jobs=J[s]["jobs"]) for s in J}
     N["counters"] = {s: J[s]["n"] for s in J}
     N["energies"] = {s: J[s]["e"] for s in J}
     N["seconds"] = {s: J[s]["seconds"] for s in J}
@@ -189,6 +204,55 @@ def numbers(S, M, st) -> dict:
     t_loc = d["t"] - BX_NS * d["bx"]
     N["late_hits"] = {o: int(((t_loc > 25.0) & (d["origin"] == i)).sum()) for i, o in enumerate(ORIGINS)}
     return N
+
+
+def budget(S) -> dict:
+    """Who leaves how much where: the primaries in five groups, and for each the energy it brings and the energy
+    its descendants leave in the tracker, the crystals, the scintillator and the muon system (GeV). The family
+    inside the acceptance of each detector; the crowd summed over everything."""
+    sg = S["signal"]
+    names = [str(x) for x in sg["tal_names"]]
+    T = {n: sg["prim_tal"][:, i].astype(float) for i, n in enumerate(names)}
+    p4 = sg["prim_p4"]
+    pt = np.hypot(p4[:, 1], p4[:, 2])
+    aeta = np.abs(np.arcsinh(p4[:, 3] / np.maximum(pt, 1e-9)))
+    kind = sg["prim_kind"]
+    n = len(kind)
+    ntrk = np.bincount(sg["trk_prim"], minlength=n)
+    nmu = np.bincount(sg["mu_prim"], minlength=n) if len(sg["mu_prim"]) else np.zeros(n, int)
+    cdet = sg["cal_code"] // sim.CODE
+    hfpe = np.bincount(sg["cal_prim"][cdet == sim.HF], weights=sg["cal_e"][cdet == sim.HF], minlength=n)
+    fam = {}
+    for k, name in list(enumerate(sim.KINDS)) + [(-1, "all")]:
+        m = np.ones(n, bool) if k < 0 else kind == k
+        a, b, f = m & (aeta < 2.5), m & (aeta < 3.0), m & (aeta >= 3.0)
+        s = lambda col, mask: float(T[col][mask].sum())
+        fam[name] = dict(
+            n=int(m.sum()), e=float(p4[m, 0].sum()),
+            trk=dict(n=int(a.sum()), e=float(p4[a, 0].sum()), lost=s("trkvol", a), si=s("si", a), hits=int(ntrk[a].sum()), lost_all=s("trkvol", m), hits_all=int(ntrk[m].sum())),
+            ecal=dict(n=int(b.sum()), e=float(p4[b, 0].sum()), trkvol=s("trkvol", b), eb=s("eb_vis", b), ee=s("ee_vis", b), es=s("es_vis", b), raw=s("eb", b) + s("ee", b)),
+            hcal=dict(n=int(b.sum()), e=float(p4[b, 0].sum()), raw=s("hb", b) + s("he", b) + s("ho", b), vis=s("hb_vis", b) + s("he_vis", b) + s("ho_vis", b),
+                      hb=s("hb_vis", b), he=s("he_vis", b), ho=s("ho_vis", b), n_fwd=int(f.sum()), e_fwd=float(p4[f, 0].sum()), hf_in=s("hf_in", m), hf_pe=float(hfpe[m].sum()), dead=s("dead", m)),
+            muon=dict(vol=s("muvol", m), gas=s("gas", m), hits=int(nmu[m].sum())))
+    # who is at the gate and what becomes of them as a primary
+    fate, fnames = sg["prim_fate"], [str(x) for x in sg["fate_names"]]
+    charged = np.array([sim.dec.charge3(int(i)) != 0 for i in sg["prim_id"]])
+    thr = sim.looper_pt(sim.R_EB)
+    fates = {}
+    for k, name in list(enumerate(sim.KINDS)) + [(-1, "all")]:
+        m = np.ones(n, bool) if k < 0 else kind == k
+        fates[name] = dict(n=int(m.sum()), e=float(p4[m, 0].sum()), in_tracker=int((m & (aeta < 2.5)).sum()), loopers=int((m & charged & (aeta < 2.5) & (pt < thr)).sum()),
+                           **{f: int((m & (fate == i)).sum()) for i, f in enumerate(fnames)})
+    crowd = {}
+    for smp in ("intime", "oot"):
+        d = S[smp]
+        if "col_tal" not in d:
+            continue
+        cn = [str(x) for x in d["tal_names"]]
+        tot_ = d["col_tal"].astype(float).sum(axis=0)                  # group x column
+        crowd[smp] = {name: {c: float(tot_[k, i]) for i, c in enumerate(cn)} for k, name in enumerate(sim.KINDS)}
+        crowd[smp]["all"] = {c: float(tot_[:, i].sum()) for i, c in enumerate(cn)}
+    return dict(family=fam, crowd=crowd, fates=fates)
 
 
 # ---------------------------------------------------------------------------
@@ -259,10 +323,12 @@ def latex(N) -> str:
         b.append(("\\midrule " if k == "total" else "") + f"{k if k != 'total' else 'muon system'} & " + " & ".join(th(d[o]) for o in O) + f" & {th(tot(d))} \\\\")
     L.append("\\newcommand{\\simMuonRows}{%\n" + "\n".join(b) + "}")
     # stages
-    names = {"transport": "transport only (chapter 9)", "B": "+ magnetic field", "B_Decay": "+ decays in flight", "B_Decay_EM": "+ electromagnetic physics", "full": "+ hadronic physics = full"}
     b = []
-    for w in N["stages"]:
-        b.append(f"{names[w['stage']]} & {w['boundary']} & {th(w['secondaries'])} & {w['sec_decay']}/{w['sec_em']}/{w['sec_had']} & {th(w['trk'])} & {w['mu']} & {w['de']:.2f} & {th(w['cells'])} & "
+    for i, w in enumerate(N["stages"]):
+        label = w["stage"] if w["stage"] not in ("Geant4", "+ hadronic physics = full (the record)") else "+ hadronic physics (the record)"
+        if i == len(N["stages"]) - 1 and i > 0:
+            label = "\\midrule " + label
+        b.append(f"{label} & {w['boundary']} & {th(w['secondaries'])} & {w['sec_decay']}/{w['sec_em']}/{w['sec_had']} & {th(w['trk'])} & {th(w['mu'])} & {w['de']:.2f} & {th(w['cells'])} & "
                  f"{w['EB']:.1f} & {w['EE']:.1f} & {w['HB']:.2f} & {w['HE']:.2f} & {th(w['HF'])} & {w['jet_bnd_pt']:.1f} ({w['jet_bnd_n']}) & {w['jet_ecal']:.1f} \\\\")
     L.append("\\newcommand{\\simStageRows}{%\n" + "\n".join(b) + "}")
     # the circle of our jet
@@ -273,6 +339,42 @@ def latex(N) -> str:
         x = c[o]
         b.append(f"{lab[o]} & {th(x['trk'])} & {th(x['ecal_cells'])} & {x['ecal_e']:.1f} & {x['ecal_et']:.1f} & {th(x['hcal_cells'])} & {x['hcal_e']:.3f} & {x['hcal_et']:.1f} & {x['ecal_et'] + x['hcal_et']:.1f} \\\\")
     L.append("\\newcommand{\\simCircleRows}{%\n" + "\n".join(b) + "}")
+    # who leaves how much where: the five groups of primaries
+    F = N["budget"]["family"]
+    G = [("charged hadron", "charged hadrons"), ("neutral hadron", "neutral hadrons"), ("photon", "photons"), ("electron", "electrons"), ("muon", "muons"), ("all", "\\midrule all")]
+    pc = lambda a, b_: f"{100 * a / b_:.1f}" if b_ > 0 else "--"
+    pc2 = lambda a, b_: f"{100 * a / b_:.2f}" if b_ > 0 else "--"
+    b = []
+    for k, lab in G:
+        x = F[k]["trk"]
+        b.append(f"{lab} & {x['n']} & {x['e']:.1f} & {x['lost']:.2f} & {pc(x['lost'], x['e'])} & {1e3 * x['si']:.0f} & {th(x['hits'])} & {x['hits'] / max(x['n'], 1):.1f} \\\\")
+    L.append("\\newcommand{\\simBudgetTrkRows}{%\n" + "\n".join(b) + "}")
+    b = []
+    for k, lab in G:
+        x = F[k]["ecal"]
+        b.append(f"{lab} & {x['n']} & {x['e']:.1f} & {x['eb']:.1f} & {x['ee']:.1f} & {1e3 * x['es']:.0f} & {pc(x['eb'] + x['ee'], x['e'])} \\\\")
+    L.append("\\newcommand{\\simBudgetEcalRows}{%\n" + "\n".join(b) + "}")
+    b = []
+    for k, lab in G:
+        x = F[k]["hcal"]
+        b.append(f"{lab} & {x['n']} & {x['e']:.1f} & {x['raw']:.3f} & {x['vis']:.3f} & {pc(x['vis'], x['raw']) if x['raw'] > 0 else '--'} & {pc2(x['vis'], x['e'])} & {x['n_fwd']} & {x['hf_in']:.0f} & {th(x['hf_pe'])} \\\\")
+    L.append("\\newcommand{\\simBudgetHcalRows}{%\n" + "\n".join(b) + "}")
+    b = []
+    for k, lab in G:
+        x = F[k]
+        b.append(f"{lab} & {x['n']} & {x['e']:.0f} & {x['muon']['vol']:.2f} & {1e6 * x['muon']['gas']:.0f} & {x['muon']['hits']} \\\\")
+    L.append("\\newcommand{\\simBudgetMuonRows}{%\n" + "\n".join(b) + "}")
+    b = []
+    for k, lab in G:
+        x = N["budget"]["fates"][k]
+        b.append(f"{lab} & {x['n']} & {x['e']:.0f} & {x['in_tracker']} & {x['loopers'] if k in ('charged hadron', 'electron', 'muon', 'all') else '--'} & {x['calorimeter']} & {x['decay']} & {x['conversion']} & {x['nuclear']} & {x['stopped']} & {x['beam pipe']} \\\\")
+    L.append("\\newcommand{\\simFateRows}{%\n" + "\n".join(b) + "}")
+    # the picture to carry (chapter/tikz/sim_chain.tex)
+    tr, ec, pr, nc = N["tracker"]["total"], N["ECAL"]["e"], N["primaries"], N["collisions"]
+    L.append(f"\\newcommand{{\\simChainSignal}}{{{th(tr['signal'])} tracker hits\\\\{ec['signal']:.0f} GeV in crystals}}")
+    L.append(f"\\newcommand{{\\simChainIntime}}{{{th(tr['intime'])} tracker hits\\\\{th(ec['intime'])} GeV}}")
+    L.append(f"\\newcommand{{\\simChainOot}}{{{th(tr['early'] + tr['late'])} tracker hits\\\\{th(ec['early'] + ec['late'])} GeV}}")
+    L.append(f"\\newcommand{{\\simChainSum}}{{{th(tot(tr))} tracker hits, {th(N['ECAL']['hit_all'])} ECAL cells}}")
     return "\n".join(L) + "\n"
 
 
@@ -308,6 +410,17 @@ def text(N) -> str:
     out.append(f"per bunch crossing (bx: collisions, tracker hits): " + ", ".join(f"{b}: {n}, {t}" for b, n, t in zip(N['per_bx']['bx'], N['per_bx']['collisions'], N['per_bx']['trk'])))
     j = N["jet"]
     out.append("")
+    out.append("who leaves how much where (the family, GeV): group; inside |eta| < 2.5: primaries, energy, left in the tracker volume, of it in silicon, hits;")
+    out.append("  inside |eta| < 3: energy, light of EB, EE, energy in the preshower silicon; scintillator of HB+HE+HO before and after Birks' law; beyond: energy stopped at the HF, HF p.e.; muon system: energy, hits")
+    for k, x in N["budget"]["family"].items():
+        a, b_, c, m = x["trk"], x["ecal"], x["hcal"], x["muon"]
+        out.append(f"  {k:15s} | {a['n']:4d} {a['e']:9.2f} {a['lost']:8.3f} {a['si']:8.4f} {a['hits']:6d} | {b_['e']:9.2f} {b_['eb']:8.2f} {b_['ee']:8.2f} {b_['es']:7.4f} | "
+                   f"{c['raw']:7.4f} {c['vis']:7.4f} | {c['hf_in']:8.1f} {c['hf_pe']:6.0f} | {m['vol']:7.3f} {m['hits']:4d}")
+    for smp, cr in N["budget"]["crowd"].items():
+        out.append(f"  the {smp} crowd, all primaries (GeV): group, primaries, energy at the gate, tracker volume, silicon, crystals, scintillator before / after Birks, stopped at the HF, muon system")
+        for k, x in cr.items():
+            out.append(f"    {k:15s} {x['n']:8.0f} {x['e_gate']:11.1f} {x['trkvol']:9.2f} {x['si']:8.3f} {x['eb_vis'] + x['ee_vis']:10.1f} {x['hb'] + x['he'] + x['ho']:8.3f} {x['hb_vis'] + x['he_vis'] + x['ho_vis']:8.3f} {x['hf_in']:10.0f} {x['muvol']:8.2f}")
+    out.append("")
     out.append(f"our jet: ak4 jet [0], pT {j['pt']:.2f}, {j['n']} members, E {j['e']:.1f} GeV at eta {j['eta']:.3f}, phi {j['phi']:.3f}")
     out.append(f"  members reaching the calorimeters as primaries: {j['bnd_n']}, vector pT {j['bnd_pt']:.2f}; fates {j['fates']}")
     out.append(f"  their deposits: crystals {j['ecal_e']:.2f} GeV in {j['ecal_cells']} cells (pT {j['ecal_pt']:.2f}); HCAL {j['hcal_e']:.3f} GeV scintillator in {j['hcal_cells']} cells, x factor {j['hcal_e_sf']:.1f} GeV (pT {j['hcal_pt']:.2f}); together pT {j['calo_pt']:.2f}")
@@ -324,7 +437,7 @@ def record_tables(N, S, st) -> str:
     """The tables this stop appends to the record of chapter 9."""
     sg = S["signal"]
     out = []
-    hdr = " --------  Standalone SimHit Summary  (three samples simulated separately by standalone_SIM.py, seed 1, added by add_hits_SIM.py)  ----------"
+    hdr = " --------  Standalone SimHit Summary  (signal and crowd by Geant4 in geant4_SIM.py, seed 1, added by add_hits_SIM.py)  ----------"
     out.append(hdr)
     out.append(text(N))
     out.append(hdr.replace("Standalone SimHit Summary", "End Standalone SimHit Summary"))

@@ -18,9 +18,12 @@ simulated separately, each collision with its own random stream:
                      at its own bunch crossing as if it were alone; its hit times are relative to that crossing
   --sample all       the three, one after the other (default)
 
-Each writes ../simhits_<sample>.npz (tracker and muon hits, calorimeter deposits per cell) and
-<sample>.json next to this script. Nothing is added here: add_hits_SIM.py reads the three files, shifts the
-out-of-time hits by 25 ns x bx and adds them cell by cell, which is all the MixingModule of CMSSW does.
+Each writes ../simhits_<sample>_fast.npz (tracker and muon hits, calorimeter deposits per cell; "fast" because
+the samples of the record, ../simhits_<sample>.npz, are simulated by Geant4 in geant4_SIM.py: this script is
+the readable version of the same physics, and validate_SIM.py compares the two) and
+<sample>.json next to this script. Nothing is added here: add_hits_SIM.py reads the three files of Geant4, shifts
+the out-of-time hits by 25 ns x bx and adds them cell by cell, which is all the MixingModule of CMSSW does
+(add_hits_SIM.py -d with a folder of the *_fast files renamed adds the hand-written ones instead).
 
 What is implemented (the physics of chapter 10), each switchable so that the signal can be run stage by stage
 (--stage transport | B | B_Decay | B_Decay_EM | full):
@@ -1592,7 +1595,7 @@ def main():
                 r = run_signal(st, args.seed, sg, args.field, vv=vv)
                 rows.append(signal_row(st, r, sg))
             narrate(st, rows, r, say, args.field) if args.stage == "full" else None
-            save_signal(args.outdir / f"simhits_signal{tag}.npz", st, r)
+            save_signal(args.outdir / f"simhits_signal{tag or '_fast'}.npz", st, r)      # the record ../simhits_signal.npz is Geant4's (geant4_SIM.py)
             t = r["trk"]
             summ = dict(sample="signal", stage=args.stage, seed=args.seed, field=args.field, stages=rows, n=r["n"], e=r["e"],
                         stations=station_summary(t["det"], t["lay"], t["de"], r["mu"]["det"], r["cal"]["code"], r["cal"]["e"]),
@@ -1607,7 +1610,7 @@ def main():
         else:
             out, dt = run_crowd(st, which, args.seed, args.stage, args.field, args.jobs, progress=not args.quiet)
             d = pack_crowd(out)
-            np.savez_compressed(args.outdir / f"simhits_{which}{tag}.npz", **d)
+            np.savez_compressed(args.outdir / f"simhits_{which}{tag or '_fast'}.npz", **d)           # ../simhits_<sample>.npz is Geant4's
             n, e = counters(out)
             summ = dict(sample=which, stage=args.stage, seed=args.seed, field=args.field, collisions=len(out), primaries=int(d["col_nprim"].sum()),
                         simtracks=int(d["col_nprim"].sum() + d["col_nsec"].sum()), calhits=int(d["col_ncalhits"].sum()), n=n, e=e,

@@ -9,11 +9,17 @@ sample : signal | intime | oot | mixed (the three added by add_hits_SIM.mix)
 station: TRK | ECAL | HCAL | MUON | ALL
 view   : rz | xy (barrel) | etaphi (direction of the hit seen from the nominal collision point)
 
-A tracker or muon hit is a dot; a calorimeter cell is a marker whose area grows with the logarithm of its
-energy. Hits of the signal are coloured by the kind of the primary they descend from, hits of the crowd by
-their bunch crossing (early, in time, late); a cell takes the colour of whoever deposited most of its energy.
-The crowd is drawn first and the signal on top. The pages are written as PNG: with a million markers a
-vector page would be tens of megabytes (matplotlib rasterises them in a few seconds).
+The signal is drawn hit by hit: a tracker or muon hit is a dot, a calorimeter cell a marker whose area grows
+with the logarithm of its energy, coloured by the kind of the primary it descends from. The crowd is two
+million hits and is drawn as a histogram instead (the TH2 of ROOT): the plane is cut into bins, every hit and
+cell of the crowd is counted in its bin, and a bin is painted in the colour of the group (early, in time,
+late) that fills it most per bunch crossing, the darker the more it holds. A cell belongs to whoever deposited most of its energy.
+The pages are PNG, and ../../compress_png.sh then reduces them to 256 colours: 100 kB a page.
+
+The r-z view shows r < 450 cm: all of the tracker and the calorimeters and the first muon station of the
+barrel. The muon stations further out and the outer rings of the endcap disks are outside the page (their
+hits are counted in the header and in the tables of the chapter). The x-y view shows the barrel in the same
++-450 cm.
 """
 from __future__ import annotations
 
@@ -26,6 +32,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import to_rgb
 from matplotlib.lines import Line2D
 
 import add_hits_SIM as add
@@ -40,6 +47,7 @@ ORDER = [5, 7, 6, 0, 1, 2, 3, 4]                       # drawing order: the crow
 STATIONS = {"TRK": (sim.TRACKER, ()), "ECAL": ((), sim.ECAL), "HCAL": ((), sim.HCAL), "MUON": (sim.MUON, ()),
             "ALL": (sim.TRACKER + sim.MUON, sim.ECAL + sim.HCAL)}
 BARREL_DETS = (sim.PXB, sim.TIB, sim.TOB, sim.DT, sim.EB, sim.HB, sim.HO)
+LIMITS = {"TRK": (300, 125), "ECAL": (360, 165), "HCAL": (1300, 430), "MUON": (1300, 450), "ALL": (1300, 450)}   # |z|, r [cm]
 TITLE = {"TRK": "tracker", "ECAL": "ECAL", "HCAL": "HCAL", "MUON": "muon system", "ALL": "ALL (all subdetectors)"}
 
 
@@ -136,6 +144,26 @@ def draw_detector(ax, view, station):
             ax.plot(r * np.cos(t), r * np.sin(t), **g)
 
 
+def binned(ax, x, y, cat, extent, nbins):
+    """The crowd as a histogram: a bin takes the colour of the group (early, in time, late) that fills it most
+    per bunch crossing, and is the more opaque the more hits and cells it holds (logarithmic)."""
+    img = np.zeros((nbins[1], nbins[0], 4))
+    tot = np.zeros((nbins[1], nbins[0]))
+    best = np.zeros((nbins[1], nbins[0]))
+    for k, ncross in ((5, 12), (7, 3), (6, 1)):
+        m = cat == k
+        if not m.any():
+            continue
+        h, _, _ = np.histogram2d(y[m], x[m], bins=(nbins[1], nbins[0]), range=((extent[2], extent[3]), (extent[0], extent[1])))
+        win = h / ncross > best
+        img[win, :3] = to_rgb(COL[k])
+        best = np.maximum(best, h / ncross)
+        tot += h
+    if tot.max() > 0:
+        img[..., 3] = np.where(tot > 0, 0.55 + 0.45 * np.log1p(tot) / math.log1p(tot.max()), 0.0)
+        ax.imshow(img, extent=extent, origin="lower", aspect="auto", interpolation="nearest", zorder=1)
+
+
 def size_of(e):
     return 1.5 + 9.0 * np.clip(np.log10(np.maximum(e, 1e-4) / 0.01) + 1.0, 0.0, 5.0) ** 1.6 / 3.0
 
@@ -151,7 +179,17 @@ def page(sample, station, view, H, C, S, out: Path, st=None):
         mh &= np.isin(H["det"], BARREL_DETS)
         mc &= np.isin(cdet, BARREL_DETS)
     fig = plt.figure(figsize=(13.96, 8.7))
-    ax = fig.add_axes([0.07, 0.09, 0.69, 0.74])
+    lim = LIMITS[station]
+    if view == "xy":                                       # a square page for a round detector
+        w = 0.74 * 8.7 / 13.96
+        ax = fig.add_axes([0.07 + (0.69 - w) / 2, 0.09, w, 0.74])
+        extent = (-lim[1], lim[1], -lim[1], lim[1])
+        nbins = (320, 320)
+    else:
+        ax = fig.add_axes([0.07, 0.09, 0.69, 0.74])
+        em = 2.7 if station == "TRK" else (3.1 if station == "ECAL" else 5.3)
+        extent = (-lim[0], lim[0], 0, lim[1]) if view == "rz" else (-em, em, -math.pi, math.pi)
+        nbins = (480, 320) if view == "rz" else (2 * int(round(em / 0.0349)), 180)
     draw_detector(ax, view, station)
     def xy(x, y, z):
         r = np.hypot(x, y)
@@ -165,15 +203,19 @@ def page(sample, station, view, H, C, S, out: Path, st=None):
     ux, uy = xy(cx[mc], cy[mc], cz[mc])
     uc, ue = C["cat"][mc], C["e"][mc]
     counts = np.zeros(8, int)
-    dense = len(hx) > 100000
+    for k in range(8):
+        counts[k] = int((hc == k).sum()) + int((uc == k).sum())
+    binned(ax, np.concatenate([hx[hc >= 5], ux[uc >= 5]]), np.concatenate([hy[hc >= 5], uy[uc >= 5]]), np.concatenate([hc[hc >= 5], uc[uc >= 5]]), extent, nbins)
     for k in ORDER:
+        if k >= 5:
+            continue
         m = hc == k
-        counts[k] += int(m.sum())
         if m.any():
-            ax.plot(hx[m], hy[m], ls="none", marker="," if (dense and k >= 5) else ".", ms=1.0 if k >= 5 else 2.2, color=COL[k], rasterized=True, zorder=2 + ORDER.index(k))
+            ax.plot(hx[m], hy[m], ls="none", marker="o", mew=0, ms=1.0 if counts[5:].any() else 1.6, color=COL[k], rasterized=True, zorder=2 + ORDER.index(k))
     for k in ORDER:
+        if k >= 5:
+            continue
         m = uc == k
-        counts[k] += int(m.sum())
         if m.any():
             ax.scatter(ux[m], uy[m], s=size_of(ue[m]), marker=MRK[k], color=COL[k], lw=0, rasterized=True, zorder=12 + ORDER.index(k), alpha=0.95)
     # the followed primaries of the signal
@@ -217,20 +259,50 @@ def page(sample, station, view, H, C, S, out: Path, st=None):
                     lab = (px_[0], py_[0])
             if lab is not None:
                 ax.annotate(f"{sim.dec.name(int(sg['prim_id'][j]))} {pt[j]:.0f} GeV", lab, xytext=(8, 6), textcoords="offset points", color=COL[k], fontsize=11, fontweight="bold", zorder=32)
-    lim = {"TRK": (300, 125), "ECAL": (360, 165), "HCAL": (1300, 430), "MUON": (1100, 760), "ALL": (1300, 800)}[station]
+    ax.set_xlim(extent[0], extent[1]); ax.set_ylim(extent[2], extent[3])
     if view == "rz":
-        ax.set_xlim(-lim[0], lim[0]); ax.set_ylim(0, lim[1]); ax.set_xlabel("z [cm]", fontsize=16, loc="right"); ax.set_ylabel("r [cm]", fontsize=16, loc="top")
+        ax.set_xlabel("z [cm]", fontsize=16, loc="right"); ax.set_ylabel("r [cm]", fontsize=16, loc="top")
+        if station in ("ALL", "MUON"):
+            ax.text(0.5, 0.985, "muon system: only the first barrel station and the inner part of the endcap disks are inside the page",
+                    transform=ax.transAxes, ha="center", va="top", fontsize=8.5, color="0.35", zorder=40)
     elif view == "xy":
-        ax.set_xlim(-lim[1] * 1.6, lim[1] * 1.6); ax.set_ylim(-lim[1], lim[1]); ax.set_xlabel("x [cm]", fontsize=16, loc="right"); ax.set_ylabel("y [cm]", fontsize=16, loc="top")
+        ax.set_xlabel("x [cm]", fontsize=16, loc="right"); ax.set_ylabel("y [cm]", fontsize=16, loc="top")
     else:
-        em = 2.7 if station == "TRK" else (3.1 if station == "ECAL" else 5.3)
-        ax.set_xlim(-em, em); ax.set_ylim(-math.pi, math.pi); ax.set_xlabel(r"$\eta$", fontsize=16, loc="right"); ax.set_ylabel(r"$\varphi$", fontsize=16, loc="top")
+        ax.set_xlabel(r"$\eta$", fontsize=16, loc="right"); ax.set_ylabel(r"$\varphi$", fontsize=16, loc="top")
+    # where the b jets of the family point (the generator jets of chapter 7 that carry a B hadron)
+    if sample in ("signal", "mixed") and st is not None:
+        nlab = 0
+        for i, j in enumerate(st.genjets["ak4"][:6]):
+            if j.get("hadron_flavour") != 5 or j["pt"] < 30.0:
+                continue
+            nlab += 1
+            lab = f"b jet [{i}], {j['pt']:.0f} GeV"
+            kw = dict(color="#cc0000", lw=1.3, ls="--", zorder=35)
+            if view == "rz":
+                zz = np.array([0.0, math.copysign(extent[1], j["eta"])])
+                rr = np.abs(zz) / abs(math.sinh(j["eta"]))
+                if rr[1] > extent[3]:
+                    rr[1] = extent[3]; zz[1] = math.copysign(extent[3] * abs(math.sinh(j["eta"])), j["eta"])
+                ax.plot(zz, rr, **kw)
+                ax.annotate(lab, (zz[1], rr[1]), xytext=(4 if rr[1] < extent[3] else -4, -12 if rr[1] >= extent[3] else 8 + 13 * (nlab - 2)), textcoords="offset points",
+                            color="#cc0000", fontsize=10, fontweight="bold", ha="left" if rr[1] < extent[3] else "right", zorder=36, annotation_clip=False,
+                            bbox=dict(fc="white", ec="none", alpha=0.75, pad=1.0))
+            elif view == "xy" and abs(j["eta"]) < 1.5:
+                ax.plot([0, extent[1] * math.cos(j["phi"])], [0, extent[1] * math.sin(j["phi"])], **kw)
+                ax.annotate(lab, (0.72 * extent[1] * math.cos(j["phi"]), 0.72 * extent[1] * math.sin(j["phi"])), xytext=(6, 6), textcoords="offset points",
+                            color="#cc0000", fontsize=10, fontweight="bold", zorder=36, bbox=dict(fc="white", ec="none", alpha=0.75, pad=1.0))
+            elif view == "etaphi" and abs(j["eta"]) < extent[1]:
+                tt = np.linspace(0, 2 * math.pi, 100)
+                for dphi in (0.0, 2 * math.pi, -2 * math.pi):
+                    ax.plot(j["eta"] + 0.4 * np.cos(tt), j["phi"] + dphi + 0.4 * np.sin(tt), **kw)
+                ax.annotate(lab, (j["eta"], j["phi"] + 0.42), xytext=(0, 3), textcoords="offset points", ha="center", color="#cc0000", fontsize=10,
+                            fontweight="bold", zorder=36, bbox=dict(fc="white", ec="none", alpha=0.75, pad=1.0))
     ax.grid(True, ls=":", color="k", lw=0.6)
     ax.tick_params(labelsize=14)
     # the header
     name = {"signal": "SIM hits of the signal", "intime": "SIM hits of the in-time pileup", "oot": "SIM hits of the out-of-time pileup", "mixed": "SIM + pileup hits"}[sample]
     fig.text(0.07, 0.955, f"{name} at {TITLE[station]}", fontsize=16, fontweight="bold")
-    fig.text(0.63, 0.955, "standalone, seed 1", fontsize=12, fontweight="bold")
+    fig.text(0.63, 0.955, "standalone (Geant4), seed 1", fontsize=12, fontweight="bold")
     parts = [f"{sim.DET_NAME[d]} {int((H['det'][mh] == d).sum())}" for d in hd if (H["det"][mh] == d).any()]
     parts += [f"{sim.DET_NAME[d]} {int((cdet[mc] == d).sum())} cells ({C['e'][mc & (cdet == d)].sum():.3g} {'p.e.' if d == sim.HF else 'GeV'})" for d in cd if (cdet[mc] == d).any()]
     line, lines = "", []
@@ -255,8 +327,10 @@ def page(sample, station, view, H, C, S, out: Path, st=None):
     # the legend panel
     fig.text(0.775, 0.93, "chapter 10_SIM, standalone", fontsize=9.5, fontweight="bold", color="0.25")
     fig.text(0.775, 0.908, "PU = 60 per bx (Poisson), bx -12..3", fontsize=9.5, fontweight="bold", color="0.25")
-    fig.text(0.775, 0.886, "2025 detector model, 13.6 TeV, B = 3.8 T", fontsize=9.5, fontweight="bold", color="0.25")
-    hs = [Line2D([], [], ls="none", marker=MRK[k], color=COL[k], ms=8, label=f"{CAT[k]} ({counts[k]})") for k in range(8) if counts[k]]
+    fig.text(0.775, 0.886, "Geant4, CMS Run-3 geometry, 13.6 TeV", fontsize=9.5, fontweight="bold", color="0.25")
+    if counts[5:].any():
+        fig.text(0.775, 0.36, "pileup: counted in bins (colour = group with\nmost per crossing, darker = more hits)", fontsize=9, fontweight="bold", color="0.25", va="bottom")
+    hs = [Line2D([], [], ls="none", marker=MRK[k] if k < 5 else "s", color=COL[k], ms=8, label=f"{CAT[k]} ({counts[k]})") for k in range(8) if counts[k]]
     hs.append(Line2D([], [], ls="-", color="0.72", label="detector elements"))
     leg = fig.legend(handles=hs, loc="upper left", bbox_to_anchor=(0.768, 0.82), frameon=False, fontsize=9.5, title=f"{station} hits by kind / bunch crossing", title_fontsize=9.5, labelspacing=1.1)
     leg._legend_box.align = "left"
@@ -284,19 +358,17 @@ def main():
         todo = [(s, st, v) for s in ("signal", "intime", "oot", "mixed") for st in STATIONS for v in ("rz", "xy", "etaphi")]
     elif args.sample:
         todo = [(args.sample, args.station or "ALL", args.view or "etaphi")]
-    else:   # the pages of the chapter
-        todo = [("signal", "TRK", "rz"), ("signal", "TRK", "xy"), ("signal", "ECAL", "rz"), ("signal", "HCAL", "rz"), ("signal", "ALL", "etaphi"),
-                ("intime", "ALL", "etaphi"), ("oot", "ALL", "etaphi"),
-                ("mixed", "TRK", "xy"), ("mixed", "ECAL", "etaphi"), ("mixed", "HCAL", "rz"), ("mixed", "MUON", "rz"),
-                ("mixed", "ALL", "rz"), ("mixed", "ALL", "xy"), ("mixed", "ALL", "etaphi")]
+    else:   # the pages of the chapter and of the film
+        todo = [("signal", "ALL", "rz"), ("mixed", "ALL", "rz"), ("mixed", "ALL", "xy"), ("mixed", "ALL", "etaphi")]
     cache = {}
     S = add.load(HERE.parent)
+    stage = sim.load_stage()
     for s, st, v in todo:
         if s not in cache:
             cache[s] = collect(s, S)
         H, C, _ = cache[s]
         out = args.outdir / f"simHits_{s}_10_SIM_{st}_{v}.png"
-        dt = page(s, st, v, H, C, S, out)
+        dt = page(s, st, v, H, C, S, out, st=stage)
         print(f"{out.name}: {dt:.1f} s")
 
 

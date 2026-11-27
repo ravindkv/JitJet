@@ -170,6 +170,7 @@ FIGURES := example/ME/journey_ME.pdf \
            chapter/tikz/g4_cms3d.tex \
            example/SIM/Standalone/sim_ledger.tex \
            example/SIM/Standalone/pages/simHits_mixed_10_SIM_ALL_etaphi.png \
+           example/SIM/Standalone/pages/geant4_tracker.png \
            example/SIM/Standalone/theory_SIM.pdf \
            example/SIM/Standalone/animate_standalone_SIM_stills.pdf
 
@@ -417,28 +418,66 @@ example/G4/event_G4.lhe: example/G4/Standalone/standalone_G4.py example/PU/event
 		--summary example/G4/Standalone/standalone_G4.json --tables example/G4/Standalone/handover_ledger --quiet
 	$(PYTHON) example/G4/Standalone/standalone_G4.py --library-scan example/G4/Standalone/standalone_G4_library.json > example/G4/Standalone/standalone_G4_library.log
 
-# Chapter 10: the primaries of chapter 9 through the detector of standalone_SIM.py. The family (with its -v log),
-# the in-time crowd and the out-of-time crowd are simulated separately (simhits_*.npz; the 27 MB out-of-time file
-# is not in git), then add_hits_SIM.py adds the hits and writes the record and the tables. About two minutes.
+# Chapter 10: the primaries of chapter 9 through the detector, all of them through Geant4 itself in the CMS
+# geometry (geant4_SIM.py; interpreter G4PY, see venv-sim). Three samples, three files: the family (one minute on
+# 10 processes), the 63 collisions of its bunch crossing (five minutes) and the 897 collisions of the fifteen
+# crossings around it (most of an hour; that file is not in git). The crowd does not depend on the family, so its
+# two files are made only when they are missing: a change of geant4_SIM.py or of the signal does not simulate
+# the crowd again. `make sim-intime sim-oot` does it on purpose. add_hits_SIM.py then adds the hits and writes
+# the record and the tables, and compress_png.sh brings every page down to 256 colours.
 SIMDIR := example/SIM/Standalone
+G4PY := $(SIMDIR)/.venv/bin/python
+GDML := example/G4/geometry/cmsSimGeo2021.gdml
 SIMHITS := example/SIM/simhits_signal.npz example/SIM/simhits_intime.npz example/SIM/simhits_oot.npz
-example/SIM/simhits_signal.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
+# the interpreter with Geant4: its first import downloads Geant4's data tables (2 GB) to ~/.geant4_pybind
+venv-sim:
+	example/ME/Standalone/.venv/bin/python -m venv $(SIMDIR)/.venv
+	$(SIMDIR)/.venv/bin/pip install numpy scipy geant4-pybind
+	echo Y | $(G4PY) -c "import geant4_pybind"
+# the CMS geometry as GDML, from the TGeo dump of chapter 9 (needs ROOT)
+gdml $(GDML): $(SIMDIR)/export_gdml_SIM.py
+	PYTHONPATH=$$(root-config --libdir) example/ME/Standalone/.venv/bin/python $(SIMDIR)/export_gdml_SIM.py
+$(SIMDIR)/field_map_SIM.npz: $(SIMDIR)/field_map_SIM.py | $(GDML)
+	$(G4PY) $(SIMDIR)/field_map_SIM.py > $(SIMDIR)/field_map_SIM.log
+shapes example/SIM/cms_shapes_SIM.npz: $(SIMDIR)/dump_shapes_SIM.py | $(GDML)
+	$(G4PY) $(SIMDIR)/dump_shapes_SIM.py > $(SIMDIR)/dump_shapes_SIM.log
+example/SIM/simhits_signal.npz: $(SIMDIR)/geant4_SIM.py $(SIMDIR)/field_map_SIM.npz example/G4/event_G4.lhe | $(GDML)
+	$(G4PY) $(SIMDIR)/geant4_SIM.py --sample signal -v --log $(SIMDIR)/geant4_SIM.log --quiet
+example/SIM/g4tracks_signal.npz: example/SIM/simhits_signal.npz
+# the family again with the physics switched on one family of processes at a time (the stage table); two minutes
+$(SIMDIR)/geant4_SIM_signal_B_Decay_EM.json: $(SIMDIR)/geant4_SIM.py example/SIM/simhits_signal.npz
+	for s in transport B B_Decay B_Decay_EM; do $(G4PY) $(SIMDIR)/geant4_SIM.py --sample signal --stage $$s --quiet || exit 1; done
+# the crowd: order-only prerequisites, so that it is simulated once and kept
+example/SIM/simhits_intime.npz: | $(GDML) $(SIMDIR)/field_map_SIM.npz
+	$(G4PY) $(SIMDIR)/geant4_SIM.py --sample intime
+example/SIM/simhits_oot.npz: | $(GDML) $(SIMDIR)/field_map_SIM.npz
+	$(G4PY) $(SIMDIR)/geant4_SIM.py --sample oot
+sim-intime:
+	$(G4PY) $(SIMDIR)/geant4_SIM.py --sample intime
+sim-oot:
+	$(G4PY) $(SIMDIR)/geant4_SIM.py --sample oot
+# the hand-written script, the readable version of the same physics: it is only compared with Geant4 (sim-validate)
+$(SIMDIR)/standalone_SIM_signal.json: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
 	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample signal -v --log $(SIMDIR)/standalone_SIM.log --quiet
-example/SIM/simhits_intime.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
-	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample intime --quiet
-example/SIM/simhits_oot.npz: $(SIMDIR)/standalone_SIM.py example/G4/event_G4.lhe
-	$(PYTHON) $(SIMDIR)/standalone_SIM.py --sample oot --quiet
-example/SIM/event_SIM.lhe: $(SIMDIR)/add_hits_SIM.py $(SIMHITS)
+# the five 3D pages of the family inside the Geant4 detector
+$(SIMDIR)/pages/geant4_tracker.png: $(SIMDIR)/display_geant4_SIM.py $(SIMDIR)/g4view_SIM.py example/SIM/simhits_signal.npz example/SIM/cms_shapes_SIM.npz
+	$(PYTHON) $(SIMDIR)/display_geant4_SIM.py
+	example/compress_png.sh -w 1600 $(SIMDIR)/pages/geant4_*.png
+example/SIM/event_SIM.lhe: $(SIMDIR)/add_hits_SIM.py $(SIMHITS) $(SIMDIR)/geant4_SIM_signal_B_Decay_EM.json
 	$(PYTHON) $(SIMDIR)/add_hits_SIM.py -v > $(SIMDIR)/add_hits_SIM.log
 $(SIMDIR)/sim_ledger.tex: example/SIM/event_SIM.lhe
 $(SIMDIR)/pages/simHits_mixed_10_SIM_ALL_etaphi.png: $(SIMDIR)/plot_simhits_SIM.py example/SIM/event_SIM.lhe
 	$(PYTHON) $(SIMDIR)/plot_simhits_SIM.py
-# the scan of the CMS geometry with ROOT's TGeo (validate_SIM.json feeds page 4 of the theory plots)
-sim-validate:
-	PYTHONPATH=$$(root-config --libdir) example/ME/Standalone/.venv/bin/python $(SIMDIR)/validate_SIM.py > $(SIMDIR)/validate_SIM.log
-$(SIMDIR)/theory_SIM.pdf: $(SIMDIR)/plot_theory_SIM.py example/SIM/event_SIM.lhe $(SIMDIR)/validate_SIM.json
+	example/compress_png.sh $(SIMDIR)/pages/simHits_*.png
+# single particles through Geant4 for the theory plots (twenty minutes), and the hand-written script against
+# Geant4 for the table "three ways" (five minutes)
+$(SIMDIR)/guns_SIM.json: $(SIMDIR)/guns_SIM.py example/SIM/simhits_signal.npz
+	$(G4PY) $(SIMDIR)/guns_SIM.py > $(SIMDIR)/guns_SIM.log
+sim-validate $(SIMDIR)/validate_SIM.json: $(SIMDIR)/validate_SIM.py example/SIM/simhits_signal.npz
+	$(G4PY) $(SIMDIR)/validate_SIM.py > $(SIMDIR)/validate_SIM.log
+$(SIMDIR)/theory_SIM.pdf: $(SIMDIR)/plot_theory_SIM.py example/SIM/event_SIM.lhe $(SIMDIR)/validate_SIM.json $(SIMDIR)/guns_SIM.json
 	$(PYTHON) $(SIMDIR)/plot_theory_SIM.py -o $@ > $(SIMDIR)/plot_theory_SIM.log
-$(SIMDIR)/animate_standalone_SIM_stills.pdf: $(SIMDIR)/animate_standalone_SIM.py example/SIM/event_SIM.lhe
+$(SIMDIR)/animate_standalone_SIM_stills.pdf: $(SIMDIR)/animate_standalone_SIM.py $(SIMDIR)/pages/geant4_tracker.png $(SIMDIR)/pages/simHits_mixed_10_SIM_ALL_etaphi.png example/SIM/event_SIM.lhe
 	$(PYTHON) $(SIMDIR)/animate_standalone_SIM.py --stills $@ --no-video
 
 clean:
@@ -455,4 +494,4 @@ clean:
 distclean: clean
 	rm -f $(MAIN).pdf $(COVER) $(PRERENDER) cover/cover_timeline.pdf cover/cover_timeline_minimal.pdf cover/cover_timeline_spiral.pdf
 
-.PHONY: quick cover cover-timeline cover-timeline-minimal cover-timeline-spiral cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean
+.PHONY: venv-sim gdml shapes sim-validate sim-intime sim-oot quickcover cover-timeline cover-timeline-minimal cover-timeline-spiral cover-video cover-video-short trailer-part1 cover-youtube profile-youtube thumbnails-youtube figures records clean distclean

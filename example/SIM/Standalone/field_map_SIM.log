@@ -1,0 +1,49 @@
+1. the coil and the iron, from cmsSimGeo2021.gdml (16 azimuths per grid point, 5 cm grid)
+G4GDML: Reading '/Users/ravindrakumar/rverma/JME/JitJet/example/G4/geometry/cmsSimGeo2021.gdml'...
+G4GDML: Reading definitions...
+G4GDML: Reading materials...
+G4GDML: Reading solids...
+G4GDML: Reading structure...
+G4GDML: Reading setup...
+G4GDML: Reading '/Users/ravindrakumar/rverma/JME/JitJet/example/G4/geometry/cmsSimGeo2021.gdml' done!
+Stripping off GDML names of materials, solids and volumes ...
+   scan r =      0 cm, 0 s
+   scan r =    200 cm, 1 s
+   scan r =    400 cm, 3 s
+   scan r =    600 cm, 4 s
+   scan r =    800 cm, 6 s
+   scan r =   1000 cm, 7 s
+   scan r =   1200 cm, 8 s
+   iron in 24048 cells, coil in 620 cells; 13 s
+2. Ampere's law on the grid, with the saturation of the steel
+   iteration  0: largest change of ln(mu) in the iron 2.512
+   iteration 10: largest change of ln(mu) in the iron 0.772
+   iteration 20: largest change of ln(mu) in the iron 0.333
+   iteration 30: largest change of ln(mu) in the iron 0.263
+   iteration 40: largest change of ln(mu) in the iron 0.131
+   iteration 50: largest change of ln(mu) in the iron 0.088
+   iteration 60: largest change of ln(mu) in the iron 0.071
+   iteration 70: largest change of ln(mu) in the iron 0.062
+   iteration 80: largest change of ln(mu) in the iron 0.051
+   iteration 90: largest change of ln(mu) in the iron 0.041
+   iteration 100: largest change of ln(mu) in the iron 0.031
+   iteration 110: largest change of ln(mu) in the iron 0.023
+   iteration 115: largest change of ln(mu) in the iron 0.020
+3. the map: 39.6 million ampere-turns give 3.8 T at the centre (CMS: 41.7 million for 4 T, 39.6 for 3.8 T)
+   centre                             B_r  +0.00  B_z  +3.80  |B|  3.80 T
+   tracker edge (r 110, z 280)        B_r  +0.07  B_z  +3.67  |B|  3.67 T
+   ECAL barrel (r 140)                B_r  +0.00  B_z  +3.82  |B|  3.82 T
+   HCAL barrel (r 230)                B_r  +0.00  B_z  +3.84  |B|  3.84 T
+   HCAL endcap (r 150, z 480)         B_r  +0.23  B_z  +3.29  |B|  3.30 T
+   inside the coil cryostat (r 290)   B_r  +0.00  B_z  +3.87  |B|  3.87 T
+   first muon station (r 420)         B_r  +0.00  B_z  -0.07  |B|  0.07 T
+   barrel yoke, layer 1 (r 475)       B_r  +0.00  B_z  -2.06  |B|  2.06 T
+   barrel yoke, layer 2 (r 585)       B_r  +0.00  B_z  -1.66  |B|  1.66 T
+   barrel yoke, layer 3 (r 680)       B_r  -0.00  B_z  -1.63  |B|  1.63 T
+   endcap disk 1 (r 400, z 760)       B_r  +2.30  B_z  +0.13  |B|  2.30 T
+   endcap disk 2 (r 400, z 860)       B_r  +1.95  B_z  +0.08  |B|  1.95 T
+   HF (r 60, z 1200)                  B_r  +0.00  B_z  +0.00  |B|  0.00 T
+wrote /Users/ravindrakumar/rverma/JME/JitJet/example/SIM/Standalone/field_map_SIM.npz (92 s)
+WARNING - Attempt to delete the physical volume store while geometry closed !
+WARNING - Attempt to delete the logical volume store while geometry closed !
+WARNING - Attempt to delete the solid store while geometry closed !

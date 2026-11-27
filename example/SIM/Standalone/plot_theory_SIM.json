@@ -1,58 +1,296 @@
 {
- "pion_response": {
-  "e": [
-   2.0,
-   5.0,
-   10.0,
-   20.0,
-   50.0,
-   100.0,
-   300.0
+ "event": {
+  "field": {
+   "primaries": 672,
+   "charged": 307,
+   "charged_in_tracker": 175,
+   "median_pt": 0.5522870630387788,
+   "threshold": 0.7347852899999999,
+   "below_threshold": 113
+  },
+  "fates": {
+   "charged hadron": {
+    "n": 300,
+    "e": 4021.470674853688,
+    "in_tracker": 170,
+    "loopers": 108,
+    "calorimeter": 158,
+    "decay": 35,
+    "conversion": 0,
+    "nuclear": 85,
+    "stopped": 4,
+    "beam pipe": 18
+   },
+   "neutral hadron": {
+    "n": 70,
+    "e": 1553.7104955737998,
+    "in_tracker": 35,
+    "loopers": 0,
+    "calorimeter": 17,
+    "decay": 29,
+    "conversion": 0,
+    "nuclear": 4,
+    "stopped": 0,
+    "beam pipe": 20
+   },
+   "photon": {
+    "n": 295,
+    "e": 1546.5878785542354,
+    "in_tracker": 179,
+    "loopers": 0,
+    "calorimeter": 109,
+    "decay": 0,
+    "conversion": 143,
+    "nuclear": 0,
+    "stopped": 1,
+    "beam pipe": 42
+   },
+   "electron": {
+    "n": 6,
+    "e": 6.555813763712961,
+    "in_tracker": 5,
+    "loopers": 5,
+    "calorimeter": 1,
+    "decay": 0,
+    "conversion": 0,
+    "nuclear": 0,
+    "stopped": 5,
+    "beam pipe": 0
+   },
+   "muon": {
+    "n": 1,
+    "e": 11.267951677212679,
+    "in_tracker": 0,
+    "loopers": 0,
+    "calorimeter": 1,
+    "decay": 0,
+    "conversion": 0,
+    "nuclear": 0,
+    "stopped": 0,
+    "beam pipe": 0
+   },
+   "all": {
+    "n": 672,
+    "e": 7139.592814422647,
+    "in_tracker": 389,
+    "loopers": 113,
+    "calorimeter": 286,
+    "decay": 64,
+    "conversion": 143,
+    "nuclear": 89,
+    "stopped": 10,
+    "beam pipe": 80
+   }
+  },
+  "decays": {
+   "all": 369,
+   "by_particle": {
+    "Lambda": 9,
+    "pi0": 208,
+    "eta": 8,
+    "pi+-": 69,
+    "K0S": 27,
+    "Sigma+": 6,
+    "K+-": 9,
+    "mu+-": 9,
+    "other": 20,
+    "Xi0": 1,
+    "Sigma-": 1,
+    "K0L": 2
+   },
+   "primaries": 64,
+   "primaries_by_particle": {
+    "Lambda0": 5,
+    "Sigma+": 6,
+    "K+": 7,
+    "pi+": 22,
+    "K_S0": 23,
+    "K_L0": 1
+   },
+   "neutrinos": 147
+  },
+  "hits": {
+   "n": 12623,
+   "sum_gev": 2.979416576078279,
+   "mean_kev": 236.03078317977335,
+   "median_kev": 141.7073217453435,
+   "by_kind": {
+    "charged hadron": 7210,
+    "neutral hadron": 1691,
+    "photon": 3470,
+    "electron": 252,
+    "muon": 0
+   }
+  },
+  "material": {
+   "photons_above_1gev": 61,
+   "converted": 39,
+   "photons": 179,
+   "photons_converted": 91,
+   "charged_hadrons_above_500mev": 126,
+   "interacted": 45
+  },
+  "vertices": {
+   "conversions": 655,
+   "nuclear": 447,
+   "nuclear_secondaries_mean": 7.120805263519287
+  },
+  "jet_members": [
+   {
+    "rank": 0,
+    "name": "pi+",
+    "e": 29.00741762032601,
+    "pt": 14.268694824685262,
+    "eta": -1.3357576718493587,
+    "fate": "calorimeter",
+    "trk_hits": 24,
+    "ecal": 10.095446596848557,
+    "scint": 0.11733717437797253
+   },
+   {
+    "rank": 1,
+    "name": "K-",
+    "e": 22.521195461165025,
+    "pt": 10.567226930467614,
+    "eta": -1.389338516424174,
+    "fate": "nuclear",
+    "trk_hits": 79,
+    "ecal": 9.362018543526425,
+    "scint": 0.08604357122254669
+   },
+   {
+    "rank": 2,
+    "name": "K+",
+    "e": 19.11404596102039,
+    "pt": 8.546029311908542,
+    "eta": -1.4435277422326553,
+    "fate": "nuclear",
+    "trk_hits": 73,
+    "ecal": 6.841150190921686,
+    "scint": 0.06062871123205493
+   },
+   {
+    "rank": 3,
+    "name": "K_S0",
+    "e": 18.64614944164076,
+    "pt": 8.986767216301978,
+    "eta": -1.3587230092088103,
+    "fate": "decay",
+    "trk_hits": 175,
+    "ecal": 10.855235044153915,
+    "scint": 0.029463733521211566
+   },
+   {
+    "rank": 4,
+    "name": "pi-",
+    "e": 11.40642454934937,
+    "pt": 4.491399002538073,
+    "eta": -1.583845820253198,
+    "fate": "calorimeter",
+    "trk_hits": 32,
+    "ecal": 3.656485318103216,
+    "scint": 0.061568176829823074
+   },
+   {
+    "rank": 5,
+    "name": "pi-",
+    "e": 11.234560872593107,
+    "pt": 5.413973494578635,
+    "eta": -1.3591843252876796,
+    "fate": "calorimeter",
+    "trk_hits": 29,
+    "ecal": 5.567075830034336,
+    "scint": 0.027867885918013258
+   },
+   {
+    "rank": 6,
+    "name": "pi-",
+    "e": 9.43421363972642,
+    "pt": 4.451100762732742,
+    "eta": -1.3832439363345586,
+    "fate": "nuclear",
+    "trk_hits": 74,
+    "ecal": 3.786004937633559,
+    "scint": 0.010943353112665477
+   },
+   {
+    "rank": 7,
+    "name": "gamma",
+    "e": 8.661086363730591,
+    "pt": 4.083549069130919,
+    "eta": -1.3841425747533613,
+    "fate": "conversion",
+    "trk_hits": 37,
+    "ecal": 6.924836548882922,
+    "scint": 0.003094276686624653
+   },
+   {
+    "rank": 8,
+    "name": "pi-",
+    "e": 8.47001316409839,
+    "pt": 4.335423624053363,
+    "eta": -1.2896308705992146,
+    "fate": "calorimeter",
+    "trk_hits": 71,
+    "ecal": 4.379050056903216,
+    "scint": 0.00604275465821047
+   },
+   {
+    "rank": 9,
+    "name": "pi+",
+    "e": 8.057607213062697,
+    "pt": 3.3056050883310304,
+    "eta": -1.538968132900913,
+    "fate": "calorimeter",
+    "trk_hits": 24,
+    "ecal": 0.17509567944216542,
+    "scint": 0.05010227572361714
+   }
   ],
-  "response": [
-   0.7656386218923982,
-   0.8085974251420759,
-   0.8226459685125432,
-   0.8198539676891535,
-   0.8520204020610879,
-   0.8385734900897596,
-   0.820319722150333
-  ],
-  "rms": [
-   0.10788913608781985,
-   0.1216529498218187,
-   0.11042819465789082,
-   0.11616828593927517,
-   0.14413077509186584,
-   0.19049028280103372,
-   0.22818949546896178
-  ],
-  "ecal_share": [
-   0.5462884372706042,
-   0.4126732609405631,
-   0.4150597313470659,
-   0.4347184936927869,
-   0.4093592289780731,
-   0.40092643504505715,
-   0.4053024481424302
-  ],
-  "mip": [
-   0.2850467289719626,
-   0.3317307692307692,
-   0.3,
-   0.24056603773584906,
-   0.3087557603686636,
-   0.32195121951219513,
-   0.35096153846153844
-  ]
+  "muon_hits": {
+   "n": 82,
+   "by_particle": {
+    "p": 2,
+    "e-": 79,
+    "e+": 1
+   },
+   "by_detector": {
+    "DT": 0,
+    "CSC": 82,
+    "RPC": 0,
+    "GEM": 0
+   },
+   "by_station": {
+    "3": 81,
+    "4": 1
+   },
+   "primaries": 2,
+   "by_kind": {
+    "charged hadron": 82,
+    "neutral hadron": 0,
+    "photon": 0,
+    "electron": 0,
+    "muon": 0
+   },
+   "median_p_mev": 0.043133957660757005,
+   "outer_charged": 616,
+   "outer_muons": 19
+  },
+  "jet_leading_charged": {
+   "name": "pi+",
+   "pt": 14.268694824685262,
+   "radius_m": 12.525166585632103,
+   "sagitta_cm": 1.2075687693727142,
+   "turn_rad": 0.04392571579843293
+  }
  },
  "scaling": {
-  "hits_per_primary": 8.570258876745468,
-  "gev_per_primary": 0.38888534370129013,
-  "hits_per_collision": 1247.3208333333334,
-  "gev_per_collision": 56.59861597562558,
-  "median_hits": 725.0,
-  "max_hits": 8102,
+  "hits_per_primary": 14.603038956763218,
+  "gev_per_primary": 0.35968821670679973,
+  "hits_per_collision": 2125.335416666667,
+  "gev_per_collision": 52.349247864643075,
+  "median_hits": 1220.5,
+  "max_hits": 14002,
   "min_hits": 0
  }
 }

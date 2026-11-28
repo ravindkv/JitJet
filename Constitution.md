@@ -27,7 +27,8 @@ Rule C: The .tex chapter then has exactly these sections
     (C1) What we will see at this stop
         (C1-1) motivation, connected to the previous chapter
         (C1-2) the animated journey: the YouTube playlist link, ONE paragraph,
-               and at most one figure with relevant frames. The films are
+               and at most one figure with relevant frames. The films (ensure "4" is 
+               spelled as "four" nat "far" and no bkg music) are
                fully narrated, so the .tex does not retell them.
         (C1-3) a sketch or diagram, and a picture to carry if it helps
         (C1-4) the agreement table: one row per quantity, columns standalone /

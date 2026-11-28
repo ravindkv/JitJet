@@ -178,7 +178,7 @@ def numbers(S, M, st) -> dict:
     wj = np.where(cdet[mh_] == sim.HB, SF[sim.HB], SF[sim.HE])
     px2, py2, _, _ = sim.cell_pt(sg["cal_code"][mh_], sg["cal_e"][mh_] * wj)
     b = sg["prim_bnd"][jm]
-    ok = np.isfinite(b[:, 0])
+    ok = np.isfinite(b[:, 0]) & (sg["prim_fate"][jm] == [str(x) for x in sg["fate_names"]].index("calorimeter"))   # not those that left along the beam pipe
     p4 = sg["prim_p4"][jm]
     N["jet"] = dict(pt=jet["pt"], m=jet["m"], n=int(len(jm)), e=float(p4[:, 0].sum()), eta=eta0, phi=phi0,
                     bnd_n=int(ok.sum()), bnd_pt=float(math.hypot(b[ok, 3].sum(), b[ok, 4].sum())),
@@ -289,7 +289,7 @@ def latex(N) -> str:
     b.append(row("HF photoelectrons", N["HF"]["e"]))
     b.append("\\midrule\\multicolumn{6}{@{}l}{\\emph{after the addition, each cell given to the origin that deposits most in it}}\\\\")
     b.append(row("ECAL cells", N["ECAL"]["dom"]))
-    b.append(row("\\quad their energy [GeV]", N["ECAL"]["e_dom"], nd=1))
+    b.append(row("\\quad energy of all origins in them [GeV]", N["ECAL"]["e_dom"], nd=1))
     b.append(row("HB, HE, HO cells", N["HBHEHO"]["dom"]))
     b.append(row("HF cells", N["HF"]["dom"]))
     L.append("\\newcommand{\\simLedgerRows}{%\n" + "\n".join(b) + "}")
@@ -328,7 +328,7 @@ def latex(N) -> str:
         label = w["stage"] if w["stage"] not in ("Geant4", "+ hadronic physics = full (the record)") else "+ hadronic physics (the record)"
         if i == len(N["stages"]) - 1 and i > 0:
             label = "\\midrule " + label
-        b.append(f"{label} & {w['boundary']} & {th(w['secondaries'])} & {w['sec_decay']}/{w['sec_em']}/{w['sec_had']} & {th(w['trk'])} & {th(w['mu'])} & {w['de']:.2f} & {th(w['cells'])} & "
+        b.append(f"{label} & {w['boundary'] + w.get('boundary_fwd', 0)} ({w['boundary']}) & {th(w['secondaries'])} & {w['sec_decay']}/{w['sec_em']}/{w['sec_had']} & {th(w['trk'])} & {th(w['mu'])} & {w['de']:.2f} & {th(w['cells'])} & "
                  f"{w['EB']:.1f} & {w['EE']:.1f} & {w['HB']:.2f} & {w['HE']:.2f} & {th(w['HF'])} & {w['jet_bnd_pt']:.1f} ({w['jet_bnd_n']}) & {w['jet_ecal']:.1f} \\\\")
     L.append("\\newcommand{\\simStageRows}{%\n" + "\n".join(b) + "}")
     # the circle of our jet
@@ -391,7 +391,7 @@ def text(N) -> str:
     row("HB+HE+HO cells", N["HBHEHO"]["hit"], extra=N["HBHEHO"]["hit_all"]); row("HB+HE+HO scintillator energy [GeV]", N["HBHEHO"]["e"], 2)
     row("HF cells", N["HF"]["hit"], extra=N["HF"]["hit_all"]); row("HF photoelectrons", N["HF"]["e"])
     out.append("after the addition, cells by the origin that deposits most:")
-    row("ECAL cells", N["ECAL"]["dom"]); row("  their energy [GeV]", N["ECAL"]["e_dom"], 1); row("HB+HE+HO cells", N["HBHEHO"]["dom"]); row("HF cells", N["HF"]["dom"])
+    row("ECAL cells", N["ECAL"]["dom"]); row("  energy of all origins in them [GeV]", N["ECAL"]["e_dom"], 1); row("HB+HE+HO cells", N["HBHEHO"]["dom"]); row("HF cells", N["HF"]["dom"])
     out.append("")
     out.append("tracker, hits by subdetector")
     for k in ("PXB", "PXF", "TIB", "TID", "TOB", "TEC", "total"):

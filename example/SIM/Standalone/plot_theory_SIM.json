@@ -14,72 +14,72 @@
     "e": 4021.470674853688,
     "in_tracker": 170,
     "loopers": 108,
-    "calorimeter": 158,
-    "decay": 35,
+    "calorimeter": 85,
+    "decay": 34,
     "conversion": 0,
-    "nuclear": 85,
+    "nuclear": 82,
     "stopped": 4,
-    "beam pipe": 18
+    "beam pipe": 95
    },
    "neutral hadron": {
     "n": 70,
     "e": 1553.7104955737998,
     "in_tracker": 35,
     "loopers": 0,
-    "calorimeter": 17,
+    "calorimeter": 15,
     "decay": 29,
     "conversion": 0,
     "nuclear": 4,
     "stopped": 0,
-    "beam pipe": 20
+    "beam pipe": 22
    },
    "photon": {
     "n": 295,
     "e": 1546.5878785542354,
     "in_tracker": 179,
     "loopers": 0,
-    "calorimeter": 109,
+    "calorimeter": 92,
     "decay": 0,
-    "conversion": 143,
+    "conversion": 139,
     "nuclear": 0,
     "stopped": 1,
-    "beam pipe": 42
+    "beam pipe": 63
    },
    "electron": {
     "n": 6,
     "e": 6.555813763712961,
     "in_tracker": 5,
     "loopers": 5,
-    "calorimeter": 1,
+    "calorimeter": 0,
     "decay": 0,
     "conversion": 0,
     "nuclear": 0,
-    "stopped": 5,
-    "beam pipe": 0
+    "stopped": 4,
+    "beam pipe": 2
    },
    "muon": {
     "n": 1,
     "e": 11.267951677212679,
     "in_tracker": 0,
     "loopers": 0,
-    "calorimeter": 1,
+    "calorimeter": 0,
     "decay": 0,
     "conversion": 0,
     "nuclear": 0,
     "stopped": 0,
-    "beam pipe": 0
+    "beam pipe": 1
    },
    "all": {
     "n": 672,
     "e": 7139.592814422647,
     "in_tracker": 389,
     "loopers": 113,
-    "calorimeter": 286,
-    "decay": 64,
-    "conversion": 143,
-    "nuclear": 89,
-    "stopped": 10,
-    "beam pipe": 80
+    "calorimeter": 192,
+    "decay": 63,
+    "conversion": 139,
+    "nuclear": 86,
+    "stopped": 9,
+    "beam pipe": 183
    }
   },
   "decays": {
@@ -98,12 +98,12 @@
     "Sigma-": 1,
     "K0L": 2
    },
-   "primaries": 64,
+   "primaries": 63,
    "primaries_by_particle": {
     "Lambda0": 5,
     "Sigma+": 6,
     "K+": 7,
-    "pi+": 22,
+    "pi+": 21,
     "K_S0": 23,
     "K_L0": 1
    },
@@ -128,7 +128,7 @@
    "photons": 179,
    "photons_converted": 91,
    "charged_hadrons_above_500mev": 126,
-   "interacted": 45
+   "interacted": 44
   },
   "vertices": {
    "conversions": 655,
@@ -292,5 +292,26 @@
   "median_hits": 1220.5,
   "max_hits": 14002,
   "min_hits": 0
+ },
+ "birks": {
+  "scintillator": {
+   "charged hadrons": 73.4150821793831,
+   "neutral hadrons": 73.37163259916828,
+   "photons": 98.02606579967528,
+   "electrons": 94.4728266369104
+  },
+  "crystals": {
+   "charged hadrons": 98.21997988666483,
+   "neutral hadrons": 98.09364257550008,
+   "photons": 99.96410679029029,
+   "electrons": 99.99997067842517
+  },
+  "marks": {
+   "minimum-ionising": 2.0,
+   "proton, 100 MeV": 7.367902345993082,
+   "proton, 10 MeV": 46.63439792896908,
+   "proton, 2 MeV": 166.2102533953219,
+   "$\\alpha$, 20 MeV": 324.2004930700301
+  }
  }
 }

@@ -1,6 +1,6 @@
-# Chapter 10 companion: The Footprints and Fingerprints at the Crossings (SIM)
+# Chapter 10 companion: The Footprints at the Crossings (SIM)
 
-This is the technical companion of chapter 10, *The Footprints and Fingerprints at the Crossings: The Simulated RAW Hits*
+This is the technical companion of chapter 10, *The Footprints at the Crossings: The Simulated RAW Hits*
 ([`chapter_10_SIM.tex`](chapter_10_SIM.tex)). The chapter gives the physics; this page says how to run the
 scripts, how to read what they write, how each number of the official packages was obtained, and lists every
 table the chapter quotes with the command that produced it. All files are in [`example/SIM/`](../example/SIM/)
@@ -27,7 +27,7 @@ obtained three ways", which compares Geant4 with the hand-written script and wit
 | CMSSW figures | `example/SIM/CMSSW/simHits_mixed_10_SIM_ALL_{etaphi,rz,xy}_run1_event1.png` |
 | CMSSW write-up (JitJetSW) | physics: [`chapter_10_SIM.tex`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.tex); technical: [`chapter_10_SIM.md`](https://github.com/ravindkv/JitJetSW/blob/main/Journey/doc/chapter/chapter_10_SIM.md) |
 | 3D displays | [`display_geant4_SIM.py`](../example/SIM/Standalone/display_geant4_SIM.py) -> `Standalone/pages/geant4_{magnet,tracker,ecal,hcal,muon}.png`, drawn with [`g4view_SIM.py`](../example/SIM/Standalone/g4view_SIM.py) |
-| Film | [`animate_standalone_SIM.py`](../example/SIM/Standalone/animate_standalone_SIM.py): seven scenes inside the Geant4 detector, narrated, no music; key frames in `animate_standalone_SIM_stills.pdf` |
+| Film | [`animate_standalone_SIM.py`](../example/SIM/Standalone/animate_standalone_SIM.py): six scenes inside the Geant4 detector, narrated, no music; key frames in `animate_standalone_SIM_stills.pdf` |
 
 Contents: [0. Geant4 on the laptop](#0-geant4-on-the-laptop) · [1. The hand-written script](#1-the-hand-written-script) ·
 [2. Reading the record](#2-reading-the-record) ·
@@ -48,7 +48,7 @@ cd example/SIM/Standalone
 .venv/bin/python field_map_SIM.py              # the field map from the coil and the iron of the geometry, 80 s
 .venv/bin/python geant4_SIM.py --sample signal -v --log geant4_SIM.log     # the family, 70 s on 10 processes
 .venv/bin/python geant4_SIM.py --sample intime                             # 63 collisions of bx 0, 5 min
-.venv/bin/python geant4_SIM.py --sample oot                                # 897 collisions of the 15 other crossings, 49 min
+.venv/bin/python geant4_SIM.py --sample oot                                # 897 collisions of the 15 other crossings, 51 min
 for s in transport B B_Decay B_Decay_EM; do .venv/bin/python geant4_SIM.py --sample signal --stage $s; done   # the stage table
 .venv/bin/python guns_SIM.py > guns_SIM.log    # single particles for the theory plots, 10 min
 python3 add_hits_SIM.py -v > add_hits_SIM.log  # the addition and every table, 10 s
@@ -70,6 +70,7 @@ in-time and the out-of-time pileup arrive together and cannot be taken apart.
 | `guns_SIM.py` | single particles from the origin: 4000 photons and 4000 pi+ of 5 GeV flat in abs(eta) < 3, stopped at the calorimeters (which converted or interacted, and where); 300 photons of 10 GeV at eta = 0.5; pi+ of 2 to 100 GeV at eta = 0.5. Writes `guns_SIM.json` |
 | `dump_shapes_SIM.py` | walks the tree of placed volumes and writes the eight corners of the 17 004 tracker sensors, 61 200 + 14 648 crystals, scintillator layers, muon gas volumes, yoke plates |
 | `g4view_SIM.py`, `display_geant4_SIM.py` | a perspective camera and the painter's algorithm in matplotlib; the five pages |
+| `draw_tracker_SIM.py` | the layers and disks of the tracker in the r-z plane, from `BARREL` and `DISKS_1` of `standalone_SIM.py`, as TikZ: `chapter/tikz/sim_tracker.tex` |
 
 ### How close this is to CMSSW 2025
 
@@ -119,7 +120,7 @@ scintillator (HB, HE, HO; `HCalSD`) weight = 1 / (1 + kB dE/dx + C (kB dE/dx)^2)
 `BirkL3Parametrization`) weight = 1 - `BirkSlope` ln(kB dE/dx) = 1 - 0.253694 ln(kB dE/dx) with kB = 0.03333
 g/(MeV cm2) / density, kept between `BirkCut` = 0.1 and 1. For the family the scintillator light is
 74.1 % of the deposit and the crystal light
-98.899 %. `--no-birks` switches both off.
+98.85 %. `--no-birks` switches both off.
 
 **Also as in CMSSW:** particles are stopped 500 ns after their bunch crossing (`MaxTrackTime`); the forward
 calorimeter is not showered (a particle entering its steel is stopped and answered in photoelectrons by the
@@ -143,6 +144,25 @@ and of the muon system, in the crystals, the preshower silicon and the scintilla
 law, in the silicon sensors and the chamber gas, and the energy that arrives at the HF and behind it. The
 tables "Who leaves how much" of the chapter are sums of these by group of primary (charged hadrons, neutral
 hadrons, photons, electrons, muons).
+
+**What is counted.** A *delta ray* is an ionisation step (`eIoni`, `hIoni`, `muIoni`, `ionIoni`) that made a
+secondary; a charged particle that loses its last energy by ionisation and stops is counted apart (`ranged_out`:
+14 297 for the family, against 45 759 delta rays). Neutrinos are followed, so that the displays can draw them, but
+nobody sees them: one that reaches the steel of the HF or the dead region is removed without light and without
+an entry in the energy tallies (`neutrinos_hf`, `neutrinos_dead`: 75 and 2 for the family), and a neutrino is not
+a stored secondary. At the HF a baryon or a nucleus brings its kinetic energy, an antibaryon its kinetic energy
+plus twice its mass, everything else its total energy.
+
+**The boundary of a primary.** A primary "reaches the calorimeters" when it crosses the envelope of the volume
+`trackerTracker` as itself: r = 123.3 cm or abs(z) = 293.2 cm (`R_BND`, `Z_BND`; CMSSW: `CaloTrkProcessing`). The
+first crossing counts (`App.crossing`): the point where the chord of the step meets the surface and the momentum
+at the end of that step go to `prim_bnd`. A crossing of the end face inside r = 293.2 / sinh 3 = 29.3 cm is the
+fate `beam pipe` (beyond abs(eta) = 3, past the endcap calorimeters), any other crossing `calorimeter`; a primary
+ended before by a decay, a conversion or a nuclear interaction has that fate, and one that ranges out or is still
+inside after 500 ns is `stopped`. For the family: 192 + 183 = 375 cross, 63 decay, 139 convert, 86 interact, 9 stop.
+Between the beam pipe and the tracker, from abs(z) = 150 cm on, and behind the end of the tracker near the beam,
+the geometry has gaps that belong to the world volume and to no subdetector; the sensitive detector `gap` on the
+world volume follows the primary there, or a forward primary would be lost from sight at r = 2.5 cm.
 
 Traps met: a `G4PrimaryVertex` built in Python is freed twice (use `G4ParticleGun`); killing a particle
 in a sensitive detector needs `fKillTrackAndSecondaries`, or the secondaries of that step are counted again; the
@@ -192,7 +212,7 @@ Everything else in it counts.
 - `Standalone SimHit Summary`: the text of `sim_ledger.txt` (section 5);
 - `Standalone SimHit Primary Listing`: one row per primary of the family. Columns: row of the chapter-7
   record, id, name, E, pT, eta; `fate` (what ended it as a primary: `calorimeter`, `conversion`, `nuclear`,
-  `decay`, `stopped`, `beam pipe`); radius, z and pT where it left the tracker volume; its tracker hits; the
+  `decay`, `stopped`, `beam pipe`); radius, z and pT where it crossed the boundary of the tracker volume (r = 123.3 cm or abs(z) = 293.2 cm; `beam pipe`: through the end inside r = 29.3 cm, beyond abs(eta) = 3); its tracker hits; the
   energy it and its descendants left in the ECAL, in the scintillator of HB+HE+HO, and the photoelectrons in
   the HF; `*` if it is a member of ak4 jet [0];
 - `Standalone SimHit Collision Listing`: one row per collision of the crowd: k, bx, primaries, tracks, tracker
@@ -252,12 +272,13 @@ each display script. The five 3D pages went from 7.7 MB to 1.8 MB, the stills pa
 ### The theory plots
 
 ```bash
-python3 plot_theory_SIM.py -o theory_SIM.pdf     # 9 pages, a few seconds; needs guns_SIM.json, validate_SIM.json, add_hits_SIM.json
+python3 plot_theory_SIM.py -o theory_SIM.pdf     # 10 pages, a few seconds; needs guns_SIM.json, validate_SIM.json, add_hits_SIM.json
 ```
 
 Pages: 1 helix and loopers, 2 decays, 3 Bethe-Bloch and Landau, 4 material (geantinos) and what it does to
 photons and pions, 5 a radiography of the tracker in Geant4 (not in the book), 6 electromagnetic shower,
-7 hadronic shower, 8 the three crowds in time, 9 hits per collision (not in the book). The curves are the
+7 hadronic shower, 8 the three crowds in time, 9 hits per collision (not in the book), 10 Birks' law (the weight
+against dE/dx, and the light of the family by group). The curves are the
 formulas; every point and histogram is Geant4's. `plot_theory_SIM.json` holds the numbers the theory sections
 quote for the event (`event`: the charged primaries and the loopers, the fates by group, the decays by
 particle, the hits, the photons that convert, the hadrons that interact, the muon-chamber hits, the members of
@@ -272,14 +293,15 @@ python3 animate_standalone_SIM.py --fast -o preview.mp4              # every fou
 python3 animate_standalone_SIM.py --jobs 8                           # the film, 1920x1080 (edge-tts needs the network)
 ```
 
-Seven scenes: 1 the detector and the field, 2 the tracker (and five close-ups), 3 the crystals, 4 the HCAL,
-5 the muon system, all for the signal; 6 the crowd in the same detector, first the 63 collisions of our bunch
-crossing, then all sixteen crossings (drawn from `../g4pileup_display.npz`, a sample of the hits cut once from
-the two crowd files); 7 the r-z page, the family alone and then the sum, with the b jets marked (the x-y and
-(eta, phi) pages are not shown). 19 lines of narration, every number read from `geant4_SIM_signal.json`
-and `add_hits_SIM.json`. Large numbers are written short, 13K and 1.4M, on the screen and in the subtitles, and
+Six scenes: 1 the detector and the field, 2 the tracker (and five close-ups), 3 the crystals, 4 the HCAL,
+5 the muon system, all for the signal (in scene 5 the tracker, the crystals and the HCAL inside the yoke keep the
+colours of their own scenes: blue silicon with yellow hits, green crystals, gold scintillator, deposits coloured by
+energy); 6 the crowd in the same detector, first the 63 collisions of our bunch crossing, then all sixteen crossings
+(drawn from `../g4pileup_display.npz`, a sample of the hits cut once from the two crowd files). The r-z, x-y and
+(eta, phi) pages are in the book, not in the film. 17 lines of narration, every number read from
+`geant4_SIM_signal.json` and `add_hits_SIM.json`. Large numbers are written short, 13K and 1.4M, on the screen and in the subtitles, and
 spoken as thousand and million (`soundtrack.short_number`, `SPOKEN_RE`). Pronunciations fixed in
-`example/soundtrack.py` for all films: "Geant4" is spoken "Jee-antt fore", "ampere" "am-pee-ar", "looper"
+`example/soundtrack.py` for all films: "Geant4" is spoken "Jee-antt-four" (joined, so that the number is a stressed syllable), "ampere" "am-pee-ar", "looper"
 "loo-per", and a lone "4" or "four" is spoken "fore" (the voices swallow "four" to an unstressed "for"). The
 `.mp4` and `.srt` are not in git; the narration clips are cached in `build/narration/SIM/`.
 
@@ -305,17 +327,17 @@ spoken as thousand and million (`soundtrack.short_number`, `SPOKEN_RE`). Pronunc
 
    | | hand-written | Geant4 |
    |---|---|---|
-   | primaries that leave the tracker towards the calorimeters | 407 | 286 |
+   | primaries that cross the tracker boundary as themselves | 407 | 375 |
    | decays in flight in the tracker volume | 87 | 369 |
    | photon conversions in the tracker volume | 313 | 655 |
    | nuclear interactions in the tracker volume | 163 | 447 |
-   | secondaries above 10 MeV born in the tracker volume | 2008 | 4403 |
+   | secondaries above 10 MeV born in the tracker volume | 2008 | 4298 |
    | tracker hits | 8585 | 12623 |
    | energy left in the silicon [MeV] | 2102 | 2979 |
    | ECAL barrel energy [GeV] | 206 | 181 |
    | ECAL endcap energy [GeV] | 411 | 457 |
    | HB + HE scintillator energy [GeV] | 2.51 | 3.48 |
-   | HF photoelectrons | 1936 | 1671 |
+   | HF photoelectrons | 1936 | 1651 |
    | muon-chamber hits | 0 | 82 |
    | jet [0]: members reaching the calorimeters as primaries | 13 | 18 |
    | jet [0]: energy of its descendants in the crystals [GeV] | 134 | 99.1 |
@@ -332,15 +354,19 @@ The comparison with CMSSW is per primary or per collision, because the events di
 
 | quantity | standalone (Geant4 on the laptop) | CMSSW | how |
 |---|---|---|---|
-| sensors crossed per charged primary, no field | 3636 / 307 = 11.8 | (6734 - 3283) / 277 = 12.5 | the stage `transport`; theirs minus the crossings of neutral primaries |
+| sensors crossed per charged primary, no field | 3636 / 307 = 11.8 | (6734 - 3283) / 277 = 12.5 | the stage `transport`; theirs minus the crossings of neutral primaries, which its stage table counts as hits in the rows without electromagnetic physics |
+| secondaries per primary | 4298 / 672 = 6.4 | 1355 / 571 = 2.4 | not the same count: born in the tracker above 10 MeV here, kept as `SimTrack` there |
 | tracker hits per primary, full | 12623 / 672 = 18.8 | 10 272 / 571 = 18.0 | |
 | energy loss per hit | 0.236 MeV | 0.23 MeV | |
-| primaries reaching the boundary | 286 of 672 | 310 of 571 | |
+| primaries crossing the tracker boundary as themselves | 375 of 672 (192 towards the calorimeters, 183 beyond abs(eta) = 3) | 310 of 571 | first crossing of r = 123.3 cm or abs(z) = 293.2 cm, forward ones included on both sides |
 | photons > 1 GeV converting, abs(eta) < 2.5 | 39 of 61 | 15 of 29 | |
-| charged hadrons p > 0.5 GeV interacting | 45 of 126 | 19 of 73 | |
-| HF photoelectrons, signal | 1671 | 1849 | the HF constants of the parametrisation were chosen to give this scale |
+| charged hadrons p > 0.5 GeV interacting | 44 of 126 | 19 of 73 | |
+| HF photoelectrons, signal | 1651 | 1849 | the HF constants of the parametrisation were chosen to give this scale |
 | tracker hits per pileup collision | 2040322 / 960 = 2125 | 2 096 409 / 995 = 2107 | |
-| ECAL energy per in-time collision | 4147 / 63 = 66 GeV | 3430 / 64 = 54 GeV | |
+| ECAL energy per pileup collision, all crossings | 50 294 / 960 = 52 GeV | (56 598 - 362) / 995 = 57 GeV | in time alone 4147 / 63 = 66 against 3430 / 64 = 54: our in-time draw is a busy one (172 primaries per collision against 144 out of time), CMSSW's a quiet one (138 against 151) |
+| HF photoelectrons per pileup collision | 293 172 / 960 = 305 | (246 009 - 1849) / 995 = 245 | the two constants of the formula were chosen on the signal |
+| muon-chamber hits per pileup collision | 1320 / 960 = 1.4 | 838 / 995 = 0.8 | one production cut per region here, the electron's, also for photons |
+| HB / HE cells hit in the sum | 8632 / 6147 | 6856 / 5464 | no Russian roulette here: more slow neutrons, more cells, the same energy (HB 0.043 against 0.044 GeV per collision, HE 0.26 against 0.28) |
 | signal share of tracker hits | 0.61 % | 0.49 % | |
 
 ### 4.3 CMSSW
@@ -393,7 +419,7 @@ From the last block of `add_hits_SIM.log`:
 
 | row | value | where |
 |---|---|---|
-| members reaching the calorimeters as primaries | 18 of 31, vector pT 42.52 | `members reaching the calorimeters as primaries` |
+| members reaching the calorimeters as primaries | 17 of 31, vector pT 42.48 (two more leave along the beam pipe) | `members reaching the calorimeters as primaries` |
 | what the cells record of the members | crystals 99.04 GeV in 4262 cells (pT 40.35); HCAL 0.587 GeV in 477 cells, x factor 97.9 GeV (pT 38.84); together 79.16 | `their deposits` |
 | family, circle | 68.28 (vector), 68.99 (scalar ET) in 1316 cells | `signal :` and `vector pT of the cells` |
 | + in time, + early, + late | 92.21, 304.09, 364.35 | `vector pT of the cells of the circle` |
@@ -408,9 +434,9 @@ On 10 processes of a laptop with 12 cores:
 
 | step | time |
 |---|---|
-| Geant4, the family (672 primaries) | 70 s (11 min of processor time) |
-| Geant4, the in-time crowd (63 collisions, 10 825 primaries) | 5.1 min (49 min of processor time) |
-| Geant4, the out-of-time crowd (897 collisions, 128 894 primaries) | 49 min (8.1 h of processor time) |
+| Geant4, the family (672 primaries) | 70 s (10 min of processor time) |
+| Geant4, the in-time crowd (63 collisions, 10 825 primaries) | 4.9 min (47 min of processor time) |
+| Geant4, the out-of-time crowd (897 collisions, 128 894 primaries) | 51 min (8.4 h of processor time) |
 | Geant4, the four reduced stages of the family | 208 s |
 | Geant4, single particles (`guns_SIM.py`) / validation | 10 min / 5 min |
 | addition and tables | 10 s |

@@ -1,0 +1,68 @@
+%% smpost/thumbnail/chapter_10_crowd_at_the_border.tex : thumbnail of video 10/30,
+%% "Chapter-10 | The Footprints at the Crossings: The Simulated RAW Hits". Motif:
+%% the barrel of CMS seen along the beam, as on the thumbnail of chapter 9, but
+%% now everybody moves. The charged members of the family bend in the field and
+%% leave a yellow hit on every layer of silicon they cross; one of them is a
+%% looper and never gets out; a photon flies straight. Showers light up the
+%% crystals (green ring) and the scintillator (orange ring); the iron stays
+%% dark. The grey dots on the layers are the footprints of the crowd.
+%% Compile: make thumbnails-youtube   (or: pdflatex chapter_10_crowd_at_the_border)
+\documentclass[tikz,border=0pt]{standalone}
+\input{thumbnail_common}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\thumbbackground
+\thumbtext{10}{Chapter 10}{10 / 30}{The Footprints\\at the Crossings}{Simulated hits: the family and the crowd through Geant4}
+
+\begin{scope}[shift={(\mx+0.15,\my-0.75)}, scale=0.84]
+%% the detector: iron, coil, HCAL, ECAL, the tracker volume
+\foreach \r/\c/\o in {3.55/bred/0.42, 3.0/steel/0.7, 2.72/hcalcol/0.8, 2.08/ecalcol/0.85}
+  \fill[\c, opacity=\o] (0,0) circle[radius=\r];
+\fill[navy] (0,0) circle[radius=1.78];
+\draw[gold, line width=0.8pt, opacity=0.8] (0,0) circle[radius=3.55];
+%% the layers of silicon
+\foreach \r in {0.22,0.42,0.62,0.95,1.2,1.45,1.68}
+  \draw[trackcol, line width=0.35pt, opacity=0.45] (0,0) circle[radius=\r];
+%% the footprints of the crowd: grey dots on the layers
+\pgfmathsetseed{10}
+\foreach \r in {0.22,0.42,0.62,0.95,1.2,1.45,1.68}{
+  \foreach \i in {1,...,26}{
+    \pgfmathsetmacro{\aa}{360*rnd}
+    \node[circle, fill=pu, opacity=0.75, inner sep=0pt, minimum size=1.9pt] at (\aa:\r) {};}}
+%% the family: a track of radius R that leaves the beam at azimuth a is at azimuth a + asin(r / 2R) at radius r
+\foreach \a/\R/\c in {18/4.5/trackcol, 62/-2.4/trackcol, 118/1.5/hadroncol, 171/-6.0/trackcol, 232/2.1/hadroncol, 296/-1.25/trackcol}{
+  \draw[\c, line width=1.3pt, line cap=round] plot[domain=0:1.78, samples=24, variable=\r] ({\a+asin(\r/(2*\R))}:\r);
+  \foreach \r in {0.22,0.42,0.62,0.95,1.2,1.45,1.68}
+    \node[circle, fill=yellow, draw=navy, line width=0.2pt, inner sep=0pt, minimum size=3.6pt] at ({\a+asin(\r/(2*\R))}:\r) {};}
+%% a looper: its circle is too small to reach the crystals
+\draw[bred, line width=1.3pt] (331+90:0.58) circle[radius=0.58];
+\foreach \r in {0.22,0.42,0.62,0.95}{
+  \node[circle, fill=yellow, draw=navy, line width=0.2pt, inner sep=0pt, minimum size=3.6pt] at ({331+asin(\r/1.16)}:\r) {};
+  \node[circle, fill=yellow, draw=navy, line width=0.2pt, inner sep=0pt, minimum size=3.6pt] at ({331+180-asin(\r/1.16)}:\r) {};}
+%% a photon: straight, and no footprint in the silicon
+\draw[fsr, line width=1.2pt, dash pattern=on 3pt off 2pt] (0,0) -- (88:1.78);
+%% showers in the crystals (where the tracks and the photon arrive) and in the scintillator behind
+\foreach \a/\n in {29.4/0.9, 40.2/0.7, 88/1.0, 154.4/0.8, 162.5/0.6, 257.1/0.75, 250.6/0.6}{
+  \foreach \i in {1,...,9}{
+    \pgfmathsetmacro{\aa}{\a+9*(rnd-0.5)}
+    \pgfmathsetmacro{\rr}{1.82+0.24*rnd}
+    \node[circle, fill=white, opacity=0.9, inner sep=0pt, minimum size=2.4pt*\n] at (\aa:\rr) {};}
+  \fill[yellow, opacity=0.55] (\a:1.93) circle[radius=0.085*\n];}
+\foreach \a/\n in {29.4/1.0, 154.4/0.8, 257.1/1.0, 40.2/0.6}{
+  \foreach \i in {1,...,7}{
+    \pgfmathsetmacro{\aa}{\a+16*(rnd-0.5)}
+    \pgfmathsetmacro{\rr}{2.14+0.52*rnd}
+    \node[circle, fill=yellow!35!white, opacity=0.9, inner sep=0pt, minimum size=3.4pt*\n] at (\aa:\rr) {};}}
+%% the collision point
+\fill[white] (0,0) circle[radius=0.07];
+%% what is what
+\node[trackcol, font=\sffamily\scriptsize\itshape, anchor=east] at (-3.3,-3.6) {the iron: almost dark};
+\draw[trackcol, line width=0.4pt, opacity=0.7] (-3.25,-3.6) -- (-2.3,-2.4);
+\end{scope}
+%% the numbers to take away
+\node[yellow, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,9.05)
+  {the family: 12\,623 hits in the silicon};
+\node[pu!40!white, motiflabel, anchor=north east, fill=navy, fill opacity=0.85, text opacity=1, rounded corners=2pt, align=right] at (18.3,8.45)
+  {with the crowd: 2 million, 0.6\,\% its own};
+\end{tikzpicture}
+\end{document}

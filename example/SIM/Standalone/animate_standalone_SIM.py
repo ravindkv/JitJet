@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""The film of chapter 10: the family inside the Geant4 CMS detector, then the crowd, then the sum.
+"""The film of chapter 10: the family inside the Geant4 CMS detector, then the crowd.
 
-Seven scenes, narrated, no music, all drawn from what Geant4 did (geant4_SIM.py) inside the geometry it tracked
+Six scenes, narrated, no music, all drawn from what Geant4 did (geant4_SIM.py) inside the geometry it tracked
 the particles through, with the viewer of g4view_SIM.py:
 
   1 the detector   CMS as Geant4 has it, built from the inside out; then the field lines of the magnet
@@ -10,11 +10,10 @@ the particles through, with the viewer of g4view_SIM.py:
                    electron radiating, a nuclear interaction
   3 the crystals   the electromagnetic showers light up the ECAL; one shower from close by, deposit by deposit
   4 the brass      the hadronic showers in the scintillator layers of the HCAL
-  5 the iron       what is left behind the calorimeters: the muon system
+  5 the iron       what is left behind the calorimeters: the muon system, with the tracker, the crystals and
+                   the HCAL inside it drawn in the colours of their own scenes
   6 the crowd      the same detector for the pileup: the 63 collisions of our bunch crossing, then all sixteen
                    crossings (the steps are those of scenes 2 to 5 and are not shown again)
-  7 the sum        the r-z page of plot_simhits_SIM.py, first the family alone, then with the crowd, with the
-                   directions of the b jets marked
 
 Every number of the narration is read from geant4_SIM_signal.json and add_hits_SIM.json; large numbers are
 written and spoken short (13K, 1.4M).
@@ -58,7 +57,8 @@ import soundtrack as snd  # noqa: E402
 FIGSIZE = (12.8, 7.2)
 ASPECT = 16 / 9
 TXT, TXT2 = "#e8eaf0", "#aab2c0"
-SCENE_NAMES = {1: "detector", 2: "tracker", 3: "ecal", 4: "hcal", 5: "muon", 6: "pileup", 7: "sum"}
+SCENE_NAMES = {1: "detector", 2: "tracker", 3: "ecal", 4: "hcal", 5: "muon", 6: "pileup"}
+ECAL_VOX, HCAL_VOX = (1e-3, 3.0), (1e-5, 0.03)     # GeV: the colour scale of a shower deposit in the crystals and in the scintillator
 PU_COL = {"early": "#d6d04a", "intime": "#6aa8ff", "late": "#ff7a7a"}
 SHORT = snd.short_number
 PAGES = HERE / "pages"
@@ -591,7 +591,13 @@ class MuonScene(Scene):
         super().__init__(W, [("iron", 4.0, 80.0, 9.0)])
         self.cam = gv.Camera.orbit((0, -60, 0), 3700.0, 64.0, 20.0, fov=35.0, aspect=ASPECT)
         ev = W.ev
-        self.v = ev.vox[ev.vox[:, 4] > 3e-3]
+        # the deposits of the calorimeters, with the thresholds and the colour scales of scenes 3 and 4
+        v = ev.vox
+        self.v_ecal = v[np.isin(v[:, 0], (sim.EB, sim.EE)) & (v[:, 4] > 3 * ECAL_VOX[0])]
+        self.v_hcal = v[np.isin(v[:, 0], (sim.HB, sim.HE, sim.HO)) & (v[:, 4] > 3 * HCAL_VOX[0])]
+        h = ev.hits
+        self.hit_xyz = np.column_stack([h["trk_x"], h["trk_y"], h["trk_z"]])
+        self.hit_t = h["trk_t"] - ev.t0
 
     def fill(self, pt):
         det = self.W.det
@@ -600,18 +606,27 @@ class MuonScene(Scene):
         for nm, a in (("dt", 0.35), ("csc", 0.35), ("rpc", 0.2), ("gem", 0.4)):
             pt.surface(det.quads(nm, cut), gv.DET_COL[nm], a, edge="#8a8430" if nm in ("dt", "csc") else None, lw=0.1)
         pt.surface(gv.cylinder(340.0, -615.0, 615.0, math.radians(100.0), math.radians(340.0)), gv.DET_COL["coil"], 0.25, lw=0.0)
-        pt.surface(det.quads("hb", cut), gv.DET_COL["hb"], 0.12, lw=0.0)
-        pt.surface(det.quads("he", cut), gv.DET_COL["he"], 0.12, lw=0.0)
+        # inside the coil everything looks as in its own scene: the HCAL of scene 4, the crystals of scene 3,
+        # the silicon of scene 2
+        for nm in ("hb", "he"):
+            pt.surface(det.quads(nm, cut), gv.DET_COL[nm], 0.06, edge="#c79a45", lw=0.12, shade=False)
+        for nm in ("eb", "ee"):
+            pt.surface(det.quads(nm, cut), gv.DET_COL[nm], 0.4, lw=0.0)
+        for name, alpha, edge, lw in (("trk", 0.2, "#6aa5e8", 0.18), ("pix", 0.3, "#a9e0ff", 0.12)):
+            pt.surface(det.quads(name, cut), gv.DET_COL[name], alpha, edge=edge, lw=lw)
 
     def render(self, fig, key, u, val):
         W, ev = self.W, self.W.ev
         ax = stage(fig, W.background(("mu", 0), self.cam, self.fill))
         pt = gv.Painter(self.cam)
-        v = self.v[self.v[:, 5] - ev.t0 <= val]
-        pt.dot(v[:, 1:4], disp.e_colour(v[:, 4], 1e-3, 10.0), size=1.5, alpha=0.7, scale=False)
+        for v, (lo, hi), s in ((self.v_ecal, ECAL_VOX, 0.25), (self.v_hcal, HCAL_VOX, 0.5)):
+            v = v[v[:, 5] - ev.t0 <= val]
+            size = 1.5 + 14.0 * np.clip(np.log10(np.maximum(v[:, 4], lo) / lo), 0, 3.5) / 3.5
+            pt.dot(v[:, 1:4], disp.e_colour(v[:, 4], lo, hi), size=size * s, scale=False)
         idx, col, lw = gv.track_style(ev, disp.tracker_mask(ev, 0.3, 1.0, 1.0), ev.t0 + val)
         a, b = ev.segments(idx)
         pt.line(a, b, col, lw=lw * 0.5)
+        pt.dot(self.hit_xyz[self.hit_t <= val], "#ffe14d", size=0.9, alpha=0.9)
         mask = ev.outer[ev.seg_trk]
         idx, col, lw = gv.track_style(ev, mask, ev.t0 + val)
         col[:, 3] = np.maximum(col[:, 3], 0.9)
@@ -627,7 +642,7 @@ class MuonScene(Scene):
         counter(fig, 0.015, 0.86, f"{ntr}", "charged trajectories above 20 MeV out here")
         counter(fig, 0.015, 0.76, f"{nmu}", "of them muons", gv.KIND_COL[4])
         counter(fig, 0.015, 0.66, f"{len(h['mu_x'])}", "hits in the gas of the chambers")
-        chrome(fig, 5, self.title, "Red: the steel of the return yoke. Yellow: the muon chambers between its layers. The glow in the middle is the energy the calorimeters kept.",
+        chrome(fig, 5, self.title, "Red: the steel of the yoke. Yellow: the muon chambers. Inside: the tracker, the crystals and the HCAL with their hits, in the colours of scenes 2 to 4.",
                clock=f"t = {val:4.0f} ns")
 
 
@@ -700,38 +715,11 @@ class PileupScene(Scene):
                clock=f"bunch crossing {b:+d}" if b else "bunch crossing 0")
 
 
-# ---------------------------------------------------------------------------
-# scene 7: the sum, on one page
-# ---------------------------------------------------------------------------
-class SumScene(Scene):
-    number, title = 7, "the sum, in the r-z view"
-    IMG = {"alone": "simHits_signal_10_SIM_ALL_rz.png", "rz": "simHits_mixed_10_SIM_ALL_rz.png"}
-
-    def __init__(self, W):
-        super().__init__(W, [("alone", 0.0, 1.0, 6.0), ("rz", 0.0, 1.0, 8.0)])
-        self._img = {}
-
-    def render(self, fig, key, u, val):
-        if key not in self._img:
-            self._img[key] = plt.imread(PAGES / self.IMG[key])
-        fig.clf()
-        fig.patch.set_facecolor("white")
-        ax = fig.add_axes([0.02, 0.06, 0.96, 0.875], facecolor="white")
-        ax.add_patch(plt.Rectangle((0, 0), 1, 1, transform=fig.transFigure, facecolor="white", edgecolor="none", zorder=-5, clip_on=False))
-        ax.imshow(self._img[key], interpolation="bilinear")
-        ax.axis("off")
-        cap = {"alone": "The hits of the family alone, r against z. Red dashed lines: where its b jets point. Only the first muon station is inside the page.",
-               "rz": "The family with the 960 collisions of the crowd, all through Geant4, added by hand: every hit shifted by 25 ns times its bunch crossing."}[key]
-        fig.text(0.02, 0.965, f"Scene 7: {self.title}", fontsize=15, weight="bold", color="#0b0b0b", va="center")
-        fig.text(0.98, 0.965, "geant4_SIM.py + add_hits_SIM.py + plot_simhits_SIM.py", fontsize=9.5, color="#52514e", ha="right", va="center")
-        fig.text(0.02, 0.025, cap, fontsize=10.5, color="#0b0b0b", va="bottom")
-
-
 def build_scenes(W) -> List[Scene]:
     return [DetectorScene(W), TrackerScene(W),
-            CaloScene(W, 3, "the crystals: electromagnetic showers", "ecal", (sim.EB, sim.EE), 1180.0, 1e-3, 3.0, "ECAL"),
-            CaloScene(W, 4, "the HCAL: showers in brass, light in plastic", "hcal", (sim.HB, sim.HE, sim.HO), 1950.0, 1e-5, 0.03, "HCAL"),
-            MuonScene(W), PileupScene(W), SumScene(W)]
+            CaloScene(W, 3, "the crystals: electromagnetic showers", "ecal", (sim.EB, sim.EE), 1180.0, *ECAL_VOX, "ECAL"),
+            CaloScene(W, 4, "the HCAL: showers in brass, light in plastic", "hcal", (sim.HB, sim.HE, sim.HO), 1950.0, *HCAL_VOX, "HCAL"),
+            MuonScene(W), PileupScene(W)]
 
 
 # ---------------------------------------------------------------------------
@@ -744,7 +732,6 @@ def narration(W) -> Dict[str, str]:
     ec = N["ECAL"]
     total = sum(tr.values())
     T = ev.T
-    J = sim.load_stage().genjets["ak4"]
     lines = {
         "detector_build": ("The gate has opened. ... This is the one stop of the road where we do not write the simulation ourselves. This is Geant4, the toolkit that every experiment at the collider uses, "
                            "and this is the CMS detector of Run 3 as Geant4 has it: two million volumes, each with its shape and its material. From the inside out: the silicon of the tracker, the crystals, "
@@ -796,12 +783,6 @@ def narration(W) -> Dict[str, str]:
         "pileup_all": (f"And the detector has a memory. {c['early'] + c['late']} more collisions, from the twelve bunch crossings before ours and the three after it, twenty five nanoseconds apart. "
                        "The signal, the pileup in time, the pileup out of time: three samples, kept in three files. If the signal changes, the crowd need not be simulated again. "
                        "Only a simulation has this freedom. In data, everything happens at once."),
-        "sum_alone": ("Now everything on one page: the radius against the distance along the beam. Only the first muon station fits on this page. This is the family alone. The red lines are the directions of its b jets. "
-                      f"One points to the corner where the barrel meets the endcap, on the left: that is our jet, {J[0]['pt']:.0f} GeV. "
-                      "The other b jets went forward: they end in the forward calorimeter, eleven metres down the beam pipe, at the far left."),
-        "sum_rz": (f"And now with the crowd: {SHORT(1 + c['intime'] + c['early'] + c['late'])} collisions, added by hand, every hit shifted by twenty five nanoseconds times the number of its crossing. "
-                   f"The sum: {SHORT(total)} hits in the tracker, and our family owns {100 * tr['signal'] / total:.1f} percent of them. In the crystals, {SHORT(ec['hit_all'])} cells hold energy, "
-                   f"and in only {SHORT(ec['dom']['signal'])} of them is the family the largest contributor. Our jet is still there, along the same red line. It is no longer alone."),
         "outro": ("Nothing has been measured yet. A hit is deposited energy, not a signal. ... Turning sixteen crossings of hits into the pulses of the electronics is the next film."),
     })
     return lines
@@ -823,7 +804,7 @@ def draw(fig, sc, k, t):
         _LAST[id(fig)] = key
 
 
-STILLS = [(1, "field", 1.0), (2, "hits", 0.35), (2, "conversion", 0.9), (3, "shower", 0.9), (4, "wall", 1.0), (5, "iron", 1.0), (6, "all", 1.0), (7, "rz", 1.0)]
+STILLS = [(1, "field", 1.0), (2, "hits", 0.35), (2, "conversion", 0.9), (3, "shower", 0.9), (4, "wall", 1.0), (5, "iron", 1.0), (6, "intime", 1.0), (6, "all", 1.0)]
 
 
 def write_stills(scenes, out: Path, dpi: int = 85, quality: int = 88):

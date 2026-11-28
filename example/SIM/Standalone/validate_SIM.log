@@ -33,21 +33,21 @@ Geant4: geant4-11-04-patch-01 [MT], physics list FTFP_BERT, geometry cmsSimGeo20
 
 == 4. the family (672 primaries): hand-written simulation against Geant4 ==
                                                                hand-written     Geant4   ratio
-   primaries that leave the tracker towards the calorimeters            407        286    1.42
+   primaries that cross the tracker boundary as themselves              407        375    1.09
    decays in flight in the tracker volume                                87        369    0.24
    photon conversions in the tracker volume                             313        655    0.48
    nuclear interactions in the tracker volume                           163        447    0.36
-   secondaries above 10 MeV born in the tracker volume                 2008       4403    0.46
+   secondaries above 10 MeV born in the tracker volume                 2008       4298    0.47
    tracker hits                                                        8585      12623    0.68
    energy left in the silicon [MeV]                                    2102       2979    0.71
    ECAL barrel energy [GeV]                                           205.7      181.0    1.14
    ECAL endcap energy [GeV]                                           410.8      457.0    0.90
    HB + HE scintillator energy [GeV]                                   2.51       3.48    0.72
-   HF photoelectrons                                                   1936       1671    1.16
+   HF photoelectrons                                                   1936       1651    1.17
    muon-chamber hits                                                      0         82    0.00
-   jet [0]: members reaching the calorimeters as primaries               13         18    0.72
+   jet [0]: members reaching the calorimeters as primaries               13         17    0.76
    jet [0]: energy of its descendants in the crystals [GeV]           133.5       99.1    1.35
-   Geant4 also makes what the hand-written script leaves out: 60056 delta rays, 15786 Compton scatterings, 2205 photoelectric absorptions and 9719 bremsstrahlung photons down to 1 keV
+   Geant4 also makes what the hand-written script leaves out: 45759 delta rays, 15786 Compton scatterings, 2205 photoelectric absorptions and 9719 bremsstrahlung photons down to 1 keV
 
 == 5. single particles at eta = 0.5, 100 per point (mean +- rms) ==
    10 GeV photons, fraction of the energy in the hottest crystal / 9 hottest / 25 hottest / all barrel crystals

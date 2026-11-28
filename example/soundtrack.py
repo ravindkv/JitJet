@@ -54,8 +54,11 @@ def display_text(text: str) -> str:
 
 # Written -> spoken: words the voices read as initials or mangle. Subtitles and --print-script keep the written form.
 SPOKEN = {"JitJet": "Jit Jet",          # "JitJet" comes out as "J-I-T Jet"
-          "Geant4": "Jee-antt fore",    # "Geant4" comes out as "Gene 4", and "Jee-antt four" as "Jee-antt for"
-          "Geant 4": "Jee-antt fore",
+          # "Geant4" comes out as "Gene 4", and "Jee-antt four" as "Jee-antt for". Joined by a hyphen the number is
+          # one stressed syllable, half as long again (0.18 s against 0.12 s; measured vowel 420 / 690 Hz, the
+          # same as the word "four" spoken alone). The British voice has no final r: it says "faw", never "far".
+          "Geant4": "Jee-antt-four",
+          "Geant 4": "Jee-antt-four",
           "Ampere": "Am-pee-ar", "ampere": "am-pee-ar",   # not "am-pair"
           "looper": "loo-per", "Looper": "Loo-per"}        # not "lopper"
 # Patterns. A lone "4" or "four" is swallowed to an unstressed "for" by the voices; "fore" is the same sound and is

@@ -1,5 +1,93 @@
 
 --------------------------------------------
+2026-11-28| P41_ReviewedCh10SIM
+--------------------------------------------
+Comments on the JitJet.pdf:
+
+Line 507:: "The Footprints and Fingerprints" -> "The Footprints"
+
+Line 557: "This is the last stop at which one can still say which hit belongs to whom"
+> This was the classical mixing. The premixing happens at DIGI step where we digitise them
+separtly so we can tell which digi belongs to which. However, when we mix the digi then
+the later chapters see everyting at once. So maybe we can rephrase the above line.
+
+Line 574: "so it can be simulated once and laid over any number of signal events"
+> Here it would be worth mentioning that the "same" crowed is not overlaid on "every"
+signal event. The crowed is randomly picked from large premixing library of the croweds.
+And maybe also emphasise why preparing premixing library becomes huge CPU consuming.
+
+Line 600: "Inside Geant4: the magnet."
+> Remove this sentence as we already have section title before
+
+Figure 2.4: "The helix in the transverse plane ..."
+> The left figure has overlapping text
+
+Line 617: "barrel ECAL at r= 1.29 m"
+> Here refer Figure 1.3 ("A quadrant of the CMS detector in the r–z plane ...")  of the
+previous chapter
+
+Figure 2.7: "..the probability to decay within 1.23 m.."
+> In the legend, also write the mass (m) in GeV of each particle
+
+Line 648: "Inside Geant4: the tracker. "
+> Remove this sentence
+
+Line 647: "Footprints and tolls: the tracker"
+> In  this section draw the tracker showing different layers mentioned in Table 2.3. Feel
+free to pull the schematic diagram from CERN document server if useful
+
+Equation 2.4: BetheBloch
+> explain other variables used in the equation e.g Z, A, I, K, etc
+
+Line 696: "Inside Geant4: the crystals. "
+> Remove this sentence
+
+Line 729: "Inside Geant4: the HCAL."
+> Remove this sentence
+
+Line 861: "..and the gap between barrel and endcap that this jet happens to point at."
+> Highlight in red. Mention that why a jet in this region need higher JECs (refere future
+chapter)
+
+Figure 2.15: A pion in the calorimeters
+>  Fix the overlapping txt on left corner
+
+Line 752:
+> Explain what "h" and "e" are. Elaborate the entire paragraph in more detail
+
+Line 768: "This is the non-linear response the jet energy..."
+> Elaborate the entire paragraph in more detail
+
+Equation 2.11:
+> Make a plot of the weight w
+
+Figure 2.16
+> Elaborate more either in caption
+
+Film:
++ Most importantly try to spell "4" as "fɔːr" not as "far"
++ Remove the z-r plot. So total length would be 06.42
++ Update the δ-ray count to the NEW value (46K). Also use the latest number
++ In the Scene-5  where we have full detector, try to show the ECAL and hits in the ECAL
+in the same color as used in the Scene-3. Similarly for HCAL from Scene-4 and Tracker from
+Scene-2. That way the Scenes 2, 3, 4 will be consistent in Scene-5 as well
++ Add chapter 10 in smpost/SMPost.md
++ Create the thumbnail in smpost/thumbnail/
+
+--------------------------------------------
+2026-11-27| P40_FableReviewOnCh10SIM
+--------------------------------------------
+Please have a careful review of the chapter/chapter_10_SIM.tex/.md and example/SIM/:
+(1) Try to connect the the numbers from previous chapter (09) if they are propagated 
+properly 
+(2) Similarly compare the ballpark numbers from CMSSW (chapter 09, 10) and see if the
+trend wise they are on the same footing 
+(3) Write down any inconsistency/pitfalls/bugs in  review_10_SIM.txt file which then as
+a next step we will fix.
+
+Fable's fix is in review/P40_FableReviewOnCh10SIM.txt
+
+--------------------------------------------
 2026-11-24| P39_MajorCommentsOnCh10SIM
 --------------------------------------------
 Few major comments on chapter 10 (example/SIM/, chapter/chapter_10_SIM.tex):

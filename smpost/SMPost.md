@@ -38,7 +38,7 @@ Channel Playlist: JitJet Book, JitJet bTour, JitJet tTour, etc
 
 JitJet: Journey is the Jet
 Director: Ravindra Verma (University of Helsinki)
-Producer: Claude Fable, ChatGPT Astra
+Producer: Claude Fable
 
 JitJet Book: https://github.com/ravindkv
 JitJet CMSSW : https://github.com/ravindkv/JitJetSW
@@ -266,3 +266,34 @@ only 52 % of its energy, and a quarter of the crowd's. Our b jet crosses whole,
 Path:
 example/G4/Standalone/animate_standalone_G4.mp4
 chapter/chapter_09_G4.tex
+
+
+### --------------------------------------
+(10/30) JitJet | Chapter-10 | The Footprints at the Crossings: The Simulated RAW Hits
+
+The gate has opened, and now everything moves. This is the one stop of the
+road where we do not write the simulation ourselves: the film is shot inside
+Geant4, in the CMS detector of Run 3 as the toolkit has it, two million
+volumes with their shapes and materials. The detector is built from the inside
+out and the field lines of the magnet are drawn, 3.8 tesla along the beam and
+two tesla back through the steel. Then the clock runs. The 672 members of our
+family bend into helices and leave 12.6 thousand hits in the silicon, and five
+things that really happened in this event are shown from close by: a looper
+that never reaches the calorimeter, a K-short that decays in flight, a photon
+that converts into an electron and a positron, an electron that radiates, and
+a hadron that breaks a nucleus apart. 46 thousand delta rays, 655 conversions,
+447 nuclear interactions: the tracker is thin, but it is not empty. The
+showers light up the crystals, 638 GeV, deposit by deposit inside the frames
+of the real crystals; behind them the brass absorbs the hadrons and the
+plastic between its plates sees 3.5 GeV of it. Behind the coil the iron stays
+almost dark: 82 hits, nearly all from one slow proton. And then the crowd
+crosses the same detector, the 63 collisions of our own bunch crossing and the
+897 of the fifteen crossings around it, each simulated alone and kept in its
+own file: a freedom only a simulation has. Two million hits in the silicon,
+and our family owns 0.6 % of them. Nothing has been measured yet: a hit is
+deposited energy, not a signal. Turning it into the pulses of the electronics
+is the next film.
+
+Path:
+example/SIM/Standalone/animate_standalone_SIM.mp4
+chapter/chapter_10_SIM.tex

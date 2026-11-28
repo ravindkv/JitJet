@@ -2,20 +2,20 @@ The ledger of the hits (standalone): three samples simulated separately, then ad
                                                   signal     in time       early        late       added
 collisions                                             1          63         712         185         961
 primaries                                            672      10,825     101,792      27,102     140,391
-tracks                                             5,075      65,357     606,063     160,735     837,230
+tracks                                             4,970      64,127     594,385     157,612     821,094
 tracker hits                                      12,623     163,143   1,479,304     397,875   2,052,945
 muon hits                                             82         138         847         335       1,402
 ECAL cells with energy                            29,938      87,940     147,136     105,299     160,395
 ECAL energy [GeV]                                  638.4     4,147.1    36,186.5     9,960.1    50,932.0
 HB+HE+HO cells                                     3,141       9,532      14,502      12,077      14,945
 HB+HE+HO scintillator energy [GeV]                  3.48       21.30      211.15       57.59      293.51
-HF cells                                             524       1,532       1,667       1,617       1,684
-HF photoelectrons                                  1,671      23,619     210,907      58,283     294,480
+HF cells                                             521       1,524       1,649       1,613       1,671
+HF photoelectrons                                  1,651      23,588     211,258      58,326     294,823
 after the addition, cells by the origin that deposits most:
 ECAL cells                                         1,254       9,733     124,912      24,496     160,395
-  their energy [GeV]                               347.8     1,189.2    45,995.8     3,399.2    50,932.0
+  energy of all origins in them [GeV]              347.8     1,189.2    45,995.8     3,399.2    50,932.0
 HB+HE+HO cells                                       209         848      11,834       2,054      14,945
-HF cells                                               3           5       1,654          22       1,684
+HF cells                                               2           3       1,641          25       1,671
 
 tracker, hits by subdetector
   PXB          1,327      18,402     167,590      44,259     231,578   signal 0.57 % of all, 6.7 % of its own crossing
@@ -41,34 +41,34 @@ calorimeters: cells in the detector; cells hit and energy by origin; cells hit a
   HB     9072 | signal 1,281 cells 0.83 intime 4,921 cells 3.84 early 8,309 cells 29.57 late 6,590 cells 8.12 | hit 8,632 | signal keeps 141 cells, 0.5
   HE     6768 | signal 1,858 cells 2.64 intime 4,600 cells 17.46 early 6,058 cells 181.55 late 5,455 cells 49.46 | hit 6,147 | signal keeps 67 cells, 0.5
   HO     2160 | signal 2 cells 0.00 intime 11 cells 0.00 early 135 cells 0.04 late 32 cells 0.01 | hit 166 | signal keeps 1 cells, 0.0
-  HF     1728 | signal 524 cells 1,671.00 intime 1,532 cells 23,619.00 early 1,667 cells 210,907.00 late 1,617 cells 58,283.00 | hit 1,684 | signal keeps 3 cells, 163.0
+  HF     1728 | signal 521 cells 1,651.00 intime 1,524 cells 23,588.00 early 1,649 cells 211,258.00 late 1,613 cells 58,326.00 | hit 1,671 | signal keeps 2 cells, 162.0
 per bunch crossing (bx: collisions, tracker hits): -12: 60, 130738, -11: 56, 105079, -10: 68, 156350, -9: 61, 127618, -8: 66, 121303, -7: 56, 109142, -6: 55, 105751, -5: 50, 108259, -4: 53, 126554, -3: 66, 135657, -2: 61, 140878, -1: 60, 111975, 0: 63, 163143, 1: 63, 141802, 2: 59, 134228, 3: 63, 121845
 
 who leaves how much where (the family, GeV): group; inside |eta| < 2.5: primaries, energy, left in the tracker volume, of it in silicon, hits;
   inside |eta| < 3: energy, light of EB, EE, energy in the preshower silicon; scintillator of HB+HE+HO before and after Birks' law; beyond: energy stopped at the HF, HF p.e.; muon system: energy, hits
-  charged hadron  |  170    573.00   30.391   1.5725   6005 |    804.15    83.36   208.55  0.1422 |  2.9800  2.1940 |   2698.0   1000 |  41.798   82
-  neutral hadron  |   35    151.49    8.165   0.3590   1595 |    222.67    30.49    37.04  0.0171 |  1.1424  0.8360 |   1285.6    359 |   6.174    0
+  charged hadron  |  170    573.00   30.391   1.5725   6005 |    804.15    83.36   208.55  0.1422 |  2.9800  2.1940 |   2685.9    993 |  41.798   82
+  neutral hadron  |   35    151.49    8.165   0.3590   1595 |    222.67    30.49    37.04  0.0171 |  1.1424  0.8360 |   1291.7    346 |   6.174    0
   photon          |  179    254.29   13.907   0.5262   3331 |    329.95    60.84   177.01  0.2064 |  0.1051  0.1033 |    768.6    308 |   4.740    0
   electron        |    5      1.00    0.480   0.0423    252 |      1.00     0.38     0.00  0.0000 |  0.0001  0.0001 |      5.5      4 |   0.000    0
   muon            |    0      0.00    0.000   0.0000      0 |      0.00     0.00     0.00  0.0000 |  0.0000  0.0000 |      0.0      0 |   0.000    0
-  all             |  389    979.79   52.943   2.4999  11183 |   1357.77   175.07   422.60  0.3657 |  4.2275  3.1333 |   4757.8   1671 |  52.712   82
+  all             |  389    979.79   52.943   2.4999  11183 |   1357.77   175.07   422.60  0.3657 |  4.2275  3.1333 |   4751.8   1651 |  52.712   82
   the intime crowd, all primaries (GeV): group, primaries, energy at the gate, tracker volume, silicon, crystals, scintillator before / after Birks, stopped at the HF, muon system
-    charged hadron      4802     54294.7    751.73   26.565     1962.2   22.609   15.977      39350   350.28
-    neutral hadron       861     87824.7    138.57    4.705      566.4    6.401    4.398       8642    98.67
+    charged hadron      4802     54294.7    751.73   26.565     1962.2   22.609   15.977      39229   350.28
+    neutral hadron       861     87824.7    138.57    4.705      566.4    6.401    4.398       8698    98.67
     photon              5108     74059.3    321.83    7.116     1606.0    0.935    0.881      14176    90.96
     electron              50       166.5      3.56    0.120        8.5    0.004    0.004         52     2.71
     muon                   4        20.7      0.23    0.010        0.9    0.041    0.041          0     6.45
-    all                10825    216366.0   1215.93   38.517     4144.0   29.990   21.301      62219   549.07
+    all                10825    216366.0   1215.93   38.517     4144.0   29.990   21.301      62155   549.07
   the oot crowd, all primaries (GeV): group, primaries, energy at the gate, tracker volume, silicon, crystals, scintillator before / after Birks, stopped at the HF, muon system
-    charged hadron     57437    613356.6   8617.26  302.301    21751.0  287.728  206.028     446057  5170.16
-    neutral hadron     10348   1312563.9   1786.72   58.177     6410.2   74.602   52.743     107128  1250.05
-    photon             60382   1140713.4   3742.70   77.572    17857.3   10.083    9.715     164803  1230.73
+    charged hadron     57437    613356.6   8617.26  302.301    21751.0  287.728  206.028     444968  5170.16
+    neutral hadron     10348   1312563.9   1786.72   58.177     6410.2   74.602   52.743     108113  1250.05
+    photon             60382   1140713.4   3742.70   77.572    17857.3   10.083    9.715     164802  1230.73
     electron             703      1589.1     64.91    1.423       90.3    0.091    0.089        546    11.92
-    muon                  24       286.5      2.07    0.095        2.4    0.160    0.158          1     8.49
-    all               128894   3068509.5  14213.67  439.568    46111.3  372.664  268.734     718535  7671.35
+    muon                  24       286.5      2.07    0.095        2.4    0.160    0.158          0     8.49
+    all               128894   3068509.5  14213.67  439.568    46111.3  372.664  268.734     718430  7671.35
 
 our jet: ak4 jet [0], pT 99.83, 31 members, E 222.8 GeV at eta -1.439, phi -2.712
-  members reaching the calorimeters as primaries: 18, vector pT 42.52; fates {'calorimeter': 18, 'decay': 1, 'conversion': 6, 'nuclear': 5, 'stopped': 0, 'beam pipe': 1}
+  members reaching the calorimeters as primaries: 17, vector pT 42.48; fates {'calorimeter': 17, 'decay': 1, 'conversion': 6, 'nuclear': 5, 'stopped': 0, 'beam pipe': 2}
   their deposits: crystals 99.04 GeV in 4262 cells (pT 40.35); HCAL 0.587 GeV scintillator in 477 cells, x factor 97.9 GeV (pT 38.84); together pT 79.16
   the circle dR < 0.4 around the jet: 1355 crystals and 270 HCAL cells hit after the addition
     signal : tracker hits   1,000; crystals  1121 cells    81.62 GeV, ET   36.86; HCAL  195 cells   0.437 GeV, x factor ET   32.13; sum ET   68.99

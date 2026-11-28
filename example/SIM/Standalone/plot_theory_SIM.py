@@ -91,11 +91,11 @@ def page_decay(pdf, S):
     fig, (a, b) = plt.subplots(1, 2, figsize=(13, 5.4))
     p = np.logspace(-1, 2, 200)
     L = sim.R_TRK
-    for pid, name, col in ((211, r"$\pi^\pm$ ($c\tau$ = 7.8 m)", "k"), (321, r"$K^\pm$ (3.7 m)", "#3366cc"), (130, r"$K^0_L$ (15.3 m)", "0.5"),
-                           (3122, r"$\Lambda$ (7.9 cm)", "#aa00aa"), (310, r"$K^0_S$ (2.7 cm)", C["sig"])):
+    for pid, name, col in ((211, r"$\pi^\pm$", "k"), (321, r"$K^\pm$", "#3366cc"), (130, r"$K^0_L$", "0.5"), (3122, r"$\Lambda$", "#aa00aa"), (310, r"$K^0_S$", C["sig"])):
         m = sim.dec.m0(pid)
         ct = sim.dec.tau0(pid) / 10.0
-        a.plot(p, 1 - np.exp(-L * m / (p * ct)), color=col, lw=1.8, label=name)
+        length = f"{ct / 100:.1f} m" if ct >= 100 else f"{ct:.1f} cm"
+        a.plot(p, 1 - np.exp(-L * m / (p * ct)), color=col, lw=1.8, label=f"{name}: $m$ = {m:.3f} GeV, $c\\tau$ = {length}")
     a.set_xscale("log"); a.set_yscale("log"); a.set_ylim(1e-4, 1.5)
     a.set_xlabel("p [GeV]"); a.set_ylabel(f"probability to decay within L = {L:.0f} cm")
     a.set_title(r"$P = 1 - \exp(-L\,m / (p\,c\tau))$, straight flight")
@@ -288,6 +288,64 @@ def page_scaling(pdf, S):
                 median_hits=float(np.median(tr)), max_hits=int(tr.max()), min_hits=int(tr.min()))
 
 
+def page_birks(pdf, S):
+    """Birks' law as CMSSW and geant4_SIM.py apply it: the weight of a step against its dE/dx, and what it does to
+    the light of each group of primaries of the family."""
+    import geant4_SIM as g4
+    fig, (a, b) = plt.subplots(1, 2, figsize=(13, 5.0), gridspec_kw=dict(width_ratios=[1.35, 1]))
+    x = np.logspace(-0.2, 3.7, 400)                        # MeV / cm
+    k1, c2, c3 = g4.BIRK_HCAL
+    rho_s, rho_c = 1.032, 8.28                             # g / cm3: the scintillator, lead tungstate
+    kb = k1 / rho_s
+    w1 = 1 / (1 + kb * x + c2 * (kb * x) ** 2)
+    w2 = 1 / (1 + kb * x / c3 + c2 * (kb * x) ** 2)
+    kc, slope, wmin = g4.BIRK_ECAL
+    wc = np.clip(1 - slope * np.log(np.maximum(kc / rho_c * x, 1e-12)), wmin, 1.0)
+    a.plot(x, w1, color=C["sig"], lw=2.0, label="scintillator, charge 1")
+    a.plot(x, w2, color=C["sig"], lw=1.6, ls="--", label=r"scintillator, charge $\geq$ 2")
+    a.plot(x, wc, color="#009977", lw=2.0, label="crystals")
+
+    def dedx(m, t, z=1):                                    # Bethe-Bloch in polystyrene, MeV / cm (no shell or density correction)
+        g = 1 + t / m; b2 = 1 - 1 / g ** 2; me = 0.511
+        tmax = 2 * me * b2 * g * g / (1 + 2 * g * me / m + (me / m) ** 2)
+        return 0.307 * 0.5377 * z * z / b2 * (0.5 * np.log(2 * me * b2 * g * g * tmax / (68.7e-6) ** 2) - b2) * rho_s
+
+    marks = (("minimum-ionising", 2.0, 0), ("proton, 100 MeV", dedx(938.3, 100.0), 1), ("proton, 10 MeV", dedx(938.3, 10.0), 0), ("proton, 2 MeV", dedx(938.3, 2.0), 1),
+             (r"$\alpha$, 20 MeV", dedx(3727.4, 20.0, 2), 0))
+    for name, v, up in marks:
+        alpha = name.startswith(r"$\alpha")
+        w = 1 / (1 + kb * v / (c3 if alpha else 1) + c2 * (kb * v) ** 2)
+        a.plot([v], [w], "o", color="k", ms=5, zorder=5)
+        a.annotate(f"{name}\n{v:.0f} MeV/cm: {100 * w:.0f} %", (v, w), xytext=(8, 10) if up else (-8, -30), textcoords="offset points", fontsize=8.5,
+                   ha="left" if up else "right")
+    a.set_xscale("log"); a.set_ylim(0, 1.08); a.set_xlim(x[0], x[-1])
+    a.set_xlabel(r"$dE/dx$ of the step [MeV/cm]"); a.set_ylabel("weight $w$: light per MeV, relative to a fast particle")
+    a.set_title("Birks' law: a dense track quenches its own light")
+    a.legend(fontsize=9, loc="lower left")
+    sg = S["signal"]
+    names = [str(n) for n in sg["tal_names"]]
+    T = {n: sg["prim_tal"][:, i].astype(float) for i, n in enumerate(names)}
+    kind = sg["prim_kind"]
+    groups = [(0, "charged\nhadrons"), (1, "neutral\nhadrons"), (2, "photons"), (3, "electrons")]
+    ys, yc = [], []
+    for k, _ in groups:
+        m = kind == k
+        raw_s = sum(T[c][m].sum() for c in ("hb", "he", "ho")); vis_s = sum(T[c + "_vis"][m].sum() for c in ("hb", "he", "ho"))
+        raw_c = sum(T[c][m].sum() for c in ("eb", "ee")); vis_c = sum(T[c + "_vis"][m].sum() for c in ("eb", "ee"))
+        ys.append(100 * vis_s / raw_s if raw_s > 0 else np.nan); yc.append(100 * vis_c / raw_c if raw_c > 0 else np.nan)
+    xx = np.arange(len(groups))
+    b.bar(xx - 0.2, yc, 0.38, color="#009977", label="crystals")
+    b.bar(xx + 0.2, ys, 0.38, color=C["sig"], label="scintillator")
+    for i, (u, v) in enumerate(zip(yc, ys)):
+        b.text(i - 0.2, u + 1, f"{u:.1f}", ha="center", fontsize=8.5); b.text(i + 0.2, v + 1, f"{v:.1f}", ha="center", fontsize=8.5)
+    b.set_xticks(xx); b.set_xticklabels([g for _, g in groups]); b.set_ylim(0, 112); b.set_ylabel("light / deposited energy [%]")
+    b.set_title("the family in Geant4, by group of primary")
+    b.legend(fontsize=9, loc="lower right")
+    fig.tight_layout(); pdf.savefig(fig); plt.close(fig)
+    return dict(scintillator=dict(zip([g.replace("\n", " ") for _, g in groups], ys)), crystals=dict(zip([g.replace("\n", " ") for _, g in groups], yc)),
+                marks={name: float(v) for name, v, _ in marks})
+
+
 def chapter_numbers(S) -> dict:
     """The numbers the theory sections quote for our event, from what Geant4 recorded."""
     sg = S["signal"]
@@ -380,6 +438,7 @@ def main():
         page_had(pdf)
         page_time(pdf, S, N)
         extra["scaling"] = page_scaling(pdf, S)
+        extra["birks"] = page_birks(pdf, S)
     (HERE / "plot_theory_SIM.json").write_text(json.dumps(extra, indent=1))
     print(f"{args.output} written (9 pages)")
     print(json.dumps(extra, indent=1))

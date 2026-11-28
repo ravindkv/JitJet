@@ -165,7 +165,7 @@ def main():
     fast = sim.signal_row(st, rf, "full")
     g4 = summ["stages"][0]
     nf, ng = rf["n"], summ["n"]
-    fam = [("primaries that leave the tracker towards the calorimeters", fast["boundary"], g4["boundary"], "d"),
+    fam = [("primaries that cross the tracker boundary as themselves", fast["boundary"], g4["boundary"] + g4.get("boundary_fwd", 0), "d"),
            ("decays in flight in the tracker volume", nf.get("decays", 0), ng["decays"], "d"),
            ("photon conversions in the tracker volume", nf.get("conversions", 0), ng["conversions"], "d"),
            ("nuclear interactions in the tracker volume", nf.get("nuclear", 0), ng["nuclear"], "d"),

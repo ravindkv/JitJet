@@ -13,7 +13,7 @@ What is official and what is ours
   volumes: every pixel module, every crystal, every scintillator tile, every drift cell).
 * The physics is Geant4's reference list FTFP_BERT: the standard electromagnetic processes (ionisation with
   delta rays, multiple scattering, bremsstrahlung, pair production, Compton scattering, the photoelectric
-  effect, annihilation), decays in flight, and for the hadrons the Bertini cascade below about 5 GeV and the
+  effect, annihilation), decays in flight, and for the hadrons the Bertini cascade below 6 GeV and, from 3 GeV on, the
   Fritiof string model with the Precompound de-excitation above. CMSSW runs FTFP_BERT_EMM, the same hadronic
   physics with a faster variant of the electromagnetic one in the calorimeters.
 * The magnetic field is ours: field_map_SIM.py solves Ampere's law for the coil and the iron of this geometry
@@ -31,8 +31,10 @@ What is official and what is ours
   stopped and its energy is turned into photoelectrons by the parametrisation of standalone_SIM.py (CMSSW
   uses a library of pre-simulated showers there). Particles are also stopped behind the HF, |z| > 13 m,
   where CMSSW has its dead region towards the ZDC, and 500 ns after their bunch crossing.
-* Not done: Birks' law in the scintillator, the Roman pots and the ZDC, the production cuts per region of
-  CMSSW (Geant4's default of 0.7 mm is used everywhere).
+* Taken from CMSSW: the production cuts region by region (REGIONS) and Birks' law in the scintillator and in
+  the crystals (BIRK_HCAL, BIRK_ECAL). Not done: the Roman pots and the ZDC.
+* A primary "reaches the calorimeters" when it crosses the envelope of the tracker volume (r = 123.3 cm,
+  |z| = 293.2 cm) as itself; the point and the momentum there are its boundary record (prim_bnd).
 
 Every primary is one Geant4 event, so every hit knows the primary it descends from without any bookkeeping
 of track parentage, and the events are spread over --jobs processes. The random seed of an event depends
@@ -82,6 +84,11 @@ E_SEC = 0.010                     # GeV: a secondary born in the tracker is "sto
 E_REC_IN, E_REC_OUT = 0.0002, 0.020   # GeV: trajectories are kept above this kinetic energy (tracker; muon system)
 VOX_ECAL, VOX_HCAL = 0.5, 1.0     # cm: the 3D grid of the shower deposits kept for the displays
 HF_MIN = 0.3                      # GeV: below this a particle entering the HF leaves no light
+# The tracker / calorimeter boundary: the envelope of the volume trackerTracker in this geometry, a cylinder of
+# radius 123.3 cm and half-length 293.2 cm. A primary "reaches the calorimeters" when it crosses this surface as
+# itself (CMSSW: CaloTrkProcessing); if it crosses the end face beyond |eta| = 3, inside r = 29.3 cm, it misses
+# the endcap calorimeters and leaves along the beam pipe, towards the forward calorimeter.
+R_BND, Z_BND, ETA_FWD = 123.3, 293.2, 3.0
 
 # Birks' law as CMSSW applies it (SimG4Core/Application/python/g4SimHits_cfi.py; CaloSD::getAttenuation and
 # ECalSD::getBirkL3): the light of a step is its energy deposit times a weight that falls with dE/dx.
@@ -137,6 +144,8 @@ PROC_WORD = {"Decay": "decay", "conv": "conversion", "eBrem": "bremsstrahlung", 
 PROC_CODE = {"primary": 0, "decay": 1, "conversion": 2, "bremsstrahlung": 3, "nuclear interaction": 4, "delta ray": 5,
              "Compton scattering": 6, "photoelectric effect": 7, "annihilation": 8, "elastic scattering": 9, "other": 10}
 PROC_OF_CODE = {v: k for k, v in PROC_CODE.items()}
+IONI = ("eIoni", "hIoni", "muIoni", "ionIoni")
+NEUTRINOS = (12, 14, 16)          # nobody sees them: no light in the HF, no energy in any tally, not a stored secondary
 FATES = ["calorimeter", "decay", "conversion", "nuclear", "stopped", "beam pipe"]
 # the physics switched on one family of processes at a time (--stage): field, decays, electromagnetic, hadronic
 STAGES = {"transport": (0, 0, 0, 0), "B": (1, 0, 0, 0), "B_Decay": (1, 1, 0, 0), "B_Decay_EM": (1, 1, 1, 0), "full": (1, 1, 1, 1)}
@@ -329,6 +338,8 @@ class App:
                     tr.SetTrackStatus(g.fStopAndKill)
                     app.n["time_cut"] += 1
                     return True
+                if tid == 1 and app.cross1 is None:
+                    app.crossing(step)
                 e = step.GetTotalEnergyDeposit()
                 if e > 0.0:
                     app.cur[self.vol] += e
@@ -362,12 +373,30 @@ class App:
                     pd = post.GetProcessDefinedStep()
                     proc = pd.GetProcessName() if pd is not None else "none"
                     if ns or dead:
-                        app.n[proc if not self.charged_only else "out_" + proc] += 1      # out_: behind the calorimeters
+                        key = proc if ns or proc not in IONI else "ranged_out"            # no secondary: the particle stopped
+                        app.n[key if not self.charged_only else "out_" + key] += 1        # out_: behind the calorimeters
                         if not self.charged_only and proc not in ("eIoni", "hIoni", "muIoni", "ionIoni", "msc", "Transportation"):
                             app.verts.append((proc, tid, p.x, p.y, p.z, d.GetPDGEncoding(), step.GetPreStepPoint().GetKineticEnergy(), ns, t))
                     if tid == 1:
                         m = post.GetMomentum()
                         app.last1 = (proc, dead, p.x, p.y, p.z, m.x, m.y, m.z, self.charged_only)
+                return True
+
+        class GapSD(g.G4VSensitiveDetector):
+            """The world volume itself: the gaps between the beam pipe, the tracker and the calorimeters belong to
+            no subdetector. Only the primary is looked at, so that its crossing of the tracker boundary is seen
+            (a forward particle leaves the beam pipe into such a gap and never enters the tracker volume)."""
+            def ProcessHits(self, step, hist):
+                tr = step.GetTrack()
+                if tr.GetTrackID() != 1 or app.cross1 is not None:
+                    return True
+                post = step.GetPostStepPoint()
+                app.crossing(step)
+                if app.cross1 is None:
+                    pd = post.GetProcessDefinedStep()
+                    p, m = post.GetPosition(), post.GetMomentum()
+                    app.last1 = (pd.GetProcessName() if pd is not None else "none", tr.GetTrackStatus() != g.fAlive,
+                                 p.x, p.y, p.z, m.x, m.y, m.z, False)
                 return True
 
         class HFSD(g.G4VSensitiveDetector):
@@ -379,10 +408,18 @@ class App:
                 a = abs(pid)
                 if a == 13:
                     return True
+                if a in NEUTRINOS:                                  # a neutrino leaves no light
+                    app.n["neutrinos_hf"] += 1
+                    tr.SetTrackStatus(g.fStopAndKill)
+                    return True
                 pre = step.GetPreStepPoint()
                 p = pre.GetPosition()
                 ek = pre.GetKineticEnergy()
-                e = ek if a in (2212, 2112) or a > 1000000000 else (ek + 2 * d.GetPDGMass() if pid in (-2212, -2112) else pre.GetTotalEnergy())
+                # the energy a shower can be made of: the kinetic energy of a baryon or a nucleus (its mass stays),
+                # kinetic energy plus twice the mass for an antibaryon (it annihilates), the total energy of a meson,
+                # a photon or an electron
+                nb = d.GetBaryonNumber()
+                e = ek if nb > 0 else (ek + 2 * d.GetPDGMass() if nb < 0 else pre.GetTotalEnergy())
                 app.hf.append((p.x, p.y, p.z, pre.GetGlobalTime(), e, 1.0 if a in (11, 22, 111) else 0.0))
                 app.cur["hf_in"] += e
                 tr.SetTrackStatus(g.fKillTrackAndSecondaries)       # and what this very step produced: its energy is counted above
@@ -394,6 +431,10 @@ class App:
                 if abs(pre.GetPosition().z) < app.z_dead:
                     return True
                 tr = step.GetTrack()
+                if abs(tr.GetDefinition().GetPDGEncoding()) in NEUTRINOS:
+                    app.n["neutrinos_dead"] += 1
+                    tr.SetTrackStatus(g.fStopAndKill)
+                    return True
                 app.e["dead_region"] += pre.GetKineticEnergy()
                 app.cur["dead"] += pre.GetKineticEnergy()
                 app.n["dead_region"] += 1
@@ -473,7 +514,7 @@ class App:
                 for k in ("eb", "ee", "hb", "he", "ho"):
                     make(k, CalSD(k))
                 make("esx", CalSD("esx", 0)); make("esy", CalSD("esy", 1))
-                make("hf", HFSD("hf")); make("dead", DeadSD("dead"))
+                make("hf", HFSD("hf")); make("dead", DeadSD("dead")); make("gap", GapSD("gap"))
                 make("in", RecSD("in", 0, E_REC_IN, False)); make("out", RecSD("out", 0, E_REC_OUT, True))
                 for nm, det in list(TRK_PREFIX.items()):
                     make("trk%d" % det, RecSD("trk%d" % det, det, E_REC_IN, False))
@@ -538,6 +579,9 @@ class App:
                 if app.scan:
                     sd_scan = make("scan", ScanSD("scan"))
                 walk(world, None)
+                if not app.scan:
+                    world.SetSensitiveDetector(sd["gap"])              # the world volume itself, not its daughters
+                    counts["gap"] += 1
                 app.sd_counts = dict(counts)
                 if not app.field or app.scan:
                     return
@@ -646,7 +690,7 @@ class App:
     # ---------------------------------------------------------------- per task
     def reset(self):
         self.n, self.e = Counter(), Counter()
-        self.out = dict(trk=[], mu=[], cal_c=[], cal_e=[], cal_t=[], cal_p=[], births=[], pts=[], verts=[], vox=[], fate={}, bnd={}, end={}, scan=[], tal=[])
+        self.out = dict(trk=[], mu=[], cal_c=[], cal_e=[], cal_t=[], cal_p=[], births=[], pts=[], verts=[], vox=[], fate={}, bnd={}, fwd={}, end={}, scan=[], tal=[])
         self.ncalhits = 0
         self.nsec = 0
 
@@ -654,11 +698,37 @@ class App:
         self.hits, self.births, self.pts, self.verts, self.hf = [], [], [], [], []
         self.known = {}
         self.last1 = None
+        self.cross1 = None
         self.t_kill = (self.todo[j][7] + T_MAX) * self.ns
         self.rng = np.random.default_rng(self.todo[j][8])     # for the HF parametrisation: one stream per primary
         self.scan_x0 = self.scan_li = 0.0
         self.scan_sensors = Counter()
         self.cur = Counter()
+
+    def crossing(self, step):
+        """Called for the steps of the primary until it has crossed the tracker / calorimeter boundary: if this
+        step ends on or beyond the surface, keep the point where its chord meets the surface and the momentum
+        there. Only the first crossing counts: what the primary does behind the boundary is no longer its fate."""
+        R, Z = R_BND * self.cm, Z_BND * self.cm
+        eps = 1e-3 * self.cm
+        post = step.GetPostStepPoint()
+        b = post.GetPosition()
+        if math.hypot(b.x, b.y) < R - eps and abs(b.z) < Z - eps:
+            return
+        a = step.GetPreStepPoint().GetPosition()
+        dx, dy, dz = b.x - a.x, b.y - a.y, b.z - a.z
+        f = 1.0
+        if abs(b.z) > Z and dz != 0.0:
+            f = min(f, (math.copysign(Z, b.z) - a.z) / dz)
+        d2 = dx * dx + dy * dy
+        if math.hypot(b.x, b.y) > R and d2 > 0.0:
+            ad = a.x * dx + a.y * dy
+            disc = ad * ad - d2 * (a.x * a.x + a.y * a.y - R * R)
+            if disc >= 0.0:
+                f = min(f, (-ad + math.sqrt(disc)) / d2)
+        f = min(1.0, max(0.0, f))
+        m = post.GetMomentum()
+        self.cross1 = (a.x + f * dx, a.y + f * dy, a.z + f * dz, m.x, m.y, m.z)
 
     def end(self, j):
         o = self.out
@@ -740,22 +810,22 @@ class App:
         o["tal"].append((prim, sim.kind_of(int(row[0])), tal))
         # secondaries stored, vertices, the fate of the primary
         for b in self.births:
-            if b[1] > 0 and b[9] and not b[10] and b[8] >= E_SEC * 1e3:
+            if b[1] > 0 and b[9] and not b[10] and b[8] >= E_SEC * 1e3 and abs(b[2]) not in NEUTRINOS:
                 self.nsec += 1
                 self.n["sec_" + word(b[3])] += 1
-        if self.last1 is not None:
-            proc, dead, x, y, z, px, py, pz, outer = self.last1
+        # the fate of the primary: it crossed the tracker boundary as itself (towards the calorimeters, or beyond
+        # |eta| = 3 along the beam pipe), or something ended it inside; a primary that is still alive inside when
+        # the clock stops is "stopped"
+        if self.cross1 is not None:
+            x, y, z, px, py, pz = self.cross1
             x, y, z = x / cm, y / cm, z / cm
-            r = math.hypot(x, y)
-            if dead and not outer:
-                w = word(proc)
-                o["fate"][prim] = {"decay": "decay", "conversion": "conversion", "nuclear interaction": "nuclear"}.get(w, "stopped")
-                o["end"][prim] = (x, y, z)
-            elif not outer and r < 30.0 and abs(z) > 280.0:
-                o["fate"][prim] = "beam pipe"
-            else:
-                o["fate"][prim] = "calorimeter"
-                o["bnd"][prim] = (x, y, z, px / 1e3, py / 1e3, pz / 1e3)
+            fwd = abs(z) > Z_BND - 0.01 and math.hypot(x, y) < Z_BND / math.sinh(ETA_FWD)
+            o["fate"][prim] = "beam pipe" if fwd else "calorimeter"
+            o["fwd" if fwd else "bnd"][prim] = (x, y, z, px / 1e3, py / 1e3, pz / 1e3)
+        elif self.last1 is not None:
+            proc, dead, x, y, z, px, py, pz, outer = self.last1
+            o["fate"][prim] = {"decay": "decay", "conversion": "conversion", "nuclear interaction": "nuclear"}.get(word(proc), "stopped") if dead else "stopped"
+            o["end"][prim] = (x / cm, y / cm, z / cm)
         if self.record_tracks:
             if self.births:
                 o["births"].append((prim, self.births))
@@ -785,7 +855,7 @@ class App:
         else:
             cal = dict(code=np.zeros(0, np.int64), e=np.zeros(0, f4), t=np.zeros(0, f4), prim=np.zeros(0, np.int32))
         r = dict(trk=cat("trk"), mu=cat("mu"), cal=cal, n=dict(self.n), e={k: float(v) / (1e3 if k == "dead_region" else 1.0) for k, v in self.e.items()},
-                 ncalhits=self.ncalhits, nsec=self.nsec, fate=o["fate"], bnd=o["bnd"], end=o["end"], scan=o["scan"])
+                 ncalhits=self.ncalhits, nsec=self.nsec, fate=o["fate"], bnd=o["bnd"], fwd=o["fwd"], end=o["end"], scan=o["scan"])
         r["tal_prim"] = np.array([x[0] for x in o["tal"]], dtype=np.int64)
         r["tal_kind"] = np.array([x[1] for x in o["tal"]], dtype=np.int8)
         r["tal"] = np.array([x[2] for x in o["tal"]], dtype=float).reshape(-1, len(TALLY))
@@ -938,10 +1008,10 @@ def run_signal(args, st, say):
     r = dict(sel=sel, trk=merge_hits(parts, "trk"), mu=merge_hits(parts, "mu"), cal=merge_cal(parts), seconds=dt,
              cpu=sum(p["seconds"] for p in parts), version=parts[0]["version"], physics=parts[0]["physics"], sd=parts[0]["sd"])
     n, e = Counter(), Counter()
-    fate, bnd = {}, {}
+    fate, bnd, fwd = {}, {}, {}
     for p in parts:
-        n.update(p["n"]); e.update(p["e"]); fate.update(p["fate"]); bnd.update(p["bnd"])
-    r.update(n=dict(n), e=dict(e), fate=fate, bnd=bnd, ncalhits=sum(p["ncalhits"] for p in parts), nsec=sum(p["nsec"] for p in parts))
+        n.update(p["n"]); e.update(p["e"]); fate.update(p["fate"]); bnd.update(p["bnd"]); fwd.update(p["fwd"])
+    r.update(n=dict(n), e=dict(e), fate=fate, bnd=bnd, fwd=fwd, ncalhits=sum(p["ncalhits"] for p in parts), nsec=sum(p["nsec"] for p in parts))
     tp = np.concatenate([p["tal_prim"] for p in parts]); order = np.argsort(tp)
     r["tal_prim"] = tp[order]
     r["tal_kind"] = np.concatenate([p["tal_kind"] for p in parts])[order]
@@ -984,8 +1054,9 @@ def save_signal(args, st, r):
     d["prim_jet0"] = np.isin(np.arange(len(sel)), sim.jet_members(st, sel))
     d["prim_fate"] = np.array([FATES.index(r["fate"].get(j, "stopped")) for j in range(len(sel))], np.int8)
     d["fate_names"] = np.array(FATES)
+    # where each primary crossed the tracker boundary as itself (x, y, z, px, py, pz): fate "calorimeter" or "beam pipe"
     b = np.full((len(sel), 6), np.nan)
-    for j, v in r["bnd"].items():
+    for j, v in list(r["bnd"].items()) + list(r["fwd"].items()):
         b[j] = v
     d["prim_bnd"] = b
     tal = np.zeros((len(sel), len(TALLY)))
@@ -993,7 +1064,7 @@ def save_signal(args, st, r):
     d["prim_tal"] = tal.astype(np.float32)
     d["tal_names"] = np.array(TALLY)
     T = r["T"]
-    stored = (T[:, 2] >= 0) & (T[:, 9] == 0) & (T[:, 8] >= E_SEC) if len(T) else np.zeros(0, bool)
+    stored = (T[:, 2] >= 0) & (T[:, 9] == 0) & (T[:, 8] >= E_SEC) & ~np.isin(np.abs(T[:, 1]), NEUTRINOS) if len(T) else np.zeros(0, bool)
     par = T[stored, 2].astype(int)
     d["sec"] = np.column_stack([np.minimum(T[stored, 3], 4), T[stored, 1], T[stored, 0], T[stored, 4], T[stored, 5], T[stored, 6],
                                 T[stored, 8], T[par, 1]]) if stored.any() else np.zeros((0, 8))
@@ -1018,7 +1089,7 @@ def summary_signal(args, st, r):
     bnd = r["bnd"]
     jb = [j for j in jm if j in bnd]
     in_jet = np.isin(cal["prim"], jm)
-    row = dict(stage=STAGE_LABEL[args.stage], primaries=int(len(sel)), boundary=len(bnd), secondaries=int(r["nsec"]),
+    row = dict(stage=STAGE_LABEL[args.stage], primaries=int(len(sel)), boundary=len(bnd), boundary_fwd=len(r["fwd"]), secondaries=int(r["nsec"]),
                sec_decay=n["sec_decay"], sec_em=n["sec_conversion"] + n["sec_bremsstrahlung"] + n["sec_delta ray"] + n["sec_Compton scattering"] + n["sec_photoelectric effect"],
                sec_had=n["sec_nuclear interaction"], trk=int(len(t["det"])), mu=int(len(r["mu"]["det"])), de=float(t["de"].sum()),
                cells=int(len(np.unique(cal["code"]))), calhits=int(r["ncalhits"]), jet_n=len(jm), jet_bnd_n=len(jb),
@@ -1028,7 +1099,7 @@ def summary_signal(args, st, r):
         row[sim.DET_NAME[d]] = float(cal["e"][det == d].sum())
     words = Counter()
     for k, v in n.items():
-        if not k.startswith(("sec_", "out_")) and k not in ("time_cut", "dead_region", "hf_in", "unknown_particle"):
+        if not k.startswith(("sec_", "out_")) and k not in ("time_cut", "dead_region", "hf_in", "unknown_particle", "ranged_out", "neutrinos_hf", "neutrinos_dead"):
             words[word(k)] += v
     nn = dict(n)
     nn.update(decays=words["decay"], conversions=words["conversion"], brems=words["bremsstrahlung"], nuclear=words["nuclear interaction"],
@@ -1188,14 +1259,16 @@ def narrate(st, r, summ, say):
     say("4. What happened in the tracker volume (Geant4 process: number of steps that ended with it and made a secondary or stopped the particle)")
     procs = sorted(((k, v) for k, v in summ["n"].items() if not k.startswith(("sec_", "out_")) and k[0].islower() or k in ("Decay",)), key=lambda kv: -kv[1])
     for k, v in procs:
-        if k in ("decays", "conversions", "brems", "nuclear", "delta_rays", "compton", "photoelectric", "annihilations", "elastic", "time_cut", "dead_region", "hf_in", "msc", "none"):
+        if k in ("decays", "conversions", "brems", "nuclear", "delta_rays", "compton", "photoelectric", "annihilations", "elastic", "time_cut", "dead_region", "hf_in", "msc", "none", "ranged_out", "neutrinos_hf", "neutrinos_dead"):
             continue
         say(f"   {k:28s} {v:8d}   {word(k)}")
     say(f"   in words: {n['decays']} decays, {n['conversions']} conversions, {n['brems']} bremsstrahlung photons, {n['nuclear']} nuclear interactions,")
     say(f"   {n['delta_rays']} delta rays, {n['compton']} Compton scatterings, {n['photoelectric']} photoelectric absorptions, {n['annihilations']} annihilations")
+    say(f"   (a delta ray is an ionisation step that made a secondary; {n['ranged_out']} charged particles lost their last energy by ionisation and stopped)")
     outs = {k[4:]: v for k, v in summ["n"].items() if k.startswith("out_")}
     say("   behind the calorimeters (charged particles in the muon system): " + ", ".join(f"{k} {v}" for k, v in sorted(outs.items(), key=lambda kv: -kv[1])[:8]))
-    say(f"5. The primaries: {row['boundary']} of {row['primaries']} leave the tracker volume towards the calorimeters; the fates of the others:")
+    say(f"5. The primaries: {row['boundary']} of {row['primaries']} leave the tracker volume (r = {R_BND} cm, |z| = {Z_BND} cm) towards the calorimeters and "
+        f"{row['boundary_fwd']} beyond |eta| = {ETA_FWD:g}, along the beam pipe: {row['boundary'] + row['boundary_fwd']} cross the boundary as themselves. All fates:")
     fates = Counter(r["fate"].values())
     say("   " + ", ".join(f"{k} {v}" for k, v in fates.most_common()))
     say(f"   secondaries born in the tracker above {E_SEC * 1e3:.0f} MeV: {row['secondaries']} ({row['sec_decay']} from decays, {row['sec_em']} electromagnetic, {row['sec_had']} from nuclear interactions)")
@@ -1292,7 +1365,7 @@ def main():
             n.update(r["n"]); e.update(r["e"])
         words = Counter()
         for k, v in n.items():
-            if not k.startswith(("sec_", "out_")) and k not in ("time_cut", "dead_region", "hf_in", "unknown_particle"):
+            if not k.startswith(("sec_", "out_")) and k not in ("time_cut", "dead_region", "hf_in", "unknown_particle", "ranged_out", "neutrinos_hf", "neutrinos_dead"):
                 words[word(k)] += v
         nn = dict(n)
         nn.update(decays=words["decay"], conversions=words["conversion"], brems=words["bremsstrahlung"], nuclear=words["nuclear interaction"], delta_rays=words["delta ray"])

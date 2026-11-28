@@ -1,10 +1,10 @@
 % chapter 10: the hadronic shower in ECAL + HCAL: where the energy of a pion goes.
 \begin{tikzpicture}[x=1cm,y=1cm,font=\footnotesize,>={Stealth[length=2mm]}]
-\fill[green!12] (0,-1.5) rectangle (1.3,1.5); \node[above] at (0.65,1.5) {crystals, $1.1\,\lambda_I$};
+\fill[green!12] (0,-1.5) rectangle (1.3,1.5); \node[above,align=center] at (0.65,1.5) {crystals\\$1.1\,\lambda_I$};
 \foreach \x in {2.2,2.9,3.6,4.3,5.0,5.7,6.4,7.1} {\fill[orange!35] (\x,-1.5) rectangle (\x+0.5,1.5); \fill[blue!35] (\x+0.5,-1.5) rectangle (\x+0.7,1.5);}
-\node[above] at (4.9,1.5) {HCAL: brass (orange) and scintillator (blue), $5.6\,\lambda_I$ at $\eta=0$};
-\draw[thick,->] (-1.4,0)--(0,0); \node[above] at (-0.8,0) {$\pi^+$};
-\draw[thick,dashed] (0,0)--(2.9,0); \node[below,font=\scriptsize] at (0.65,-0.05) {ionises};
+\node[above,align=center] at (5.0,1.5) {HCAL: brass and scintillator\\$5.6\,\lambda_I$ at $\eta=0$};
+\draw[thick,->] (-1.4,0)--(0,0); \node[above] at (-0.9,0.05) {$\pi^+$};
+\draw[thick,dashed] (0,0)--(2.9,0); \node[below,font=\scriptsize] at (0.65,-0.1) {ionises};
 \fill (2.9,0) circle (2pt);
 \foreach \a/\l in {28/1.9,14/2.8,-8/3.2,-24/2.2} \draw[thick] (2.9,0)--++(\a:\l);
 \draw[decorate,decoration={snake,amplitude=1pt,segment length=4pt},green!50!black,thick] (2.9,0)--++(5:1.3) node[right,font=\scriptsize]{$\pi^0\to\gamma\gamma$};
@@ -19,6 +19,6 @@
 \node[anchor=west,align=left] at (0,-0.75) {$f_{em}=1-(E/E_0)^{k-1}$: 0.37 at 10 GeV, 0.58 at 100 GeV};
 \node[anchor=west,align=left] at (0,-1.45) {invisible: nuclear binding, slow neutrons, neutrinos};
 \node[anchor=west,align=left] at (0,-2.15) {seen: $f_{em}+(1-f_{em})\,h/e$, and of that only the};
-\node[anchor=west,align=left] at (0,-2.65) {scintillator's share, about 1\,\% (the sampling fraction)};
+\node[anchor=west,align=left] at (0,-2.65) {scintillator's share, below 1\,\% (the sampling fraction)};
 \end{scope}
 \end{tikzpicture}

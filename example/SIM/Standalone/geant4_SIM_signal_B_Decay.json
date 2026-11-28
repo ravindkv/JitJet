@@ -9,19 +9,20 @@
   {
    "stage": "+ decays in flight",
    "primaries": 672,
-   "boundary": 482,
-   "secondaries": 205,
-   "sec_decay": 205,
+   "boundary": 357,
+   "boundary_fwd": 249,
+   "secondaries": 168,
+   "sec_decay": 168,
    "sec_em": 0,
    "sec_had": 0,
    "trk": 6450,
    "mu": 1972,
    "de": 0.0,
-   "cells": 580,
+   "cells": 585,
    "calhits": 0,
    "jet_n": 31,
-   "jet_bnd_n": 30,
-   "jet_bnd_pt": 81.52340029617328,
+   "jet_bnd_n": 29,
+   "jet_bnd_pt": 85.46752595352514,
    "jet_ecal": 0.0,
    "jet_hcal": 0.0,
    "EB": 0.0,
@@ -30,16 +31,19 @@
    "HB": 0.0,
    "HE": 0.0,
    "HO": 0.0,
-   "HF": 2123.0
+   "HF": 2120.0
   }
  ],
  "n": {
-  "hf_in": 379,
-  "dead_region": 78,
-  "Decay": 107,
-  "sec_decay": 205,
+  "hf_in": 366,
+  "dead_region": 75,
+  "neutrinos_hf": 13,
+  "Decay": 100,
+  "sec_decay": 168,
   "time_cut": 3,
-  "decays": 107,
+  "out_Decay": 7,
+  "neutrinos_dead": 3,
+  "decays": 100,
   "conversions": 0,
   "brems": 0,
   "nuclear": 0,
@@ -50,8 +54,8 @@
   "elastic": 0
  },
  "e": {
-  "hf_in": 5769.810365269903,
-  "dead_region": 480.02481069988306
+  "hf_in": 5763.319306734113,
+  "dead_region": 479.40526805694105
  },
  "stations": {
   "tracker": {
@@ -153,13 +157,13 @@
     "e": 0.0
    },
    "HF": {
-    "cells": 580,
-    "e": 2123.0
+    "cells": 585,
+    "e": 2120.0
    }
   }
  },
  "primaries": 672,
- "simtracks": 877,
+ "simtracks": 840,
  "calhits": 0,
  "cells": {
   "EB": 61200,
@@ -169,8 +173,8 @@
   "HO": 2160,
   "HF": 1728
  },
- "seconds": 49.77815389633179,
- "cpu_seconds": 426.7084102630615,
+ "seconds": 47.25895094871521,
+ "cpu_seconds": 408.74773263931274,
  "jobs": 10,
  "sensitive_volume_types": {
   "dead": 169,
@@ -193,7 +197,8 @@
   "mu13": 55,
   "mu14": 50,
   "mu12": 17,
-  "hf": 1
+  "hf": 1,
+  "gap": 1
  },
  "budget": {
   "charged hadron": {
@@ -215,8 +220,8 @@
    "ho_vis": 0.0,
    "si": 0.0,
    "gas": 0.0,
-   "hf_in": 3333.2693950918106,
-   "dead": 216.86128532228372
+   "hf_in": 3312.977869735571,
+   "dead": 216.32155480644792
   },
   "neutral hadron": {
    "n": 70.0,
@@ -237,8 +242,8 @@
    "ho_vis": 0.0,
    "si": 0.0,
    "gas": 0.0,
-   "hf_in": 1360.7731876232676,
-   "dead": 28.919754869992744
+   "hf_in": 1374.573654443717,
+   "dead": 28.839942742886596
   },
   "photon": {
    "n": 295.0,
@@ -325,8 +330,8 @@
    "ho_vis": 0.0,
    "si": 0.0,
    "gas": 0.0,
-   "hf_in": 5769.810365269903,
-   "dead": 480.0248106998832
+   "hf_in": 5763.319306734114,
+   "dead": 479.40526805694117
   }
  },
  "jet_budget": {

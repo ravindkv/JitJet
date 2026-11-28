@@ -18,3 +18,10 @@ Punchline in the begining:
 + "In equations we trust; in numbers we verify"
 
 Maybe we can change "Open problems in the context of Phase-2 LHC" to "Things we will see in Phase-2 LHC" where the tone of problems can be changed to "things which will differ". 
+
+Cover:
++ maybe put the cone on upper part and all text below
++ have another version where we can show many jets (e.g. six from ttbar full hadronic) on the upper part covering half circle.  Basically similar six cones tilted left to right. 
+Every cone will have road/bus and everything similar to reflect the fact that every jet has its own journey. The thickess of the cone can be made smaller to fit the page.
+
+Youtube tags: The  "Physics in this chapter" content from every chapter can be converted in hastag for every video
